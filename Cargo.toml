@@ -8,6 +8,7 @@ license = "Apache-2.0"
 repository = "https://github.com/converge-ai-labs/agent-foundation"
 description = "Rust SDK for Agent Foundation Service"
 readme = "README.md"
+exclude = ["agent-foundation-cli/**"]
 keywords = ["agents", "ai", "api", "sdk"]
 categories = ["api-bindings"]
 
