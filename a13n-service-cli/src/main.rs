@@ -4,9 +4,9 @@ use clap::Parser;
 
 #[derive(Debug, Parser)]
 #[command(
-    name = "agent-foundation",
+    name = "a13n-service-cli",
     version,
-    about = "Command-line client for Agent Foundation Service"
+    about = "Command-line client for a13n Service"
 )]
 struct Cli {}
 

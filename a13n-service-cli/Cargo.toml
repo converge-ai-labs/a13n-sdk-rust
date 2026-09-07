@@ -1,17 +1,17 @@
 [package]
-name = "agent-foundation-cli"
+name = "a13n-service-cli"
 version = "0.0.0"
 edition = "2024"
 rust-version = "1.96"
 authors = ["Converge AI"]
 license = "Apache-2.0"
 repository = "https://github.com/converge-ai-labs/agent-foundation"
-description = "Command-line client for Agent Foundation Service"
+description = "Command-line client for a13n Service"
 readme = "README.md"
 publish = false
 
 [[bin]]
-name = "agent-foundation"
+name = "a13n-service-cli"
 path = "src/main.rs"
 
 [dependencies]
