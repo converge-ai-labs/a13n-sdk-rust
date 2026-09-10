@@ -22,6 +22,9 @@ pub struct SessionResource {
     #[serde(rename = "preview", deserialize_with = "Option::deserialize")]
     pub preview: Option<Box<models::SessionPreview>>,
 
+    #[serde(rename = "run_count", deserialize_with = "Option::deserialize")]
+    pub run_count: Option<i32>,
+
     #[serde(rename = "updated_at")]
     pub updated_at: chrono::DateTime<chrono::FixedOffset>,
 
@@ -34,6 +37,7 @@ impl SessionResource {
         created_at: chrono::DateTime<chrono::FixedOffset>,
         id: String,
         preview: Option<models::SessionPreview>,
+        run_count: Option<i32>,
         updated_at: chrono::DateTime<chrono::FixedOffset>,
         workspace_id: String,
     ) -> SessionResource {
@@ -45,6 +49,7 @@ impl SessionResource {
             } else {
                 None
             },
+            run_count,
             updated_at,
             workspace_id,
         }

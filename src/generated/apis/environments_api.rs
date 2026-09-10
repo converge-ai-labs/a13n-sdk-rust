@@ -297,7 +297,10 @@ pub async fn get_environment_commands_command_id(
 
 pub async fn get_environment_provider_types(
     configuration: &configuration::Configuration,
-) -> Result<Response<models::CollectionDict>, Error<GetEnvironmentProviderTypesError>> {
+) -> Result<
+    Response<models::CollectionEnvironmentProviderDefinition>,
+    Error<GetEnvironmentProviderTypesError>,
+> {
     let uri_str = format!(
         "{}/api/v1/environment-provider-types",
         configuration.base_path
@@ -335,12 +338,12 @@ pub async fn get_environment_provider_types(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::CollectionDict`",
+                    "Received `text/plain` content type response that cannot be converted to `models::CollectionEnvironmentProviderDefinition`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::CollectionDict`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::CollectionEnvironmentProviderDefinition`"
                 ))));
             }
         }
@@ -360,7 +363,7 @@ pub async fn get_environment_provider_types_provider_type(
     configuration: &configuration::Configuration,
     provider_type: &str,
 ) -> Result<
-    Response<std::collections::HashMap<String, serde_json::Value>>,
+    Response<models::EnvironmentProviderDefinition>,
     Error<GetEnvironmentProviderTypesProviderTypeError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
@@ -404,12 +407,12 @@ pub async fn get_environment_provider_types_provider_type(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `std::collections::HashMap&lt;String, serde_json::Value&gt;`",
+                    "Received `text/plain` content type response that cannot be converted to `models::EnvironmentProviderDefinition`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `std::collections::HashMap&lt;String, serde_json::Value&gt;`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::EnvironmentProviderDefinition`"
                 ))));
             }
         }

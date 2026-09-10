@@ -12,9 +12,9 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CollectionDict {
+pub struct CollectionEnvironmentProviderDefinition {
     #[serde(rename = "items")]
-    pub items: Vec<std::collections::HashMap<String, serde_json::Value>>,
+    pub items: Vec<models::EnvironmentProviderDefinition>,
 
     #[serde(
         rename = "next_cursor",
@@ -25,9 +25,11 @@ pub struct CollectionDict {
     pub next_cursor: Option<Option<String>>,
 }
 
-impl CollectionDict {
-    pub fn new(items: Vec<std::collections::HashMap<String, serde_json::Value>>) -> CollectionDict {
-        CollectionDict {
+impl CollectionEnvironmentProviderDefinition {
+    pub fn new(
+        items: Vec<models::EnvironmentProviderDefinition>,
+    ) -> CollectionEnvironmentProviderDefinition {
+        CollectionEnvironmentProviderDefinition {
             items,
             next_cursor: None,
         }

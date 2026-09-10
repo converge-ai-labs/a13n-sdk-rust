@@ -1340,11 +1340,23 @@ pub async fn get_workspaces_workspace_runs(
 pub async fn get_workspaces_workspace_sessions(
     configuration: &configuration::Configuration,
     workspace: &str,
+    q: Option<&str>,
+    agent_id: Option<&str>,
+    status: Option<Vec<models::RunStatus>>,
+    trigger_type: Option<Vec<String>>,
+    updated_after: Option<chrono::DateTime<chrono::FixedOffset>>,
+    updated_before: Option<chrono::DateTime<chrono::FixedOffset>>,
     limit: Option<i32>,
     cursor: Option<&str>,
 ) -> Result<Response<models::SessionCollection>, Error<GetWorkspacesWorkspaceSessionsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace = workspace;
+    let p_query_q = q;
+    let p_query_agent_id = agent_id;
+    let p_query_status = status;
+    let p_query_trigger_type = trigger_type;
+    let p_query_updated_after = updated_after;
+    let p_query_updated_before = updated_before;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
 
@@ -1355,6 +1367,56 @@ pub async fn get_workspaces_workspace_sessions(
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
+    if let Some(ref param_value) = p_query_q {
+        req_builder = req_builder.query(&[("q", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_agent_id {
+        req_builder = req_builder.query(&[("agent_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_status {
+        req_builder = match "multi" {
+            "multi" => req_builder.query(
+                &param_value
+                    .into_iter()
+                    .map(|p| ("status".to_owned(), p.to_string()))
+                    .collect::<Vec<(std::string::String, std::string::String)>>(),
+            ),
+            _ => req_builder.query(&[(
+                "status",
+                &param_value
+                    .into_iter()
+                    .map(|p| p.to_string())
+                    .collect::<Vec<String>>()
+                    .join(",")
+                    .to_string(),
+            )]),
+        };
+    }
+    if let Some(ref param_value) = p_query_trigger_type {
+        req_builder = match "multi" {
+            "multi" => req_builder.query(
+                &param_value
+                    .into_iter()
+                    .map(|p| ("trigger_type".to_owned(), p.to_string()))
+                    .collect::<Vec<(std::string::String, std::string::String)>>(),
+            ),
+            _ => req_builder.query(&[(
+                "trigger_type",
+                &param_value
+                    .into_iter()
+                    .map(|p| p.to_string())
+                    .collect::<Vec<String>>()
+                    .join(",")
+                    .to_string(),
+            )]),
+        };
+    }
+    if let Some(ref param_value) = p_query_updated_after {
+        req_builder = req_builder.query(&[("updated_after", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_updated_before {
+        req_builder = req_builder.query(&[("updated_before", &param_value.to_string())]);
+    }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
     }

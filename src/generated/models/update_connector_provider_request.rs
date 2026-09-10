@@ -11,8 +11,16 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct UpdateConnectorProviderRequest {
+    #[serde(
+        rename = "credentials",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub credentials: Option<Option<std::collections::HashMap<String, String>>>,
+
     #[serde(rename = "expected_version")]
     pub expected_version: i32,
 
@@ -23,13 +31,28 @@ pub struct UpdateConnectorProviderRequest {
         skip_serializing_if = "Option::is_none"
     )]
     pub name: Option<Option<String>>,
+
+    #[serde(
+        rename = "status",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub status: Option<Option<models::ConnectorProviderStatus>>,
 }
 
 impl UpdateConnectorProviderRequest {
     pub fn new(expected_version: i32) -> UpdateConnectorProviderRequest {
         UpdateConnectorProviderRequest {
+            credentials: None,
             expected_version,
             name: None,
+            status: None,
         }
+    }
+}
+impl std::fmt::Debug for UpdateConnectorProviderRequest {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("UpdateConnectorProviderRequest { .. }")
     }
 }

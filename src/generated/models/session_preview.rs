@@ -13,6 +13,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SessionPreview {
+    #[serde(rename = "agent_name", deserialize_with = "Option::deserialize")]
+    pub agent_name: Option<String>,
+
     #[serde(rename = "input_text", deserialize_with = "Option::deserialize")]
     pub input_text: Option<String>,
 
@@ -22,22 +25,34 @@ pub struct SessionPreview {
     #[serde(rename = "run_id")]
     pub run_id: String,
 
+    #[serde(rename = "run_status")]
+    pub run_status: models::RunStatus,
+
     #[serde(rename = "thread_id")]
     pub thread_id: String,
+
+    #[serde(rename = "trigger_type")]
+    pub trigger_type: String,
 }
 
 impl SessionPreview {
     pub fn new(
+        agent_name: Option<String>,
         input_text: Option<String>,
         output_text: Option<String>,
         run_id: String,
+        run_status: models::RunStatus,
         thread_id: String,
+        trigger_type: String,
     ) -> SessionPreview {
         SessionPreview {
+            agent_name,
             input_text,
             output_text,
             run_id,
+            run_status,
             thread_id,
+            trigger_type,
         }
     }
 }

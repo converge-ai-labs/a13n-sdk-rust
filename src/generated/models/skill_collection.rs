@@ -14,14 +14,14 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SkillCollection {
     #[serde(rename = "items")]
-    pub items: Vec<models::Skill>,
+    pub items: Vec<models::SkillListItem>,
 
     #[serde(rename = "next_cursor", deserialize_with = "Option::deserialize")]
     pub next_cursor: Option<String>,
 }
 
 impl SkillCollection {
-    pub fn new(items: Vec<models::Skill>, next_cursor: Option<String>) -> SkillCollection {
+    pub fn new(items: Vec<models::SkillListItem>, next_cursor: Option<String>) -> SkillCollection {
         SkillCollection { items, next_cursor }
     }
 }
