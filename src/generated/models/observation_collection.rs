@@ -12,16 +12,19 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct TraceCollection {
+pub struct ObservationCollection {
     #[serde(rename = "items")]
-    pub items: Vec<models::Trace>,
+    pub items: Vec<models::Observation>,
 
     #[serde(rename = "next_cursor", deserialize_with = "Option::deserialize")]
     pub next_cursor: Option<String>,
 }
 
-impl TraceCollection {
-    pub fn new(items: Vec<models::Trace>, next_cursor: Option<String>) -> TraceCollection {
-        TraceCollection { items, next_cursor }
+impl ObservationCollection {
+    pub fn new(
+        items: Vec<models::Observation>,
+        next_cursor: Option<String>,
+    ) -> ObservationCollection {
+        ObservationCollection { items, next_cursor }
     }
 }
