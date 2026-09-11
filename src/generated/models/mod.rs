@@ -100,6 +100,8 @@ pub mod complete_connector_setup_request;
 pub use self::complete_connector_setup_request::CompleteConnectorSetupRequest;
 pub mod complete_email_change_request;
 pub use self::complete_email_change_request::CompleteEmailChangeRequest;
+pub mod complete_mcpo_auth_request;
+pub use self::complete_mcpo_auth_request::CompleteMcpoAuthRequest;
 pub mod complete_password_reset_request;
 pub use self::complete_password_reset_request::CompletePasswordResetRequest;
 pub mod complete_pending_resolution;
