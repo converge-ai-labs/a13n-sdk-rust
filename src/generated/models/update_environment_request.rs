@@ -11,14 +11,14 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum Body {
-    AnyOf0(models::CreateManagedEnvironmentRequest),
-    AnyOf1(models::RegisterEnvironmentRequest),
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+pub struct UpdateEnvironmentRequest {
+    #[serde(rename = "name")]
+    pub name: String,
 }
-impl Default for Body {
-    fn default() -> Self {
-        Self::AnyOf0(Default::default())
+
+impl UpdateEnvironmentRequest {
+    pub fn new(name: String) -> UpdateEnvironmentRequest {
+        UpdateEnvironmentRequest { name }
     }
 }
