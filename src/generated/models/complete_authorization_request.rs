@@ -12,16 +12,19 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CompleteMcpoAuthRequest {
+pub struct CompleteAuthorizationRequest {
+    #[serde(rename = "completion_verifier")]
+    pub completion_verifier: String,
+
     #[serde(rename = "receipt")]
     pub receipt: String,
-
-    #[serde(rename = "state")]
-    pub state: String,
 }
 
-impl CompleteMcpoAuthRequest {
-    pub fn new(receipt: String, state: String) -> CompleteMcpoAuthRequest {
-        CompleteMcpoAuthRequest { receipt, state }
+impl CompleteAuthorizationRequest {
+    pub fn new(completion_verifier: String, receipt: String) -> CompleteAuthorizationRequest {
+        CompleteAuthorizationRequest {
+            completion_verifier,
+            receipt,
+        }
     }
 }

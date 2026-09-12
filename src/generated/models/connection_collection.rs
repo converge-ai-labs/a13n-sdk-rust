@@ -12,9 +12,9 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct McpConnectionCollection {
+pub struct ConnectionCollection {
     #[serde(rename = "items")]
-    pub items: Vec<models::McpConnection>,
+    pub items: Vec<models::Connection>,
 
     #[serde(
         rename = "next_cursor",
@@ -25,9 +25,9 @@ pub struct McpConnectionCollection {
     pub next_cursor: Option<Option<String>>,
 }
 
-impl McpConnectionCollection {
-    pub fn new(items: Vec<models::McpConnection>) -> McpConnectionCollection {
-        McpConnectionCollection {
+impl ConnectionCollection {
+    pub fn new(items: Vec<models::Connection>) -> ConnectionCollection {
+        ConnectionCollection {
             items,
             next_cursor: None,
         }

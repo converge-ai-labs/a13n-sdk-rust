@@ -12,9 +12,9 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ConnectorConnectionToolSelection {
-    #[serde(rename = "connector_connection_id")]
-    pub connector_connection_id: String,
+pub struct ConnectionToolSelection {
+    #[serde(rename = "connection_id")]
+    pub connection_id: String,
 
     #[serde(rename = "defer_loading", skip_serializing_if = "Option::is_none")]
     pub defer_loading: Option<bool>,
@@ -28,10 +28,10 @@ pub struct ConnectorConnectionToolSelection {
     pub tools: Option<Option<Vec<String>>>,
 }
 
-impl ConnectorConnectionToolSelection {
-    pub fn new(connector_connection_id: String) -> ConnectorConnectionToolSelection {
-        ConnectorConnectionToolSelection {
-            connector_connection_id,
+impl ConnectionToolSelection {
+    pub fn new(connection_id: String) -> ConnectionToolSelection {
+        ConnectionToolSelection {
+            connection_id,
             defer_loading: None,
             tools: None,
         }

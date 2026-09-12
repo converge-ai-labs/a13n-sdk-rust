@@ -12,9 +12,9 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct McpConnection {
-    #[serde(rename = "auth_mode")]
-    pub auth_mode: models::McpAuthMode,
+pub struct Connection {
+    #[serde(rename = "authorization_generation")]
+    pub authorization_generation: i32,
 
     #[serde(rename = "created_at")]
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
@@ -25,14 +25,16 @@ pub struct McpConnection {
     #[serde(rename = "credential_configured")]
     pub credential_configured: bool,
 
-    #[serde(rename = "credential_generation")]
-    pub credential_generation: i32,
-
-    #[serde(rename = "endpoint_url")]
-    pub endpoint_url: String,
-
     #[serde(rename = "id")]
     pub id: String,
+
+    #[serde(
+        rename = "last_check",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub last_check: Option<Option<Box<models::ConnectionCheck>>>,
 
     #[serde(rename = "name")]
     pub name: String,
@@ -40,14 +42,22 @@ pub struct McpConnection {
     #[serde(rename = "organization_id")]
     pub organization_id: String,
 
-    #[serde(rename = "static_header_names")]
-    pub static_header_names: Vec<String>,
+    #[serde(rename = "safe_metadata", skip_serializing_if = "Option::is_none")]
+    pub safe_metadata: Option<std::collections::HashMap<String, serde_json::Value>>,
+
+    #[serde(rename = "source")]
+    pub source: Box<models::Source3>,
 
     #[serde(rename = "status")]
-    pub status: models::McpConnectionStatus,
+    pub status: models::ConnectionStatus,
 
-    #[serde(rename = "status_reason", deserialize_with = "Option::deserialize")]
-    pub status_reason: Option<models::McpConnectionStatusReason>,
+    #[serde(
+        rename = "status_reason",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub status_reason: Option<Option<models::ConnectionStatusReason>>,
 
     #[serde(rename = "updated_at")]
     pub updated_at: chrono::DateTime<chrono::FixedOffset>,
@@ -59,37 +69,34 @@ pub struct McpConnection {
     pub workspace_id: String,
 }
 
-impl McpConnection {
+impl Connection {
     pub fn new(
-        auth_mode: models::McpAuthMode,
+        authorization_generation: i32,
         created_at: chrono::DateTime<chrono::FixedOffset>,
         created_by: models::PrincipalRef,
         credential_configured: bool,
-        credential_generation: i32,
-        endpoint_url: String,
         id: String,
         name: String,
         organization_id: String,
-        static_header_names: Vec<String>,
-        status: models::McpConnectionStatus,
-        status_reason: Option<models::McpConnectionStatusReason>,
+        source: models::Source3,
+        status: models::ConnectionStatus,
         updated_at: chrono::DateTime<chrono::FixedOffset>,
         version: i32,
         workspace_id: String,
-    ) -> McpConnection {
-        McpConnection {
-            auth_mode,
+    ) -> Connection {
+        Connection {
+            authorization_generation,
             created_at,
             created_by: Box::new(created_by),
             credential_configured,
-            credential_generation,
-            endpoint_url,
             id,
+            last_check: None,
             name,
             organization_id,
-            static_header_names,
+            safe_metadata: None,
+            source: Box::new(source),
             status,
-            status_reason,
+            status_reason: None,
             updated_at,
             version,
             workspace_id,

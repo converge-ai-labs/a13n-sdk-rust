@@ -12,27 +12,19 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CompleteConnectorSetupRequest {
-    #[serde(rename = "attempt_id")]
-    pub attempt_id: String,
-
+pub struct LaunchAuthorizationRequest {
     #[serde(rename = "browser_nonce")]
     pub browser_nonce: String,
 
-    #[serde(rename = "session_uri")]
-    pub session_uri: String,
+    #[serde(rename = "token")]
+    pub token: String,
 }
 
-impl CompleteConnectorSetupRequest {
-    pub fn new(
-        attempt_id: String,
-        browser_nonce: String,
-        session_uri: String,
-    ) -> CompleteConnectorSetupRequest {
-        CompleteConnectorSetupRequest {
-            attempt_id,
+impl LaunchAuthorizationRequest {
+    pub fn new(browser_nonce: String, token: String) -> LaunchAuthorizationRequest {
+        LaunchAuthorizationRequest {
             browser_nonce,
-            session_uri,
+            token,
         }
     }
 }

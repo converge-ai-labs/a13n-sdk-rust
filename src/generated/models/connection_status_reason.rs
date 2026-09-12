@@ -13,14 +13,14 @@ use serde::{Deserialize, Serialize};
 
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum ConnectorConnectionStatusReason {
+pub enum ConnectionStatusReason {
     #[serde(rename = "reauthorization_required")]
     ReauthorizationRequired,
     #[serde(rename = "incompatible")]
     Incompatible,
 }
 
-impl std::fmt::Display for ConnectorConnectionStatusReason {
+impl std::fmt::Display for ConnectionStatusReason {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             Self::ReauthorizationRequired => write!(f, "reauthorization_required"),
@@ -29,8 +29,8 @@ impl std::fmt::Display for ConnectorConnectionStatusReason {
     }
 }
 
-impl Default for ConnectorConnectionStatusReason {
-    fn default() -> ConnectorConnectionStatusReason {
+impl Default for ConnectionStatusReason {
+    fn default() -> ConnectionStatusReason {
         Self::ReauthorizationRequired
     }
 }

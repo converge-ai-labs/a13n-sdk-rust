@@ -12,19 +12,19 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct UpdateMcpConnectionRequest {
-    #[serde(rename = "expected_version")]
-    pub expected_version: i32,
-
+pub struct CreateConnectionRequest {
     #[serde(rename = "name")]
     pub name: String,
+
+    #[serde(rename = "source")]
+    pub source: Box<models::Source3>,
 }
 
-impl UpdateMcpConnectionRequest {
-    pub fn new(expected_version: i32, name: String) -> UpdateMcpConnectionRequest {
-        UpdateMcpConnectionRequest {
-            expected_version,
+impl CreateConnectionRequest {
+    pub fn new(name: String, source: models::Source3) -> CreateConnectionRequest {
+        CreateConnectionRequest {
             name,
+            source: Box::new(source),
         }
     }
 }

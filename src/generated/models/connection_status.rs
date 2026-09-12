@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum ConnectorConnectionStatus {
+pub enum ConnectionStatus {
     #[serde(rename = "pending")]
     Pending,
     #[serde(rename = "ready")]
@@ -24,7 +24,7 @@ pub enum ConnectorConnectionStatus {
     Disabled,
 }
 
-impl std::fmt::Display for ConnectorConnectionStatus {
+impl std::fmt::Display for ConnectionStatus {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             Self::Pending => write!(f, "pending"),
@@ -35,8 +35,8 @@ impl std::fmt::Display for ConnectorConnectionStatus {
     }
 }
 
-impl Default for ConnectorConnectionStatus {
-    fn default() -> ConnectorConnectionStatus {
+impl Default for ConnectionStatus {
+    fn default() -> ConnectionStatus {
         Self::Pending
     }
 }

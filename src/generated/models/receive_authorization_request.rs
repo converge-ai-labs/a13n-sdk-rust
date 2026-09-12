@@ -12,24 +12,24 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ConnectorConnectionCollection {
-    #[serde(rename = "items")]
-    pub items: Vec<models::ConnectorConnection>,
+pub struct ReceiveAuthorizationRequest {
+    #[serde(rename = "browser_nonce")]
+    pub browser_nonce: String,
 
     #[serde(
-        rename = "next_cursor",
+        rename = "session_uri",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub next_cursor: Option<Option<String>>,
+    pub session_uri: Option<Option<String>>,
 }
 
-impl ConnectorConnectionCollection {
-    pub fn new(items: Vec<models::ConnectorConnection>) -> ConnectorConnectionCollection {
-        ConnectorConnectionCollection {
-            items,
-            next_cursor: None,
+impl ReceiveAuthorizationRequest {
+    pub fn new(browser_nonce: String) -> ReceiveAuthorizationRequest {
+        ReceiveAuthorizationRequest {
+            browser_nonce,
+            session_uri: None,
         }
     }
 }

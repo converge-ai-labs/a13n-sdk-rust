@@ -12,13 +12,13 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ConnectorSetupCompletion {
-    #[serde(rename = "return_path")]
-    pub return_path: String,
+pub struct AuthorizationRedirect {
+    #[serde(rename = "url")]
+    pub url: String,
 }
 
-impl ConnectorSetupCompletion {
-    pub fn new(return_path: String) -> ConnectorSetupCompletion {
-        ConnectorSetupCompletion { return_path }
+impl AuthorizationRedirect {
+    pub fn new(url: String) -> AuthorizationRedirect {
+        AuthorizationRedirect { url }
     }
 }
