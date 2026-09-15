@@ -11,39 +11,50 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
+/// ModelPricing : Editable USD prices per million tokens.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ModelOverride {
+pub struct ModelPricing {
     #[serde(
-        rename = "characteristics",
+        rename = "cache_read",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub characteristics: Option<Option<Box<models::AgentModelCharacteristics>>>,
+    pub cache_read: Option<Option<f64>>,
 
     #[serde(
-        rename = "model_key",
+        rename = "cache_write",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub model_key: Option<Option<String>>,
+    pub cache_write: Option<Option<f64>>,
 
     #[serde(
-        rename = "settings",
+        rename = "input",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub settings: Option<Option<std::collections::HashMap<String, serde_json::Value>>>,
+    pub input: Option<Option<f64>>,
+
+    #[serde(
+        rename = "output",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub output: Option<Option<f64>>,
 }
 
-impl ModelOverride {
-    pub fn new() -> ModelOverride {
-        ModelOverride {
-            characteristics: None,
-            model_key: None,
-            settings: None,
+impl ModelPricing {
+    /// Editable USD prices per million tokens.
+    pub fn new() -> ModelPricing {
+        ModelPricing {
+            cache_read: None,
+            cache_write: None,
+            input: None,
+            output: None,
         }
     }
 }

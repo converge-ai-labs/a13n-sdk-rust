@@ -12,13 +12,13 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ModelDiscovery {
+pub struct BaseModelCandidateCollection {
     #[serde(rename = "items")]
-    pub items: Vec<models::ModelCandidate>,
+    pub items: Vec<models::BaseModelCandidate>,
 }
 
-impl ModelDiscovery {
-    pub fn new(items: Vec<models::ModelCandidate>) -> ModelDiscovery {
-        ModelDiscovery { items }
+impl BaseModelCandidateCollection {
+    pub fn new(items: Vec<models::BaseModelCandidate>) -> BaseModelCandidateCollection {
+        BaseModelCandidateCollection { items }
     }
 }
