@@ -12,7 +12,7 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchProviderReference {
+pub struct WebProviderReference {
     #[serde(rename = "agent_id")]
     pub agent_id: String,
 
@@ -26,14 +26,14 @@ pub struct SearchProviderReference {
     pub version: i32,
 }
 
-impl SearchProviderReference {
+impl WebProviderReference {
     pub fn new(
         agent_id: String,
         agent_revision_id: String,
         is_current: bool,
         version: i32,
-    ) -> SearchProviderReference {
-        SearchProviderReference {
+    ) -> WebProviderReference {
+        WebProviderReference {
             agent_id,
             agent_revision_id,
             is_current,

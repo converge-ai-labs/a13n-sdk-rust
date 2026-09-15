@@ -13,132 +13,132 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`get_organizations_organization_search_providers`]
+/// struct for typed errors of method [`get_organizations_organization_web_providers`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetOrganizationsOrganizationSearchProvidersError {
+pub enum GetOrganizationsOrganizationWebProvidersError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_organizations_organization_search_providers_provider_id`]
+/// struct for typed errors of method [`get_organizations_organization_web_providers_provider_id`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetOrganizationsOrganizationSearchProvidersProviderIdError {
+pub enum GetOrganizationsOrganizationWebProvidersProviderIdError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_organizations_organization_search_providers_provider_id_references`]
+/// struct for typed errors of method [`get_organizations_organization_web_providers_provider_id_references`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetOrganizationsOrganizationSearchProvidersProviderIdReferencesError {
+pub enum GetOrganizationsOrganizationWebProvidersProviderIdReferencesError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_search_provider_types`]
+/// struct for typed errors of method [`get_web_provider_types`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetSearchProviderTypesError {
+pub enum GetWebProviderTypesError {
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_search_provider_types_provider_type`]
+/// struct for typed errors of method [`get_web_provider_types_provider_type`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetSearchProviderTypesProviderTypeError {
+pub enum GetWebProviderTypesProviderTypeError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_workspaces_workspace_search_providers`]
+/// struct for typed errors of method [`get_workspaces_workspace_web_providers`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetWorkspacesWorkspaceSearchProvidersError {
+pub enum GetWorkspacesWorkspaceWebProvidersError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_workspaces_workspace_search_providers_provider_id`]
+/// struct for typed errors of method [`get_workspaces_workspace_web_providers_provider_id`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetWorkspacesWorkspaceSearchProvidersProviderIdError {
+pub enum GetWorkspacesWorkspaceWebProvidersProviderIdError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_workspaces_workspace_search_providers_provider_id_references`]
+/// struct for typed errors of method [`get_workspaces_workspace_web_providers_provider_id_references`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetWorkspacesWorkspaceSearchProvidersProviderIdReferencesError {
+pub enum GetWorkspacesWorkspaceWebProvidersProviderIdReferencesError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`patch_organizations_organization_search_providers_provider_id`]
+/// struct for typed errors of method [`patch_organizations_organization_web_providers_provider_id`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PatchOrganizationsOrganizationSearchProvidersProviderIdError {
+pub enum PatchOrganizationsOrganizationWebProvidersProviderIdError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`patch_workspaces_workspace_search_providers_provider_id`]
+/// struct for typed errors of method [`patch_workspaces_workspace_web_providers_provider_id`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PatchWorkspacesWorkspaceSearchProvidersProviderIdError {
+pub enum PatchWorkspacesWorkspaceWebProvidersProviderIdError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`post_organizations_organization_search_providers`]
+/// struct for typed errors of method [`post_organizations_organization_web_providers`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PostOrganizationsOrganizationSearchProvidersError {
+pub enum PostOrganizationsOrganizationWebProvidersError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`post_organizations_organization_search_providers_provider_id_test`]
+/// struct for typed errors of method [`post_organizations_organization_web_providers_provider_id_test`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PostOrganizationsOrganizationSearchProvidersProviderIdTestError {
+pub enum PostOrganizationsOrganizationWebProvidersProviderIdTestError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`post_workspaces_workspace_search_providers`]
+/// struct for typed errors of method [`post_workspaces_workspace_web_providers`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PostWorkspacesWorkspaceSearchProvidersError {
+pub enum PostWorkspacesWorkspaceWebProvidersError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`post_workspaces_workspace_search_providers_provider_id_test`]
+/// struct for typed errors of method [`post_workspaces_workspace_web_providers_provider_id_test`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PostWorkspacesWorkspaceSearchProvidersProviderIdTestError {
+pub enum PostWorkspacesWorkspaceWebProvidersProviderIdTestError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn get_organizations_organization_search_providers(
+pub async fn get_organizations_organization_web_providers(
     configuration: &configuration::Configuration,
     organization: &str,
     limit: Option<i32>,
@@ -146,8 +146,8 @@ pub async fn get_organizations_organization_search_providers(
     r#type: Option<&str>,
     enabled: Option<bool>,
 ) -> Result<
-    Response<models::SearchProviderCollection>,
-    Error<GetOrganizationsOrganizationSearchProvidersError>,
+    Response<models::WebProviderCollection>,
+    Error<GetOrganizationsOrganizationWebProvidersError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization = organization;
@@ -157,7 +157,7 @@ pub async fn get_organizations_organization_search_providers(
     let p_query_enabled = enabled;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization}/search-providers",
+        "{}/api/v1/organizations/{organization}/web-providers",
         configuration.base_path,
         organization = crate::generated::apis::urlencode(p_path_organization)
     );
@@ -206,18 +206,18 @@ pub async fn get_organizations_organization_search_providers(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProviderCollection`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProviderCollection`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProviderCollection`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProviderCollection`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetOrganizationsOrganizationSearchProvidersError> =
+        let entity: Option<GetOrganizationsOrganizationWebProvidersError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -228,20 +228,20 @@ pub async fn get_organizations_organization_search_providers(
     }
 }
 
-pub async fn get_organizations_organization_search_providers_provider_id(
+pub async fn get_organizations_organization_web_providers_provider_id(
     configuration: &configuration::Configuration,
     provider_id: &str,
     organization: &str,
 ) -> Result<
-    Response<models::SearchProvider>,
-    Error<GetOrganizationsOrganizationSearchProvidersProviderIdError>,
+    Response<models::WebProvider>,
+    Error<GetOrganizationsOrganizationWebProvidersProviderIdError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_path_organization = organization;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization}/search-providers/{provider_id}",
+        "{}/api/v1/organizations/{organization}/web-providers/{provider_id}",
         configuration.base_path,
         provider_id = crate::generated::apis::urlencode(p_path_provider_id),
         organization = crate::generated::apis::urlencode(p_path_organization)
@@ -279,18 +279,18 @@ pub async fn get_organizations_organization_search_providers_provider_id(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProvider`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProvider`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProvider`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProvider`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetOrganizationsOrganizationSearchProvidersProviderIdError> =
+        let entity: Option<GetOrganizationsOrganizationWebProvidersProviderIdError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -301,15 +301,15 @@ pub async fn get_organizations_organization_search_providers_provider_id(
     }
 }
 
-pub async fn get_organizations_organization_search_providers_provider_id_references(
+pub async fn get_organizations_organization_web_providers_provider_id_references(
     configuration: &configuration::Configuration,
     provider_id: &str,
     organization: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
 ) -> Result<
-    Response<models::SearchProviderReferenceCollection>,
-    Error<GetOrganizationsOrganizationSearchProvidersProviderIdReferencesError>,
+    Response<models::WebProviderReferenceCollection>,
+    Error<GetOrganizationsOrganizationWebProvidersProviderIdReferencesError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
@@ -318,7 +318,7 @@ pub async fn get_organizations_organization_search_providers_provider_id_referen
     let p_query_cursor = cursor;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization}/search-providers/{provider_id}/references",
+        "{}/api/v1/organizations/{organization}/web-providers/{provider_id}/references",
         configuration.base_path,
         provider_id = crate::generated::apis::urlencode(p_path_provider_id),
         organization = crate::generated::apis::urlencode(p_path_organization)
@@ -362,18 +362,18 @@ pub async fn get_organizations_organization_search_providers_provider_id_referen
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProviderReferenceCollection`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProviderReferenceCollection`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProviderReferenceCollection`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProviderReferenceCollection`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetOrganizationsOrganizationSearchProvidersProviderIdReferencesError> =
+        let entity: Option<GetOrganizationsOrganizationWebProvidersProviderIdReferencesError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -384,11 +384,10 @@ pub async fn get_organizations_organization_search_providers_provider_id_referen
     }
 }
 
-pub async fn get_search_provider_types(
+pub async fn get_web_provider_types(
     configuration: &configuration::Configuration,
-) -> Result<Response<models::SearchProviderDefinitionCollection>, Error<GetSearchProviderTypesError>>
-{
-    let uri_str = format!("{}/api/v1/search-provider-types", configuration.base_path);
+) -> Result<Response<models::WebProviderDefinitionCollection>, Error<GetWebProviderTypesError>> {
+    let uri_str = format!("{}/api/v1/web-provider-types", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -422,18 +421,18 @@ pub async fn get_search_provider_types(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProviderDefinitionCollection`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProviderDefinitionCollection`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProviderDefinitionCollection`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProviderDefinitionCollection`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetSearchProviderTypesError> = serde_json::from_str(&content).ok();
+        let entity: Option<GetWebProviderTypesError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -443,18 +442,15 @@ pub async fn get_search_provider_types(
     }
 }
 
-pub async fn get_search_provider_types_provider_type(
+pub async fn get_web_provider_types_provider_type(
     configuration: &configuration::Configuration,
     provider_type: &str,
-) -> Result<
-    Response<models::SearchProviderDefinition>,
-    Error<GetSearchProviderTypesProviderTypeError>,
-> {
+) -> Result<Response<models::WebProviderDefinition>, Error<GetWebProviderTypesProviderTypeError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_type = provider_type;
 
     let uri_str = format!(
-        "{}/api/v1/search-provider-types/{provider_type}",
+        "{}/api/v1/web-provider-types/{provider_type}",
         configuration.base_path,
         provider_type = crate::generated::apis::urlencode(p_path_provider_type)
     );
@@ -491,18 +487,18 @@ pub async fn get_search_provider_types_provider_type(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProviderDefinition`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProviderDefinition`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProviderDefinition`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProviderDefinition`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetSearchProviderTypesProviderTypeError> =
+        let entity: Option<GetWebProviderTypesProviderTypeError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -513,17 +509,15 @@ pub async fn get_search_provider_types_provider_type(
     }
 }
 
-pub async fn get_workspaces_workspace_search_providers(
+pub async fn get_workspaces_workspace_web_providers(
     configuration: &configuration::Configuration,
     workspace: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
     r#type: Option<&str>,
     enabled: Option<bool>,
-) -> Result<
-    Response<models::SearchProviderCollection>,
-    Error<GetWorkspacesWorkspaceSearchProvidersError>,
-> {
+) -> Result<Response<models::WebProviderCollection>, Error<GetWorkspacesWorkspaceWebProvidersError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace = workspace;
     let p_query_limit = limit;
@@ -532,7 +526,7 @@ pub async fn get_workspaces_workspace_search_providers(
     let p_query_enabled = enabled;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace}/search-providers",
+        "{}/api/v1/workspaces/{workspace}/web-providers",
         configuration.base_path,
         workspace = crate::generated::apis::urlencode(p_path_workspace)
     );
@@ -581,18 +575,18 @@ pub async fn get_workspaces_workspace_search_providers(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProviderCollection`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProviderCollection`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProviderCollection`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProviderCollection`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetWorkspacesWorkspaceSearchProvidersError> =
+        let entity: Option<GetWorkspacesWorkspaceWebProvidersError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -603,20 +597,18 @@ pub async fn get_workspaces_workspace_search_providers(
     }
 }
 
-pub async fn get_workspaces_workspace_search_providers_provider_id(
+pub async fn get_workspaces_workspace_web_providers_provider_id(
     configuration: &configuration::Configuration,
     provider_id: &str,
     workspace: &str,
-) -> Result<
-    Response<models::SearchProvider>,
-    Error<GetWorkspacesWorkspaceSearchProvidersProviderIdError>,
-> {
+) -> Result<Response<models::WebProvider>, Error<GetWorkspacesWorkspaceWebProvidersProviderIdError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_path_workspace = workspace;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace}/search-providers/{provider_id}",
+        "{}/api/v1/workspaces/{workspace}/web-providers/{provider_id}",
         configuration.base_path,
         provider_id = crate::generated::apis::urlencode(p_path_provider_id),
         workspace = crate::generated::apis::urlencode(p_path_workspace)
@@ -654,18 +646,18 @@ pub async fn get_workspaces_workspace_search_providers_provider_id(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProvider`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProvider`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProvider`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProvider`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetWorkspacesWorkspaceSearchProvidersProviderIdError> =
+        let entity: Option<GetWorkspacesWorkspaceWebProvidersProviderIdError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -676,15 +668,15 @@ pub async fn get_workspaces_workspace_search_providers_provider_id(
     }
 }
 
-pub async fn get_workspaces_workspace_search_providers_provider_id_references(
+pub async fn get_workspaces_workspace_web_providers_provider_id_references(
     configuration: &configuration::Configuration,
     provider_id: &str,
     workspace: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
 ) -> Result<
-    Response<models::SearchProviderReferenceCollection>,
-    Error<GetWorkspacesWorkspaceSearchProvidersProviderIdReferencesError>,
+    Response<models::WebProviderReferenceCollection>,
+    Error<GetWorkspacesWorkspaceWebProvidersProviderIdReferencesError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
@@ -693,7 +685,7 @@ pub async fn get_workspaces_workspace_search_providers_provider_id_references(
     let p_query_cursor = cursor;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace}/search-providers/{provider_id}/references",
+        "{}/api/v1/workspaces/{workspace}/web-providers/{provider_id}/references",
         configuration.base_path,
         provider_id = crate::generated::apis::urlencode(p_path_provider_id),
         workspace = crate::generated::apis::urlencode(p_path_workspace)
@@ -737,18 +729,18 @@ pub async fn get_workspaces_workspace_search_providers_provider_id_references(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProviderReferenceCollection`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProviderReferenceCollection`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProviderReferenceCollection`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProviderReferenceCollection`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetWorkspacesWorkspaceSearchProvidersProviderIdReferencesError> =
+        let entity: Option<GetWorkspacesWorkspaceWebProvidersProviderIdReferencesError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -759,24 +751,24 @@ pub async fn get_workspaces_workspace_search_providers_provider_id_references(
     }
 }
 
-pub async fn patch_organizations_organization_search_providers_provider_id(
+pub async fn patch_organizations_organization_web_providers_provider_id(
     configuration: &configuration::Configuration,
     provider_id: &str,
     organization: &str,
     if_match: &str,
-    update_search_provider_request: models::UpdateSearchProviderRequest,
+    update_web_provider_request: models::UpdateWebProviderRequest,
 ) -> Result<
-    Response<models::SearchProvider>,
-    Error<PatchOrganizationsOrganizationSearchProvidersProviderIdError>,
+    Response<models::WebProvider>,
+    Error<PatchOrganizationsOrganizationWebProvidersProviderIdError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_path_organization = organization;
     let p_header_if_match = if_match;
-    let p_body_update_search_provider_request = update_search_provider_request;
+    let p_body_update_web_provider_request = update_web_provider_request;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization}/search-providers/{provider_id}",
+        "{}/api/v1/organizations/{organization}/web-providers/{provider_id}",
         configuration.base_path,
         provider_id = crate::generated::apis::urlencode(p_path_provider_id),
         organization = crate::generated::apis::urlencode(p_path_organization)
@@ -792,7 +784,7 @@ pub async fn patch_organizations_organization_search_providers_provider_id(
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
-    req_builder = req_builder.json(&p_body_update_search_provider_request);
+    req_builder = req_builder.json(&p_body_update_web_provider_request);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -818,18 +810,18 @@ pub async fn patch_organizations_organization_search_providers_provider_id(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProvider`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProvider`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProvider`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProvider`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PatchOrganizationsOrganizationSearchProvidersProviderIdError> =
+        let entity: Option<PatchOrganizationsOrganizationWebProvidersProviderIdError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -840,24 +832,22 @@ pub async fn patch_organizations_organization_search_providers_provider_id(
     }
 }
 
-pub async fn patch_workspaces_workspace_search_providers_provider_id(
+pub async fn patch_workspaces_workspace_web_providers_provider_id(
     configuration: &configuration::Configuration,
     provider_id: &str,
     workspace: &str,
     if_match: &str,
-    update_search_provider_request: models::UpdateSearchProviderRequest,
-) -> Result<
-    Response<models::SearchProvider>,
-    Error<PatchWorkspacesWorkspaceSearchProvidersProviderIdError>,
-> {
+    update_web_provider_request: models::UpdateWebProviderRequest,
+) -> Result<Response<models::WebProvider>, Error<PatchWorkspacesWorkspaceWebProvidersProviderIdError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_path_workspace = workspace;
     let p_header_if_match = if_match;
-    let p_body_update_search_provider_request = update_search_provider_request;
+    let p_body_update_web_provider_request = update_web_provider_request;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace}/search-providers/{provider_id}",
+        "{}/api/v1/workspaces/{workspace}/web-providers/{provider_id}",
         configuration.base_path,
         provider_id = crate::generated::apis::urlencode(p_path_provider_id),
         workspace = crate::generated::apis::urlencode(p_path_workspace)
@@ -873,7 +863,7 @@ pub async fn patch_workspaces_workspace_search_providers_provider_id(
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
-    req_builder = req_builder.json(&p_body_update_search_provider_request);
+    req_builder = req_builder.json(&p_body_update_web_provider_request);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -899,18 +889,18 @@ pub async fn patch_workspaces_workspace_search_providers_provider_id(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProvider`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProvider`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProvider`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProvider`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PatchWorkspacesWorkspaceSearchProvidersProviderIdError> =
+        let entity: Option<PatchWorkspacesWorkspaceWebProvidersProviderIdError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -921,20 +911,17 @@ pub async fn patch_workspaces_workspace_search_providers_provider_id(
     }
 }
 
-pub async fn post_organizations_organization_search_providers(
+pub async fn post_organizations_organization_web_providers(
     configuration: &configuration::Configuration,
     organization: &str,
-    create_search_provider_request: models::CreateSearchProviderRequest,
-) -> Result<
-    Response<models::SearchProvider>,
-    Error<PostOrganizationsOrganizationSearchProvidersError>,
-> {
+    create_web_provider_request: models::CreateWebProviderRequest,
+) -> Result<Response<models::WebProvider>, Error<PostOrganizationsOrganizationWebProvidersError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization = organization;
-    let p_body_create_search_provider_request = create_search_provider_request;
+    let p_body_create_web_provider_request = create_web_provider_request;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization}/search-providers",
+        "{}/api/v1/organizations/{organization}/web-providers",
         configuration.base_path,
         organization = crate::generated::apis::urlencode(p_path_organization)
     );
@@ -948,7 +935,7 @@ pub async fn post_organizations_organization_search_providers(
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
-    req_builder = req_builder.json(&p_body_create_search_provider_request);
+    req_builder = req_builder.json(&p_body_create_web_provider_request);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -974,18 +961,18 @@ pub async fn post_organizations_organization_search_providers(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProvider`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProvider`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProvider`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProvider`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PostOrganizationsOrganizationSearchProvidersError> =
+        let entity: Option<PostOrganizationsOrganizationWebProvidersError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -996,22 +983,20 @@ pub async fn post_organizations_organization_search_providers(
     }
 }
 
-pub async fn post_organizations_organization_search_providers_provider_id_test(
+pub async fn post_organizations_organization_web_providers_provider_id_test(
     configuration: &configuration::Configuration,
     provider_id: &str,
     organization: &str,
-    body: serde_json::Value,
 ) -> Result<
-    Response<models::SearchProviderTestResult>,
-    Error<PostOrganizationsOrganizationSearchProvidersProviderIdTestError>,
+    Response<models::WebProviderTestResult>,
+    Error<PostOrganizationsOrganizationWebProvidersProviderIdTestError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_path_organization = organization;
-    let p_body_body = body;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization}/search-providers/{provider_id}/test",
+        "{}/api/v1/organizations/{organization}/web-providers/{provider_id}/test",
         configuration.base_path,
         provider_id = crate::generated::apis::urlencode(p_path_provider_id),
         organization = crate::generated::apis::urlencode(p_path_organization)
@@ -1026,7 +1011,6 @@ pub async fn post_organizations_organization_search_providers_provider_id_test(
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
-    req_builder = req_builder.json(&p_body_body);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -1052,18 +1036,18 @@ pub async fn post_organizations_organization_search_providers_provider_id_test(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProviderTestResult`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProviderTestResult`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProviderTestResult`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProviderTestResult`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PostOrganizationsOrganizationSearchProvidersProviderIdTestError> =
+        let entity: Option<PostOrganizationsOrganizationWebProvidersProviderIdTestError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1074,17 +1058,17 @@ pub async fn post_organizations_organization_search_providers_provider_id_test(
     }
 }
 
-pub async fn post_workspaces_workspace_search_providers(
+pub async fn post_workspaces_workspace_web_providers(
     configuration: &configuration::Configuration,
     workspace: &str,
-    create_search_provider_request: models::CreateSearchProviderRequest,
-) -> Result<Response<models::SearchProvider>, Error<PostWorkspacesWorkspaceSearchProvidersError>> {
+    create_web_provider_request: models::CreateWebProviderRequest,
+) -> Result<Response<models::WebProvider>, Error<PostWorkspacesWorkspaceWebProvidersError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace = workspace;
-    let p_body_create_search_provider_request = create_search_provider_request;
+    let p_body_create_web_provider_request = create_web_provider_request;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace}/search-providers",
+        "{}/api/v1/workspaces/{workspace}/web-providers",
         configuration.base_path,
         workspace = crate::generated::apis::urlencode(p_path_workspace)
     );
@@ -1098,7 +1082,7 @@ pub async fn post_workspaces_workspace_search_providers(
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
-    req_builder = req_builder.json(&p_body_create_search_provider_request);
+    req_builder = req_builder.json(&p_body_create_web_provider_request);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -1124,18 +1108,18 @@ pub async fn post_workspaces_workspace_search_providers(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProvider`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProvider`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProvider`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProvider`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PostWorkspacesWorkspaceSearchProvidersError> =
+        let entity: Option<PostWorkspacesWorkspaceWebProvidersError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1146,22 +1130,20 @@ pub async fn post_workspaces_workspace_search_providers(
     }
 }
 
-pub async fn post_workspaces_workspace_search_providers_provider_id_test(
+pub async fn post_workspaces_workspace_web_providers_provider_id_test(
     configuration: &configuration::Configuration,
     provider_id: &str,
     workspace: &str,
-    body: serde_json::Value,
 ) -> Result<
-    Response<models::SearchProviderTestResult>,
-    Error<PostWorkspacesWorkspaceSearchProvidersProviderIdTestError>,
+    Response<models::WebProviderTestResult>,
+    Error<PostWorkspacesWorkspaceWebProvidersProviderIdTestError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_path_workspace = workspace;
-    let p_body_body = body;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace}/search-providers/{provider_id}/test",
+        "{}/api/v1/workspaces/{workspace}/web-providers/{provider_id}/test",
         configuration.base_path,
         provider_id = crate::generated::apis::urlencode(p_path_provider_id),
         workspace = crate::generated::apis::urlencode(p_path_workspace)
@@ -1176,7 +1158,6 @@ pub async fn post_workspaces_workspace_search_providers_provider_id_test(
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
-    req_builder = req_builder.json(&p_body_body);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -1202,18 +1183,18 @@ pub async fn post_workspaces_workspace_search_providers_provider_id_test(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchProviderTestResult`",
+                    "Received `text/plain` content type response that cannot be converted to `models::WebProviderTestResult`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchProviderTestResult`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::WebProviderTestResult`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PostWorkspacesWorkspaceSearchProvidersProviderIdTestError> =
+        let entity: Option<PostWorkspacesWorkspaceWebProvidersProviderIdTestError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,

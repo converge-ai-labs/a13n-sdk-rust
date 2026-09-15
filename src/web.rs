@@ -1,5 +1,6 @@
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use serde_json::{Map, Value};
+use std::collections::BTreeMap;
 use std::fmt;
 
 /// Write-only input. Debug, Display, and ordinary serialization are redacted.
@@ -23,6 +24,39 @@ impl fmt::Display for Secret {
 impl Serialize for Secret {
     fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
         s.serialize_str("[REDACTED]")
+    }
+}
+
+/// One arbitrary JSON credential object retained as write-only input.
+#[derive(Clone)]
+pub struct WebProviderCredential(Map<String, Value>);
+impl WebProviderCredential {
+    pub fn new<K: Into<String>>(fields: impl IntoIterator<Item = (K, Value)>) -> Self {
+        Self(
+            fields
+                .into_iter()
+                .map(|(name, value)| (name.into(), value))
+                .collect(),
+        )
+    }
+
+    pub(crate) fn reveal(&self) -> Value {
+        Value::Object(self.0.clone())
+    }
+}
+impl fmt::Debug for WebProviderCredential {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("WebProviderCredential([REDACTED])")
+    }
+}
+impl fmt::Display for WebProviderCredential {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("[REDACTED]")
+    }
+}
+impl Serialize for WebProviderCredential {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_str("[REDACTED]")
     }
 }
 
@@ -56,27 +90,90 @@ impl<'de, T: Deserialize<'de>> Deserialize<'de> for Optional<T> {
     }
 }
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
-pub struct SearchSelection {
-    pub provider_id: String,
+pub struct SearchToolConfiguration {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub provider_id: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_results: Option<u8>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub include_domains: Option<Vec<String>>,
+    pub allow_domains: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub deny_domains: Option<Vec<String>>,
 }
-impl SearchSelection {
+impl SearchToolConfiguration {
     pub fn new(provider_id: impl Into<String>) -> Self {
         Self {
-            provider_id: provider_id.into(),
+            provider_id: Some(provider_id.into()),
             max_results: None,
-            include_domains: None,
+            allow_domains: None,
+            deny_domains: None,
         }
     }
 }
-/// Types search and preserves other Service-owned configuration fields verbatim.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
+pub struct ScrapeToolConfiguration {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub provider_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_content_bytes: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub allow_domains: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub deny_domains: Option<Vec<String>>,
+}
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
+pub struct FetchToolConfiguration {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_content_bytes: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub allow_domains: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub deny_domains: Option<Vec<String>>,
+}
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
+pub struct DownloadToolConfiguration {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub allow_domains: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub deny_domains: Option<Vec<String>>,
+}
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
+pub enum ToolPermission {
+    #[serde(rename = "inherit")]
+    #[default]
+    Inherit,
+    #[serde(rename = "allow")]
+    Allow,
+    #[serde(rename = "ask")]
+    Ask,
+    #[serde(rename = "deny")]
+    Deny,
+    #[serde(rename = "review")]
+    Review,
+}
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
+pub struct ToolSelection {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub enabled: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub permission: Option<ToolPermission>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub config: Option<Map<String, Value>>,
+}
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
+pub struct ToolsetSelection {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub enabled: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub config: Option<Map<String, Value>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tools: Option<BTreeMap<String, ToolSelection>>,
+}
+/// Types built-in Toolsets and preserves other Service-owned configuration fields verbatim.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
 pub struct AgentConfig {
     #[serde(default, skip_serializing_if = "Optional::is_omitted")]
-    pub search: Optional<SearchSelection>,
+    pub toolsets: Optional<BTreeMap<String, ToolsetSelection>>,
     #[serde(flatten)]
     pub fields: Map<String, Value>,
 }
@@ -88,7 +185,7 @@ pub struct PrincipalRef {
     pub principal_id: String,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct SearchProvider {
+pub struct WebProvider {
     pub id: String,
     pub organization_id: String,
     pub workspace_id: Option<String>,
@@ -104,7 +201,7 @@ pub struct SearchProvider {
     pub updated_by: PrincipalRef,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct SearchProviderDefinition {
+pub struct WebProviderDefinition {
     #[serde(rename = "type")]
     pub provider_type: String,
     pub display_name: String,
@@ -112,16 +209,18 @@ pub struct SearchProviderDefinition {
     pub credential_schema: Map<String, Value>,
     pub credential_required: bool,
     pub setup_url: String,
+    pub operations: Vec<String>,
+    pub supports_restricted_scrape: bool,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct SearchProviderReference {
+pub struct WebProviderReference {
     pub agent_id: String,
     pub agent_revision_id: String,
     pub version: u64,
     pub is_current: bool,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct SearchProviderTestResult {
+pub struct WebProviderTestResult {
     pub success: bool,
     pub code: Option<String>,
     pub checked_at: String,
@@ -138,22 +237,22 @@ pub struct Representation<T> {
     pub request_id: Option<String>,
 }
 #[derive(Clone, Debug, Serialize)]
-pub struct CreateSearchProviderRequest {
+pub struct CreateWebProviderRequest {
     #[serde(rename = "type")]
     pub provider_type: String,
     pub name: String,
     #[serde(skip)]
-    pub credential: Secret,
+    pub credential: WebProviderCredential,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub configuration: Option<Map<String, Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
 }
-impl CreateSearchProviderRequest {
+impl CreateWebProviderRequest {
     pub fn new(
         provider_type: impl Into<String>,
         name: impl Into<String>,
-        credential: Secret,
+        credential: WebProviderCredential,
     ) -> Self {
         Self {
             provider_type: provider_type.into(),
@@ -165,31 +264,31 @@ impl CreateSearchProviderRequest {
     }
 }
 #[derive(Clone, Debug, Default, Serialize)]
-pub struct UpdateSearchProviderRequest {
+pub struct UpdateWebProviderRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     #[serde(skip)]
-    pub credential: Option<Secret>,
+    pub credential: Option<WebProviderCredential>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub configuration: Option<Map<String, Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
 }
 #[derive(Clone, Debug)]
-pub enum SearchScope {
+pub enum WebProviderScope {
     Workspace(String),
     Organization(String),
 }
-impl SearchScope {
+impl WebProviderScope {
     pub(crate) fn segments(&self) -> [&str; 3] {
         match self {
-            Self::Workspace(id) => ["workspaces", id, "search-providers"],
-            Self::Organization(id) => ["organizations", id, "search-providers"],
+            Self::Workspace(id) => ["workspaces", id, "web-providers"],
+            Self::Organization(id) => ["organizations", id, "web-providers"],
         }
     }
 }
 #[derive(Clone, Debug, Default, Serialize)]
-pub struct SearchListOptions {
+pub struct WebProviderListOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cursor: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -12,24 +12,28 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchProviderCollection {
-    #[serde(rename = "items")]
-    pub items: Vec<models::SearchProvider>,
+pub struct ToolsetCandidateError {
+    #[serde(rename = "code")]
+    pub code: String,
+
+    #[serde(rename = "path")]
+    pub path: String,
 
     #[serde(
-        rename = "next_cursor",
+        rename = "setup_destination",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub next_cursor: Option<Option<String>>,
+    pub setup_destination: Option<Option<Box<models::ToolSetupDestination>>>,
 }
 
-impl SearchProviderCollection {
-    pub fn new(items: Vec<models::SearchProvider>) -> SearchProviderCollection {
-        SearchProviderCollection {
-            items,
-            next_cursor: None,
+impl ToolsetCandidateError {
+    pub fn new(code: String, path: String) -> ToolsetCandidateError {
+        ToolsetCandidateError {
+            code,
+            path,
+            setup_destination: None,
         }
     }
 }

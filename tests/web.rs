@@ -20,6 +20,10 @@ struct Server {
     requests: mpsc::UnboundedReceiver<Request>,
     task: JoinHandle<()>,
 }
+
+fn credentials(value: &str) -> WebProviderCredential {
+    WebProviderCredential::new([("api_key", json!(value))])
+}
 impl Drop for Server {
     fn drop(&mut self) {
         self.task.abort();
@@ -90,31 +94,32 @@ async fn server(handler: impl Fn(&Request) -> Option<(u16, Value)> + Send + 'sta
     }
 }
 fn provider() -> Value {
-    json!({"id":"sp_test","organization_id":"org_test","workspace_id":"ws_test","type":"brave","name":"Research","configuration":{},"enabled":true,"credential_configured":true,"created_at":"2026-09-09T00:00:00Z","updated_at":"2026-09-09T00:00:00Z","created_by":{"principal_type":"user","principal_id":"user_test"},"updated_by":{"principal_type":"user","principal_id":"user_test"},"credential":"unexpected-secret"})
+    json!({"id":"wprov_test","organization_id":"org_test","workspace_id":"ws_test","type":"brave","name":"Research","configuration":{},"enabled":true,"credential_configured":true,"created_at":"2026-09-09T00:00:00Z","updated_at":"2026-09-09T00:00:00Z","created_by":{"principal_type":"user","principal_id":"user_test"},"updated_by":{"principal_type":"user","principal_id":"user_test"},"credential":"unexpected-secret"})
 }
-fn scope() -> SearchScope {
-    SearchScope::Workspace("ws_test".into())
+fn scope() -> WebProviderScope {
+    WebProviderScope::Workspace("ws_test".into())
 }
 
 #[test]
-fn search_configuration_is_lossless_and_tri_state() {
+fn toolset_configuration_is_lossless_and_tri_state() {
     for value in [
         json!({}),
-        json!({"search":null}),
-        json!({"model":{"model_key":"research"},"search":{"provider_id":"sp_test"}}),
+        json!({"toolsets":null}),
+        json!({"model":{"model_key":"research"},"toolsets":{"web":{"tools":{"search":{"config":{"provider_id":"wprov_test"}}}}}}),
     ] {
         let config: AgentRunOverride = serde_json::from_value(value.clone()).unwrap();
         assert_eq!(serde_json::to_value(config).unwrap(), value);
     }
     let config = AgentRunOverride {
-        search: Optional::Null,
+        toolsets: Optional::Null,
         ..Default::default()
     };
     assert_eq!(
         serde_json::to_value(config).unwrap(),
-        json!({"search":null})
+        json!({"toolsets":null})
     );
-    let request = CreateSearchProviderRequest::new("brave", "Research", Secret::new("test-secret"));
+    let request =
+        CreateWebProviderRequest::new("external_web", "Research", credentials("test-secret"));
     assert!(
         !format!("{request:?} {}", serde_json::to_string(&request).unwrap())
             .contains("test-secret")
@@ -125,9 +130,20 @@ fn search_configuration_is_lossless_and_tri_state() {
 async fn account_crud_preserves_scope_etags_and_write_only_credentials() {
     let mut server = server(|_| Some((200, provider()))).await;
     let client = Client::new(&server.url, Secret::new("service-token")).unwrap();
-    let request = CreateSearchProviderRequest::new("brave", "Research", Secret::new("test-secret"));
+    let request = CreateWebProviderRequest::new(
+        "external_web",
+        "Research",
+        WebProviderCredential::new([
+            ("api_key", json!("test-secret")),
+            (
+                "nested",
+                json!({"client_secret":"nested-secret","tenant":null}),
+            ),
+        ]),
+    );
+    assert!(!format!("{request:?}").contains("nested-secret"));
     let result = client
-        .create_search_provider(&scope(), &request)
+        .create_web_provider(&scope(), &request)
         .await
         .unwrap();
     assert_eq!(result.etag.as_deref(), Some("\"v1\""));
@@ -135,14 +151,21 @@ async fn account_crud_preserves_scope_etags_and_write_only_credentials() {
     assert!(!format!("{result:?}").contains("unexpected-secret"));
     let sent = server.requests.recv().await.unwrap();
     assert_eq!(sent.method, "POST");
-    assert_eq!(sent.body["credential"], "test-secret");
+    assert_eq!(sent.body["type"], "external_web");
+    assert_eq!(
+        sent.body["credential"],
+        json!({"api_key":"test-secret","nested":{"client_secret":"nested-secret","tenant":null}})
+    );
     assert!(sent.headers.contains("authorization: bearer service-token"));
+    let rotated = WebProviderCredential::new([("token", json!({"primary":"rotated-secret"}))]);
+    assert!(!format!("{rotated:?}").contains("rotated-secret"));
     client
-        .update_search_provider(
+        .update_web_provider(
             &scope(),
-            "sp_test",
+            "wprov_test",
             "\"v1\"",
-            &UpdateSearchProviderRequest {
+            &UpdateWebProviderRequest {
+                credential: Some(rotated),
                 enabled: Some(false),
                 ..Default::default()
             },
@@ -151,19 +174,25 @@ async fn account_crud_preserves_scope_etags_and_write_only_credentials() {
         .unwrap();
     let sent = server.requests.recv().await.unwrap();
     assert_eq!(sent.method, "PATCH");
-    assert_eq!(sent.body, json!({"enabled":false}));
+    assert_eq!(
+        sent.body,
+        json!({"credential":{"token":{"primary":"rotated-secret"}},"enabled":false})
+    );
     assert!(sent.headers.contains("if-match: \"v1\""));
     client
-        .search_provider(&SearchScope::Organization("org_test".into()), "sp_test")
+        .web_provider(
+            &WebProviderScope::Organization("org_test".into()),
+            "wprov_test",
+        )
         .await
         .unwrap();
     assert_eq!(
         server.requests.recv().await.unwrap().target,
-        "/prefix/api/v1/organizations/org_test/search-providers/sp_test"
+        "/prefix/api/v1/organizations/org_test/web-providers/wprov_test"
     );
     client.close();
     assert!(matches!(
-        client.search_provider(&scope(), "sp_test").await,
+        client.web_provider(&scope(), "wprov_test").await,
         Err(Error::Closed)
     ));
 }
@@ -173,20 +202,20 @@ async fn catalog_pages_references_and_probe_match_native_contract() {
     let mut server = server(|request| {
   let value = if request.target.ends_with("/test") { assert_eq!(request.body, json!({})); json!({"success":true,"code":null,"checked_at":"2026-09-09T00:00:00Z"}) }
   else if request.target.contains("/references") { json!({"items":[{"agent_id":"agent_test","agent_revision_id":"rev_test","version":1,"is_current":true}]}) }
-  else if request.target.contains("search-provider-types") {
-   let kind = json!({"type":"brave","display_name":"Brave","configuration_schema":{},"credential_schema":{"writeOnly":true},"credential_required":true,"setup_url":"https://example.com"});
+  else if request.target.contains("web-provider-types") {
+   let kind = json!({"type":"brave","display_name":"Brave","configuration_schema":{},"credential_schema":{"writeOnly":true},"credential_required":true,"setup_url":"https://example.com","operations":["search"],"supports_restricted_scrape":false});
    if request.target.ends_with("/brave") { kind } else { json!({"items":[kind]}) }
   } else { assert!(request.target.contains("cursor=next")); json!({"items":[provider()],"next_cursor":"later"}) };
   Some((200, value))
  }).await;
     let client = Client::new(&server.url, Secret::new("token")).unwrap();
     assert_eq!(
-        client.search_provider_types().await.unwrap().value.items[0].provider_type,
+        client.web_provider_types().await.unwrap().value.items[0].provider_type,
         "brave"
     );
     assert_eq!(
         client
-            .search_provider_type("brave")
+            .web_provider_type("brave")
             .await
             .unwrap()
             .value
@@ -195,9 +224,9 @@ async fn catalog_pages_references_and_probe_match_native_contract() {
     );
     assert_eq!(
         client
-            .search_providers(
+            .web_providers(
                 &scope(),
-                &SearchListOptions {
+                &WebProviderListOptions {
                     cursor: Some("next".into()),
                     ..Default::default()
                 }
@@ -211,7 +240,7 @@ async fn catalog_pages_references_and_probe_match_native_contract() {
     );
     assert!(
         client
-            .search_provider_references(&scope(), "sp_test", &SearchListOptions::default())
+            .web_provider_references(&scope(), "wprov_test", &WebProviderListOptions::default())
             .await
             .unwrap()
             .value
@@ -220,7 +249,7 @@ async fn catalog_pages_references_and_probe_match_native_contract() {
     );
     assert!(
         client
-            .test_search_provider(&scope(), "sp_test")
+            .test_web_provider(&scope(), "wprov_test")
             .await
             .unwrap()
             .value
@@ -238,21 +267,25 @@ async fn uncertain_mutations_are_not_replayed() {
     let client = Client::new(&server.url, Secret::new("token")).unwrap();
     assert!(matches!(
         client
-            .create_search_provider(
+            .create_web_provider(
                 &scope(),
-                &CreateSearchProviderRequest::new("exa", "Research", Secret::new("test-secret"))
+                &CreateWebProviderRequest::new(
+                    "external_web",
+                    "Research",
+                    credentials("test-secret")
+                )
             )
             .await,
         Err(Error::Transport)
     ));
     assert!(matches!(
         client
-            .update_search_provider(
+            .update_web_provider(
                 &scope(),
-                "sp_test",
+                "wprov_test",
                 "\"v1\"",
-                &UpdateSearchProviderRequest {
-                    credential: Some(Secret::new("test-secret")),
+                &UpdateWebProviderRequest {
+                    credential: Some(credentials("test-secret")),
                     ..Default::default()
                 }
             )
@@ -260,7 +293,7 @@ async fn uncertain_mutations_are_not_replayed() {
         Err(Error::Transport)
     ));
     assert!(matches!(
-        client.test_search_provider(&scope(), "sp_test").await,
+        client.test_web_provider(&scope(), "wprov_test").await,
         Err(Error::Transport)
     ));
     for _ in 0..3 {
@@ -282,7 +315,7 @@ async fn errors_are_safe_and_responses_bounded() {
         let server = server(move |_| Some((status, body.clone()))).await;
         let client = Client::new(&server.url, Secret::new("token")).unwrap();
         let error = client
-            .search_provider(&scope(), "sp_test")
+            .web_provider(&scope(), "wprov_test")
             .await
             .unwrap_err();
         if status == 412 {
@@ -308,7 +341,7 @@ async fn close_cancels_an_inflight_request() {
         .unwrap(),
     );
     let caller = client.clone();
-    let task = tokio::spawn(async move { caller.test_search_provider(&scope(), "sp_test").await });
+    let task = tokio::spawn(async move { caller.test_web_provider(&scope(), "wprov_test").await });
     let (_socket, _) = listener.accept().await.unwrap();
     client.close();
     assert!(matches!(task.await.unwrap(), Err(Error::Closed)));
@@ -336,23 +369,23 @@ async fn workspace_binding_resolves_once_and_shares_shutdown() {
     for _ in 0..2 {
         assert_eq!(
             workspace
-                .search_providers(&SearchListOptions::default())
+                .web_providers(&WebProviderListOptions::default())
                 .await
                 .unwrap()
                 .value
                 .items[0]
                 .id,
-            "sp_test"
+            "wprov_test"
         );
         assert_eq!(
             server.requests.recv().await.unwrap().target,
-            "/prefix/api/v1/workspaces/ws_test/search-providers"
+            "/prefix/api/v1/workspaces/ws_test/web-providers"
         );
     }
     client.close();
     assert!(matches!(
         workspace
-            .search_providers(&SearchListOptions::default())
+            .web_providers(&WebProviderListOptions::default())
             .await,
         Err(Error::Closed)
     ));

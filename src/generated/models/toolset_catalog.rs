@@ -12,13 +12,13 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchProviderDefinitionCollection {
+pub struct ToolsetCatalog {
     #[serde(rename = "items")]
-    pub items: Vec<models::SearchProviderDefinition>,
+    pub items: Vec<models::ToolsetDefinition>,
 }
 
-impl SearchProviderDefinitionCollection {
-    pub fn new(items: Vec<models::SearchProviderDefinition>) -> SearchProviderDefinitionCollection {
-        SearchProviderDefinitionCollection { items }
+impl ToolsetCatalog {
+    pub fn new(items: Vec<models::ToolsetDefinition>) -> ToolsetCatalog {
+        ToolsetCatalog { items }
     }
 }

@@ -12,12 +12,12 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, PartialEq, Serialize, Deserialize)]
-pub struct CreateSearchProviderRequest {
+pub struct CreateWebProviderRequest {
     #[serde(rename = "configuration", skip_serializing_if = "Option::is_none")]
-    pub configuration: Option<serde_json::Value>,
+    pub configuration: Option<std::collections::HashMap<String, serde_json::Value>>,
 
     #[serde(rename = "credential")]
-    pub credential: String,
+    pub credential: std::collections::HashMap<String, serde_json::Value>,
 
     #[serde(rename = "enabled", skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
@@ -26,12 +26,16 @@ pub struct CreateSearchProviderRequest {
     pub name: String,
 
     #[serde(rename = "type")]
-    pub r#type: Type,
+    pub r#type: String,
 }
 
-impl CreateSearchProviderRequest {
-    pub fn new(credential: String, name: String, r#type: Type) -> CreateSearchProviderRequest {
-        CreateSearchProviderRequest {
+impl CreateWebProviderRequest {
+    pub fn new(
+        credential: std::collections::HashMap<String, serde_json::Value>,
+        name: String,
+        r#type: String,
+    ) -> CreateWebProviderRequest {
+        CreateWebProviderRequest {
             configuration: None,
             credential,
             enabled: None,
@@ -40,22 +44,8 @@ impl CreateSearchProviderRequest {
         }
     }
 }
-impl std::fmt::Debug for CreateSearchProviderRequest {
+impl std::fmt::Debug for CreateWebProviderRequest {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str("CreateSearchProviderRequest { .. }")
-    }
-}
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Type {
-    #[serde(rename = "brave")]
-    Brave,
-    #[serde(rename = "exa")]
-    Exa,
-}
-
-impl Default for Type {
-    fn default() -> Type {
-        Self::Brave
+        f.write_str("CreateWebProviderRequest { .. }")
     }
 }

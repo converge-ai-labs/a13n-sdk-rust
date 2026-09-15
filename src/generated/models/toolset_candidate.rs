@@ -12,24 +12,24 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchProviderReferenceCollection {
-    #[serde(rename = "items")]
-    pub items: Vec<models::SearchProviderReference>,
-
+pub struct ToolsetCandidate {
     #[serde(
-        rename = "next_cursor",
+        rename = "reviewer",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub next_cursor: Option<Option<String>>,
+    pub reviewer: Option<Option<Box<models::AgentReviewer>>>,
+
+    #[serde(rename = "toolsets", skip_serializing_if = "Option::is_none")]
+    pub toolsets: Option<std::collections::HashMap<String, models::ToolsetSelection>>,
 }
 
-impl SearchProviderReferenceCollection {
-    pub fn new(items: Vec<models::SearchProviderReference>) -> SearchProviderReferenceCollection {
-        SearchProviderReferenceCollection {
-            items,
-            next_cursor: None,
+impl ToolsetCandidate {
+    pub fn new() -> ToolsetCandidate {
+        ToolsetCandidate {
+            reviewer: None,
+            toolsets: None,
         }
     }
 }

@@ -12,7 +12,7 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchProviderDefinition {
+pub struct WebProviderDefinition {
     #[serde(rename = "configuration_schema")]
     pub configuration_schema: std::collections::HashMap<String, serde_json::Value>,
 
@@ -28,28 +28,54 @@ pub struct SearchProviderDefinition {
     #[serde(rename = "display_name")]
     pub display_name: String,
 
+    #[serde(rename = "operations")]
+    pub operations: Vec<Operations>,
+
     #[serde(rename = "setup_url")]
     pub setup_url: String,
+
+    #[serde(
+        rename = "supports_restricted_scrape",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub supports_restricted_scrape: Option<bool>,
 
     #[serde(rename = "type")]
     pub r#type: String,
 }
 
-impl SearchProviderDefinition {
+impl WebProviderDefinition {
     pub fn new(
         configuration_schema: std::collections::HashMap<String, serde_json::Value>,
         credential_schema: std::collections::HashMap<String, serde_json::Value>,
         display_name: String,
+        operations: Vec<Operations>,
         setup_url: String,
         r#type: String,
-    ) -> SearchProviderDefinition {
-        SearchProviderDefinition {
+    ) -> WebProviderDefinition {
+        WebProviderDefinition {
             configuration_schema,
             credential_required: None,
             credential_schema,
             display_name,
+            operations,
             setup_url,
+            supports_restricted_scrape: None,
             r#type,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Operations {
+    #[serde(rename = "search")]
+    Search,
+    #[serde(rename = "scrape")]
+    Scrape,
+}
+
+impl Default for Operations {
+    fn default() -> Operations {
+        Self::Search
     }
 }

@@ -12,14 +12,14 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, PartialEq, Serialize, Deserialize)]
-pub struct UpdateSearchProviderRequest {
+pub struct UpdateWebProviderRequest {
     #[serde(
         rename = "configuration",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub configuration: Option<Option<serde_json::Value>>,
+    pub configuration: Option<Option<std::collections::HashMap<String, serde_json::Value>>>,
 
     #[serde(
         rename = "credential",
@@ -27,7 +27,7 @@ pub struct UpdateSearchProviderRequest {
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub credential: Option<Option<String>>,
+    pub credential: Option<Option<std::collections::HashMap<String, serde_json::Value>>>,
 
     #[serde(
         rename = "enabled",
@@ -46,9 +46,9 @@ pub struct UpdateSearchProviderRequest {
     pub name: Option<Option<String>>,
 }
 
-impl UpdateSearchProviderRequest {
-    pub fn new() -> UpdateSearchProviderRequest {
-        UpdateSearchProviderRequest {
+impl UpdateWebProviderRequest {
+    pub fn new() -> UpdateWebProviderRequest {
+        UpdateWebProviderRequest {
             configuration: None,
             credential: None,
             enabled: None,
@@ -56,8 +56,8 @@ impl UpdateSearchProviderRequest {
         }
     }
 }
-impl std::fmt::Debug for UpdateSearchProviderRequest {
+impl std::fmt::Debug for UpdateWebProviderRequest {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str("UpdateSearchProviderRequest { .. }")
+        f.write_str("UpdateWebProviderRequest { .. }")
     }
 }

@@ -62,14 +62,6 @@ pub struct AgentRunOverrideOutput {
     pub output_spec: Option<Option<Box<models::OutputSpec>>>,
 
     #[serde(
-        rename = "permissions",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub permissions: Option<Option<Box<models::ToolPermissions>>>,
-
-    #[serde(
         rename = "plugins",
         default,
         with = "::serde_with::rust::double_option",
@@ -94,14 +86,6 @@ pub struct AgentRunOverrideOutput {
     pub reviewer: Option<Option<Box<models::AgentReviewer>>>,
 
     #[serde(
-        rename = "search",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub search: Option<Option<Box<models::SearchSelection>>>,
-
-    #[serde(
         rename = "skills",
         default,
         with = "::serde_with::rust::double_option",
@@ -116,6 +100,14 @@ pub struct AgentRunOverrideOutput {
         skip_serializing_if = "Option::is_none"
     )]
     pub subagents: Option<Option<serde_json::Value>>,
+
+    #[serde(
+        rename = "toolsets",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub toolsets: Option<Option<std::collections::HashMap<String, models::ToolsetSelection>>>,
 }
 
 impl AgentRunOverrideOutput {
@@ -127,13 +119,12 @@ impl AgentRunOverrideOutput {
             memory: None,
             model: None,
             output_spec: None,
-            permissions: None,
             plugins: None,
             retries: None,
             reviewer: None,
-            search: None,
             skills: None,
             subagents: None,
+            toolsets: None,
         }
     }
 }

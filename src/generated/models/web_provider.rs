@@ -12,7 +12,7 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchProvider {
+pub struct WebProvider {
     #[serde(rename = "configuration")]
     pub configuration: std::collections::HashMap<String, serde_json::Value>,
 
@@ -50,7 +50,7 @@ pub struct SearchProvider {
     pub workspace_id: Option<String>,
 }
 
-impl SearchProvider {
+impl WebProvider {
     pub fn new(
         configuration: std::collections::HashMap<String, serde_json::Value>,
         created_at: chrono::DateTime<chrono::FixedOffset>,
@@ -64,8 +64,8 @@ impl SearchProvider {
         updated_at: chrono::DateTime<chrono::FixedOffset>,
         updated_by: models::PrincipalRef,
         workspace_id: Option<String>,
-    ) -> SearchProvider {
-        SearchProvider {
+    ) -> WebProvider {
+        WebProvider {
             configuration,
             created_at,
             created_by: Box::new(created_by),

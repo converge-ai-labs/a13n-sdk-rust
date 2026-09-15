@@ -12,7 +12,7 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchProviderTestResult {
+pub struct WebProviderTestResult {
     #[serde(rename = "checked_at")]
     pub checked_at: chrono::DateTime<chrono::FixedOffset>,
 
@@ -23,13 +23,13 @@ pub struct SearchProviderTestResult {
     pub success: bool,
 }
 
-impl SearchProviderTestResult {
+impl WebProviderTestResult {
     pub fn new(
         checked_at: chrono::DateTime<chrono::FixedOffset>,
         code: Option<String>,
         success: bool,
-    ) -> SearchProviderTestResult {
-        SearchProviderTestResult {
+    ) -> WebProviderTestResult {
+        WebProviderTestResult {
             checked_at,
             code,
             success,
