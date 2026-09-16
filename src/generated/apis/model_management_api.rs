@@ -13,18 +13,19 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`get_base_models`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GetBaseModelsError {
-    DefaultResponse(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
 /// struct for typed errors of method [`get_model_provider_types`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetModelProviderTypesError {
+    DefaultResponse(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`get_organizations_organization_model_catalog`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum GetOrganizationsOrganizationModelCatalogError {
+    Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
 }
@@ -60,6 +61,15 @@ pub enum GetOrganizationsOrganizationModelsError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetOrganizationsOrganizationModelsModelIdError {
+    Status400(models::ErrorResponse),
+    DefaultResponse(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`get_workspaces_workspace_model_catalog`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum GetWorkspacesWorkspaceModelCatalogError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
@@ -137,28 +147,10 @@ pub enum PatchWorkspacesWorkspaceModelsModelIdError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`post_organizations_organization_model_catalog_suggestions`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum PostOrganizationsOrganizationModelCatalogSuggestionsError {
-    Status400(models::ErrorResponse),
-    DefaultResponse(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
 /// struct for typed errors of method [`post_organizations_organization_model_providers`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum PostOrganizationsOrganizationModelProvidersError {
-    Status400(models::ErrorResponse),
-    DefaultResponse(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`post_organizations_organization_model_providers_provider_id_discover_models`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum PostOrganizationsOrganizationModelProvidersProviderIdDiscoverModelsError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
@@ -191,28 +183,10 @@ pub enum PostOrganizationsOrganizationModelsModelIdTestError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`post_workspaces_workspace_model_catalog_suggestions`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum PostWorkspacesWorkspaceModelCatalogSuggestionsError {
-    Status400(models::ErrorResponse),
-    DefaultResponse(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
 /// struct for typed errors of method [`post_workspaces_workspace_model_providers`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum PostWorkspacesWorkspaceModelProvidersError {
-    Status400(models::ErrorResponse),
-    DefaultResponse(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`post_workspaces_workspace_model_providers_provider_id_discover_models`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum PostWorkspacesWorkspaceModelProvidersProviderIdDiscoverModelsError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
@@ -243,64 +217,6 @@ pub enum PostWorkspacesWorkspaceModelsModelIdTestError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
-}
-
-pub async fn get_base_models(
-    configuration: &configuration::Configuration,
-) -> Result<Response<models::BaseModelCandidateCollection>, Error<GetBaseModelsError>> {
-    let uri_str = format!("{}/api/v1/base-models", configuration.base_path);
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::BaseModelCandidateCollection`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::BaseModelCandidateCollection`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<GetBaseModelsError> = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
 }
 
 pub async fn get_model_provider_types(
@@ -353,6 +269,76 @@ pub async fn get_model_provider_types(
     } else {
         let content = resp.text().await?;
         let entity: Option<GetModelProviderTypesError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn get_organizations_organization_model_catalog(
+    configuration: &configuration::Configuration,
+    organization: &str,
+) -> Result<
+    Response<models::ModelCatalogCollection>,
+    Error<GetOrganizationsOrganizationModelCatalogError>,
+> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_organization = organization;
+
+    let uri_str = format!(
+        "{}/api/v1/organizations/{organization}/model-catalog",
+        configuration.base_path,
+        organization = crate::generated::apis::urlencode(p_path_organization)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ModelCatalogCollection`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ModelCatalogCollection`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetOrganizationsOrganizationModelCatalogError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -682,6 +668,74 @@ pub async fn get_organizations_organization_models_model_id(
     } else {
         let content = resp.text().await?;
         let entity: Option<GetOrganizationsOrganizationModelsModelIdError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn get_workspaces_workspace_model_catalog(
+    configuration: &configuration::Configuration,
+    workspace: &str,
+) -> Result<Response<models::ModelCatalogCollection>, Error<GetWorkspacesWorkspaceModelCatalogError>>
+{
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_workspace = workspace;
+
+    let uri_str = format!(
+        "{}/api/v1/workspaces/{workspace}/model-catalog",
+        configuration.base_path,
+        workspace = crate::generated::apis::urlencode(p_path_workspace)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ModelCatalogCollection`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ModelCatalogCollection`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetWorkspacesWorkspaceModelCatalogError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1344,81 +1398,6 @@ pub async fn patch_workspaces_workspace_models_model_id(
     }
 }
 
-pub async fn post_organizations_organization_model_catalog_suggestions(
-    configuration: &configuration::Configuration,
-    organization: &str,
-    model_catalog_suggestion_request: models::ModelCatalogSuggestionRequest,
-) -> Result<
-    Response<models::ModelCatalogMatch>,
-    Error<PostOrganizationsOrganizationModelCatalogSuggestionsError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization = organization;
-    let p_body_model_catalog_suggestion_request = model_catalog_suggestion_request;
-
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization}/model-catalog/suggestions",
-        configuration.base_path,
-        organization = crate::generated::apis::urlencode(p_path_organization)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    req_builder = req_builder.json(&p_body_model_catalog_suggestion_request);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ModelCatalogMatch`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ModelCatalogMatch`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<PostOrganizationsOrganizationModelCatalogSuggestionsError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
 pub async fn post_organizations_organization_model_providers(
     configuration: &configuration::Configuration,
     organization: &str,
@@ -1483,82 +1462,6 @@ pub async fn post_organizations_organization_model_providers(
         let content = resp.text().await?;
         let entity: Option<PostOrganizationsOrganizationModelProvidersError> =
             serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn post_organizations_organization_model_providers_provider_id_discover_models(
-    configuration: &configuration::Configuration,
-    provider_id: &str,
-    organization: &str,
-) -> Result<
-    Response<models::ModelDiscovery>,
-    Error<PostOrganizationsOrganizationModelProvidersProviderIdDiscoverModelsError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_provider_id = provider_id;
-    let p_path_organization = organization;
-
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization}/model-providers/{provider_id}/discover-models",
-        configuration.base_path,
-        provider_id = crate::generated::apis::urlencode(p_path_provider_id),
-        organization = crate::generated::apis::urlencode(p_path_organization)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ModelDiscovery`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ModelDiscovery`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<
-            PostOrganizationsOrganizationModelProvidersProviderIdDiscoverModelsError,
-        > = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1793,81 +1696,6 @@ pub async fn post_organizations_organization_models_model_id_test(
     }
 }
 
-pub async fn post_workspaces_workspace_model_catalog_suggestions(
-    configuration: &configuration::Configuration,
-    workspace: &str,
-    model_catalog_suggestion_request: models::ModelCatalogSuggestionRequest,
-) -> Result<
-    Response<models::ModelCatalogMatch>,
-    Error<PostWorkspacesWorkspaceModelCatalogSuggestionsError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace = workspace;
-    let p_body_model_catalog_suggestion_request = model_catalog_suggestion_request;
-
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace}/model-catalog/suggestions",
-        configuration.base_path,
-        workspace = crate::generated::apis::urlencode(p_path_workspace)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    req_builder = req_builder.json(&p_body_model_catalog_suggestion_request);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ModelCatalogMatch`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ModelCatalogMatch`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<PostWorkspacesWorkspaceModelCatalogSuggestionsError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
 pub async fn post_workspaces_workspace_model_providers(
     configuration: &configuration::Configuration,
     workspace: &str,
@@ -1930,81 +1758,6 @@ pub async fn post_workspaces_workspace_model_providers(
     } else {
         let content = resp.text().await?;
         let entity: Option<PostWorkspacesWorkspaceModelProvidersError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn post_workspaces_workspace_model_providers_provider_id_discover_models(
-    configuration: &configuration::Configuration,
-    provider_id: &str,
-    workspace: &str,
-) -> Result<
-    Response<models::ModelDiscovery>,
-    Error<PostWorkspacesWorkspaceModelProvidersProviderIdDiscoverModelsError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_provider_id = provider_id;
-    let p_path_workspace = workspace;
-
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace}/model-providers/{provider_id}/discover-models",
-        configuration.base_path,
-        provider_id = crate::generated::apis::urlencode(p_path_provider_id),
-        workspace = crate::generated::apis::urlencode(p_path_workspace)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ModelDiscovery`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ModelDiscovery`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<PostWorkspacesWorkspaceModelProvidersProviderIdDiscoverModelsError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,

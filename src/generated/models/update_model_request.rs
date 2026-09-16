@@ -14,12 +14,12 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UpdateModelRequest {
     #[serde(
-        rename = "base_model",
+        rename = "catalog_ref",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub base_model: Option<Option<String>>,
+    pub catalog_ref: Option<Option<Box<models::CatalogRef>>>,
 
     #[serde(
         rename = "declarations",
@@ -27,7 +27,7 @@ pub struct UpdateModelRequest {
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub declarations: Option<Option<Box<models::ModelDeclarations>>>,
+    pub declarations: Option<Option<Box<models::ModelDeclarationsInput>>>,
 
     #[serde(
         rename = "description",
@@ -81,7 +81,7 @@ pub struct UpdateModelRequest {
 impl UpdateModelRequest {
     pub fn new() -> UpdateModelRequest {
         UpdateModelRequest {
-            base_model: None,
+            catalog_ref: None,
             declarations: None,
             description: None,
             enabled: None,
