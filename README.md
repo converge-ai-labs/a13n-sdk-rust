@@ -44,7 +44,7 @@ let request_id = response.headers.get("X-Request-ID");
 
 ## Development
 
-This independent repository contains the SDK at the root and the companion [CLI](a13n-service-cli/README.md) in its own Cargo workspace. Use the stable Rust toolchain (at least the manifest's `rust-version`) with rustfmt/Clippy, Python 3.13, uv and Make. No Service checkout or sibling SDK is required.
+This independent repository contains the SDK at the root and the companion [CLI](a13n-service-cli/README.md) in its own Cargo workspace. Use Rust 1.97.0 with rustfmt/Clippy to match generation and CI, plus Python 3.13, uv and Make. No Service checkout or sibling SDK is required.
 
 ```bash
 make install
