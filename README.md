@@ -44,11 +44,19 @@ let request_id = response.headers.get("X-Request-ID");
 
 ## Development
 
-Run the Rust workspace checks from the repository root:
+This independent repository contains the SDK at the root and the companion [CLI](a13n-service-cli/README.md) in its own Cargo workspace. Use the stable Rust toolchain (at least the manifest's `rust-version`) with rustfmt/Clippy, Python 3.13, uv and Make. No Service checkout or sibling SDK is required.
 
 ```bash
-make sdk-rust-check
+make install
+make generate         # local pinned contract; uv supplies the generator's JDK
+make generated-check  # temporary output comparison, no committed-file changes
+make check-all        # generator, SDK tests/package, and CLI checks/tests/build
+make cli-check-all    # CLI and its path dependency only
 ```
+
+The generator pins OpenAPI Generator 7.25.0 with repository-owned Apache-2.0 templates. Typed unions, nullable presence, boolean constants, extensible Run status, streaming binary operations and redacted diagnostics remain explicit language adapters. Commit generated output with input changes, not hand edits.
+
+See [contract provenance](contract/README.md), [SDK and CLI contracts](spec/README.md) and [Contributing](CONTRIBUTING.md). `contract/source.json` records real upstream source paths, commit SHA and input hashes.
 
 ## License
 

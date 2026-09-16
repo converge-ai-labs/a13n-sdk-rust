@@ -19,8 +19,8 @@ The CLI does not implement a separate HTTP client or manage a13n Service process
 This directory is an independent Cargo project with its own lock file. From the repository root, run:
 
 ```bash
-make a13n-service-cli-check
-make a13n-service-cli-check-all
+make cli-check
+make cli-check-all
 ```
 
 ## Release
