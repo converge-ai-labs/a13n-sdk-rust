@@ -14,15 +14,15 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CreateModelRequest {
     #[serde(
-        rename = "base_model",
+        rename = "catalog_ref",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub base_model: Option<Option<String>>,
+    pub catalog_ref: Option<Option<Box<models::CatalogRef>>>,
 
     #[serde(rename = "declarations", skip_serializing_if = "Option::is_none")]
-    pub declarations: Option<Box<models::ModelDeclarations>>,
+    pub declarations: Option<Box<models::ModelDeclarationsInput>>,
 
     #[serde(
         rename = "description",
@@ -38,13 +38,8 @@ pub struct CreateModelRequest {
     #[serde(rename = "key")]
     pub key: String,
 
-    #[serde(
-        rename = "model_api",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub model_api: Option<Option<String>>,
+    #[serde(rename = "model_api")]
+    pub model_api: String,
 
     #[serde(rename = "name")]
     pub name: String,
@@ -62,17 +57,18 @@ pub struct CreateModelRequest {
 impl CreateModelRequest {
     pub fn new(
         key: String,
+        model_api: String,
         name: String,
         provider_id: String,
         upstream_model: String,
     ) -> CreateModelRequest {
         CreateModelRequest {
-            base_model: None,
+            catalog_ref: None,
             declarations: None,
             description: None,
             enabled: None,
             key,
-            model_api: None,
+            model_api,
             name,
             provider_id,
             settings: None,
