@@ -13,6 +13,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ModelProviderDefinition {
+    #[serde(rename = "catalog_providers", skip_serializing_if = "Option::is_none")]
+    pub catalog_providers: Option<Vec<String>>,
+
     #[serde(rename = "configuration_schema")]
     pub configuration_schema: std::collections::HashMap<String, serde_json::Value>,
 
@@ -35,9 +38,6 @@ pub struct ModelProviderDefinition {
     #[serde(rename = "supported_model_apis")]
     pub supported_model_apis: Vec<String>,
 
-    #[serde(rename = "supports_model_discovery")]
-    pub supports_model_discovery: bool,
-
     #[serde(rename = "type")]
     pub r#type: String,
 }
@@ -54,10 +54,10 @@ impl ModelProviderDefinition {
             std::collections::HashMap<String, serde_json::Value>,
         >,
         supported_model_apis: Vec<String>,
-        supports_model_discovery: bool,
         r#type: String,
     ) -> ModelProviderDefinition {
         ModelProviderDefinition {
+            catalog_providers: None,
             configuration_schema,
             credential_schema,
             default_model_api,
@@ -65,7 +65,6 @@ impl ModelProviderDefinition {
             model_api_labels,
             settings_schemas,
             supported_model_apis,
-            supports_model_discovery,
             r#type,
         }
     }

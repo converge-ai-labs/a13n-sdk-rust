@@ -11,9 +11,9 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// ModelDeclarations : Harness-facing facts and authoring choices declared for one saved Model.
+/// ModelDeclarationsInput : Harness-facing facts and authoring choices declared for one saved Model.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ModelDeclarations {
+pub struct ModelDeclarationsInput {
     #[serde(rename = "capabilities", skip_serializing_if = "Option::is_none")]
     pub capabilities: Option<Vec<models::ModelCapability>>,
 
@@ -26,20 +26,12 @@ pub struct ModelDeclarations {
     pub context_window_tokens: Option<Option<i32>>,
 
     #[serde(
-        rename = "max_output_tokens",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub max_output_tokens: Option<Option<i32>>,
-
-    #[serde(
         rename = "pricing",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub pricing: Option<Option<Box<models::ModelPricing>>>,
+    pub pricing: Option<Option<Box<models::TokenPricingInput>>>,
 
     #[serde(
         rename = "structured_output",
@@ -56,42 +48,17 @@ pub struct ModelDeclarations {
         skip_serializing_if = "Option::is_none"
     )]
     pub supports_tools: Option<Option<bool>>,
-
-    #[serde(rename = "thinking_efforts", skip_serializing_if = "Option::is_none")]
-    pub thinking_efforts: Option<Vec<ThinkingEfforts>>,
 }
 
-impl ModelDeclarations {
+impl ModelDeclarationsInput {
     /// Harness-facing facts and authoring choices declared for one saved Model.
-    pub fn new() -> ModelDeclarations {
-        ModelDeclarations {
+    pub fn new() -> ModelDeclarationsInput {
+        ModelDeclarationsInput {
             capabilities: None,
             context_window_tokens: None,
-            max_output_tokens: None,
             pricing: None,
             structured_output: None,
             supports_tools: None,
-            thinking_efforts: None,
         }
-    }
-}
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum ThinkingEfforts {
-    #[serde(rename = "minimal")]
-    Minimal,
-    #[serde(rename = "low")]
-    Low,
-    #[serde(rename = "medium")]
-    Medium,
-    #[serde(rename = "high")]
-    High,
-    #[serde(rename = "xhigh")]
-    Xhigh,
-}
-
-impl Default for ThinkingEfforts {
-    fn default() -> ThinkingEfforts {
-        Self::Minimal
     }
 }
