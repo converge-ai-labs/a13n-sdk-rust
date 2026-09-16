@@ -17,7 +17,6 @@ concurrency:
 jobs:
   checks:
     name: Rust SDK and CLI
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -29,7 +28,8 @@ jobs:
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
-      - uses: dtolnay/rust-toolchain@stable
+      # Keep rustfmt identical to sync-service-contract.yml.
+      - uses: dtolnay/rust-toolchain@1.97.0
         with:
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@v2

@@ -142,3 +142,34 @@ def test_cli_has_independent_workspace_and_is_excluded_from_sdk_package() -> Non
         assert len(metadata["workspace_members"]) == 1
     package = subprocess.check_output(["cargo", "package", "--locked", "--allow-dirty", "--list"], cwd=ROOT, text=True)
     assert not any(name.startswith("a13n-service-cli/") for name in package.splitlines())
+
+
+def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
+    """Exercise the real pinned generator, not the sync test's fake make."""
+    document = {
+        "openapi": "3.1.0",
+        "info": {"title": "Autogen fixture", "version": "1"},
+        "components": {"schemas": {"RunStatus": {"type": "string", "enum": ["queued", "running"]}}},
+        "paths": {
+            "/api/v1/autogen-probe": {
+                "get": {"operationId": "autogen_probe", "responses": {"204": {"description": "No content"}}}
+            }
+        },
+    }
+    initial, updated = tmp_path / "initial", tmp_path / "updated"
+    initial.mkdir()
+    updated.mkdir()
+    before = codegen.files(codegen.generate(document, initial))
+    document["paths"]["/api/v1/autogen-probe"]["get"]["parameters"] = [
+        {"name": "autogen_probe_value", "in": "query", "schema": {"type": "string"}}
+    ]
+    source = json.dumps(document)
+    output = codegen.generate(document, updated)
+    after = codegen.files(output)
+    assert before != after
+    assert not any(b"autogen_probe_value" in value for value in before.values())
+    assert any(b"autogen_probe_value" in value for value in after.values())
+    assert json.dumps(document) == source
+    target = tmp_path / "installed"
+    assert codegen.install(output, target, check=False)
+    assert codegen.install(output, target, check=True)
