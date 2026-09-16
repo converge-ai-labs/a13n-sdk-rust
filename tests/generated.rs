@@ -8,7 +8,7 @@ use tokio::{
 };
 
 fn fixtures() -> Value {
-    serde_json::from_str(include_str!("../../fixtures/wire.json")).unwrap()
+    serde_json::from_str(include_str!("../contract/fixtures/wire.json")).unwrap()
 }
 fn roundtrip<T: DeserializeOwned + Serialize>(values: &Value) {
     for value in values.as_array().unwrap() {
@@ -115,6 +115,7 @@ async fn generated_binary_upload_sets_the_declared_content_type() {
         },
     };
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-upload.bin");
+    std::fs::create_dir_all(path.parent().unwrap()).unwrap();
     std::fs::write(&path, b"binary body").unwrap();
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let base = format!("http://{}", listener.local_addr().unwrap());

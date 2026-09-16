@@ -1,0 +1,28 @@
+[project]
+name = "a13n-sdk-rust-tooling"
+version = "0.0.0"
+requires-python = ">=3.13"
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = ["pytest==9.1.1", "ruff==0.16.3", "pyright==1.1.411"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "RUF", "UP"]
+ignore = ["E501"]
+
+[tool.pyright]
+include = ["codegen", "scripts"]
+exclude = ["**/tests", "**/__pycache__", ".venv"]
+pythonVersion = "3.13"
+typeCheckingMode = "standard"
+
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
+testpaths = ["codegen/tests", "scripts/tests"]

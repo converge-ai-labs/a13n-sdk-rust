@@ -12,13 +12,13 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct DeleteQueuedSubmissionRequest {
-    #[serde(rename = "expected_version")]
-    pub expected_version: i32,
+pub struct CreateConfigurationThreadRequest {
+    #[serde(rename = "fork_from_run_id")]
+    pub fork_from_run_id: String,
 }
 
-impl DeleteQueuedSubmissionRequest {
-    pub fn new(expected_version: i32) -> DeleteQueuedSubmissionRequest {
-        DeleteQueuedSubmissionRequest { expected_version }
+impl CreateConfigurationThreadRequest {
+    pub fn new(fork_from_run_id: String) -> CreateConfigurationThreadRequest {
+        CreateConfigurationThreadRequest { fork_from_run_id }
     }
 }

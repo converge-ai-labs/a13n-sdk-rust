@@ -313,16 +313,13 @@ pub enum PutThreadsThreadIdLabelsError {
 pub async fn delete_queued_submissions_queued_submission_id(
     configuration: &configuration::Configuration,
     queued_submission_id: &str,
+    expected_version: i32,
     idempotency_key: &str,
-    delete_queued_submission_request: models::DeleteQueuedSubmissionRequest,
-) -> Result<
-    Response<models::ThreadQueueMutationReceipt>,
-    Error<DeleteQueuedSubmissionsQueuedSubmissionIdError>,
-> {
+) -> Result<Response<()>, Error<DeleteQueuedSubmissionsQueuedSubmissionIdError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_queued_submission_id = queued_submission_id;
+    let p_query_expected_version = expected_version;
     let p_header_idempotency_key = idempotency_key;
-    let p_body_delete_queued_submission_request = delete_queued_submission_request;
 
     let uri_str = format!(
         "{}/api/v1/queued-submissions/{queued_submission_id}",
@@ -333,6 +330,7 @@ pub async fn delete_queued_submissions_queued_submission_id(
         .client
         .request(reqwest::Method::DELETE, &uri_str);
 
+    req_builder = req_builder.query(&[("expected_version", &p_query_expected_version.to_string())]);
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
@@ -340,41 +338,19 @@ pub async fn delete_queued_submissions_queued_submission_id(
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
-    req_builder = req_builder.json(&p_body_delete_queued_submission_request);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
 
     let status = resp.status();
     let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
 
     if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ThreadQueueMutationReceipt`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ThreadQueueMutationReceipt`"
-                ))));
-            }
-        }
+        Ok(Response {
+            data: (),
+            status,
+            headers,
+        })
     } else {
         let content = resp.text().await?;
         let entity: Option<DeleteQueuedSubmissionsQueuedSubmissionIdError> =

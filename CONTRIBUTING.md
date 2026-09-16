@@ -1,0 +1,56 @@
+# Contributing
+
+Write code, documentation, commit messages, Issues and pull requests in English. Discuss unresolved product, architecture, compatibility and scope decisions in Issues; accepted design belongs in `spec/`. Use descriptive short-lived branches from `main` and Conventional Commit PR titles. Draft PRs skip code CI; ready PRs receive the full relevant gate. Resolve review threads and merge through PRs. Repository governance retains the parent's squash-only merge, protected main and immutable release-tag policies.
+
+## Development
+
+Use a stable Rust toolchain at or above `rust-version` with rustfmt and Clippy, plus Python 3.13, uv and Make for generation. `make install` resolves locked SDK, CLI and tooling dependencies. The SDK and CLI have separate Cargo manifests, lockfiles and workspaces; the CLI consumes the SDK through the path dependency `..`.
+
+`make format` applies formatting. `make check` verifies SDK Clippy and tooling types/style; `make test` runs SDK, generator and workspace-boundary tests; `make package` verifies the SDK crate. `make cli-check-all` checks, tests and builds the CLI. `make check-all` includes all of these plus non-mutating generated-output verification. These commands require no Service or other SDK checkout.
+
+Keep changes direct and scoped. Preserve typed unions, omitted/null/value, credential redaction and cancellation semantics. Modify templates/adapters, never generated output by hand. Generated Rust may suppress style/complexity/performance suggestions locally, not correctness/compiler diagnostics or checks on handwritten code. Report exact validation outcomes and reuse still-valid results.
+
+## Releases
+
+Source versions stay `0.0.0`; release workflows inject versions only in ephemeral checkouts. Versions are stable `X.Y.Z` or `X.Y.Z-rc.N`, with positive N and no leading zeroes. Tag a main-line commit whose required CI passed; tags are immutable.
+
+The SDK channel is `release/a13n/rust/<version>` and uses `sdk-rust-crates-io` for crates.io publication. The CLI channel is independently `release/a13n-service-cli-v<version>`; it publishes binary archives and checksums to GitHub, never crates.io. CLI release preparation versions the CLI only; the SDK source dependency remains independent. RC releases do not advance a stable latest pointer. Actual publishing requires separate maintainer authorization and applicable credentials; local packaging does not establish remote publication.
+
+### Release operations
+
+The release workflow verifies that the tagged commit is an ancestor of `origin/main` and that its latest push-triggered `ci.yml` run on `main` completed successfully. It fails rather than waiting for CI or silently using an older successful attempt. Rerun a blocked release only after CI succeeds. This read-only check uses `actions: read`; it does not replace branch protection or rerun the full test suite. Local tests for this boundary require Git, Bash and jq and use a fake GitHub CLI response, not production credentials.
+
+Version preparation and artifact builds operate in ephemeral checkouts. Do not commit their modified manifests/lockfiles. Release tags are immutable, and a retry must retain the same tag and source commit. Publication is not transactional across registry and GitHub: an earlier job may have published before a later job failed. Inspect the registry, tags, artifacts and workflow result before rerunning; do not move tags or assume every publish step is idempotent.
+
+Changelogs use first-parent history scoped to this repository and select only ancestor tags from the same release channel. RCs compare against an earlier RC for the same target, otherwise the preceding stable; stable releases compare against the preceding stable. PR labels classify and omit entries with a Conventional Commit fallback. Curated `.github/release-notes/COMPONENT/VERSION.md` notes are optional. Preview an existing, locally fetched tag without publishing (GitHub PR-label reads still require `gh` authentication):
+
+```bash
+GITHUB_REPOSITORY=converge-ai-labs/a13n-sdk-rust \
+  python3 scripts/create-github-release.py a13n-rust 1.2.3 "a13n SDK 1.2.3" --dry-run
+```
+
+The first channel release uses initial or curated notes rather than attributing extracted monorepo history to this repository's PR numbers. RC GitHub Releases explicitly avoid `latest`. Repository privacy is separate from package visibility: registry publication can expose the package even when its source repository remains private.
+
+The `sdk-rust-crates-io` environment must supply `CARGO_REGISTRY_TOKEN` for `a13n`; copying environment policy does not transfer it. The SDK crate excludes the companion CLI. CLI changelogs select `a13n-service-cli/` and its own workflow/curated notes; SDK changelogs exclude those paths. CLI version injection changes only its manifest and lock entry, preserving its SDK path dependency. Its workflow builds Linux, macOS and Windows x86_64/ARM64 archives, each with the executable and `LICENSE`, plus `SHA256SUMS`. Both stable and RC CLI GitHub Releases use `--latest=false` and require no registry environment.
+
+## Service contract updates
+
+Contract tooling requires Git, Bash, jq and `shasum`. Ordinary builds need no Service checkout or credentials. Generation verifies the local manifest and hashes before reading the snapshot; `contract/README.md` is local guidance, not upstream evidence.
+
+From a clean SDK branch, with the Service repository's full `origin/main` history fetched:
+
+```bash
+bash scripts/sync-contract.sh /path/to/agent-foundation FULL_40_CHARACTER_SERVICE_SHA
+make generate
+make check-all
+```
+
+Sync copies Git blobs, never working-tree files or executable Service code. It requires a complete main-line SHA, forward ancestry from the old pin, and byte-accurate old provenance. Missing/malformed inputs fail before writes; same-SHA retries do nothing. Inspect any interrupted local write and restore only the affected snapshot before retrying. The snapshot includes OpenAPI, both wire schemas, fixtures, API conventions, Native streaming and queue semantics. The source compare exposes runtime-only changes too. Follow recorded upstream paths for related specifications; accepted specs take precedence over inconsistent implementation.
+
+`sync-service-contract.yml` receives Service dispatches or a manual full SHA and opens a **draft PR** containing the snapshot. Maintainers generate, adapt and test, then mark it ready for ordinary CI and review. It never merges, tags or releases. Each SHA has one branch; retries preserve existing open/closed PRs and reviewer edits. If push succeeded before PR creation failed, a retry creates the missing draft without rewriting the branch. Run `open-contract-pr.sh` only in an ephemeral CI checkout.
+
+### Setup
+
+Install both repositories' workflows on their default branches first. Use a dedicated GitHub App installed only on Service and the four SDK repos, with Contents and Pull requests read/write. Configure variable `SERVICE_CONTRACT_APP_CLIENT_ID` and secret `SERVICE_CONTRACT_APP_PRIVATE_KEY` in those repos (or restrict an organization secret to them). Never copy a developer's OAuth token. Workflows request separate Service-read and destination-write tokens and do not persist checkout credentials. Without a client ID the job is skipped; configuration enables it without another feature flag.
+
+Verify one known main SHA end to end before relying on notifications: dispatch, draft, provenance, adaptation and ready-PR CI. Source import is not compatibility acceptance. Offline tests use temporary Git repos and fake GitHub responses; they do not prove App installation or delivery. Registry credentials and release authorization remain separate.
