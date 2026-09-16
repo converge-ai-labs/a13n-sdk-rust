@@ -11,30 +11,27 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
+/// TokenPriceTierInput : Complete rates for requests strictly above the input threshold.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ModelLimits {
+pub struct TokenPriceTierInput {
     #[serde(
-        rename = "context_window_tokens",
+        rename = "above",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub context_window_tokens: Option<Option<i32>>,
+    pub above: Option<Option<i32>>,
 
-    #[serde(
-        rename = "max_output_tokens",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub max_output_tokens: Option<Option<i32>>,
+    #[serde(rename = "rates")]
+    pub rates: Box<models::TokenRatesInput>,
 }
 
-impl ModelLimits {
-    pub fn new() -> ModelLimits {
-        ModelLimits {
-            context_window_tokens: None,
-            max_output_tokens: None,
+impl TokenPriceTierInput {
+    /// Complete rates for requests strictly above the input threshold.
+    pub fn new(rates: models::TokenRatesInput) -> TokenPriceTierInput {
+        TokenPriceTierInput {
+            above: None,
+            rates: Box::new(rates),
         }
     }
 }
