@@ -4,9 +4,22 @@ Write code, documentation, commit messages, Issues and pull requests in English.
 
 ## Development
 
-Use Rust 1.97.0 with rustfmt and Clippy to match generation and CI, plus Python 3.13, uv and Make. When another toolchain is your default, use `RUSTUP_TOOLCHAIN=1.97.0 make generate` (and `make check-all` with the same environment). Update the Rust version in both `ci.yml` and `sync-service-contract.yml` together; the manifest's `rust-version` remains the consumer minimum. `make install` resolves locked SDK, CLI and tooling dependencies. The SDK and CLI have separate Cargo manifests, lockfiles and workspaces; the CLI consumes the SDK through the path dependency `..`.
+Use Rust 1.97.0 with rustfmt and Clippy to match generation and CI, plus Python 3.13, uv and Make. `rust-toolchain.toml` selects that toolchain automatically for local Cargo/rustfmt commands. Update it, `ci.yml`, and `sync-service-contract.yml` together; the manifest's `rust-version` remains the consumer minimum. `make install` resolves locked SDK, CLI and tooling dependencies. The SDK and CLI have separate Cargo manifests, lockfiles and workspaces; the CLI consumes the SDK through the path dependency `..`.
 
-`make format` applies formatting. `make check` verifies SDK Clippy and tooling types/style; `make test` runs SDK, generator and workspace-boundary tests; `make package` verifies the SDK crate. `make cli-check-all` checks, tests and builds the CLI. `make check-all` includes all of these plus non-mutating generated-output verification. These commands require no Service or other SDK checkout.
+`make format` applies formatting. `make check` verifies both SDK and CLI Clippy plus tooling types/style; `make test` runs SDK, generator and workspace-boundary tests; `make package` verifies the SDK crate. `make cli-check-all` checks, tests and builds the CLI. `make check-all` includes all of these plus non-mutating generated-output verification. These commands require no Service or other SDK checkout.
+
+### Quality gates
+
+Run `make hooks-install` once after `make install` to install pre-commit in this checkout. Commit hooks run file hygiene, Markdown/Ruff formatting, and rustfmt for the affected SDK or CLI. Clippy, Pyright, tests, and generation remain explicit Make/CI checks; no networked generation runs on every commit.
+
+- `make format` applies native, Python, and owned Markdown formatting.
+- `make lint` checks SDK formatting/Clippy, Python style, and Markdown without rewriting files.
+- `make typecheck` runs Pyright `standard` on Python tooling; native Rust type checking is covered by Clippy and builds.
+- `make check` includes the CLI's static checks without merging its independent workspace.
+- `make hooks-check` runs all hooks. Formatter changes fail the run for review and restaging; do not bypass hooks.
+- `make check-all` runs hooks and the complete existing provenance, generation, static, test, package, and CLI gates. CI uses that same entry point without installing hooks.
+
+Vendored contract evidence is excluded from hooks and Markdown formatting; the locally owned `contract/README.md` is still checked. Native formatting includes generated Rust using the same pinned toolchain as generation, and generated code remains compiled/linted/tested. If generated output drifts, fix its generator rather than staging a manual patch. Keep linting moderate and scoped, as in the parent repository, rather than enabling all optional rules.
 
 Keep changes direct and scoped. Preserve typed unions, omitted/null/value, credential redaction and cancellation semantics. Modify templates/adapters, never generated output by hand. Generated Rust may suppress style/complexity/performance suggestions locally, not correctness/compiler diagnostics or checks on handwritten code. Report exact validation outcomes and reuse still-valid results.
 
