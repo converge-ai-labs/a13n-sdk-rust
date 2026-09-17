@@ -49,14 +49,13 @@ This independent repository contains the SDK at the root and the companion [CLI]
 ```bash
 make install
 make generate         # local pinned contract; uv supplies the generator's JDK
-make generated-check  # temporary output comparison, no committed-file changes
-make check-all        # generator, SDK tests/package, and CLI checks/tests/build
+make check-all        # SDK tests/package, and CLI checks/tests/build
 make cli-check-all    # CLI and its path dependency only
 ```
 
 The generator pins OpenAPI Generator 7.25.0 with repository-owned Apache-2.0 templates. Typed unions, nullable presence, boolean constants, extensible Run status, streaming binary operations and redacted diagnostics remain explicit language adapters. Commit generated output with input changes, not hand edits.
 
-See [contract provenance](contract/README.md), [SDK and CLI contracts](spec/README.md) and [Contributing](CONTRIBUTING.md). `contract/source.json` records real upstream source paths, commit SHA and input hashes.
+See [contract provenance](contract/README.md), [SDK and CLI contracts](spec/README.md) and [Contributing](CONTRIBUTING.md). `contract/source.json` records real upstream source paths, and commit SHA.
 
 ## License
 

@@ -3,32 +3,25 @@
   "commit": "387504cab0faa7b148c2ef2a62fd3dac57af21a6",
   "files": {
     "openapi.json": {
-      "source_path": "proto/a13n-service/openapi.json",
-      "sha256": "797899d38aeeb9031f9e23cadc6af23b8ea193b725d0a0749e2d737790c9a546"
+      "source_path": "proto/a13n-service/openapi.json"
     },
     "notification-client.schema.json": {
-      "source_path": "proto/a13n-service/notification-client.schema.json",
-      "sha256": "37c0b3fd4df1613d44b8de3a64b591506ee0f17a9ab6a20750264632bd4aff73"
+      "source_path": "proto/a13n-service/notification-client.schema.json"
     },
     "run-stream-event.schema.json": {
-      "source_path": "proto/a13n-service/run-stream-event.schema.json",
-      "sha256": "aa40647226f360c667d5a04508dc3eb0ac3028362dff3f713d10b421cae79e93"
+      "source_path": "proto/a13n-service/run-stream-event.schema.json"
     },
     "fixtures/wire.json": {
-      "source_path": "proto/a13n-service/fixtures/wire.json",
-      "sha256": "b02d49652bb9a0704d11cbfd6d0c5167f1341be3ec89b014240ffe2aa5d324f9"
+      "source_path": "proto/a13n-service/fixtures/wire.json"
     },
     "semantics/api-conventions.md": {
-      "source_path": "spec/api-conventions.md",
-      "sha256": "654b9b68132752fa2b905580a132aed7b1480656d9478614e174ec13371835a6"
+      "source_path": "spec/api-conventions.md"
     },
     "semantics/native-streaming-and-notifications.md": {
-      "source_path": "spec/a13n-service/21-native-streaming-and-notifications.md",
-      "sha256": "3b95a9070e987ad659e82e45eb351894e5f5c05f4dde09d3e3d0049afc5cd73c"
+      "source_path": "spec/a13n-service/21-native-streaming-and-notifications.md"
     },
     "semantics/queued-submissions.md": {
-      "source_path": "spec/a13n-service/20-agent-control-queued-submissions.md",
-      "sha256": "20e0ff8ce0d97ac8eb5eb53d5ee4709f26cddc1fdacf2be3557a103a9d4c6207"
+      "source_path": "spec/a13n-service/20-agent-control-queued-submissions.md"
     }
   }
 }
