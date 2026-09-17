@@ -11,14 +11,14 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ModelDiscovery {
-    #[serde(rename = "items")]
-    pub items: Vec<models::ModelCandidate>,
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum CacheWrite {
+    AnyOf0(f64),
+    AnyOf1(String),
 }
-
-impl ModelDiscovery {
-    pub fn new(items: Vec<models::ModelCandidate>) -> ModelDiscovery {
-        ModelDiscovery { items }
+impl Default for CacheWrite {
+    fn default() -> Self {
+        Self::AnyOf0(Default::default())
     }
 }

@@ -15,31 +15,11 @@ use serde::{Deserialize, Serialize};
 pub struct DocumentAccessReason {
     #[serde(rename = "kind")]
     pub kind: Kind,
-
-    #[serde(
-        rename = "policy_id",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub policy_id: Option<Option<String>>,
-
-    #[serde(
-        rename = "policy_name",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub policy_name: Option<Option<String>>,
 }
 
 impl DocumentAccessReason {
     pub fn new(kind: Kind) -> DocumentAccessReason {
-        DocumentAccessReason {
-            kind,
-            policy_id: None,
-            policy_name: None,
-        }
+        DocumentAccessReason { kind }
     }
 }
 ///
@@ -47,10 +27,8 @@ impl DocumentAccessReason {
 pub enum Kind {
     #[serde(rename = "owner")]
     Owner,
-    #[serde(rename = "publication")]
-    Publication,
-    #[serde(rename = "policy")]
-    Policy,
+    #[serde(rename = "installation")]
+    Installation,
 }
 
 impl Default for Kind {

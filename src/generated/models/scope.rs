@@ -45,6 +45,9 @@ pub struct Scope {
 
     #[serde(rename = "version")]
     pub version: i32,
+
+    #[serde(rename = "visibility", skip_serializing_if = "Option::is_none")]
+    pub visibility: Option<Visibility>,
 }
 
 impl Scope {
@@ -69,6 +72,7 @@ impl Scope {
             timezone: None,
             use_memory: None,
             version,
+            visibility: None,
         }
     }
 }
@@ -88,5 +92,19 @@ pub enum Audience {
 impl Default for Audience {
     fn default() -> Audience {
         Self::Public
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Visibility {
+    #[serde(rename = "group")]
+    Group,
+    #[serde(rename = "installation")]
+    Installation,
+}
+
+impl Default for Visibility {
+    fn default() -> Visibility {
+        Self::Group
     }
 }

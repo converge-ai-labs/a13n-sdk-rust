@@ -35,6 +35,9 @@ pub struct ConfigureScope {
 
     #[serde(rename = "use_memory", skip_serializing_if = "Option::is_none")]
     pub use_memory: Option<bool>,
+
+    #[serde(rename = "visibility", skip_serializing_if = "Option::is_none")]
+    pub visibility: Option<Visibility>,
 }
 
 impl ConfigureScope {
@@ -46,6 +49,21 @@ impl ConfigureScope {
             save_on_request: None,
             timezone: None,
             use_memory: None,
+            visibility: None,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Visibility {
+    #[serde(rename = "group")]
+    Group,
+    #[serde(rename = "installation")]
+    Installation,
+}
+
+impl Default for Visibility {
+    fn default() -> Visibility {
+        Self::Group
     }
 }

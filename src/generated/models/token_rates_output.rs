@@ -11,16 +11,16 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// ModelPricing : Editable USD prices per million tokens.
+/// TokenRatesOutput : USD per million tokens; null is unknown, never free.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ModelPricing {
+pub struct TokenRatesOutput {
     #[serde(
         rename = "cache_read",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub cache_read: Option<Option<f64>>,
+    pub cache_read: Option<Option<String>>,
 
     #[serde(
         rename = "cache_write",
@@ -28,7 +28,7 @@ pub struct ModelPricing {
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub cache_write: Option<Option<f64>>,
+    pub cache_write: Option<Option<String>>,
 
     #[serde(
         rename = "input",
@@ -36,7 +36,7 @@ pub struct ModelPricing {
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub input: Option<Option<f64>>,
+    pub input: Option<Option<String>>,
 
     #[serde(
         rename = "output",
@@ -44,13 +44,13 @@ pub struct ModelPricing {
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub output: Option<Option<f64>>,
+    pub output: Option<Option<String>>,
 }
 
-impl ModelPricing {
-    /// Editable USD prices per million tokens.
-    pub fn new() -> ModelPricing {
-        ModelPricing {
+impl TokenRatesOutput {
+    /// USD per million tokens; null is unknown, never free.
+    pub fn new() -> TokenRatesOutput {
+        TokenRatesOutput {
             cache_read: None,
             cache_write: None,
             input: None,
