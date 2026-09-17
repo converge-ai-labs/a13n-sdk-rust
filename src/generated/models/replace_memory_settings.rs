@@ -12,19 +12,26 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PublicationAudience {
+pub struct ReplaceMemorySettings {
     #[serde(rename = "expected_version")]
     pub expected_version: i32,
 
-    #[serde(rename = "recipient_scope_ids")]
-    pub recipient_scope_ids: Vec<String>,
+    #[serde(rename = "memory", deserialize_with = "Option::deserialize")]
+    pub memory: Option<Box<models::MemorySettings>>,
 }
 
-impl PublicationAudience {
-    pub fn new(expected_version: i32, recipient_scope_ids: Vec<String>) -> PublicationAudience {
-        PublicationAudience {
+impl ReplaceMemorySettings {
+    pub fn new(
+        expected_version: i32,
+        memory: Option<models::MemorySettings>,
+    ) -> ReplaceMemorySettings {
+        ReplaceMemorySettings {
             expected_version,
-            recipient_scope_ids,
+            memory: if let Some(x) = memory {
+                Some(Box::new(x))
+            } else {
+                None
+            },
         }
     }
 }
