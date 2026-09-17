@@ -16,6 +16,7 @@ use serde::{Deserialize, Serialize};
 pub enum Receipt {
     AnyOf0(models::SlackReplyReceipt),
     AnyOf1(models::LarkReplyReceipt),
+    AnyOf2(models::GitHubCommentReceipt),
 }
 impl Default for Receipt {
     fn default() -> Self {

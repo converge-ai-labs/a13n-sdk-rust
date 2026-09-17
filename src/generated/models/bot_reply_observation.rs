@@ -97,6 +97,8 @@ pub enum ProviderKey {
     Slack,
     #[serde(rename = "lark")]
     Lark,
+    #[serde(rename = "github")]
+    Github,
 }
 
 impl Default for ProviderKey {

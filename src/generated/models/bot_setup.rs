@@ -16,19 +16,59 @@ pub struct BotSetup {
     #[serde(rename = "account_id")]
     pub account_id: String,
 
-    #[serde(rename = "event_path")]
-    pub event_path: String,
+    #[serde(rename = "event_path", deserialize_with = "Option::deserialize")]
+    pub event_path: Option<String>,
 
     #[serde(rename = "event_url", deserialize_with = "Option::deserialize")]
     pub event_url: Option<String>,
+
+    #[serde(
+        rename = "poll_checked_at",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub poll_checked_at: Option<Option<chrono::DateTime<chrono::FixedOffset>>>,
+
+    #[serde(
+        rename = "poll_error_code",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub poll_error_code: Option<Option<String>>,
+
+    #[serde(rename = "reception_mode", skip_serializing_if = "Option::is_none")]
+    pub reception_mode: Option<ReceptionMode>,
 }
 
 impl BotSetup {
-    pub fn new(account_id: String, event_path: String, event_url: Option<String>) -> BotSetup {
+    pub fn new(
+        account_id: String,
+        event_path: Option<String>,
+        event_url: Option<String>,
+    ) -> BotSetup {
         BotSetup {
             account_id,
             event_path,
             event_url,
+            poll_checked_at: None,
+            poll_error_code: None,
+            reception_mode: None,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum ReceptionMode {
+    #[serde(rename = "webhook")]
+    Webhook,
+    #[serde(rename = "polling")]
+    Polling,
+}
+
+impl Default for ReceptionMode {
+    fn default() -> ReceptionMode {
+        Self::Webhook
     }
 }

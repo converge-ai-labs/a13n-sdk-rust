@@ -130,6 +130,15 @@ pub enum PostWorkspacesWorkspaceBotsFeishuInstallationError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`post_workspaces_workspace_bots_github_user`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum PostWorkspacesWorkspaceBotsGithubUserError {
+    Status400(models::ErrorResponse),
+    DefaultResponse(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
 pub async fn get_application_accounts_account_id_bot_checks_latest(
     configuration: &configuration::Configuration,
     account_id: &str,
@@ -1105,6 +1114,78 @@ pub async fn post_workspaces_workspace_bots_feishu_installation(
     } else {
         let content = resp.text().await?;
         let entity: Option<PostWorkspacesWorkspaceBotsFeishuInstallationError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn post_workspaces_workspace_bots_github_user(
+    configuration: &configuration::Configuration,
+    workspace: &str,
+    discover_git_hub_user_request: models::DiscoverGitHubUserRequest,
+) -> Result<Response<models::InstallationInfo>, Error<PostWorkspacesWorkspaceBotsGithubUserError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_workspace = workspace;
+    let p_body_discover_git_hub_user_request = discover_git_hub_user_request;
+
+    let uri_str = format!(
+        "{}/api/v1/workspaces/{workspace}/bots/github/user",
+        configuration.base_path,
+        workspace = crate::generated::apis::urlencode(p_path_workspace)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    req_builder = req_builder.json(&p_body_discover_git_hub_user_request);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::InstallationInfo`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::InstallationInfo`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<PostWorkspacesWorkspaceBotsGithubUserError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,

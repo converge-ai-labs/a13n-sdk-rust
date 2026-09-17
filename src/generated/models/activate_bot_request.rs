@@ -26,7 +26,7 @@ pub struct ActivateBotRequest {
     pub expected_version: i32,
 
     #[serde(rename = "policy")]
-    pub policy: Box<models::MessagingPolicy>,
+    pub policy: Box<models::Policy>,
 
     #[serde(rename = "target_id")]
     pub target_id: String,
@@ -41,7 +41,7 @@ impl ActivateBotRequest {
         conversation_id: String,
         execution_service_account_id: String,
         expected_version: i32,
-        policy: models::MessagingPolicy,
+        policy: models::Policy,
         target_id: String,
         target_version: i32,
     ) -> ActivateBotRequest {
