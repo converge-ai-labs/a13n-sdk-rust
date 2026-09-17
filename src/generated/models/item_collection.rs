@@ -13,15 +13,46 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ItemCollection {
+    #[serde(rename = "complete")]
+    pub complete: bool,
+
+    #[serde(rename = "finalized")]
+    pub finalized: bool,
+
+    #[serde(rename = "incomplete_reason", deserialize_with = "Option::deserialize")]
+    pub incomplete_reason: Option<String>,
+
     #[serde(rename = "items")]
     pub items: Vec<models::ItemResource>,
 
     #[serde(rename = "next_cursor", deserialize_with = "Option::deserialize")]
     pub next_cursor: Option<String>,
+
+    #[serde(rename = "projection_cursor", deserialize_with = "Option::deserialize")]
+    pub projection_cursor: Option<String>,
+
+    #[serde(rename = "snapshot_version")]
+    pub snapshot_version: i32,
 }
 
 impl ItemCollection {
-    pub fn new(items: Vec<models::ItemResource>, next_cursor: Option<String>) -> ItemCollection {
-        ItemCollection { items, next_cursor }
+    pub fn new(
+        complete: bool,
+        finalized: bool,
+        incomplete_reason: Option<String>,
+        items: Vec<models::ItemResource>,
+        next_cursor: Option<String>,
+        projection_cursor: Option<String>,
+        snapshot_version: i32,
+    ) -> ItemCollection {
+        ItemCollection {
+            complete,
+            finalized,
+            incomplete_reason,
+            items,
+            next_cursor,
+            projection_cursor,
+            snapshot_version,
+        }
     }
 }

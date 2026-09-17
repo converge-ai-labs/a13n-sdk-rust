@@ -645,11 +645,13 @@ pub async fn get_runs_run_id_items(
     run_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
+    order: Option<&str>,
 ) -> Result<Response<models::ItemCollection>, Error<GetRunsRunIdItemsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_run_id = run_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_query_order = order;
 
     let uri_str = format!(
         "{}/api/v1/runs/{run_id}/items",
@@ -663,6 +665,9 @@ pub async fn get_runs_run_id_items(
     }
     if let Some(ref param_value) = p_query_cursor {
         req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_order {
+        req_builder = req_builder.query(&[("order", &param_value.to_string())]);
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
