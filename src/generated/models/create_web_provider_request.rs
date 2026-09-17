@@ -16,8 +16,13 @@ pub struct CreateWebProviderRequest {
     #[serde(rename = "configuration", skip_serializing_if = "Option::is_none")]
     pub configuration: Option<std::collections::HashMap<String, serde_json::Value>>,
 
-    #[serde(rename = "credential")]
-    pub credential: std::collections::HashMap<String, serde_json::Value>,
+    #[serde(
+        rename = "credential",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub credential: Option<Option<std::collections::HashMap<String, serde_json::Value>>>,
 
     #[serde(rename = "enabled", skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
@@ -30,14 +35,10 @@ pub struct CreateWebProviderRequest {
 }
 
 impl CreateWebProviderRequest {
-    pub fn new(
-        credential: std::collections::HashMap<String, serde_json::Value>,
-        name: String,
-        r#type: String,
-    ) -> CreateWebProviderRequest {
+    pub fn new(name: String, r#type: String) -> CreateWebProviderRequest {
         CreateWebProviderRequest {
             configuration: None,
-            credential,
+            credential: None,
             enabled: None,
             name,
             r#type,
