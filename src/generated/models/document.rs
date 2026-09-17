@@ -37,12 +37,6 @@ pub struct Document {
     pub kind: Kind,
 
     #[serde(
-        rename = "more_access_reasons",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub more_access_reasons: Option<bool>,
-
-    #[serde(
         rename = "owner_name",
         default,
         with = "::serde_with::rust::double_option",
@@ -107,7 +101,6 @@ impl Document {
             description,
             id,
             kind,
-            more_access_reasons: None,
             owner_name: None,
             path,
             publication_source_id: None,
