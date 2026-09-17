@@ -22,6 +22,15 @@ pub enum DeleteApplicationAccountsAccountIdMemoryScopesScopeIdDocumentsDocumentI
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`get_application_accounts_account_id_bot_memory_settings`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum GetApplicationAccountsAccountIdBotMemorySettingsError {
+    Status400(models::ErrorResponse),
+    DefaultResponse(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`get_application_accounts_account_id_memory_scopes`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -76,51 +85,6 @@ pub enum GetApplicationAccountsAccountIdMemoryScopesScopeIdOperationsDocumentIdE
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_application_accounts_account_id_memory_scopes_scope_id_publications`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GetApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsError {
-    Status400(models::ErrorResponse),
-    DefaultResponse(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`get_application_accounts_account_id_memory_scopes_scope_id_publications_document_id`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GetApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsDocumentIdError {
-    Status400(models::ErrorResponse),
-    DefaultResponse(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`get_application_accounts_account_id_memory_scopes_scope_id_publications_document_id_audience`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GetApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsDocumentIdAudienceError {
-    Status400(models::ErrorResponse),
-    DefaultResponse(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`get_application_accounts_account_id_memory_sharing_policies`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GetApplicationAccountsAccountIdMemorySharingPoliciesError {
-    Status400(models::ErrorResponse),
-    DefaultResponse(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`patch_application_accounts_account_id_memory_scopes_scope_id_publications_document_id_audience`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum PatchApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsDocumentIdAudienceError {
-    Status400(models::ErrorResponse),
-    DefaultResponse(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
 /// struct for typed errors of method [`post_application_accounts_account_id_memory_scopes`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -134,15 +98,6 @@ pub enum PostApplicationAccountsAccountIdMemoryScopesError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum PostApplicationAccountsAccountIdMemoryScopesScopeIdDocumentsError {
-    Status400(models::ErrorResponse),
-    DefaultResponse(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`post_application_accounts_account_id_memory_scopes_scope_id_documents_document_id_publications`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum PostApplicationAccountsAccountIdMemoryScopesScopeIdDocumentsDocumentIdPublicationsError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
@@ -166,28 +121,10 @@ pub enum PostApplicationAccountsAccountIdMemoryScopesScopeIdOperationsDocumentId
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`post_application_accounts_account_id_memory_scopes_scope_id_publications_document_id_withdraw`]
+/// struct for typed errors of method [`put_application_accounts_account_id_bot_memory_settings`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PostApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsDocumentIdWithdrawError {
-    Status400(models::ErrorResponse),
-    DefaultResponse(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`post_application_accounts_account_id_memory_sharing_policies`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum PostApplicationAccountsAccountIdMemorySharingPoliciesError {
-    Status400(models::ErrorResponse),
-    DefaultResponse(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`put_application_accounts_account_id_memory_sharing_policies_policy_id`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum PutApplicationAccountsAccountIdMemorySharingPoliciesPolicyIdError {
+pub enum PutApplicationAccountsAccountIdBotMemorySettingsError {
     Status400(models::ErrorResponse),
     DefaultResponse(models::ErrorResponse),
     UnknownValue(serde_json::Value),
@@ -242,6 +179,76 @@ pub async fn delete_application_accounts_account_id_memory_scopes_scope_id_docum
         let entity: Option<
             DeleteApplicationAccountsAccountIdMemoryScopesScopeIdDocumentsDocumentIdError,
         > = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn get_application_accounts_account_id_bot_memory_settings(
+    configuration: &configuration::Configuration,
+    account_id: &str,
+) -> Result<
+    Response<models::AccountMemorySettings>,
+    Error<GetApplicationAccountsAccountIdBotMemorySettingsError>,
+> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_account_id = account_id;
+
+    let uri_str = format!(
+        "{}/api/v1/application-accounts/{account_id}/bot/memory-settings",
+        configuration.base_path,
+        account_id = crate::generated::apis::urlencode(p_path_account_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::AccountMemorySettings`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::AccountMemorySettings`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetApplicationAccountsAccountIdBotMemorySettingsError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -752,389 +759,6 @@ pub async fn get_application_accounts_account_id_memory_scopes_scope_id_operatio
     }
 }
 
-pub async fn get_application_accounts_account_id_memory_scopes_scope_id_publications(
-    configuration: &configuration::Configuration,
-    account_id: &str,
-    scope_id: &str,
-    source_id: Option<&str>,
-    limit: Option<i32>,
-    cursor: Option<&str>,
-) -> Result<
-    Response<models::DocumentCollection>,
-    Error<GetApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_account_id = account_id;
-    let p_path_scope_id = scope_id;
-    let p_query_source_id = source_id;
-    let p_query_limit = limit;
-    let p_query_cursor = cursor;
-
-    let uri_str = format!(
-        "{}/api/v1/application-accounts/{account_id}/memory-scopes/{scope_id}/publications",
-        configuration.base_path,
-        account_id = crate::generated::apis::urlencode(p_path_account_id),
-        scope_id = crate::generated::apis::urlencode(p_path_scope_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref param_value) = p_query_source_id {
-        req_builder = req_builder.query(&[("source_id", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_limit {
-        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_cursor {
-        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
-    }
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::DocumentCollection`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::DocumentCollection`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<GetApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn get_application_accounts_account_id_memory_scopes_scope_id_publications_document_id(
-    configuration: &configuration::Configuration,
-    account_id: &str,
-    scope_id: &str,
-    document_id: &str,
-) -> Result<
-    Response<models::Document>,
-    Error<GetApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsDocumentIdError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_account_id = account_id;
-    let p_path_scope_id = scope_id;
-    let p_path_document_id = document_id;
-
-    let uri_str = format!(
-        "{}/api/v1/application-accounts/{account_id}/memory-scopes/{scope_id}/publications/{document_id}",
-        configuration.base_path,
-        account_id = crate::generated::apis::urlencode(p_path_account_id),
-        scope_id = crate::generated::apis::urlencode(p_path_scope_id),
-        document_id = crate::generated::apis::urlencode(p_path_document_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Document`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Document`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<
-            GetApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsDocumentIdError,
-        > = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn get_application_accounts_account_id_memory_scopes_scope_id_publications_document_id_audience(
-    configuration: &configuration::Configuration,
-    account_id: &str,
-    scope_id: &str,
-    document_id: &str,
-) -> Result<
-    Response<models::PublicationAccess>,
-    Error<GetApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsDocumentIdAudienceError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_account_id = account_id;
-    let p_path_scope_id = scope_id;
-    let p_path_document_id = document_id;
-
-    let uri_str = format!(
-        "{}/api/v1/application-accounts/{account_id}/memory-scopes/{scope_id}/publications/{document_id}/audience",
-        configuration.base_path,
-        account_id = crate::generated::apis::urlencode(p_path_account_id),
-        scope_id = crate::generated::apis::urlencode(p_path_scope_id),
-        document_id = crate::generated::apis::urlencode(p_path_document_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::PublicationAccess`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::PublicationAccess`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<
-            GetApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsDocumentIdAudienceError,
-        > = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn get_application_accounts_account_id_memory_sharing_policies(
-    configuration: &configuration::Configuration,
-    account_id: &str,
-    limit: Option<i32>,
-    cursor: Option<&str>,
-) -> Result<
-    Response<models::SharingPolicyCollection>,
-    Error<GetApplicationAccountsAccountIdMemorySharingPoliciesError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_account_id = account_id;
-    let p_query_limit = limit;
-    let p_query_cursor = cursor;
-
-    let uri_str = format!(
-        "{}/api/v1/application-accounts/{account_id}/memory-sharing-policies",
-        configuration.base_path,
-        account_id = crate::generated::apis::urlencode(p_path_account_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref param_value) = p_query_limit {
-        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_cursor {
-        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
-    }
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SharingPolicyCollection`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SharingPolicyCollection`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<GetApplicationAccountsAccountIdMemorySharingPoliciesError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn patch_application_accounts_account_id_memory_scopes_scope_id_publications_document_id_audience(
-    configuration: &configuration::Configuration,
-    account_id: &str,
-    scope_id: &str,
-    document_id: &str,
-    publication_audience: models::PublicationAudience,
-) -> Result<
-    Response<()>,
-    Error<PatchApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsDocumentIdAudienceError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_account_id = account_id;
-    let p_path_scope_id = scope_id;
-    let p_path_document_id = document_id;
-    let p_body_publication_audience = publication_audience;
-
-    let uri_str = format!(
-        "{}/api/v1/application-accounts/{account_id}/memory-scopes/{scope_id}/publications/{document_id}/audience",
-        configuration.base_path,
-        account_id = crate::generated::apis::urlencode(p_path_account_id),
-        scope_id = crate::generated::apis::urlencode(p_path_scope_id),
-        document_id = crate::generated::apis::urlencode(p_path_document_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::PATCH, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    req_builder = req_builder.json(&p_body_publication_audience);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-
-    if !status.is_client_error() && !status.is_server_error() {
-        Ok(Response {
-            data: (),
-            status,
-            headers,
-        })
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<
-            PatchApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsDocumentIdAudienceError,
-        > = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
 pub async fn post_application_accounts_account_id_memory_scopes(
     configuration: &configuration::Configuration,
     account_id: &str,
@@ -1279,91 +903,6 @@ pub async fn post_application_accounts_account_id_memory_scopes_scope_id_documen
         let content = resp.text().await?;
         let entity: Option<PostApplicationAccountsAccountIdMemoryScopesScopeIdDocumentsError> =
             serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn post_application_accounts_account_id_memory_scopes_scope_id_documents_document_id_publications(
-    configuration: &configuration::Configuration,
-    account_id: &str,
-    scope_id: &str,
-    document_id: &str,
-    idempotency_key: &str,
-    publish_document: models::PublishDocument,
-) -> Result<
-    Response<models::Document>,
-    Error<PostApplicationAccountsAccountIdMemoryScopesScopeIdDocumentsDocumentIdPublicationsError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_account_id = account_id;
-    let p_path_scope_id = scope_id;
-    let p_path_document_id = document_id;
-    let p_header_idempotency_key = idempotency_key;
-    let p_body_publish_document = publish_document;
-
-    let uri_str = format!(
-        "{}/api/v1/application-accounts/{account_id}/memory-scopes/{scope_id}/documents/{document_id}/publications",
-        configuration.base_path,
-        account_id = crate::generated::apis::urlencode(p_path_account_id),
-        scope_id = crate::generated::apis::urlencode(p_path_scope_id),
-        document_id = crate::generated::apis::urlencode(p_path_document_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    req_builder = req_builder.header("Idempotency-Key", p_header_idempotency_key.to_string());
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    req_builder = req_builder.json(&p_body_publish_document);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Document`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Document`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<
-            PostApplicationAccountsAccountIdMemoryScopesScopeIdDocumentsDocumentIdPublicationsError,
-        > = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1531,161 +1070,22 @@ pub async fn post_application_accounts_account_id_memory_scopes_scope_id_operati
     }
 }
 
-pub async fn post_application_accounts_account_id_memory_scopes_scope_id_publications_document_id_withdraw(
+pub async fn put_application_accounts_account_id_bot_memory_settings(
     configuration: &configuration::Configuration,
     account_id: &str,
-    scope_id: &str,
-    document_id: &str,
-    withdraw_publication: models::WithdrawPublication,
+    replace_memory_settings: models::ReplaceMemorySettings,
 ) -> Result<
-    Response<()>,
-    Error<PostApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsDocumentIdWithdrawError>,
+    Response<models::AccountMemorySettings>,
+    Error<PutApplicationAccountsAccountIdBotMemorySettingsError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_account_id = account_id;
-    let p_path_scope_id = scope_id;
-    let p_path_document_id = document_id;
-    let p_body_withdraw_publication = withdraw_publication;
+    let p_body_replace_memory_settings = replace_memory_settings;
 
     let uri_str = format!(
-        "{}/api/v1/application-accounts/{account_id}/memory-scopes/{scope_id}/publications/{document_id}/withdraw",
-        configuration.base_path,
-        account_id = crate::generated::apis::urlencode(p_path_account_id),
-        scope_id = crate::generated::apis::urlencode(p_path_scope_id),
-        document_id = crate::generated::apis::urlencode(p_path_document_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    req_builder = req_builder.json(&p_body_withdraw_publication);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-
-    if !status.is_client_error() && !status.is_server_error() {
-        Ok(Response {
-            data: (),
-            status,
-            headers,
-        })
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<
-            PostApplicationAccountsAccountIdMemoryScopesScopeIdPublicationsDocumentIdWithdrawError,
-        > = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn post_application_accounts_account_id_memory_sharing_policies(
-    configuration: &configuration::Configuration,
-    account_id: &str,
-    sharing_policy_input: models::SharingPolicyInput,
-) -> Result<
-    Response<models::SharingPolicy>,
-    Error<PostApplicationAccountsAccountIdMemorySharingPoliciesError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_account_id = account_id;
-    let p_body_sharing_policy_input = sharing_policy_input;
-
-    let uri_str = format!(
-        "{}/api/v1/application-accounts/{account_id}/memory-sharing-policies",
+        "{}/api/v1/application-accounts/{account_id}/bot/memory-settings",
         configuration.base_path,
         account_id = crate::generated::apis::urlencode(p_path_account_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    req_builder = req_builder.json(&p_body_sharing_policy_input);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SharingPolicy`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SharingPolicy`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<PostApplicationAccountsAccountIdMemorySharingPoliciesError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn put_application_accounts_account_id_memory_sharing_policies_policy_id(
-    configuration: &configuration::Configuration,
-    account_id: &str,
-    policy_id: &str,
-    replace_sharing_policy: models::ReplaceSharingPolicy,
-) -> Result<
-    Response<models::SharingPolicy>,
-    Error<PutApplicationAccountsAccountIdMemorySharingPoliciesPolicyIdError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_account_id = account_id;
-    let p_path_policy_id = policy_id;
-    let p_body_replace_sharing_policy = replace_sharing_policy;
-
-    let uri_str = format!(
-        "{}/api/v1/application-accounts/{account_id}/memory-sharing-policies/{policy_id}",
-        configuration.base_path,
-        account_id = crate::generated::apis::urlencode(p_path_account_id),
-        policy_id = crate::generated::apis::urlencode(p_path_policy_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
 
@@ -1695,7 +1095,7 @@ pub async fn put_application_accounts_account_id_memory_sharing_policies_policy_
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
-    req_builder = req_builder.json(&p_body_replace_sharing_policy);
+    req_builder = req_builder.json(&p_body_replace_memory_settings);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -1721,18 +1121,18 @@ pub async fn put_application_accounts_account_id_memory_sharing_policies_policy_
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SharingPolicy`",
+                    "Received `text/plain` content type response that cannot be converted to `models::AccountMemorySettings`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SharingPolicy`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::AccountMemorySettings`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PutApplicationAccountsAccountIdMemorySharingPoliciesPolicyIdError> =
+        let entity: Option<PutApplicationAccountsAccountIdBotMemorySettingsError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
