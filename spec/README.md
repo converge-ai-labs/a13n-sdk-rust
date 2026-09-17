@@ -24,8 +24,8 @@ The CLI owns a separate Cargo workspace, manifest, lockfile and version. Its pat
 
 ## Verifiable invariants
 
-- Every pinned HTTP operation has a binding; local source hashes match metadata.
-- Generation checks compare names and bytes without refreshing committed output.
+- Every pinned HTTP operation has a binding.
+- Generation consumes pinned local inputs; generated bindings compile and pass wire and transport tests.
 - Wire tests cover union branches, nullable presence, constants, decimal values and unknown Run status.
 - Transport tests preserve headers, response evidence, streaming and cancellation; compile-fail examples reject invalid request types.
 - Cargo metadata keeps the CLI and SDK in independent workspaces; the SDK package excludes CLI source.
