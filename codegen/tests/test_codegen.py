@@ -2,9 +2,11 @@
 
 import importlib.util
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "codegen"))
 SPEC = importlib.util.spec_from_file_location("sdk_codegen", ROOT / "codegen/generate.py")
 assert SPEC and SPEC.loader
 codegen = importlib.util.module_from_spec(SPEC)
@@ -17,10 +19,10 @@ def test_adapter_keeps_typed_unions_and_contract_unchanged() -> None:
     adapted = codegen.prepare(document)
     assert json.dumps(document) == before
     schemas = adapted["components"]["schemas"]
-    for name in ["ActorRef", "EnvironmentSelection"]:
+    for name in ["Part", "ConnectionConfig"]:
         assert schemas[name] == document["components"]["schemas"][name]
     assert schemas["RunStatus"]["x-rust-unknown-enum"]
-    assert "x-rust-unknown-enum" not in schemas["PrincipalType"]
+    assert "x-rust-unknown-enum" not in schemas["ItemKind"]
 
 
 def test_schema_adapters_preserve_presence_constants_binary_and_sensitive_data() -> None:
@@ -115,3 +117,40 @@ def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
     codegen.install(output, target)
     assert not (target / "obsolete.txt").exists()
     assert "autogen_probe_value" in (target / "apis/default_api.rs").read_text()
+    codegen.generate_resources(document, target)
+    ordinary = (target / "resources.rs").read_text()
+    assert "pub autogen_probe_value:Option<String>" in ordinary
+    assert "pub fn autogen_probe(" in ordinary
+    assert "pub async fn get(" in ordinary
+    assert "client.resources().autogen_probe().get(" in (target / "resource_tests.rs").read_text()
+
+
+def test_streaming_and_multimime_adapters_preserve_pinned_contract() -> None:
+    document = json.loads((ROOT / "contract/openapi.json").read_text())
+    adapted = codegen.prepare(document)
+    streaming = 0
+    multimime = 0
+    for path, item in document["paths"].items():
+        for method, operation in item.items():
+            if method not in {"get", "post", "put", "patch", "delete"}:
+                continue
+            converted = adapted["paths"][path][method]
+            for status, response in operation.get("responses", {}).items():
+                if status.startswith("2") and "text/event-stream" in response.get("content", {}):
+                    streaming += 1
+                    assert converted["responses"][status]["content"]["text/event-stream"]["schema"] == {
+                        "type": "string",
+                        "format": "binary",
+                    }
+            content = operation.get("requestBody", {}).get("content", {})
+            if len(content) > 1 and all(
+                media.get("schema", {}).get("format") == "binary" for media in content.values()
+            ):
+                multimime += 1
+                parameter = next(p for p in converted["parameters"] if p["name"] == "Content-Type")
+                assert parameter["in"] == "header"
+                assert parameter["required"] is True
+                assert parameter["schema"]["enum"] == list(content)
+    assert streaming == 1
+    assert multimime == 4
+    assert document == json.loads((ROOT / "contract/openapi.json").read_text())

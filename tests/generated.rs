@@ -1,171 +1,136 @@
-use a13n::generated::{apis::identity_api::get_auth_context, models::*};
-use a13n::{Client, Secret};
+mod common;
+use a13n::{
+    CallError, Secret,
+    generated::{
+        apis::{self, tenancy_api::*},
+        models::*,
+    },
+};
+use common::*;
 use serde::{Serialize, de::DeserializeOwned};
 use serde_json::{Value, json};
-use tokio::{
-    io::{AsyncReadExt, AsyncWriteExt},
-    net::TcpListener,
-};
-
-fn fixtures() -> Value {
-    serde_json::from_str(include_str!("../contract/fixtures/wire.json")).unwrap()
+fn roundtrip<T: DeserializeOwned + Serialize>(value: Value) {
+    let parsed: T = serde_json::from_value(value.clone()).unwrap();
+    assert_eq!(serde_json::to_value(parsed).unwrap(), value);
 }
-fn roundtrip<T: DeserializeOwned + Serialize>(values: &Value) {
-    for value in values.as_array().unwrap() {
-        let parsed: T = serde_json::from_value(value.clone()).unwrap();
-        assert_eq!(serde_json::to_value(parsed).unwrap(), *value);
-    }
-}
-
 #[test]
-fn generated_wire_fixtures() {
-    let fixture = fixtures();
-    roundtrip::<UpdateAgentRequest>(&fixture["patch"]);
-    roundtrip::<ActorRef>(&fixture["actor"]);
-    roundtrip::<EnvironmentSelection>(&fixture["environment"]);
-    roundtrip::<UserMessage>(&fixture["user_message"]);
-    roundtrip::<CostLimit>(&fixture["cost"]);
-    roundtrip::<RunStatus>(&fixture["run_status"]);
-    roundtrip::<ConnectorCollection>(&fixture["null_cursor"]);
-    let system: ActorRef = serde_json::from_value(fixture["actor"][2].clone()).unwrap();
-    assert!(matches!(system, ActorRef::AnyOf1(_)));
-    let new_env: EnvironmentSelection =
-        serde_json::from_value(fixture["environment"][1].clone()).unwrap();
-    assert!(matches!(new_env, EnvironmentSelection::AnyOf1(_)));
-    let omitted: UpdateAgentRequest = serde_json::from_value(json!({})).unwrap();
-    let null: UpdateAgentRequest = serde_json::from_value(json!({"name":null})).unwrap();
+fn models_preserve_nullable_presence_unions_unknown_status_and_credentials() {
+    for value in [
+        json!({}),
+        json!({"name":null}),
+        json!({"name":"Name","labels":{"team":"dev"}}),
+    ] {
+        roundtrip::<AgentUpdate>(value);
+    }
+    let omitted: AgentUpdate = serde_json::from_value(json!({})).unwrap();
+    let null: AgentUpdate = serde_json::from_value(json!({"name":null})).unwrap();
     assert_eq!(omitted.name, None);
     assert_eq!(null.name, Some(None));
-    let secret: CreateWebProviderRequest = serde_json::from_value(
-        json!({"type":"brave","name":"test","credential":{"api_key":"do-not-print"}}),
-    )
-    .unwrap();
+    for value in [json!("completed"), json!("future_status")] {
+        roundtrip::<RunStatus>(value);
+    }
+    for value in [
+        json!({"type":"text","text":"hello"}),
+        json!({"type":"json","value":{"arbitrary":[1,null,true]}}),
+    ] {
+        roundtrip::<Part>(value);
+    }
+    assert!(serde_json::from_value::<Part>(json!({"type":"future","value":1})).is_err());
+    let secret:ProviderCreate=serde_json::from_value(json!({"name":"provider","type":"brave","workspace_id":null,"credential":{"api_key":"do-not-print"}})).unwrap();
     assert!(!format!("{secret:?}").contains("do-not-print"));
     assert_eq!(
-        serde_json::to_value(secret).unwrap()["credential"],
-        json!({"api_key":"do-not-print"})
+        serde_json::to_value(secret).unwrap()["credential"]["api_key"],
+        "do-not-print"
+    );
+    assert!(
+        !format!(
+            "{:?} {}",
+            Secret::new("do-not-print"),
+            Secret::new("do-not-print")
+        )
+        .contains("do-not-print")
+    );
+    roundtrip::<ToolSelection>(json!({"enabled":true,"permission":"inherit"}));
+    assert!(serde_json::from_value::<ToolSelection>(json!({"enabled":"true"})).is_err());
+    assert_eq!(
+        serde_json::to_value(a13n::text_payload("hi")).unwrap(),
+        json!({"content":[{"type":"text","text":"hi"}]})
     );
 }
-
 #[tokio::test]
-async fn generated_http_uses_owner_pool_prefix_and_headers() {
-    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-    let base = format!("http://{}/prefix", listener.local_addr().unwrap());
-    let server = tokio::spawn(async move {
-        let (mut socket, _) = listener.accept().await.unwrap();
-        let request = request_headers(&mut socket).await;
-        assert!(request.starts_with("GET /prefix/api/v1/auth/context HTTP/1.1"));
-        assert!(
-            request
-                .to_lowercase()
-                .contains("authorization: bearer test-token")
-        );
-        let body = fixtures()["credential_context"].to_string();
-        socket.write_all(format!("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nX-Request-ID: req_test\r\nETag: \"v1\"\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}", body.len(), body).as_bytes()).await.unwrap();
-    });
-    let client = Client::new(&base, Secret::new("test-token")).unwrap();
-    let response = client
-        .execute(async |api| get_auth_context(api).await)
+async fn lowlevel_uses_owner_pool_prefix_path_encoding_and_metadata() {
+    let mut server = server(|_| Reply::json(200, sample("Workspace"))).await;
+    let client = client(&server);
+    let result = client
+        .execute(async |api| get_workspace_api_v1_workspaces_workspace_id_get(api, "id /+中").await)
         .await
         .unwrap();
-    assert_eq!(response.data.workspace_id.as_deref(), Some("ws_example"));
-    assert_eq!(response.headers["x-request-id"], "req_test");
-    assert_eq!(response.headers["etag"], "\"v1\"");
-    server.await.unwrap();
+    assert_eq!(result.status, 200);
+    assert_eq!(result.etag(), Some("\"v1\""));
+    assert_eq!(result.request_id(), Some("req_test"));
+    let request = server.requests.recv().await.unwrap();
+    assert_eq!(
+        request.target,
+        "/prefix/api/v1/workspaces/id%20%2F%2B%E4%B8%AD"
+    );
+    assert!(request.headers.contains("authorization: bearer test-token"));
     client.close();
     assert!(matches!(
         client
-            .execute(async |api| get_auth_context(api).await)
+            .execute(async |api| get_workspace_api_v1_workspaces_workspace_id_get(api, "w").await)
             .await,
-        Err(a13n::CallError::Closed)
+        Err(CallError::Closed)
     ));
 }
-
-#[test]
-fn boolean_constants_are_booleans_not_strings() {
-    let value = json!({"enabled": true, "permission": "inherit"});
-    let parsed: ToolSelection = serde_json::from_value(value.clone()).unwrap();
-    assert_eq!(serde_json::to_value(parsed).unwrap(), value);
-    assert!(serde_json::from_value::<ToolSelection>(json!({"enabled": "true"})).is_err());
-    let quota: model_connection_test_result::MayConsumeQuotaOrIncurCost =
-        serde_json::from_value(json!(true)).unwrap();
-    assert_eq!(serde_json::to_value(quota).unwrap(), json!(true));
-}
-
-async fn request_headers(socket: &mut tokio::net::TcpStream) -> String {
-    let mut request = Vec::new();
-    loop {
-        let mut chunk = [0; 4096];
-        let count = socket.read(&mut chunk).await.unwrap();
-        assert_ne!(count, 0);
-        request.extend_from_slice(&chunk[..count]);
-        if request.windows(4).any(|v| v == b"\r\n\r\n") {
-            break;
-        }
-    }
-    String::from_utf8(request).unwrap()
-}
-
 #[tokio::test]
-async fn generated_binary_upload_sets_the_declared_content_type() {
-    use a13n::generated::apis::{
-        Error,
-        asset_management_api::{
-            PostWorkspacesWorkspaceAssetsError, post_workspaces_workspace_assets,
-        },
-    };
-    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-upload.bin");
+async fn lowlevel_image_mime_and_typed_error_remain_available() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-image.bin");
     std::fs::create_dir_all(path.parent().unwrap()).unwrap();
-    std::fs::write(&path, b"binary body").unwrap();
-    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-    let base = format!("http://{}", listener.local_addr().unwrap());
-    let server = tokio::spawn(async move {
-        let (mut socket, _) = listener.accept().await.unwrap();
-        let mut request = request_headers(&mut socket).await;
-        let headers = request.split("\r\n\r\n").next().unwrap().to_lowercase();
-        assert!(headers.contains("content-type: application/octet-stream"));
-        assert!(headers.contains("idempotency-key: upload-test"));
-        assert!(headers.contains("transfer-encoding: chunked"));
-        // Drain the streamed upload before closing, otherwise unread bytes can
-        // reset the TCP connection and discard the error response on Linux.
-        tokio::time::timeout(std::time::Duration::from_secs(5), async {
-            while !request.ends_with("\r\n0\r\n\r\n") {
-                let mut chunk = [0; 4096];
-                let count = socket.read(&mut chunk).await.unwrap();
-                assert_ne!(count, 0, "upload ended before its final chunk");
-                request.push_str(std::str::from_utf8(&chunk[..count]).unwrap());
-            }
-        })
-        .await
-        .expect("upload did not finish");
-        assert!(request.contains("binary body"));
-        let body = json!({"error":{"code":"test_error","message":"test", "details":{},"request_id":"req_upload"}}).to_string();
-        socket.write_all(format!("HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nX-Request-ID: req_upload\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}", body.len(), body).as_bytes()).await.unwrap();
-    });
-    let client = Client::new(&base, Secret::new("test-token")).unwrap();
+    std::fs::write(&path, b"image-body").unwrap();
+    let mut server=server(|_|Reply::json(400,json!({"error":{"code":"invalid_argument","message":"Changed","details":{},"request_id":"req_test"}}))).await;
+    let client = client(&server);
     let result = client
         .execute(async |api| {
-            post_workspaces_workspace_assets(
+            put_workspace_icon_api_v1_workspaces_workspace_id_icon_put(
                 api,
-                "ws_test",
-                "test.bin",
-                "upload-test",
+                "w",
+                "image/png",
                 path.clone(),
-                None,
+                Some("\"v1\""),
             )
             .await
         })
         .await;
-    server.await.unwrap();
-    let Err(a13n::CallError::Operation(Error::ResponseError(response))) = result else {
-        panic!("expected a typed HTTP error");
+    let Err(CallError::Operation(apis::Error::ResponseError(response))) = result else {
+        panic!("expected typed HTTP error")
     };
-    assert_eq!(response.status, reqwest::StatusCode::BAD_REQUEST);
-    assert_eq!(response.headers["x-request-id"], "req_upload");
-    assert!(response.content.contains("test_error"));
+    assert_eq!(response.status, 400);
+    assert_eq!(response.headers["x-request-id"], "req_test");
     assert!(matches!(
         response.entity,
-        Some(PostWorkspacesWorkspaceAssetsError::Status400(_))
+        Some(PutWorkspaceIconApiV1WorkspacesWorkspaceIdIconPutError::Status400(_))
     ));
+    let request = server.requests.recv().await.unwrap();
+    assert!(request.headers.contains("content-type: image/png"));
+    assert_eq!(request.body, b"image-body");
     std::fs::remove_file(path).unwrap();
+}
+#[tokio::test]
+async fn lowlevel_sse_does_not_buffer_and_shares_shutdown_inside_execute() {
+    let mut server = server(|_| {
+        let mut reply = Reply::sse(": ping\n\n");
+        reply
+            .chunks
+            .push((std::time::Duration::from_secs(30), vec![b'\n']));
+        reply
+    })
+    .await;
+    let client = std::sync::Arc::new(client(&server));
+    let caller = client.clone();
+    let task = tokio::spawn(async move {
+        caller.execute(async |api| {let mut response=apis::runs_api::thread_stream_api_v1_workspaces_workspace_id_threads_thread_id_stream_get(api,"w","t",None).await?;assert_eq!(response.status(),200);while response.chunk().await.map_err(apis::Error::from)?.is_some() {} Ok::<_,apis::Error<apis::runs_api::ThreadStreamApiV1WorkspacesWorkspaceIdThreadsThreadIdStreamGetError>>(())}).await
+    });
+    server.requests.recv().await.unwrap();
+    client.close();
+    assert!(matches!(task.await.unwrap(), Err(CallError::Closed)));
 }
