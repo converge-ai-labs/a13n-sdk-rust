@@ -45,7 +45,7 @@ def rust_json(value) -> str:
 
 def generate_tests(document: dict, nodes: dict, tests: list, output: Path) -> None:
     # Import lazily: the graph module calls this after its own definitions exist.
-    from resources import identifier, pascal, snake
+    from resources import enum_name, enum_values, identifier, pascal, snake
 
     schemas = document["components"]["schemas"]
     source = [
@@ -62,9 +62,13 @@ def generate_tests(document: dict, nodes: dict, tests: list, output: Path) -> No
             if segment.startswith("{"):
                 param = next(p for p in op["parameters"] if p["name"] == segment[1:-1])
                 schema = param["schema"]
-                if "enum" in schema:
-                    value = nodes[current]["name"].removesuffix("Resource") + "Kind::" + pascal(schema["enum"][0])
-                    wire = schema["enum"][0]
+                if enum_values(schema):
+                    value = (
+                        enum_name(op["path"], param, nodes[test["owner"]]["name"])
+                        + "::"
+                        + pascal(enum_values(schema)[0])
+                    )
+                    wire = enum_values(schema)[0]
                 elif schema.get("type") == "integer":
                     value, wire = "1", "1"
                 else:
@@ -86,7 +90,11 @@ def generate_tests(document: dict, nodes: dict, tests: list, output: Path) -> No
                     elif field_type == "String":
                         value = '"test".into()'
                     else:
-                        value = "Default::default()"
+                        parameter = next((p for p in op["parameters"] if identifier(snake(p["name"])) == field), None)
+                        if parameter and enum_values(parameter["schema"]):
+                            value = rust_json(enum_values(parameter["schema"])[0])
+                        else:
+                            value = "Default::default()"
                     fields.append(f"{field}:{value}")
                 args.append(typ + "{" + ",".join(fields) + "}")
             elif name == "file":

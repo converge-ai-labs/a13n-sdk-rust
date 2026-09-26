@@ -108,8 +108,14 @@ def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
         },
     }
     document["paths"]["/api/v1/autogen-probe"]["get"]["parameters"] = [
-        {"name": "autogen_probe_value", "in": "query", "schema": {"type": "string"}}
+        {"name": "autogen_probe_value", "in": "query", "schema": {"type": "string"}},
+        {
+            "name": "flavor",
+            "in": "query",
+            "schema": {"anyOf": [{"type": "string", "enum": ["warm", "ice_cold"]}, {"type": "null"}]},
+        },
     ]
+    document["paths"]["/api/v1/autogen-probe"]["get"]["summary"] = "Read a future probe"
     output = codegen.generate(document, tmp_path)
     target = tmp_path / "installed"
     target.mkdir()
@@ -122,6 +128,12 @@ def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
     assert "pub autogen_probe_value:Option<String>" in ordinary
     assert "pub fn autogen_probe(" in ordinary
     assert "pub async fn get(" in ordinary
+    assert "/// Read a future probe." in ordinary
+    assert "GET /api/v1/autogen-probe" in ordinary
+    assert "pub flavor:Option<AutogenProbeFlavor>" in ordinary
+    assert '#[serde(rename = "ice_cold")] IceCold' in ordinary
+    assert "A local resource reference borrowing" in ordinary
+    assert "`None` omits this parameter" in ordinary
     assert "client.resources().autogen_probe().get(" in (target / "resource_tests.rs").read_text()
 
 

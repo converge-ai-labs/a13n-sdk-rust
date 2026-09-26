@@ -1,5 +1,5 @@
 use crate::{
-    Client, Error, Response,
+    Client, Error, ProtocolError, ProtocolKind, Response,
     generated::models,
     resources::{EntryResource, RunResource, ThreadResource},
 };
@@ -23,7 +23,11 @@ impl<'a> Submitted<'a> {
             || value.entry.id.is_empty()
             || value.run.as_ref().is_some_and(|run| run.id.is_empty())
         {
-            return Err(Error::Protocol);
+            return Err(ProtocolError::response(
+                ProtocolKind::InvalidReceipt,
+                receipt.status.as_u16(),
+                &receipt.headers,
+            ));
         }
         let workspace = client
             .resources()

@@ -1,6 +1,8 @@
 #![doc = include_str!("../README.md")]
 #![forbid(unsafe_code)]
 mod client;
+mod error;
+pub use error::{ProtocolError, ProtocolKind, TransportError, TransportKind, TransportStage};
 /// Generated wire models and advanced HTTP access.
 /// ```compile_fail
 /// use a13n::generated::models::AgentUpdate;

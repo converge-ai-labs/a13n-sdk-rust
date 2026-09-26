@@ -97,7 +97,7 @@ async fn paging_is_lazy_owned_repeated_query_and_loop_checked() {
     let client = common::client(&looping);
     let mut pages = client.resources().workspaces().pages(Default::default());
     pages.next().await.unwrap();
-    assert!(matches!(pages.next().await, Err(Error::Protocol)));
+    assert!(matches!(pages.next().await, Err(Error::Protocol(_))));
     assert!(pages.next().await.unwrap().is_none());
 }
 async fn server_loop() -> Server {
@@ -134,7 +134,7 @@ async fn structured_failures_bounds_no_retry_and_redirect_policy() {
             .unwrap();
         assert!(matches!(
             client.resources().workspaces().at("w").get().await,
-            Err(Error::Protocol)
+            Err(Error::Protocol(_))
         ));
     }
     let mut server = server(|_| {
@@ -157,7 +157,7 @@ async fn structured_failures_bounds_no_retry_and_redirect_policy() {
                 }
             )
             .await,
-        Err(Error::Transport)
+        Err(Error::Transport(_))
     ));
     server.requests.recv().await.unwrap();
     assert!(server.requests.try_recv().is_err());

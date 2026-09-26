@@ -16,6 +16,82 @@ CORE = {
     "workspaces/{workspace_id}/runs/{run_id}": "RunResource",
 }
 OPTIONAL_MATCH = "/api/v1/workspaces/{workspace_id}/memories/{memory_id}/revisions/{seq}/restore"
+DOMAIN_ENUMS = {
+    ("/api/v1/provider-types/{kind}", "kind"): "ProviderKind",
+    ("/api/v1/organizations/{organization_id}/members", "kind"): "MemberKind",
+    ("/api/v1/workspaces/{workspace_id}/skills", "source"): "SkillSource",
+}
+
+
+def rustdoc(text: str) -> str:
+    return "\n".join("/// " + line if line else "///" for line in text.splitlines()) + "\n"
+
+
+def enum_values(schema: dict) -> list[str]:
+    if "enum" in schema:
+        return schema["enum"]
+    for branch in schema.get("anyOf", []):
+        if "enum" in branch:
+            return branch["enum"]
+    return []
+
+
+def enum_name(path: str, parameter: dict, owner: str) -> str:
+    return DOMAIN_ENUMS.get((path, parameter["name"]), owner.removesuffix("Resource") + pascal(parameter["name"]))
+
+
+def parameter_doc(parameter: dict, required: bool) -> str:
+    text = f"{parameter['in'].capitalize()} parameter `{parameter['name']}`."
+    if parameter.get("description"):
+        text += " " + " ".join(parameter["description"].split())
+    if parameter["name"] == "If-Match":
+        text += " Use the ETag from the resource being changed; the SDK never infers it."
+        if not required:
+            text += " Omit only when restoring an absent target."
+    elif parameter["name"] == "Idempotency-Key":
+        text += " Caller-owned request key; uncertain mutations are not automatically replayed."
+    if required:
+        text += (
+            " Required; an empty string is rejected locally."
+            if parameter["schema"].get("type") == "string" and not enum_values(parameter["schema"])
+            else " Required."
+        )
+    else:
+        text += " `None` omits this parameter."
+    return text
+
+
+def operation_doc(op: dict, public: str) -> str:
+    lines = [
+        op.get("summary", "Perform this Service operation.").rstrip(".") + ".",
+        f"`{op['verb'].upper()} {op['path']}`.",
+    ]
+    if public == "Submitted<'a>":
+        lines.append(
+            "Returns an acceptance receipt with canonical Thread/Entry references and an optional Run. A queued Entry has no Run; acceptance is not completion."
+        )
+    elif public == "BinaryResponse":
+        lines.append("Returns an unbuffered body. Read chunks or drop/close it; reads share parent shutdown.")
+        if op["path"].endswith("/threads/{thread_id}/stream"):
+            lines.append(
+                "For typed frames and applied-cursor recovery, use [`ThreadResource::events`] instead of this raw stream."
+            )
+    else:
+        lines.append("Preserves the actual HTTP status and headers, including ETag and request ID.")
+    if "application/json" in op.get("requestBody", {}).get("content", {}):
+        lines.append(
+            "Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`)."
+        )
+    if op["path"].endswith("/runs/{run_id}/resume"):
+        lines.append(
+            "Returns the successor Run. Bind its returned ID before waiting; waiting on the original Run does not follow successors."
+        )
+    if any(p["name"] == "If-Match" for p in op["parameters"]):
+        lines.append("Pass the target resource's ETag explicitly; Service validates stale preconditions.")
+    lines.append(
+        "Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried."
+    )
+    return rustdoc("\n\n".join(lines))
 
 
 def pascal(value: str) -> str:
@@ -99,10 +175,42 @@ def generate_resources(document: dict, output: Path) -> None:
     ]
     inventory = []
     tests = []
+    enums: dict[str, list[str]] = {}
+    for op in operations:
+        for parameter in op["parameters"]:
+            values = enum_values(parameter["schema"])
+            if not values:
+                continue
+            name = enum_name(op["path"], parameter, nodes[op["relative"]]["name"])
+            assert name not in enums or enums[name] == values, "parameter enum collision"
+            if name in enums:
+                continue
+            enums[name] = values
+            source.append(
+                rustdoc(f"Allowed values for the `{parameter['name']}` selector. Serialized using Service wire values.")
+            )
+            source.append(
+                f"#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)] pub enum {name} {{"
+                + ",".join(f"#[serde(rename = {json.dumps(value)})] {pascal(value)}" for value in values)
+                + "}"
+            )
+            source.append(
+                f"impl {name} {{ pub fn as_str(self)-> &'static str {{match self {{"
+                + ",".join(f"Self::{pascal(value)}=>{json.dumps(value)}" for value in values)
+                + "}}}"
+            )
+            source.append(
+                f"impl std::fmt::Display for {name} {{fn fmt(&self,f:&mut std::fmt::Formatter<'_>)->std::fmt::Result {{f.write_str(self.as_str())}}}}"
+            )
     for key, node in nodes.items():
         if node["flatten"]:
             continue
         name = node["name"]
+        source.append(
+            rustdoc(
+                "A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority."
+            )
+        )
         source.append(f"#[derive(Clone)] pub struct {name}<'a>(pub(crate) Binding<'a>);")
         methods = []
         for segment, child_key in node["children"].items():
@@ -120,25 +228,19 @@ def generate_resources(document: dict, output: Path) -> None:
                     typ, value = "impl Into<String>", "id.into()"
                 else:
                     value = "id.to_string()"
-                if "enum" in spec["schema"]:
-                    enum_name = name.removesuffix("Resource") + "Kind"
-                    source.append(
-                        f"#[derive(Clone, Copy, Debug)] pub enum {enum_name} {{"
-                        + ",".join(pascal(v) for v in spec["schema"]["enum"])
-                        + "}"
-                    )
-                    typ = enum_name
-                    value = (
-                        "match id {"
-                        + ",".join(f"{enum_name}::{pascal(v)}=>{json.dumps(v)}.into()" for v in spec["schema"]["enum"])
-                        + "}"
-                    )
+                if enum_values(spec["schema"]):
+                    typ = enum_name(op["path"], spec, child["name"])
+                    value = "id.as_str().into()"
                 methods.append(
-                    f"pub fn at(&self,id:{typ})->{child['name']}<'a> {{{child['name']}(self.0.select({value}))}}"
+                    rustdoc(
+                        f"Bind `{parameter}` locally without an HTTP request. The returned reference borrows the client, not this collection."
+                    )
+                    + f"pub fn at(&self,id:{typ})->{child['name']}<'a> {{{child['name']}(self.0.select({value}))}}"
                 )
             else:
                 methods.append(
-                    f"pub fn {identifier(snake(segment))}(&self)->{child['name']}<'a> {{{child['name']}(self.0.clone())}}"
+                    rustdoc(f"Access `{segment}` locally, sharing the client and explicit scope.")
+                    + f"pub fn {identifier(snake(segment))}(&self)->{child['name']}<'a> {{{child['name']}(self.0.clone())}}"
                 )
         own_ops = [(op, VERBS[op["verb"]]) for op in node["ops"]]
         own_ops += [
@@ -167,6 +269,7 @@ def generate_resources(document: dict, output: Path) -> None:
                 status.append(303)
             args = []
             fields = []
+            field_docs = []
             setup = []
             call = [
                 f"let mut request=self.0.client.request(reqwest::Method::{op['verb'].upper()},{json.dumps(op['path'])},&self.0.ids)?;"
@@ -180,7 +283,11 @@ def generate_resources(document: dict, output: Path) -> None:
                 required = p.get("required", False) or (p["name"] == "If-Match" and op["path"] != OPTIONAL_MATCH)
                 if required and typ.startswith("Option<"):
                     typ = typ[7:-1]
+                if enum_values(p["schema"]):
+                    selected = enum_name(op["path"], p, name)
+                    typ = selected if required else f"Option<{selected}>"
                 fields.append(f"pub {field}:{typ},")
+                field_docs.append(rustdoc(parameter_doc(p, required)))
                 if required and typ == "String":
                     setup.append(f"if options.{field}.is_empty() {{return Err(Error::InvalidInput)}}")
                 expr = f"&options.{field}" if required else "value"
@@ -202,12 +309,24 @@ def generate_resources(document: dict, output: Path) -> None:
             elif media:
                 args.append("body:reqwest::Body")
                 fields.append("pub content_type:String,")
+                field_docs.append(
+                    rustdoc(
+                        "Explicit image MIME type. Allowed values: " + ", ".join(f"`{kind}`" for kind in media) + "."
+                    )
+                )
                 setup.append(
                     f"if ![{','.join(json.dumps(m) for m in media)}].contains(&options.content_type.as_str()) {{return Err(Error::InvalidInput)}}"
                 )
                 call.append('request=request.header("Content-Type",options.content_type).body(body);')
             if fields:
-                source.append(f"#[derive(Clone, Debug, Default)] pub struct {option_name} {{" + "".join(fields) + "}")
+                source.append(
+                    rustdoc(
+                        f"Query and header options for [`{name}::{method}`]. Required values must be supplied before calling the method."
+                    )
+                    + f"#[derive(Clone, Debug, Default)] pub struct {option_name} {{\n"
+                    + "\n".join(doc + field for doc, field in zip(field_docs, fields, strict=True))
+                    + "\n}"
+                )
                 args.append(f"options:{option_name}")
             if len(call) == 1:
                 call[0] = call[0].replace("let mut request=", "let request=")
@@ -225,7 +344,8 @@ def generate_resources(document: dict, output: Path) -> None:
             )
             call.append("Submitted::bind(self.0.client,response)" if submitted else "Ok(response)")
             methods.append(
-                f"pub async fn {identifier(method)}(&self{',' if args else ''}{','.join(args)})->Result<{public},Error> {{"
+                operation_doc(op, public)
+                + f"pub async fn {identifier(method)}(&self{',' if args else ''}{','.join(args)})->Result<{public},Error> {{"
                 + "\n".join(setup + call)
                 + "}"
             )
@@ -240,9 +360,15 @@ def generate_resources(document: dict, output: Path) -> None:
             ):
                 pager = name.removesuffix("Resource") + "Pages"
                 methods.append(
-                    f"pub fn pages(&self,options:{option_name})->Pages<{pager}<'a>> {{let cursor=options.cursor.clone(); Pages::new({pager}{{resource:self.clone(),options}},cursor)}}"
+                    rustdoc(
+                        "Iterate cursor pages lazily with owned options. Each page retains status and headers; no prefetch occurs. Drop the pager to stop reads."
+                    )
+                    + f"pub fn pages(&self,options:{option_name})->Pages<{pager}<'a>> {{let cursor=options.cursor.clone(); Pages::new({pager}{{resource:self.clone(),options}},cursor)}}"
                 )
-                source.append(f"pub struct {pager}<'a> {{resource:{name}<'a>,options:{option_name}}}")
+                source.append(
+                    rustdoc(f"Page source owned by [`{name}::pages`].")
+                    + f"pub struct {pager}<'a> {{resource:{name}<'a>,options:{option_name}}}"
+                )
                 source.append(
                     f"impl PageSource for {pager}<'_> {{type Page={result_type}; async fn fetch(&self,cursor:Option<String>)->Result<Response<Self::Page>,Error>{{let mut options=self.options.clone();options.cursor=cursor;self.resource.list(options).await}} fn cursor(page:&Self::Page)->Option<String>{{page.next_cursor.clone()}}}}"
                 )
