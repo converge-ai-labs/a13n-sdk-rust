@@ -57,6 +57,27 @@ fn models_preserve_nullable_presence_unions_unknown_status_and_credentials() {
         json!({"content":[{"type":"text","text":"hi"}]})
     );
 }
+#[test]
+fn model_price_rule_selectors_preserve_omission_null_and_values() {
+    for value in [
+        json!({"prices":[],"rule_id":"default"}),
+        json!({"prices":[],"rule_id":"default","max_input_tokens":null,"service_tier":null}),
+        json!({"prices":[],"rule_id":"default","max_input_tokens":128000,"service_tier":"priority"}),
+    ] {
+        roundtrip::<ModelPriceRuleInput>(value.clone());
+        roundtrip::<ModelPriceRuleOutput>(value);
+    }
+    let mut input = ModelPriceRuleInput::new(vec![], "default".into());
+    assert_eq!(input.max_input_tokens, None);
+    assert_eq!(input.service_tier, None);
+    input.max_input_tokens = Some(None);
+    input.service_tier = Some(Some("priority".into()));
+    assert_eq!(
+        serde_json::to_value(input).unwrap(),
+        json!({"prices":[],"rule_id":"default","max_input_tokens":null,"service_tier":"priority"})
+    );
+}
+
 #[tokio::test]
 async fn lowlevel_uses_owner_pool_prefix_path_encoding_and_metadata() {
     let mut server = server(|_| Reply::json(200, sample("Workspace"))).await;

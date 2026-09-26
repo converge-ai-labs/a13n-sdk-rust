@@ -17,11 +17,27 @@ pub struct ModelPriceRuleOutput {
     #[serde(rename = "constraint", skip_serializing_if = "Option::is_none")]
     pub constraint: Option<Box<models::PricingConstraint>>,
 
+    #[serde(
+        rename = "max_input_tokens",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub max_input_tokens: Option<Option<i32>>,
+
     #[serde(rename = "prices")]
     pub prices: Vec<models::PriceComponentOutput>,
 
     #[serde(rename = "rule_id")]
     pub rule_id: String,
+
+    #[serde(
+        rename = "service_tier",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub service_tier: Option<Option<String>>,
 }
 
 impl ModelPriceRuleOutput {
@@ -29,8 +45,10 @@ impl ModelPriceRuleOutput {
     pub fn new(prices: Vec<models::PriceComponentOutput>, rule_id: String) -> ModelPriceRuleOutput {
         ModelPriceRuleOutput {
             constraint: None,
+            max_input_tokens: None,
             prices,
             rule_id,
+            service_tier: None,
         }
     }
 }
