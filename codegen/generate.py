@@ -1,15 +1,15 @@
 """Generate the Rust SDK from its pinned local Service contract.
 
-Generation does not import, check out, or execute the Service. Check mode compares
-both bytes and file names without replacing the committed generated directory.
+Generation does not import, check out, or execute the Service.
 """
 
-import argparse
 import json
 import shutil
 import subprocess
 import tempfile
 from pathlib import Path
+
+from resources import generate_resources
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "codegen"
@@ -33,10 +33,24 @@ def prepare(document: dict) -> dict:
     def visit(value: object) -> None:
         if isinstance(value, dict):
             content = value.get("requestBody", {}).get("content", {})
-            if len(content) == 1:
-                media_type, media = next(iter(content.items()))
-                if media.get("schema", {}).get("format") == "binary":
-                    value["x-rust-binary-content-type"] = media_type
+            if content and all(media.get("schema", {}).get("format") == "binary" for media in content.values()):
+                if len(content) == 1:
+                    value["x-rust-binary-content-type"] = next(iter(content))
+                else:
+                    value.setdefault("parameters", []).append(
+                        {
+                            "name": "Content-Type",
+                            "in": "header",
+                            "required": True,
+                            "schema": {"type": "string", "enum": list(content)},
+                        }
+                    )
+            # SSE is a streaming success body too, not a bodyless Response<()>.
+            for status, response in value.get("responses", {}).items():
+                if status.startswith("2"):
+                    for media_type, media in response.get("content", {}).items():
+                        if media_type == "text/event-stream":
+                            media["schema"] = {"type": "string", "format": "binary"}
             branches = value.get("anyOf", [])
             if any(unrestricted(branch) for branch in branches):
                 value["x-rust-type"] = "serde_json::Value"
@@ -99,38 +113,22 @@ def generate(document: dict, work: Path) -> Path:
     return output
 
 
-def files(path: Path) -> dict[str, bytes]:
-    return {
-        str(file.relative_to(path)): file.read_bytes()
-        for file in path.rglob("*")
-        if file.is_file() and "__pycache__" not in file.parts
-    }
-
-
-def install(output: Path, target: Path, *, check: bool) -> bool:
-    actual, expected = files(target), files(output)
-    changed = sorted(name for name in actual.keys() | expected.keys() if actual.get(name) != expected.get(name))
-    if not changed:
-        return True
-    if check:
-        print(f"Stale generated files in {target.relative_to(ROOT)}: " + ", ".join(changed[:20]))
-        return False
+def install(output: Path, target: Path) -> None:
     # Only generator-owned directories are replaced, including removed schemas.
     if target.exists():
         shutil.rmtree(target)
     shutil.copytree(output, target)
-    return True
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true")
-    args = parser.parse_args()
     document = json.loads((ROOT / "contract/openapi.json").read_text())
     with tempfile.TemporaryDirectory(prefix="a13n-codegen-") as temp:
         output = generate(document, Path(temp))
-        if not install(output, TARGET, check=args.check):
-            parser.exit(1, "SDK bindings changed. Run make generate and commit the result.\n")
+        generate_resources(document, output)
+        module = output / "mod.rs"
+        module.write_text(module.read_text() + "\npub mod resources;\n")
+        run("rustfmt", "--edition", "2024", str(module))
+        install(output, TARGET)
 
 
 if __name__ == "__main__":

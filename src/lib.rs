@@ -1,18 +1,22 @@
-//! Typed Native HTTP bindings and an async Web Provider convenience client.
+#![doc = include_str!("../README.md")]
 #![forbid(unsafe_code)]
 mod client;
-/// Low-level Native bindings. Request fields retain concrete types.
+mod error;
+pub use error::{ProtocolError, ProtocolKind, TransportError, TransportKind, TransportStage};
+/// Generated wire models and advanced HTTP access.
 /// ```compile_fail
-/// use a13n::generated::models::UpdateAgentRequest;
-/// let _ = UpdateAgentRequest { name: Some(Some(42)), ..Default::default() };
+/// use a13n::generated::models::AgentUpdate;
+/// let _ = AgentUpdate { name: Some(Some(42)), ..Default::default() };
 /// ```
 /// ```compile_fail
-/// use a13n::generated::models::UserMessage;
-/// let _ = UserMessage { content: 42, ..Default::default() };
+/// use a13n::generated::models::NewThread;
+/// let _ = NewThread { payload: 42, ..Default::default() };
 /// ```
 pub mod generated;
-mod web;
-mod workspace;
-pub use client::{ApiError, CallError, Client, Error};
-pub use web::*;
-pub use workspace::WorkspaceClient;
+mod interaction;
+pub mod resources;
+pub mod streaming;
+pub use client::{
+    ApiError, BinaryResponse, CallError, Client, ClientBuilder, Error, Response, Secret, UploadFile,
+};
+pub use interaction::{Submitted, text_payload};

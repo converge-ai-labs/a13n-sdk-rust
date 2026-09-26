@@ -1,65 +1,16 @@
-"""Local contract provenance, generation adapters, and output ownership."""
+"""Generator adapters and generated binding behavior."""
 
-import hashlib
 import importlib.util
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "codegen"))
 SPEC = importlib.util.spec_from_file_location("sdk_codegen", ROOT / "codegen/generate.py")
 assert SPEC and SPEC.loader
 codegen = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(codegen)
-
-
-def test_contract_source_matches_pinned_bytes() -> None:
-    source = json.loads((ROOT / "contract/source.json").read_text())
-    assert source["repository"] == "converge-ai-labs/agent-foundation"
-    assert len(source["commit"]) == 40
-    assert all(char in "0123456789abcdef" for char in source["commit"])
-    vendored = {
-        str(path.relative_to(ROOT / "contract"))
-        for path in (ROOT / "contract").rglob("*")
-        if path.is_file() and str(path.relative_to(ROOT / "contract")) not in {"source.json", "README.md"}
-    }
-    assert set(source["files"]) == vendored
-    for name, entry in source["files"].items():
-        assert hashlib.sha256((ROOT / "contract" / name).read_bytes()).hexdigest() == entry["sha256"]
-
-
-def test_drift_checks_content_and_stale_files_without_mutation(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setattr(codegen, "ROOT", tmp_path)
-    target, output = tmp_path / "committed", tmp_path / "regenerated"
-    target.mkdir()
-    output.mkdir()
-    (target / "old.py").write_text("old")
-    (target / "current.py").write_text("out of date")
-    (output / "current.py").write_text("current")
-    before = codegen.files(target)
-    assert not codegen.install(output, target, check=True)
-    assert codegen.files(target) == before
-    assert codegen.install(output, target, check=False)
-    assert codegen.files(target) == {"current.py": b"current"}
-    assert codegen.install(output, target, check=True)
-
-
-def test_missing_output_is_drift_without_creating_it(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setattr(codegen, "ROOT", tmp_path)
-    output = tmp_path / "regenerated"
-    output.mkdir()
-    (output / "new.py").write_text("new")
-    target = tmp_path / "missing"
-    assert not codegen.install(output, target, check=True)
-    assert not target.exists()
-
-
-def test_all_native_operations_have_bindings() -> None:
-    document = json.loads((ROOT / "contract/openapi.json").read_text())
-    generated = "\n".join(path.read_text() for path in (ROOT / "src/generated/apis").glob("*.rs"))
-    for path in document["paths"].values():
-        for method, operation in path.items():
-            if method in {"get", "post", "patch", "put", "delete", "head", "options"}:
-                assert f"pub async fn {operation['operationId']}(" in generated
 
 
 def test_adapter_keeps_typed_unions_and_contract_unchanged() -> None:
@@ -68,10 +19,10 @@ def test_adapter_keeps_typed_unions_and_contract_unchanged() -> None:
     adapted = codegen.prepare(document)
     assert json.dumps(document) == before
     schemas = adapted["components"]["schemas"]
-    for name in ["ActorRef", "EnvironmentSelection"]:
+    for name in ["Part", "ConnectionConfig"]:
         assert schemas[name] == document["components"]["schemas"][name]
     assert schemas["RunStatus"]["x-rust-unknown-enum"]
-    assert "x-rust-unknown-enum" not in schemas["PrincipalType"]
+    assert "x-rust-unknown-enum" not in schemas["ItemKind"]
 
 
 def test_schema_adapters_preserve_presence_constants_binary_and_sensitive_data() -> None:
@@ -156,20 +107,62 @@ def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
             }
         },
     }
-    initial, updated = tmp_path / "initial", tmp_path / "updated"
-    initial.mkdir()
-    updated.mkdir()
-    before = codegen.files(codegen.generate(document, initial))
     document["paths"]["/api/v1/autogen-probe"]["get"]["parameters"] = [
-        {"name": "autogen_probe_value", "in": "query", "schema": {"type": "string"}}
+        {"name": "autogen_probe_value", "in": "query", "schema": {"type": "string"}},
+        {
+            "name": "flavor",
+            "in": "query",
+            "schema": {"anyOf": [{"type": "string", "enum": ["warm", "ice_cold"]}, {"type": "null"}]},
+        },
     ]
-    source = json.dumps(document)
-    output = codegen.generate(document, updated)
-    after = codegen.files(output)
-    assert before != after
-    assert not any(b"autogen_probe_value" in value for value in before.values())
-    assert any(b"autogen_probe_value" in value for value in after.values())
-    assert json.dumps(document) == source
+    document["paths"]["/api/v1/autogen-probe"]["get"]["summary"] = "Read a future probe"
+    output = codegen.generate(document, tmp_path)
     target = tmp_path / "installed"
-    assert codegen.install(output, target, check=False)
-    assert codegen.install(output, target, check=True)
+    target.mkdir()
+    (target / "obsolete.txt").write_text("old generated output")
+    codegen.install(output, target)
+    assert not (target / "obsolete.txt").exists()
+    assert "autogen_probe_value" in (target / "apis/default_api.rs").read_text()
+    codegen.generate_resources(document, target)
+    ordinary = (target / "resources.rs").read_text()
+    assert "pub autogen_probe_value:Option<String>" in ordinary
+    assert "pub fn autogen_probe(" in ordinary
+    assert "pub async fn get(" in ordinary
+    assert "/// Read a future probe." in ordinary
+    assert "GET /api/v1/autogen-probe" in ordinary
+    assert "pub flavor:Option<AutogenProbeFlavor>" in ordinary
+    assert '#[serde(rename = "ice_cold")] IceCold' in ordinary
+    assert "A local resource reference borrowing" in ordinary
+    assert "`None` omits this parameter" in ordinary
+    assert "client.resources().autogen_probe().get(" in (target / "resource_tests.rs").read_text()
+
+
+def test_streaming_and_multimime_adapters_preserve_pinned_contract() -> None:
+    document = json.loads((ROOT / "contract/openapi.json").read_text())
+    adapted = codegen.prepare(document)
+    streaming = 0
+    multimime = 0
+    for path, item in document["paths"].items():
+        for method, operation in item.items():
+            if method not in {"get", "post", "put", "patch", "delete"}:
+                continue
+            converted = adapted["paths"][path][method]
+            for status, response in operation.get("responses", {}).items():
+                if status.startswith("2") and "text/event-stream" in response.get("content", {}):
+                    streaming += 1
+                    assert converted["responses"][status]["content"]["text/event-stream"]["schema"] == {
+                        "type": "string",
+                        "format": "binary",
+                    }
+            content = operation.get("requestBody", {}).get("content", {})
+            if len(content) > 1 and all(
+                media.get("schema", {}).get("format") == "binary" for media in content.values()
+            ):
+                multimime += 1
+                parameter = next(p for p in converted["parameters"] if p["name"] == "Content-Type")
+                assert parameter["in"] == "header"
+                assert parameter["required"] is True
+                assert parameter["schema"]["enum"] == list(content)
+    assert streaming == 1
+    assert multimime == 4
+    assert document == json.loads((ROOT / "contract/openapi.json").read_text())

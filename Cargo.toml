@@ -17,7 +17,8 @@ name = "a13n"
 path = "src/lib.rs"
 
 [dependencies]
-reqwest = { version = "0.13", default-features = false, features = ["json", "query", "rustls", "multipart", "stream", "form"] }
+reqwest = { version = "0.13", default-features = false, features = ["json", "query", "rustls", "multipart", "stream", "form", "cookies"] }
+bytes = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 serde_with = { version = "3.8", default-features = false, features = ["base64", "std", "macros"] }

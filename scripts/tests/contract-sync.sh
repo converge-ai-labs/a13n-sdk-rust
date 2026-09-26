@@ -7,7 +7,7 @@ trap 'rm -rf "$work"' EXIT
 upstream="$work/service"
 sdk="$work/sdk"
 mkdir -p "$upstream" "$sdk/scripts" "$sdk/contract/fixtures" "$work/bin"
-cp "$scripts/sync-contract.sh" "$scripts/open-contract-pr.sh" "$sdk/scripts/"
+cp "$scripts/sync-contract.sh" "$scripts/open-contract-pr.sh" "$scripts/contract-inputs.sh" "$sdk/scripts/"
 git init -q -b main "$upstream"
 git -C "$upstream" config user.name Test
 git -C "$upstream" config user.email test@example.invalid
@@ -17,7 +17,6 @@ commit_source() {
   git -C "$upstream" update-ref refs/remotes/origin/main HEAD
   git -C "$upstream" rev-parse HEAD
 }
-hash() { shasum -a 256 "$1" | cut -d ' ' -f 1; }
 reject() {
   if "$@" > "$work/rejected.log" 2>&1; then
     cat "$work/rejected.log" >&2
@@ -25,23 +24,25 @@ reject() {
   fi
 }
 sync() { bash "$sdk/scripts/sync-contract.sh" "$upstream" "$1"; }
-check() { bash "$sdk/scripts/sync-contract.sh" --check; }
 
 mkdir -p "$upstream/proto/a13n-service/fixtures" "$upstream/spec/a13n-service" "$sdk/contract/semantics"
 printf '{"openapi":"3.1.0","paths":{}}\n' > "$upstream/proto/a13n-service/openapi.json"
 printf '{"examples":[]}\n' > "$upstream/proto/a13n-service/fixtures/wire.json"
-for name in notification-client run-stream-event; do
+for name in notification-client run-stream-event thread-stream; do
   printf '{"type":"object"}\n' > "$upstream/proto/a13n-service/$name.schema.json"
 done
 printf '# API conventions\n' > "$upstream/spec/api-conventions.md"
 printf '# Native streaming\n' > "$upstream/spec/a13n-service/21-native-streaming-and-notifications.md"
 printf '# Queued submissions\nDELETE uses query expected_version and 204.\n' > "$upstream/spec/a13n-service/20-agent-control-queued-submissions.md"
+printf '# Runs\n' > "$upstream/spec/a13n-service/05-runs.md"
+printf '# Facts and delivery\n' > "$upstream/spec/a13n-service/07-facts-and-delivery.md"
+printf '# API\n' > "$upstream/spec/a13n-service/10-api.md"
 initial=$(commit_source 'Initial Service contract')
 jq -n --arg commit "$initial" '{repository:"converge-ai-labs/agent-foundation",commit:$commit,files:{}}' > "$sdk/contract/source.json"
 while read -r name source; do
   cp "$upstream/$source" "$sdk/contract/$name"
-  jq --arg name "$name" --arg source "$source" --arg hash "$(hash "$sdk/contract/$name")" \
-    '.files[$name] = {source_path:$source,sha256:$hash}' "$sdk/contract/source.json" > "$work/manifest"
+  jq --arg name "$name" --arg source "$source" \
+    '.files[$name] = {source_path:$source}' "$sdk/contract/source.json" > "$work/manifest"
   cp "$work/manifest" "$sdk/contract/source.json"
 done <<'FILES'
 openapi.json proto/a13n-service/openapi.json
@@ -52,7 +53,10 @@ semantics/api-conventions.md spec/api-conventions.md
 semantics/native-streaming-and-notifications.md spec/a13n-service/21-native-streaming-and-notifications.md
 semantics/queued-submissions.md spec/a13n-service/20-agent-control-queued-submissions.md
 FILES
-check
+# SDK-owned files must survive migration even when adjacent to retired inputs.
+printf '# SDK guidance\n' > "$sdk/contract/README.md"
+printf 'local fixture\n' > "$sdk/contract/fixtures/local.txt"
+printf 'local semantic note\n' > "$sdk/contract/semantics/local.md"
 cp -R "$sdk/contract" "$work/initial"
 reject sync main
 reject sync "${initial:0:12}"
@@ -61,23 +65,42 @@ reject sync 0000000000000000000000000000000000000000
 sync "$initial"
 diff -r "$sdk/contract" "$work/initial"
 
-rm "$upstream/spec/a13n-service/20-agent-control-queued-submissions.md"
+rm "$upstream/spec/a13n-service/07-facts-and-delivery.md"
 missing=$(commit_source 'Incomplete authority')
 reject sync "$missing"
 diff -r "$sdk/contract" "$work/initial"
-printf '# Queued submissions\nDELETE uses query expected_version and204.\n' > "$upstream/spec/a13n-service/20-agent-control-queued-submissions.md"
+printf '# Facts and delivery\nCompleted facts are durable.\n' > "$upstream/spec/a13n-service/07-facts-and-delivery.md"
 complete=$(commit_source 'Complete authority')
 # The working tree is deliberately dirty: only committed bytes may be imported.
 printf 'uncommitted and invalid JSON' > "$upstream/proto/a13n-service/openapi.json"
 sync "$complete"
-check
-[[ $(jq '.files | length' "$sdk/contract/source.json") == 7 ]]
+[[ $(jq '.files | length' "$sdk/contract/source.json") == 6 ]]
+for retired in notification-client.schema.json run-stream-event.schema.json fixtures/wire.json \
+  semantics/native-streaming-and-notifications.md semantics/queued-submissions.md; do
+  [[ ! -e "$sdk/contract/$retired" ]]
+done
+for owned in README.md fixtures/local.txt semantics/local.md; do
+  cmp "$sdk/contract/$owned" "$work/initial/$owned"
+done
+[[ -f "$sdk/contract/thread-stream.schema.json" ]]
+for name in runs facts-and-delivery api; do [[ -f "$sdk/contract/semantics/$name.md" ]]; done
 cmp "$sdk/contract/openapi.json" "$work/initial/openapi.json"
 [[ $(jq -r .commit "$sdk/contract/source.json") == "$complete" ]]
 cp -R "$sdk/contract" "$work/complete"
 reject sync "$initial"
 diff -r "$sdk/contract" "$work/complete"
 git -C "$upstream" restore proto/a13n-service/openapi.json
+
+# Retired Service paths and unrelated files do not advance provenance or
+# overwrite local evidence.
+for path in runtime.txt uv.lock proto/a13n-service/README.md spec/a13n-service/37-service-sdks-and-clients.md; do
+  printf 'Unconsumed change\n' > "$upstream/$path"
+done
+printf 'Retired schema changed\n' > "$upstream/proto/a13n-service/notification-client.schema.json"
+printf 'Retired semantics changed\n' > "$upstream/spec/a13n-service/21-native-streaming-and-notifications.md"
+unchanged=$(commit_source 'Unconsumed source changes')
+sync "$unchanged"
+diff -r "$sdk/contract" "$work/complete"
 
 printf '# API conventions changed without changing HTTP schemas\n' > "$upstream/spec/api-conventions.md"
 semantic=$(commit_source 'Semantic-only update')
@@ -87,7 +110,7 @@ cmp "$sdk/contract/openapi.json" "$work/complete/openapi.json"
 printf '# Runtime-only change\n' > "$upstream/runtime.txt"
 runtime=$(commit_source 'Runtime-only update')
 sync "$runtime"
-[[ $(jq -r .commit "$sdk/contract/source.json") == "$runtime" ]]
+[[ $(jq -r .commit "$sdk/contract/source.json") == "$semantic" ]]
 cp -R "$sdk/contract" "$work/current"
 
 # A valid object on another branch is not an acceptable main-line source.
@@ -97,29 +120,10 @@ git -C "$upstream" commit -qam Unmerged
 unmerged=$(git -C "$upstream" rev-parse HEAD)
 reject sync "$unmerged"
 git -C "$upstream" switch -q main
-printf 'invalid' > "$upstream/proto/a13n-service/run-stream-event.schema.json"
-invalid=$(commit_source 'Malformed wire schema')
+printf 'invalid' > "$upstream/proto/a13n-service/thread-stream.schema.json"
+invalid=$(commit_source 'Malformed thread schema')
 reject sync "$invalid"
 diff -r "$sdk/contract" "$work/current"
-
-# Local hashes and actual upstream provenance are both required.
-printf 'tampered' >> "$sdk/contract/semantics/api-conventions.md"
-reject check
-jq --arg hash "$(hash "$sdk/contract/semantics/api-conventions.md")" '.files["semantics/api-conventions.md"].sha256 = $hash' \
-  "$sdk/contract/source.json" > "$work/manifest"
-cp "$work/manifest" "$sdk/contract/source.json"
-check
-reject sync "$runtime"
-cp "$work/current/source.json" "$sdk/contract/"
-cp "$work/current/semantics/api-conventions.md" "$sdk/contract/semantics/"
-printf 'unrecorded evidence' > "$sdk/contract/unrecorded.md"
-reject check
-rm "$sdk/contract/unrecorded.md"
-jq 'del(.files["semantics/api-conventions.md"])' "$sdk/contract/source.json" > "$work/manifest"
-cp "$work/manifest" "$sdk/contract/source.json"
-reject check
-cp "$work/current/source.json" "$sdk/contract/"
-check
 
 # PR operations use only local bare Git and fake gh/make; never a real API/token.
 # Language-specific generated ownership; the remainder of this suite is shared.
@@ -250,20 +254,27 @@ set_pr() {
   mv "$work/pr-next.json" "$TEST_PR_STATE"
 }
 next_source() {
+  printf '%s\n' "$1" >> "$upstream/spec/a13n-service/05-runs.md"
+  commit_source "$1"
+}
+next_runtime() {
   printf '%s\n' "$1" >> "$upstream/runtime.txt"
   commit_source "$1"
 }
 # An accepted pin is a no-op, even if generation would fail.
 export TEST_GENERATE_FAIL=true
 propose "$complete"
+propose "$unchanged"
 [[ ! -s "$TEST_GENERATE_LOG" && ! -s "$TEST_PR_LOG" ]]
+! git --git-dir="$TEST_REMOTE" show-ref --verify --quiet "refs/heads/$branch"
+[[ $(jq -r .commit "$sdk/contract/source.json") == "$complete" ]]
 reject propose main
 reject propose "$unmerged"
 printf dirty > "$sdk/dirty.txt"
 reject propose "$runtime"
 rm "$sdk/dirty.txt"
 
-# A semantic/runtime-only update still creates a reviewable pin update.
+# A semantic change creates an update even if a later commit only changes runtime.
 export TEST_GENERATE_FAIL=false
 propose "$runtime"
 [[ -z $(git -C "$sdk" diff main HEAD -- "$TEST_GENERATED" "$TEST_ADDED") ]]
@@ -272,9 +283,20 @@ propose "$runtime"
 ! git -C "$sdk" cat-file -e HEAD:unexpected.txt 2>/dev/null
 first_head=$(head)
 
+# Reverting pending content to the accepted bytes is still a real update.
+fresh
+while IFS= read -r path; do
+  git -C "$upstream" show "$complete:$path" > "$upstream/$path"
+done < <(jq -r '.files[].source_path' "$sdk/contract/source.json")
+reverted=$(commit_source 'Revert pending contract to accepted content')
+propose "$reverted"
+[[ $(head) != "$first_head" ]]
+[[ $(git -C "$sdk" show HEAD:contract/source.json | jq -r .commit) == "$reverted" ]]
+first_head=$(head)
+
 # A real HTTP input change fails without altering the existing remote proposal.
 fresh
-cp "$work/initial/run-stream-event.schema.json" "$upstream/proto/a13n-service/run-stream-event.schema.json"
+cp "$work/complete/thread-stream.schema.json" "$upstream/proto/a13n-service/thread-stream.schema.json"
 jq '.paths["/api/v1/probe"] = {get:{operationId:"probe",responses:{"204":{description:"No content"}}}}' \
   "$upstream/proto/a13n-service/openapi.json" > "$work/http.json"
 cp "$work/http.json" "$upstream/proto/a13n-service/openapi.json"
@@ -316,7 +338,14 @@ git -C "$sdk" switch --detach -q "$http_head"
 printf 'reviewer adaptation\n' > "$sdk/$TEST_GENERATED"
 printf 'reviewer handwritten adaptation\n' > "$sdk/handwritten.txt"
 printf 'updated generator dependency\n' > "$sdk/generator-dependency.txt"
-git -C "$sdk" add -- "$TEST_GENERATED" handwritten.txt generator-dependency.txt
+printf '\nReviewer snapshot note\n' >> "$sdk/contract/semantics/api-conventions.md"
+# Simulate a pending proposal still carrying an old manifest-owned input.
+# A newer update must stage its deletion, not just remove it locally.
+cp "$work/initial/notification-client.schema.json" "$sdk/contract/notification-client.schema.json"
+jq '.files["notification-client.schema.json"] = {source_path:"proto/a13n-service/notification-client.schema.json"}' \
+  "$sdk/contract/source.json" > "$work/old-source.json"
+cp "$work/old-source.json" "$sdk/contract/source.json"
+git -C "$sdk" add -- "$TEST_GENERATED" handwritten.txt generator-dependency.txt contract
 git -C "$sdk" commit -qm 'Reviewer adaptation'
 git -C "$sdk" push -q origin "HEAD:refs/heads/$branch"
 reviewed_head=$(head)
@@ -335,13 +364,27 @@ printf 'accepted SDK fix\n' > "$sdk/sdk-fix.txt"
 git -C "$sdk" add sdk-fix.txt
 git -C "$sdk" commit -qm 'SDK main fix'
 git -C "$sdk" push -q origin main
-newer=$(next_source 'Newer runtime')
+# Identical upstream inputs do not merge SDK fixes or touch a ready proposal,
+# even when its reviewer-edited snapshot differs from incoming upstream bytes.
+no_change=$(next_runtime 'Runtime-only while reviewed')
+metadata_before=$(wc -l < "$TEST_PR_LOG")
+propose "$no_change"
+[[ $(head) == "$reviewed_head" && $(wc -l < "$TEST_GENERATE_LOG") == "$before" ]]
+[[ $(wc -l < "$TEST_PR_LOG") == "$metadata_before" ]]
+[[ $(jq -r '.[0].isDraft' "$TEST_PR_STATE") == false ]]
+grep -q 'Reviewer snapshot note' "$sdk/contract/semantics/api-conventions.md"
+! git -C "$sdk" cat-file -e HEAD:sdk-fix.txt 2>/dev/null
+[[ $(jq -r .commit "$sdk/contract/source.json") == "$http" ]]
+newer=$(next_source 'Newer contract')
 export TEST_GENERATE_FAIL=false TEST_PR_RACE=notes
 propose "$newer"
 unset TEST_PR_RACE
 grep -q 'Notes added during generation' "$TEST_PR_STATE"
 [[ $(git -C "$sdk" show HEAD:handwritten.txt) == 'reviewer handwritten adaptation' ]]
 [[ $(git -C "$sdk" show HEAD:sdk-fix.txt) == 'accepted SDK fix' ]]
+! git -C "$sdk" cat-file -e HEAD:contract/notification-client.schema.json 2>/dev/null
+[[ $(git -C "$sdk" show HEAD:contract/source.json | jq '.files | has("notification-client.schema.json")') == false ]]
+[[ $(git -C "$sdk" show HEAD:contract/README.md) == '# SDK guidance' ]]
 git -C "$sdk" merge-base --is-ancestor "$reviewed_head" HEAD
 [[ $(jq -r '.[0].isDraft' "$TEST_PR_STATE") == true ]]
 [[ $(grep -c create "$TEST_PR_LOG") == 1 ]]
@@ -388,6 +431,10 @@ git -C "$sdk" merge --squash "$new_head"
 git -C "$sdk" commit -qm 'Accept next contract'
 git -C "$sdk" push -q origin main
 set_pr ".[0].state = \"MERGED\" | .[0].headRefOid = \"$new_head\""
+metadata_before=$(wc -l < "$TEST_PR_LOG")
+retained_no_change=$(next_runtime 'Retained branch with unchanged inputs')
+propose "$retained_no_change"
+[[ $(head) == "$new_head" && $(wc -l < "$TEST_PR_LOG") == "$metadata_before" ]]
 latest=$(next_source 'Retained branch cycle')
 reject propose "$latest"
 [[ $(head) == "$new_head" ]]
@@ -434,26 +481,6 @@ git --git-dir="$TEST_REMOTE" update-ref "refs/heads/$branch" "$before_close"
 fresh
 propose "$closing"
 
-# Same-SHA recovery verifies Git provenance, not only self-declared hashes.
-fresh
-git -C "$sdk" switch --detach -q "$(head)"
-valid_head=$(head)
-printf 'tampered evidence\n' >> "$sdk/contract/semantics/api-conventions.md"
-jq --arg hash "$(hash "$sdk/contract/semantics/api-conventions.md")" \
-  '.files["semantics/api-conventions.md"].sha256 = $hash' "$sdk/contract/source.json" > "$work/manifest"
-cp "$work/manifest" "$sdk/contract/source.json"
-git -C "$sdk" add contract
-git -C "$sdk" commit -qm 'Invalid self-consistent evidence'
-git -C "$sdk" push -q origin "HEAD:refs/heads/$branch"
-invalid_head=$(head)
-fresh
-reject propose "$closing"
-[[ $(head) == "$invalid_head" ]]
-git -C "$sdk" switch --detach -q "$invalid_head"
-git -C "$sdk" restore --source="$valid_head" -- contract
-git -C "$sdk" commit -qam 'Restore evidence'
-git -C "$sdk" push -q origin "HEAD:refs/heads/$branch"
-
 # Conflicting accepted SDK changes stop instead of overwriting adaptation work.
 fresh
 git -C "$sdk" switch --detach -q "$(head)"
@@ -466,6 +493,10 @@ git -C "$sdk" switch -q main
 echo 'different accepted adaptation' > "$sdk/handwritten.txt"
 git -C "$sdk" commit -qam 'Accepted adaptation'
 git -C "$sdk" push -q origin main
+# A no-op must stop before even attempting a conflicting SDK-main merge.
+no_change=$(next_runtime 'Runtime-only with conflicting SDK main')
+propose "$no_change"
+[[ $(head) == "$conflict_head" ]]
 conflict=$(next_source 'Conflict update')
 reject propose "$conflict"
 [[ $(head) == "$conflict_head" ]]
@@ -497,4 +528,16 @@ reject bash -euo pipefail "$work/read-event.sh"
 export MANUAL_SHA="$runtime"
 bash -euo pipefail "$work/read-event.sh"
 [[ $(wc -l < "$GITHUB_OUTPUT" | tr -d ' ') == 2 ]]
+# Every current input independently triggers an import, including the thread
+# stream schema and all four semantic documents. Whitespace counts as a change.
+while IFS= read -r path; do
+  printf '\n' >> "$upstream/$path"
+  changed=$(commit_source "Change $path")
+  sync "$changed"
+  [[ $(jq -r .commit "$sdk/contract/source.json") == "$changed" ]]
+done < <(jq -r '.files[].source_path' "$sdk/contract/source.json")
+
+# Comparison errors are failures, never an unchanged-content success.
+reject bash -c 'source "$1"; if contract_inputs_changed "$2" "$3" invalid; then exit 0; fi' \
+  _ "$sdk/scripts/contract-inputs.sh" "$upstream" "$initial"
 echo 'Contract sync integration checks passed (offline Git and fake GitHub only).'

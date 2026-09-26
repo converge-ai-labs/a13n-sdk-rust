@@ -1,14 +1,8 @@
 #![forbid(unsafe_code)]
 
-use a13n::generated::{
-    apis::{
-        Response, agent_management_api, configuration::Configuration, environments_api,
-        protocol_gateway_api, skill_management_api,
-    },
-    models::LabelsBody,
-};
+use a13n::{Client, Error, Response, Secret, generated::models, resources::*};
 use clap::{Parser, Subcommand, ValueEnum};
-use std::{collections::BTreeMap, env};
+use std::{collections::HashMap, env};
 
 #[derive(Debug, Parser)]
 #[command(
@@ -31,13 +25,13 @@ enum Command {
         #[arg(value_enum)]
         resource: Resource,
         id: String,
-        /// Workspace ID or key, required for Agent resources.
+        /// Explicit workspace ID or key. Credentials never select a workspace.
         #[arg(long)]
-        workspace: Option<String>,
+        workspace: String,
         /// Complete JSON string-to-string map. Omit to read labels.
         #[arg(long, requires = "if_match")]
         set: Option<String>,
-        /// Exact label ETag required with --set.
+        /// Exact resource ETag required with --set.
         #[arg(long, requires = "set")]
         if_match: Option<String>,
     },
@@ -51,7 +45,6 @@ enum Resource {
     Run,
     Skill,
     EnvironmentTemplate,
-    Environment,
 }
 
 async fn run(cli: Cli) -> Result<(), String> {
@@ -62,143 +55,112 @@ async fn run(cli: Cli) -> Result<(), String> {
         set,
         if_match,
     } = cli.command;
-    let workspace = match (resource, workspace.as_deref()) {
-        (Resource::Agent, None) => {
-            return Err("--workspace is required for agent labels".to_owned());
-        }
-        (_, value) => value.unwrap_or(""),
-    };
-    let replacement = set
+    let replacement: Option<HashMap<String, String>> = set
         .map(|json| {
-            let labels: BTreeMap<String, String> = serde_json::from_str(&json)
-                .map_err(|error| format!("--set must be a JSON string-to-string map: {error}"))?;
-            Ok::<_, String>(LabelsBody::new(
-                serde_json::to_value(labels).map_err(|error| error.to_string())?,
-            ))
+            serde_json::from_str(&json)
+                .map_err(|error| format!("--set must be a JSON string-to-string map: {error}"))
         })
         .transpose()?;
     let token = env::var("A13N_TOKEN").map_err(|_| "A13N_TOKEN must be set".to_owned())?;
-    let mut configuration = Configuration::new();
-    configuration.base_path = cli.base_url.trim_end_matches('/').to_owned();
-    configuration.bearer_access_token = Some(token);
-    let response = match replacement {
-        Some(body) => {
-            let etag = if_match
-                .as_deref()
-                .ok_or("--if-match is required with --set")?;
-            replace_labels(&configuration, resource, &id, workspace, etag, body).await?
-        }
-        None => read_labels(&configuration, resource, &id, workspace).await?,
+    let client =
+        Client::new(&cli.base_url, Secret::new(token)).map_err(|error| error.to_string())?;
+    let workspace = client.resources().workspaces().at(workspace);
+    let result = match replacement {
+        Some(labels) => replace_labels(&workspace, resource, &id, if_match.unwrap(), labels).await,
+        None => read_labels(&workspace, resource, &id).await,
     };
-    println!(
-        "{}",
-        serde_json::to_string_pretty(&response.data).map_err(|error| error.to_string())?
-    );
-    if let Some(etag) = response
-        .headers
-        .get("etag")
-        .and_then(|value| value.to_str().ok())
-    {
+    client.close();
+    result.map_err(|error| error.to_string())
+}
+
+fn print_labels(labels: HashMap<String, String>, etag: Option<&str>) {
+    // Keep stdout machine-readable and deterministic; metadata belongs on stderr.
+    println!("{}", serde_json::json!({"labels": labels}));
+    if let Some(etag) = etag {
         eprintln!("ETag: {etag}");
+    }
+}
+
+async fn read_labels(
+    workspace: &WorkspaceResource<'_>,
+    resource: Resource,
+    id: &str,
+) -> Result<(), Error> {
+    macro_rules! read {
+        ($collection:ident) => {{
+            let response = workspace.$collection().at(id).get().await?;
+            print_labels(response.data.labels.clone(), response.etag());
+        }};
+    }
+    match resource {
+        Resource::Agent => read!(agents),
+        Resource::Session => read!(sessions),
+        Resource::Thread => read!(threads),
+        Resource::Run => read!(runs),
+        Resource::Skill => read!(skills),
+        Resource::EnvironmentTemplate => read!(environment_templates),
     }
     Ok(())
 }
 
-async fn read_labels(
-    configuration: &Configuration,
-    resource: Resource,
-    id: &str,
-    workspace: &str,
-) -> Result<Response<LabelsBody>, String> {
-    match resource {
-        Resource::Agent => agent_management_api::get_workspaces_workspace_agents_agent_labels(
-            configuration,
-            workspace,
-            id,
-        )
-        .await
-        .map_err(|error| error.to_string()),
-        Resource::Session => {
-            protocol_gateway_api::get_sessions_session_id_labels(configuration, id)
-                .await
-                .map_err(|error| error.to_string())
-        }
-        Resource::Thread => protocol_gateway_api::get_threads_thread_id_labels(configuration, id)
-            .await
-            .map_err(|error| error.to_string()),
-        Resource::Run => protocol_gateway_api::get_runs_run_id_labels(configuration, id)
-            .await
-            .map_err(|error| error.to_string()),
-        Resource::Skill => skill_management_api::get_skills_skill_id_labels(configuration, id)
-            .await
-            .map_err(|error| error.to_string()),
-        Resource::EnvironmentTemplate => {
-            environments_api::get_environment_templates_template_id_labels(configuration, id)
-                .await
-                .map_err(|error| error.to_string())
-        }
-        Resource::Environment => {
-            environments_api::get_environments_environment_id_labels(configuration, id)
-                .await
-                .map_err(|error| error.to_string())
-        }
-    }
-}
-
 async fn replace_labels(
-    configuration: &Configuration,
+    workspace: &WorkspaceResource<'_>,
     resource: Resource,
     id: &str,
-    workspace: &str,
-    etag: &str,
-    body: LabelsBody,
-) -> Result<Response<LabelsBody>, String> {
-    match resource {
-        Resource::Agent => agent_management_api::put_workspaces_workspace_agents_agent_labels(
-            configuration,
-            workspace,
-            id,
-            etag,
-            body,
-        )
-        .await
-        .map_err(|error| error.to_string()),
-        Resource::Session => {
-            protocol_gateway_api::put_sessions_session_id_labels(configuration, id, etag, body)
-                .await
-                .map_err(|error| error.to_string())
-        }
-        Resource::Thread => {
-            protocol_gateway_api::put_threads_thread_id_labels(configuration, id, etag, body)
-                .await
-                .map_err(|error| error.to_string())
-        }
-        Resource::Run => {
-            protocol_gateway_api::put_runs_run_id_labels(configuration, id, etag, body)
-                .await
-                .map_err(|error| error.to_string())
-        }
-        Resource::Skill => {
-            skill_management_api::put_skills_skill_id_labels(configuration, id, etag, body)
-                .await
-                .map_err(|error| error.to_string())
-        }
-        Resource::EnvironmentTemplate => {
-            environments_api::put_environment_templates_template_id_labels(
-                configuration,
-                id,
-                etag,
-                body,
-            )
-            .await
-            .map_err(|error| error.to_string())
-        }
-        Resource::Environment => {
-            environments_api::put_environments_environment_id_labels(configuration, id, etag, body)
-                .await
-                .map_err(|error| error.to_string())
-        }
+    if_match: String,
+    labels: HashMap<String, String>,
+) -> Result<(), Error> {
+    macro_rules! update {
+        ($collection:ident, $body:expr, $options:ident) => {{
+            let response: Response<_> = workspace
+                .$collection()
+                .at(id)
+                .update(&$body, $options { if_match })
+                .await?;
+            print_labels(response.data.labels.clone(), response.etag());
+        }};
     }
+    match resource {
+        Resource::Agent => update!(
+            agents,
+            models::AgentUpdate {
+                labels: Some(Some(labels)),
+                ..Default::default()
+            },
+            AgentUpdateOptions
+        ),
+        Resource::Session => update!(
+            sessions,
+            models::SessionUpdate::new(labels),
+            SessionUpdateOptions
+        ),
+        Resource::Thread => update!(
+            threads,
+            models::ThreadUpdate {
+                labels: Some(Some(labels)),
+                ..Default::default()
+            },
+            ThreadUpdateOptions
+        ),
+        Resource::Run => update!(runs, models::RunLabels::new(labels), RunUpdateOptions),
+        Resource::Skill => update!(
+            skills,
+            models::SkillUpdate {
+                labels: Some(Some(labels)),
+                ..Default::default()
+            },
+            SkillUpdateOptions
+        ),
+        Resource::EnvironmentTemplate => update!(
+            environment_templates,
+            models::TemplateUpdate {
+                labels: Some(Some(labels)),
+                ..Default::default()
+            },
+            EnvironmentTemplateUpdateOptions
+        ),
+    }
+    Ok(())
 }
 
 #[tokio::main]

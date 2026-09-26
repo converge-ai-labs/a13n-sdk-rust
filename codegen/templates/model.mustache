@@ -81,8 +81,9 @@ impl Default for {{{classname}}} {
 {{/isEnum}}
 {{!-- for schemas that have a discriminator --}}
 {{#discriminator}}
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "{{{propertyBaseName}}}")]
+#[derive(Clone, Debug, PartialEq, Serialize{{#oneOf.isEmpty}}, Deserialize{{/oneOf.isEmpty}})]
+{{#oneOf.isEmpty}}#[serde(tag = "{{{propertyBaseName}}}")]{{/oneOf.isEmpty}}
+{{^oneOf.isEmpty}}#[serde(untagged)]{{/oneOf.isEmpty}}
 pub enum {{{classname}}} {
     {{^oneOf}}
     {{#mappedModels}}
@@ -122,6 +123,21 @@ impl Default for {{classname}} {
     }
 }
 
+{{^oneOf.isEmpty}}
+// Keep the discriminator in the branch payload. Serde's internally tagged
+// newtype representation otherwise removes it before the required field parses.
+impl<'de> Deserialize<'de> for {{classname}} {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = serde_json::Value::deserialize(deserializer)?;
+        match value.get("{{{propertyBaseName}}}").and_then(serde_json::Value::as_str) {
+            {{#composedSchemas.oneOf}}
+            Some("{{{baseName}}}") => serde_json::from_value(value).map(Self::{{{name}}}).map_err(serde::de::Error::custom),
+            {{/composedSchemas.oneOf}}
+            _ => Err(serde::de::Error::custom("Missing or unknown discriminator")),
+        }
+    }
+}
+{{/oneOf.isEmpty}}
 {{/discriminator}}
 {{!-- for non-enum schemas --}}
 {{^isEnum}}
