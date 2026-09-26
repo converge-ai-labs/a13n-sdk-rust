@@ -9,6 +9,8 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from resources import generate_resources
+
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "codegen"
 TARGET = ROOT / "src/generated"
@@ -31,10 +33,24 @@ def prepare(document: dict) -> dict:
     def visit(value: object) -> None:
         if isinstance(value, dict):
             content = value.get("requestBody", {}).get("content", {})
-            if len(content) == 1:
-                media_type, media = next(iter(content.items()))
-                if media.get("schema", {}).get("format") == "binary":
-                    value["x-rust-binary-content-type"] = media_type
+            if content and all(media.get("schema", {}).get("format") == "binary" for media in content.values()):
+                if len(content) == 1:
+                    value["x-rust-binary-content-type"] = next(iter(content))
+                else:
+                    value.setdefault("parameters", []).append(
+                        {
+                            "name": "Content-Type",
+                            "in": "header",
+                            "required": True,
+                            "schema": {"type": "string", "enum": list(content)},
+                        }
+                    )
+            # SSE is a streaming success body too, not a bodyless Response<()>.
+            for status, response in value.get("responses", {}).items():
+                if status.startswith("2"):
+                    for media_type, media in response.get("content", {}).items():
+                        if media_type == "text/event-stream":
+                            media["schema"] = {"type": "string", "format": "binary"}
             branches = value.get("anyOf", [])
             if any(unrestricted(branch) for branch in branches):
                 value["x-rust-type"] = "serde_json::Value"
@@ -108,6 +124,10 @@ def main() -> None:
     document = json.loads((ROOT / "contract/openapi.json").read_text())
     with tempfile.TemporaryDirectory(prefix="a13n-codegen-") as temp:
         output = generate(document, Path(temp))
+        generate_resources(document, output)
+        module = output / "mod.rs"
+        module.write_text(module.read_text() + "\npub mod resources;\n")
+        run("rustfmt", "--edition", "2024", str(module))
         install(output, TARGET)
 
 

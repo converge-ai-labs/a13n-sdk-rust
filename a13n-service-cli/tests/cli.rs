@@ -53,20 +53,13 @@ fn every_label_resource_uses_the_sdk_http_contract() {
         thread,
         time::Duration,
     };
-    for (kind, path) in [
-        (
-            "agent",
-            "/api/v1/workspaces/ws_test/agents/resource_test/labels",
-        ),
-        ("session", "/api/v1/sessions/resource_test/labels"),
-        ("thread", "/api/v1/threads/resource_test/labels"),
-        ("run", "/api/v1/runs/resource_test/labels"),
-        ("skill", "/api/v1/skills/resource_test/labels"),
-        (
-            "environment-template",
-            "/api/v1/environment-templates/resource_test/labels",
-        ),
-        ("environment", "/api/v1/environments/resource_test/labels"),
+    for (kind, collection) in [
+        ("agent", "agents"),
+        ("session", "sessions"),
+        ("thread", "threads"),
+        ("run", "runs"),
+        ("skill", "skills"),
+        ("environment-template", "environment-templates"),
     ] {
         for replace in [false, true] {
             let listener = TcpListener::bind("127.0.0.1:0").unwrap();
@@ -99,9 +92,8 @@ fn every_label_resource_uses_the_sdk_http_contract() {
                 }
                 let request = String::from_utf8(bytes).unwrap();
                 assert!(request.starts_with(&format!(
-                    "{} {} HTTP/1.1",
-                    if replace { "PUT" } else { "GET" },
-                    path
+                    "{} /api/v1/workspaces/ws_test/{collection}/resource_test HTTP/1.1",
+                    if replace { "PATCH" } else { "GET" }
                 )));
                 assert!(
                     request
@@ -116,7 +108,19 @@ fn every_label_resource_uses_the_sdk_http_contract() {
                     );
                     assert!(request.contains("\"labels\":{\"project\":\"support\"}"));
                 }
-                let body = r#"{"labels":{"project":"support"}}"#;
+                use a13n::generated::models;
+                let mut body = match kind {
+                    "agent" => serde_json::to_value(models::Agent::default()),
+                    "session" => serde_json::to_value(models::SessionView::default()),
+                    "thread" => serde_json::to_value(models::ThreadView::default()),
+                    "run" => serde_json::to_value(models::RunView::default()),
+                    "skill" => serde_json::to_value(models::Skill::default()),
+                    "environment-template" => serde_json::to_value(models::Template::default()),
+                    _ => unreachable!(),
+                }
+                .unwrap();
+                body["labels"] = serde_json::json!({"project": "support"});
+                let body = body.to_string();
                 write!(stream, "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nETag: \"result\"\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}", body.len(), body).unwrap();
             });
             let mut command = Command::new(env!("CARGO_BIN_EXE_a13n-service-cli"));
@@ -127,9 +131,7 @@ fn every_label_resource_uses_the_sdk_http_contract() {
                 kind,
                 "resource_test",
             ]);
-            if kind == "agent" {
-                command.args(["--workspace", "ws_test"]);
-            }
+            command.args(["--workspace", "ws_test"]);
             if replace {
                 command.args([
                     "--set",
@@ -149,4 +151,60 @@ fn every_label_resource_uses_the_sdk_http_contract() {
             server.join().unwrap();
         }
     }
+}
+
+#[test]
+fn every_resource_requires_explicit_workspace() {
+    for kind in [
+        "agent",
+        "session",
+        "thread",
+        "run",
+        "skill",
+        "environment-template",
+    ] {
+        let output = Command::new(env!("CARGO_BIN_EXE_a13n-service-cli"))
+            .args(["labels", kind, "resource_test"])
+            .output()
+            .unwrap();
+        assert!(!output.status.success());
+        assert!(String::from_utf8_lossy(&output.stderr).contains("--workspace"));
+    }
+}
+
+#[test]
+fn environments_do_not_offer_nonexistent_labels() {
+    let output = Command::new(env!("CARGO_BIN_EXE_a13n-service-cli"))
+        .args([
+            "labels",
+            "environment",
+            "env_test",
+            "--workspace",
+            "ws_test",
+        ])
+        .output()
+        .unwrap();
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("invalid value"));
+}
+
+#[test]
+fn replacement_rejects_non_string_values_before_network() {
+    let output = Command::new(env!("CARGO_BIN_EXE_a13n-service-cli"))
+        .args([
+            "labels",
+            "run",
+            "run_test",
+            "--workspace",
+            "ws_test",
+            "--set",
+            "{\"x\":1}",
+            "--if-match",
+            "\"v1\"",
+        ])
+        .env_remove("A13N_TOKEN")
+        .output()
+        .unwrap();
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("string-to-string map"));
 }

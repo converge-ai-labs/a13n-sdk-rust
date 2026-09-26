@@ -1,9 +1,39 @@
-use crate::web::*;
+use crate::generated::apis::configuration::Configuration;
 use reqwest::{Method, Url, header};
-use serde::de::DeserializeOwned;
-use serde_json::{Value, json};
-use std::{fmt, sync::Mutex, time::Duration};
+use serde::{Serialize, Serializer, de::DeserializeOwned};
+use serde_json::Value;
+use std::{
+    fmt,
+    future::Future,
+    sync::{Arc, Mutex},
+};
 use tokio_util::sync::CancellationToken;
+
+pub use crate::generated::apis::Response;
+
+/// Credentials serialize only through the authenticated transport.
+#[derive(Clone, Default)]
+pub struct Secret(String);
+impl Secret {
+    pub fn new(value: impl Into<String>) -> Self {
+        Self(value.into())
+    }
+}
+impl fmt::Debug for Secret {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("Secret([REDACTED])")
+    }
+}
+impl fmt::Display for Secret {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("[REDACTED]")
+    }
+}
+impl Serialize for Secret {
+    fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+        s.serialize_str("[REDACTED]")
+    }
+}
 
 #[derive(Debug)]
 pub struct ApiError {
@@ -13,6 +43,7 @@ pub struct ApiError {
     pub details: Value,
     pub request_id: Option<String>,
     pub retry_after: Option<String>,
+    pub headers: header::HeaderMap,
 }
 #[derive(Debug)]
 pub enum Error {
@@ -25,21 +56,19 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Api(error) => write!(f, "{}: {} ({})", error.code, error.message, error.status),
+            Self::Api(e) => write!(f, "{}: {} ({})", e.code, e.message, e.status),
             Self::Transport => {
                 f.write_str("Service transport failed; mutation outcome may be unknown")
             }
             Self::Protocol => f.write_str("Invalid or oversized Service response"),
-            Self::InvalidInput => {
-                f.write_str("Invalid Service URL, resource identifier, or precondition")
-            }
+            Self::InvalidInput => f.write_str(
+                "Invalid Service URL, resource identifier, content type, or precondition",
+            ),
             Self::Closed => f.write_str("Client is closed"),
         }
     }
 }
 impl std::error::Error for Error {}
-
-/// A generated call failed, or its owning client was closed.
 #[derive(Debug)]
 pub enum CallError<E> {
     Closed,
@@ -49,294 +78,317 @@ impl<E: fmt::Display> fmt::Display for CallError<E> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Closed => f.write_str("Client is closed"),
-            Self::Operation(error) => error.fmt(f),
+            Self::Operation(e) => e.fmt(f),
         }
     }
 }
 impl<E: std::error::Error + 'static> std::error::Error for CallError<E> {}
 
-/// Owns a bounded bearer transport. Drop a request future to cancel that request;
-/// close() cancels all local requests and releases the pool without changing Runs.
+type CsrfSource = Arc<dyn Fn() -> Option<String> + Send + Sync>;
+
+/// One pool and local cancellation lifetime. References borrow this owner.
+/// Dropping an operation future cancels local work, never durable server Runs.
 pub struct Client {
     base_url: Url,
     http: Mutex<Option<reqwest::Client>>,
-    shutdown: CancellationToken,
+    pub(crate) shutdown: CancellationToken,
+    csrf: Option<CsrfSource>,
+    response_limit: usize,
 }
-impl Client {
-    pub fn new(base_url: &str, token: Secret) -> Result<Self, Error> {
-        let mut base_url = Url::parse(base_url).map_err(|_| Error::InvalidInput)?;
+
+pub struct ClientBuilder {
+    base_url: String,
+    token: Secret,
+    http: reqwest::ClientBuilder,
+    csrf: Option<CsrfSource>,
+    session: Option<Arc<reqwest::cookie::Jar>>,
+    response_limit: usize,
+}
+impl ClientBuilder {
+    pub fn bearer(mut self, token: Secret) -> Self {
+        self.token = token;
+        self
+    }
+    /// Customize TLS and connection settings before SDK redirect/retry policy.
+    pub fn http_builder(mut self, http: reqwest::ClientBuilder) -> Self {
+        self.http = http;
+        self
+    }
+    /// The caller updates the CSRF token after login; the callback may run concurrently.
+    pub fn session(
+        mut self,
+        jar: Arc<reqwest::cookie::Jar>,
+        csrf: impl Fn() -> Option<String> + Send + Sync + 'static,
+    ) -> Self {
+        self.csrf = Some(Arc::new(csrf));
+        self.session = Some(jar);
+        self
+    }
+    pub fn response_limit(mut self, bytes: usize) -> Self {
+        self.response_limit = bytes;
+        self
+    }
+    pub fn build(self) -> Result<Client, Error> {
+        let base_url = Url::parse(&self.base_url).map_err(|_| Error::InvalidInput)?;
         if !matches!(base_url.scheme(), "http" | "https")
             || base_url.host_str().is_none()
             || !base_url.username().is_empty()
             || base_url.password().is_some()
             || base_url.query().is_some()
             || base_url.fragment().is_some()
+            || self.response_limit == 0
+            || (self.session.is_some() && !self.token.0.is_empty())
         {
             return Err(Error::InvalidInput);
         }
-        let path = format!("{}/api/v1/", base_url.path().trim_end_matches('/'));
-        base_url.set_path(&path);
-        let mut authorization = header::HeaderValue::from_str(&format!("Bearer {}", token.0))
-            .map_err(|_| Error::InvalidInput)?;
-        authorization.set_sensitive(true);
         let mut headers = header::HeaderMap::new();
-        headers.insert(header::AUTHORIZATION, authorization);
-        let http = reqwest::Client::builder()
+        if !self.token.0.is_empty() {
+            let mut value = header::HeaderValue::from_str(&format!("Bearer {}", self.token.0))
+                .map_err(|_| Error::InvalidInput)?;
+            value.set_sensitive(true);
+            headers.insert(header::AUTHORIZATION, value);
+        }
+        let http = match self.session {
+            Some(jar) => self.http.cookie_provider(jar),
+            None => self.http,
+        };
+        let http = http
             .default_headers(headers)
-            .timeout(Duration::from_secs(30))
             .redirect(reqwest::redirect::Policy::none())
             .retry(reqwest::retry::never())
-            .no_proxy()
             .build()
             .map_err(|_| Error::Transport)?;
-        Ok(Self {
+        Ok(Client {
             base_url,
             http: Mutex::new(Some(http)),
             shutdown: CancellationToken::new(),
+            csrf: self.csrf,
+            response_limit: self.response_limit,
         })
     }
-    /// Execute generated operations with the same pool, authentication and
-    /// cancellation as the Web facade. For binary responses, consume the
-    /// body inside the async closure so close() also cancels stream delivery.
+}
+impl Client {
+    pub fn builder(base_url: impl Into<String>) -> ClientBuilder {
+        ClientBuilder {
+            base_url: base_url.into(),
+            token: Secret::default(),
+            http: reqwest::Client::builder().no_proxy(),
+            csrf: None,
+            session: None,
+            response_limit: 16 << 20,
+        }
+    }
+    pub fn new(base_url: &str, token: Secret) -> Result<Self, Error> {
+        Self::builder(base_url).bearer(token).build()
+    }
+    pub fn resources(&self) -> crate::resources::ServiceResources<'_> {
+        crate::resources::ServiceResources(crate::resources::Binding {
+            client: self,
+            ids: Vec::new(),
+        })
+    }
+    pub(crate) fn http(&self) -> Result<reqwest::Client, Error> {
+        self.http
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .clone()
+            .ok_or(Error::Closed)
+    }
+    pub fn close(&self) {
+        self.shutdown.cancel();
+        self.http.lock().unwrap_or_else(|e| e.into_inner()).take();
+    }
+    pub(crate) async fn observe<T>(
+        &self,
+        work: impl Future<Output = Result<T, Error>>,
+    ) -> Result<T, Error> {
+        tokio::select! { biased; _=self.shutdown.cancelled()=>Err(Error::Closed),result=work=>result }
+    }
+    /// Advanced generated protocol access. Consume raw bodies inside this closure
+    /// when parent shutdown must cover their delivery. The generated parser is unbounded.
     pub async fn execute<T, E>(
         &self,
-        operation: impl AsyncFnOnce(
-            &crate::generated::apis::configuration::Configuration,
-        ) -> Result<T, E>,
+        operation: impl AsyncFnOnce(&Configuration) -> Result<T, E>,
     ) -> Result<T, CallError<E>> {
-        let http = self
-            .http
-            .lock()
-            .unwrap_or_else(|error| error.into_inner())
-            .clone()
-            .ok_or(CallError::Closed)?;
-        let configuration = crate::generated::apis::configuration::Configuration {
-            base_path: self
-                .base_url
-                .as_str()
-                .trim_end_matches("/api/v1/")
-                .to_owned(),
+        let http = self.http().map_err(|_| CallError::Closed)?;
+        // Configuration carries the current CSRF key for generated session mutations.
+        let csrf = self.csrf.as_ref().and_then(|source| source());
+        let configuration = Configuration {
+            base_path: self.base_url.as_str().trim_end_matches('/').into(),
             client: http,
             user_agent: None,
             basic_auth: None,
             oauth_access_token: None,
             bearer_access_token: None,
-            api_key: None,
+            api_key: csrf
+                .map(|key| crate::generated::apis::configuration::ApiKey { key, prefix: None }),
         };
-        tokio::select! {
-            biased;
-            _ = self.shutdown.cancelled() => Err(CallError::Closed),
-            result = operation(&configuration) => result.map_err(CallError::Operation),
-        }
+        tokio::select! { biased; _=self.shutdown.cancelled()=>Err(CallError::Closed),result=operation(&configuration)=>result.map_err(CallError::Operation) }
     }
-
-    pub fn close(&self) {
-        self.shutdown.cancel();
-        self.http
-            .lock()
-            .unwrap_or_else(|error| error.into_inner())
-            .take();
-    }
-    fn url(&self, segments: &[&str]) -> Result<Url, Error> {
-        if segments
-            .iter()
-            .any(|value| value.is_empty() || *value == "." || *value == "..")
-        {
-            return Err(Error::InvalidInput);
-        }
-        let mut url = self.base_url.clone();
-        url.path_segments_mut()
-            .map_err(|_| Error::InvalidInput)?
-            .pop_if_empty()
-            .extend(segments);
-        Ok(url)
-    }
-    async fn request<T: DeserializeOwned>(
+    pub(crate) fn request(
         &self,
         method: Method,
-        segments: &[&str],
-        body: Option<Value>,
-        etag: Option<&str>,
-        query: Option<&WebProviderListOptions>,
-    ) -> Result<Representation<T>, Error> {
-        let http = self
-            .http
-            .lock()
-            .unwrap_or_else(|error| error.into_inner())
-            .clone()
-            .ok_or(Error::Closed)?;
-        let mut builder = http.request(method, self.url(segments)?);
-        if let Some(body) = body {
-            builder = builder.json(&body);
-        }
-        if let Some(etag) = etag {
-            if etag.is_empty() || etag.starts_with("W/") {
+        path: &str,
+        ids: &[String],
+    ) -> Result<reqwest::RequestBuilder, Error> {
+        let mut url = self.base_url.clone();
+        let mut segments = url.path_segments_mut().map_err(|_| Error::InvalidInput)?;
+        segments.pop_if_empty();
+        let mut values = ids.iter();
+        for segment in path.trim_start_matches('/').split('/') {
+            let value = if segment.starts_with('{') {
+                values.next().ok_or(Error::InvalidInput)?.as_str()
+            } else {
+                segment
+            };
+            if value.is_empty() || value == "." || value == ".." {
                 return Err(Error::InvalidInput);
             }
-            builder = builder.header(header::IF_MATCH, etag);
+            segments.push(value);
         }
-        if let Some(query) = query {
-            builder = builder.query(query);
+        drop(segments);
+        let mut request = self.http()?.request(method.clone(), url);
+        if !matches!(method, Method::GET | Method::HEAD | Method::OPTIONS)
+            && let Some(csrf) = self.csrf.as_ref().and_then(|source| source())
+        {
+            request = request.header("X-CSRF-Token", csrf);
         }
-        let operation = async {
-            let mut response = builder.send().await.map_err(|_| Error::Transport)?;
-            let status = response.status();
-            let text_header = |name: &str| {
-                response
-                    .headers()
-                    .get(name)
-                    .and_then(|value| value.to_str().ok())
-                    .map(str::to_owned)
-            };
-            let etag = text_header("ETag");
-            let request_id = text_header("X-Request-ID");
-            let retry_after = text_header("Retry-After");
-            let mut raw = Vec::new();
-            while let Some(chunk) = response.chunk().await.map_err(|_| Error::Transport)? {
-                if raw.len() + chunk.len() > 1_048_576 {
-                    return Err(Error::Protocol);
-                }
-                raw.extend_from_slice(&chunk);
-            }
-            let value: Value = serde_json::from_slice(&raw).map_err(|_| Error::Protocol)?;
-            if !status.is_success() {
-                let error = &value["error"];
+        Ok(request)
+    }
+    pub(crate) async fn send(
+        &self,
+        request: reqwest::RequestBuilder,
+        statuses: &[u16],
+    ) -> Result<BinaryResponse, Error> {
+        self.observe(async {
+            let mut response = request.send().await.map_err(|_| Error::Transport)?;
+            if !statuses.contains(&response.status().as_u16()) {
+                let status = response.status().as_u16();
+                let headers = response.headers().clone();
+                let raw = read_bounded(&mut response, self.response_limit).await?;
+                let value: Value = serde_json::from_slice(&raw).unwrap_or(Value::Null);
+                let e = &value["error"];
                 return Err(Error::Api(Box::new(ApiError {
-                    status: status.as_u16(),
-                    code: error["code"].as_str().unwrap_or("http_error").to_owned(),
-                    message: error["message"]
+                    status,
+                    code: e["code"].as_str().unwrap_or("http_error").into(),
+                    message: e["message"]
                         .as_str()
                         .unwrap_or("Service request failed")
-                        .to_owned(),
-                    details: error["details"]
-                        .as_object()
-                        .cloned()
-                        .map(Value::Object)
-                        .unwrap_or(json!({})),
-                    request_id: error["request_id"]
+                        .into(),
+                    details: e["details"].clone(),
+                    request_id: e["request_id"]
                         .as_str()
                         .map(str::to_owned)
-                        .or(request_id),
-                    retry_after,
+                        .or_else(|| text_header(&headers, "x-request-id").map(str::to_owned)),
+                    retry_after: text_header(&headers, "retry-after").map(str::to_owned),
+                    headers,
                 })));
             }
-            Ok(Representation {
-                value: serde_json::from_value(value).map_err(|_| Error::Protocol)?,
-                etag,
-                request_id,
+            Ok(BinaryResponse {
+                status: response.status(),
+                headers: response.headers().clone(),
+                response: Some(response),
+                shutdown: self.shutdown.clone(),
             })
-        };
-        tokio::select! { biased; _ = self.shutdown.cancelled() => Err(Error::Closed), result = operation => result }
-    }
-    /// Resolve the API key's Workspace once and share this client's transport.
-    pub async fn workspace(&self) -> Result<crate::WorkspaceClient<'_>, Error> {
-        #[derive(serde::Deserialize)]
-        struct CredentialContext {
-            workspace_id: Option<String>,
-        }
-        let result: Representation<CredentialContext> = self
-            .request(Method::GET, &["auth", "context"], None, None, None)
-            .await?;
-        let id = result
-            .value
-            .workspace_id
-            .filter(|id| !id.is_empty())
-            .ok_or(Error::InvalidInput)?;
-        Ok(crate::WorkspaceClient::new(self, id))
-    }
-
-    pub async fn web_provider_types(
-        &self,
-    ) -> Result<Representation<Page<WebProviderDefinition>>, Error> {
-        self.request(Method::GET, &["web-provider-types"], None, None, None)
-            .await
-    }
-    pub async fn web_provider_type(
-        &self,
-        provider_type: &str,
-    ) -> Result<Representation<WebProviderDefinition>, Error> {
-        self.request(
-            Method::GET,
-            &["web-provider-types", provider_type],
-            None,
-            None,
-            None,
-        )
+        })
         .await
     }
-    pub async fn web_providers(
+    pub(crate) async fn json<T: DeserializeOwned + Default>(
         &self,
-        scope: &WebProviderScope,
-        options: &WebProviderListOptions,
-    ) -> Result<Representation<Page<WebProvider>>, Error> {
-        self.request(Method::GET, &scope.segments(), None, None, Some(options))
-            .await
-    }
-    pub async fn web_provider(
-        &self,
-        scope: &WebProviderScope,
-        provider_id: &str,
-    ) -> Result<Representation<WebProvider>, Error> {
-        let mut path = scope.segments().to_vec();
-        path.push(provider_id);
-        self.request(Method::GET, &path, None, None, None).await
-    }
-    pub async fn create_web_provider(
-        &self,
-        scope: &WebProviderScope,
-        request: &CreateWebProviderRequest,
-    ) -> Result<Representation<WebProvider>, Error> {
-        let mut body = serde_json::to_value(request).map_err(|_| Error::InvalidInput)?;
-        body["credential"] = request.credential.reveal();
-        self.request(Method::POST, &scope.segments(), Some(body), None, None)
-            .await
-    }
-    pub async fn update_web_provider(
-        &self,
-        scope: &WebProviderScope,
-        provider_id: &str,
-        etag: &str,
-        request: &UpdateWebProviderRequest,
-    ) -> Result<Representation<WebProvider>, Error> {
-        let mut body = serde_json::to_value(request).map_err(|_| Error::InvalidInput)?;
-        if let Some(credential) = &request.credential {
-            body["credential"] = credential.reveal();
-        }
-        let mut path = scope.segments().to_vec();
-        path.push(provider_id);
-        self.request(Method::PATCH, &path, Some(body), Some(etag), None)
-            .await
-    }
-    pub async fn test_web_provider(
-        &self,
-        scope: &WebProviderScope,
-        provider_id: &str,
-    ) -> Result<Representation<WebProviderTestResult>, Error> {
-        let mut path = scope.segments().to_vec();
-        path.extend([provider_id, "test"]);
-        self.request(Method::POST, &path, Some(json!({})), None, None)
-            .await
-    }
-    pub async fn web_provider_references(
-        &self,
-        scope: &WebProviderScope,
-        provider_id: &str,
-        options: &WebProviderListOptions,
-    ) -> Result<Representation<Page<WebProviderReference>>, Error> {
-        let mut path = scope.segments().to_vec();
-        path.extend([provider_id, "references"]);
-        let options = WebProviderListOptions {
-            cursor: options.cursor.clone(),
-            limit: options.limit,
-            ..Default::default()
-        };
-        self.request(Method::GET, &path, None, None, Some(&options))
-            .await
+        request: reqwest::RequestBuilder,
+        statuses: &[u16],
+    ) -> Result<Response<T>, Error> {
+        self.observe(async {
+            let mut response = self.send(request, statuses).await?;
+            let data = if response.status.as_u16() == 204 || response.status.as_u16() == 303 {
+                T::default()
+            } else {
+                let raw = read_bounded(
+                    response.response.as_mut().ok_or(Error::Closed)?,
+                    self.response_limit,
+                )
+                .await?;
+                serde_json::from_slice(&raw).map_err(|_| Error::Protocol)?
+            };
+            Ok(Response {
+                data,
+                status: response.status,
+                headers: response.headers,
+            })
+        })
+        .await
     }
 }
-
 impl Drop for Client {
     fn drop(&mut self) {
         self.close();
+    }
+}
+
+pub(crate) fn text_header<'a>(headers: &'a header::HeaderMap, name: &str) -> Option<&'a str> {
+    headers.get(name).and_then(|v| v.to_str().ok())
+}
+impl<T> Response<T> {
+    pub fn etag(&self) -> Option<&str> {
+        text_header(&self.headers, "etag")
+    }
+    pub fn request_id(&self) -> Option<&str> {
+        text_header(&self.headers, "x-request-id")
+    }
+}
+async fn read_bounded(response: &mut reqwest::Response, limit: usize) -> Result<Vec<u8>, Error> {
+    let mut bytes = Vec::new();
+    while let Some(chunk) = response.chunk().await.map_err(|_| Error::Transport)? {
+        if chunk.len() > limit.saturating_sub(bytes.len()) {
+            return Err(Error::Protocol);
+        }
+        bytes.extend_from_slice(&chunk);
+    }
+    Ok(bytes)
+}
+
+/// Streaming body. Drop or close releases it; chunk reads share parent shutdown.
+pub struct BinaryResponse {
+    pub status: reqwest::StatusCode,
+    pub headers: header::HeaderMap,
+    response: Option<reqwest::Response>,
+    shutdown: CancellationToken,
+}
+impl BinaryResponse {
+    pub async fn chunk(&mut self) -> Result<Option<bytes::Bytes>, Error> {
+        if self.shutdown.is_cancelled() {
+            self.close();
+            return Err(Error::Closed);
+        }
+        let Some(response) = self.response.as_mut() else {
+            return Ok(None);
+        };
+        let result = tokio::select! {biased; _=self.shutdown.cancelled()=>Err(Error::Closed),chunk=response.chunk()=>chunk.map_err(|_|Error::Transport)};
+        if !matches!(&result, Ok(Some(_))) {
+            self.close()
+        }
+        result
+    }
+    pub fn close(&mut self) {
+        self.response.take();
+    }
+}
+
+/// An owned streaming request body; dropping its request releases this body.
+pub struct UploadFile {
+    pub name: String,
+    pub content_type: String,
+    pub body: reqwest::Body,
+}
+impl UploadFile {
+    pub(crate) fn form(self) -> Result<reqwest::multipart::Form, Error> {
+        if self.name.is_empty() || self.content_type.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let part = reqwest::multipart::Part::stream(self.body)
+            .file_name(self.name)
+            .mime_str(&self.content_type)
+            .map_err(|_| Error::InvalidInput)?;
+        Ok(reqwest::multipart::Form::new().part("file", part))
     }
 }

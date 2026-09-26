@@ -67,7 +67,9 @@ impl<T> From<std::io::Error> for Error<T> {
 }
 
 pub fn urlencode<T: AsRef<str>>(s: T) -> String {
-    ::url::form_urlencoded::byte_serialize(s.as_ref().as_bytes()).collect()
+    ::url::form_urlencoded::byte_serialize(s.as_ref().as_bytes())
+        .collect::<String>()
+        .replace('+', "%20")
 }
 
 pub fn parse_deep_object(prefix: &str, value: &serde_json::Value) -> Vec<(String, String)> {
@@ -122,28 +124,19 @@ impl From<&str> for ContentType {
     }
 }
 
-pub mod agent_configuration_api;
-pub mod agent_management_api;
-pub mod asset_management_api;
-pub mod bot_memory_api;
-pub mod bots_api;
+pub mod agents_api;
+pub mod assets_api;
+pub mod auth_api;
 pub mod connections_api;
-pub mod connectivity_management_api;
+pub mod default_api;
 pub mod environments_api;
-pub mod hook_subscriptions_api;
-pub mod identity_api;
-pub mod identity_images_api;
-pub mod identity_management_api;
-pub mod identity_recovery_api;
-pub mod identity_settings_api;
-pub mod lifecycle_events_api;
-pub mod memory_api;
-pub mod memory_providers_api;
-pub mod model_management_api;
-pub mod protocol_gateway_api;
-pub mod skill_management_api;
-pub mod threads_api;
-pub mod trace_query_api;
-pub mod web_providers_api;
+pub mod memories_api;
+pub mod models_api;
+pub mod providers_api;
+pub mod runs_api;
+pub mod secrets_api;
+pub mod skills_api;
+pub mod subscriptions_api;
+pub mod tenancy_api;
 
 pub mod configuration;
