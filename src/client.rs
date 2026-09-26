@@ -1,4 +1,7 @@
-use crate::generated::apis::configuration::Configuration;
+use crate::{
+    ProtocolError, ProtocolKind, TransportError, TransportStage,
+    generated::apis::configuration::Configuration,
+};
 use reqwest::{Method, Url, header};
 use serde::{Serialize, Serializer, de::DeserializeOwned};
 use serde_json::Value;
@@ -48,8 +51,8 @@ pub struct ApiError {
 #[derive(Debug)]
 pub enum Error {
     Api(Box<ApiError>),
-    Transport,
-    Protocol,
+    Transport(TransportError),
+    Protocol(ProtocolError),
     InvalidInput,
     Closed,
 }
@@ -57,10 +60,8 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Api(e) => write!(f, "{}: {} ({})", e.code, e.message, e.status),
-            Self::Transport => {
-                f.write_str("Service transport failed; mutation outcome may be unknown")
-            }
-            Self::Protocol => f.write_str("Invalid or oversized Service response"),
+            Self::Transport(error) => error.fmt(f),
+            Self::Protocol(error) => error.fmt(f),
             Self::InvalidInput => f.write_str(
                 "Invalid Service URL, resource identifier, content type, or precondition",
             ),
@@ -68,7 +69,15 @@ impl fmt::Display for Error {
         }
     }
 }
-impl std::error::Error for Error {}
+impl std::error::Error for Error {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Transport(error) => Some(error),
+            Self::Protocol(error) => Some(error),
+            _ => None,
+        }
+    }
+}
 #[derive(Debug)]
 pub enum CallError<E> {
     Closed,
@@ -157,7 +166,7 @@ impl ClientBuilder {
             .redirect(reqwest::redirect::Policy::none())
             .retry(reqwest::retry::never())
             .build()
-            .map_err(|_| Error::Transport)?;
+            .map_err(|error| TransportError::classify(error, TransportStage::Build))?;
         Ok(Client {
             base_url,
             http: Mutex::new(Some(http)),
@@ -261,7 +270,10 @@ impl Client {
         statuses: &[u16],
     ) -> Result<BinaryResponse, Error> {
         self.observe(async {
-            let mut response = request.send().await.map_err(|_| Error::Transport)?;
+            let mut response = request
+                .send()
+                .await
+                .map_err(|error| TransportError::classify(error, TransportStage::Request))?;
             if !statuses.contains(&response.status().as_u16()) {
                 let status = response.status().as_u16();
                 let headers = response.headers().clone();
@@ -308,7 +320,13 @@ impl Client {
                     self.response_limit,
                 )
                 .await?;
-                serde_json::from_slice(&raw).map_err(|_| Error::Protocol)?
+                serde_json::from_slice(&raw).map_err(|_| {
+                    ProtocolError::response(
+                        ProtocolKind::InvalidJson,
+                        response.status.as_u16(),
+                        &response.headers,
+                    )
+                })?
             };
             Ok(Response {
                 data,
@@ -338,9 +356,17 @@ impl<T> Response<T> {
 }
 async fn read_bounded(response: &mut reqwest::Response, limit: usize) -> Result<Vec<u8>, Error> {
     let mut bytes = Vec::new();
-    while let Some(chunk) = response.chunk().await.map_err(|_| Error::Transport)? {
+    while let Some(chunk) = response
+        .chunk()
+        .await
+        .map_err(|error| TransportError::classify(error, TransportStage::Body))?
+    {
         if chunk.len() > limit.saturating_sub(bytes.len()) {
-            return Err(Error::Protocol);
+            return Err(ProtocolError::response(
+                ProtocolKind::ResponseTooLarge,
+                response.status().as_u16(),
+                response.headers(),
+            ));
         }
         bytes.extend_from_slice(&chunk);
     }
@@ -363,7 +389,7 @@ impl BinaryResponse {
         let Some(response) = self.response.as_mut() else {
             return Ok(None);
         };
-        let result = tokio::select! {biased; _=self.shutdown.cancelled()=>Err(Error::Closed),chunk=response.chunk()=>chunk.map_err(|_|Error::Transport)};
+        let result = tokio::select! {biased; _=self.shutdown.cancelled()=>Err(Error::Closed),chunk=response.chunk()=>chunk.map_err(|error|TransportError::classify(error, TransportStage::Body))};
         if !matches!(&result, Ok(Some(_))) {
             self.close()
         }

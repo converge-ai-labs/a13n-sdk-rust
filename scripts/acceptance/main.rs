@@ -1,6 +1,9 @@
 //! Independent executable consuming only the extracted a13n .crate archive.
 mod sse;
-use a13n::{Client, Error, Secret, UploadFile, generated::models as m, resources::*, text_payload};
+use a13n::{
+    Client, Error, ProtocolKind, Secret, TransportKind, TransportStage, UploadFile,
+    generated::models as m, resources::*, text_payload,
+};
 use std::{
     env,
     error::Error as StdError,
@@ -59,7 +62,7 @@ async fn offline() -> Result<()> {
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
     let base_url = format!("http://{}", listener.local_addr()?);
     let server = tokio::spawn(async move {
-        for _ in 0..2 {
+        for _ in 0..4 {
             let (mut socket, _) = listener.accept().await.unwrap();
             let mut data = [0; 8192];
             let size = socket.read(&mut data).await.unwrap();
@@ -76,6 +79,11 @@ async fn offline() -> Result<()> {
                     r#"{"items":[],"next_cursor":null}"#,
                     "ETag: \"offline\"\r\n",
                 )
+            } else if input.starts_with("GET /api/v1/organizations/offline/members?") {
+                assert!(input.contains("kind=service_account"));
+                ("200 OK", r#"{"items":[],"next_cursor":null}"#, "")
+            } else if input.starts_with("GET /api/v1/workspaces/invalid") {
+                ("200 OK", "private-response-body", "")
             } else {
                 assert!(input.starts_with("GET /api/v1/workspaces/fail"));
                 (
@@ -119,6 +127,54 @@ async fn offline() -> Result<()> {
         matches!(error, Error::Api(ref value) if value.status == 428 && value.code == "precondition_required"),
         "Structured ApiError",
     )?;
+    resources
+        .organizations()
+        .at("offline")
+        .members()
+        .list(OrganizationMembersListOptions {
+            kind: Some(MemberKind::ServiceAccount),
+            ..Default::default()
+        })
+        .await?;
+    ensure(
+        ProviderKind::Memory.as_str() == "memory" && SkillSource::Github.to_string() == "github",
+        "Domain enum wire values",
+    )?;
+    let error = resources
+        .workspaces()
+        .at("invalid")
+        .get()
+        .await
+        .unwrap_err();
+    ensure(
+        matches!(&error, Error::Protocol(info)
+            if info.kind == ProtocolKind::InvalidJson
+            && info.status == Some(200)
+            && info.request_id.as_deref() == Some("offline-request")),
+        "Typed protocol diagnostics",
+    )?;
+    for text in [error.to_string(), format!("{error:?}")] {
+        ensure(
+            !text.contains("private-response-body") && !text.contains("offline-request"),
+            "Protocol diagnostic redaction",
+        )?;
+    }
+    let source = error.source().ok_or("Missing safe diagnostic source")?;
+    ensure(source.source().is_none(), "Raw diagnostic cause retained")?;
+    let error = Client::builder("http://localhost/private")
+        .http_builder(reqwest::Client::builder().user_agent("private\nvalue"))
+        .build()
+        .err()
+        .ok_or("Expected builder error")?;
+    ensure(
+        matches!(&error, Error::Transport(info)
+            if info.stage == TransportStage::Build && info.kind == TransportKind::Builder),
+        "Typed transport diagnostics",
+    )?;
+    ensure(
+        !format!("{error:?}").contains("private"),
+        "Transport redaction",
+    )?;
     let null = m::AgentUpdate {
         description: Some(None),
         ..Default::default()
@@ -146,7 +202,7 @@ async fn offline() -> Result<()> {
     )?;
     server.await?;
     println!(
-        "Installed crate local TCP: typed resource, metadata, pagination, 428, nullable and close passed"
+        "Installed crate local TCP: typed resource/enums/diagnostics, redaction, metadata, pagination, 428, nullable and close passed"
     );
     Ok(())
 }

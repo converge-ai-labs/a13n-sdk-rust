@@ -1,6 +1,6 @@
 //! Complete generated resource references and explicit lazy page iteration.
 pub use crate::generated::resources::*;
-use crate::{Client, Error, Response};
+use crate::{Client, Error, ProtocolError, ProtocolKind, Response};
 use reqwest::RequestBuilder;
 use serde::Serialize;
 use serde_json::Value;
@@ -82,7 +82,11 @@ impl<S: PageSource> Pages<S> {
         if let Some(cursor) = &self.cursor {
             if !self.seen.insert(cursor.clone()) {
                 self.done = true;
-                return Err(Error::Protocol);
+                return Err(ProtocolError::response(
+                    ProtocolKind::RepeatedCursor,
+                    page.status.as_u16(),
+                    &page.headers,
+                ));
             }
         } else {
             self.done = true;

@@ -185,7 +185,7 @@ async fn hints_do_not_reset_retry_budget() {
         .unwrap();
     assert!(stream.next().await.unwrap().is_some());
     assert!(stream.next().await.unwrap().is_some());
-    assert!(matches!(stream.next().await, Err(Error::Transport)));
+    assert!(matches!(stream.next().await, Err(Error::Transport(_))));
     assert_eq!(count.load(Ordering::SeqCst), 2);
 }
 #[tokio::test]
@@ -260,7 +260,7 @@ async fn malformed_frames_utf8_limits_and_auth_are_terminal() {
             .await
             .unwrap();
         assert!(
-            matches!(stream.next().await, Err(Error::Protocol)),
+            matches!(stream.next().await, Err(Error::Protocol(_))),
             "{wire}"
         );
     }
@@ -279,7 +279,7 @@ async fn malformed_frames_utf8_limits_and_auth_are_terminal() {
             })
             .await
             .unwrap();
-        assert!(matches!(stream.next().await, Err(Error::Protocol)));
+        assert!(matches!(stream.next().await, Err(Error::Protocol(_))));
     }
     for status in [401, 403, 404, 409, 500] {
         let mut server = server(move |_| Reply::json(status, serde_json::json!({}))).await;

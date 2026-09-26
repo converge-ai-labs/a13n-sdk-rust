@@ -1,6 +1,7 @@
 //! Cancellation-safe Thread SSE observation; no background tasks or Run mutations.
 use crate::{
-    BinaryResponse, Error,
+    BinaryResponse, Error, ProtocolError, ProtocolKind, TransportError, TransportKind,
+    TransportStage,
     resources::{ThreadResource, ThreadStreamGetOptions},
 };
 use bytes::{Buf, Bytes};
@@ -190,7 +191,10 @@ impl ThreadStream<'_> {
                         self.close();
                         return Ok(None);
                     }
-                    self.schedule(Error::Transport)?;
+                    self.schedule(Error::Transport(TransportError {
+                        stage: TransportStage::Body,
+                        kind: TransportKind::StreamEnded,
+                    }))?;
                 }
                 Err(error) => {
                     self.response = None;
@@ -203,7 +207,7 @@ impl ThreadStream<'_> {
     fn schedule(&mut self, error: Error) -> Result<(), Error> {
         self.check_parent()?;
         let transient = match &error {
-            Error::Transport => true,
+            Error::Transport(_) => true,
             Error::Api(api) => matches!(api.status, 429 | 502 | 503 | 504),
             _ => false,
         };
@@ -261,7 +265,11 @@ impl ThreadStream<'_> {
                         .and_then(|v| v.to_str().ok())
                         .and_then(|v| v.split(';').next());
                     if !kind.is_some_and(|v| v.trim().eq_ignore_ascii_case("text/event-stream")) {
-                        return Err(Error::Protocol);
+                        return Err(ProtocolError::response(
+                            ProtocolKind::UnexpectedContentType,
+                            response.status.as_u16(),
+                            &response.headers,
+                        ));
                     }
                     self.response = Some(response);
                     self.parser = Parser::new(self.options.max_frame_bytes);
@@ -281,32 +289,34 @@ fn valid_cursor(value: &str) -> bool {
 }
 fn decode(event: &str, cursor: Option<String>, data: &str) -> Result<ThreadFrame, Error> {
     fn parse<T: serde::de::DeserializeOwned>(data: &str) -> Result<T, Error> {
-        serde_json::from_str(data).map_err(|_| Error::Protocol)
+        serde_json::from_str(data).map_err(|_| ProtocolError::local(ProtocolKind::InvalidFrame))
     }
     if matches!(event, "delta" | "boundary") {
-        let cursor = cursor.filter(|v| valid_cursor(v)).ok_or(Error::Protocol)?;
+        let cursor = cursor
+            .filter(|v| valid_cursor(v))
+            .ok_or_else(|| ProtocolError::local(ProtocolKind::InvalidFrame))?;
         if event == "boundary" {
             let data: Boundary = parse(data)?;
             if data.run_id.is_empty() {
-                return Err(Error::Protocol);
+                return Err(ProtocolError::local(ProtocolKind::InvalidFrame));
             }
             return Ok(ThreadFrame::Boundary { cursor, data });
         }
         let data: Delta = parse(data)?;
         if data.run_id.is_empty() || data.item.as_ref().is_some_and(|i| i.id.is_empty()) {
-            return Err(Error::Protocol);
+            return Err(ProtocolError::local(ProtocolKind::InvalidFrame));
         }
         return Ok(ThreadFrame::Delta { cursor, data });
     }
     if cursor.is_some() {
-        return Err(Error::Protocol);
+        return Err(ProtocolError::local(ProtocolKind::InvalidFrame));
     }
     match event {
         "changed" => Ok(ThreadFrame::Changed(parse(data)?)),
         "gap" | "reset" => {
             let data: RunSignal = parse(data)?;
             if data.run_id.is_empty() {
-                return Err(Error::Protocol);
+                return Err(ProtocolError::local(ProtocolKind::InvalidFrame));
             }
             Ok(if event == "gap" {
                 ThreadFrame::Gap(data)
@@ -314,7 +324,7 @@ fn decode(event: &str, cursor: Option<String>, data: &str) -> Result<ThreadFrame
                 ThreadFrame::Reset(data)
             })
         }
-        _ => Err(Error::Protocol),
+        _ => Err(ProtocolError::local(ProtocolKind::InvalidFrame)),
     }
 }
 struct Parser {
@@ -353,7 +363,7 @@ impl Parser {
             }
             self.size += 1;
             if self.size > self.limit {
-                return Err(Error::Protocol);
+                return Err(ProtocolError::local(ProtocolKind::FrameTooLarge));
             }
             if byte != b'\n' && byte != b'\r' {
                 self.line.push(byte);
@@ -361,7 +371,8 @@ impl Parser {
             }
             self.skip_lf = byte == b'\r';
             let raw = std::mem::take(&mut self.line);
-            let line = std::str::from_utf8(&raw).map_err(|_| Error::Protocol)?;
+            let line = std::str::from_utf8(&raw)
+                .map_err(|_| ProtocolError::local(ProtocolKind::InvalidUtf8))?;
             let line = if self.first {
                 self.first = false;
                 line.strip_prefix('\u{feff}').unwrap_or(line)
@@ -395,7 +406,7 @@ impl Parser {
             || !self.event.is_empty()
             || self.cursor.is_some()
         {
-            Err(Error::Protocol)
+            Err(ProtocolError::local(ProtocolKind::IncompleteFrame))
         } else {
             Ok(())
         }
