@@ -123,7 +123,13 @@ def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
     codegen.install(output, target)
     assert not (target / "obsolete.txt").exists()
     assert "autogen_probe_value" in (target / "apis/default_api.rs").read_text()
-    codegen.generate_resources(document, target)
+    nodes, tests = codegen.generate_resources(document, target)
+    codegen.generate_cli(document, nodes, tests, tmp_path / "cli/generated.rs")
+    cli = (tmp_path / "cli/generated.rs").read_text()
+    assert '"autogen-probe get"' in cli
+    assert "client.resources().autogen_probe().get(" in cli
+    assert '"/api/v1/autogen-probe"' in cli
+    assert (tmp_path / "cli/schemas.json").exists()
     ordinary = (target / "resources.rs").read_text()
     assert "pub autogen_probe_value:Option<String>" in ordinary
     assert "pub fn autogen_probe(" in ordinary

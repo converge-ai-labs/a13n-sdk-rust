@@ -80,7 +80,7 @@ main() {
     bot_git merge --no-edit origin/main
     env -u GH_TOKEN bash scripts/sync-contract.sh "$upstream" "$commit"
     env -u GH_TOKEN make generate
-    git add -A -- contract src/generated
+    git add -A -- contract src/generated a13n-service-cli/src/generated.rs a13n-service-cli/src/schemas.json
     bot_git commit -m "chore(contract): update Service snapshot to $commit"
     if [[ "$state" == OPEN ]]; then
       live_pr=$(gh pr view "$number" --repo "$GITHUB_REPOSITORY" --json state,isDraft)

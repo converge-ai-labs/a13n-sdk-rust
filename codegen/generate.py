@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from cli import generate_cli
 from resources import generate_resources
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -124,11 +125,16 @@ def main() -> None:
     document = json.loads((ROOT / "contract/openapi.json").read_text())
     with tempfile.TemporaryDirectory(prefix="a13n-codegen-") as temp:
         output = generate(document, Path(temp))
-        generate_resources(document, output)
+        nodes, tests = generate_resources(document, output)
+        cli = Path(temp) / "cli/generated.rs"
+        generate_cli(document, nodes, tests, cli)
+        run("rustfmt", "--edition", "2024", str(cli))
         module = output / "mod.rs"
         module.write_text(module.read_text() + "\npub mod resources;\n")
         run("rustfmt", "--edition", "2024", str(module))
         install(output, TARGET)
+        shutil.copy2(cli, ROOT / "a13n-service-cli/src/generated.rs")
+        shutil.copy2(cli.with_name("schemas.json"), ROOT / "a13n-service-cli/src/schemas.json")
 
 
 if __name__ == "__main__":

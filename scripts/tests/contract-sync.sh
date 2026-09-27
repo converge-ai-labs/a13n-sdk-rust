@@ -130,6 +130,10 @@ diff -r "$sdk/contract" "$work/current"
 export TEST_GENERATED=src/generated/mod.rs TEST_ADDED=src/generated/new.rs TEST_REMOVED=src/generated/obsolete.rs
 mkdir -p "$sdk/$(dirname "$TEST_GENERATED")" "$sdk/$(dirname "$TEST_ADDED")"
 cp "$sdk/contract/openapi.json" "$sdk/$TEST_GENERATED"
+mkdir -p "$sdk/a13n-service-cli/src"
+for output in generated.rs schemas.json; do
+  cp "$sdk/contract/openapi.json" "$sdk/a13n-service-cli/src/$output"
+done
 if [[ -n "$TEST_REMOVED" ]]; then
   echo obsolete > "$sdk/$TEST_REMOVED"
 else
@@ -184,6 +188,10 @@ printf 'not a generated file\n' > handwritten.txt
 printf 'untracked build output\n' > unexpected.txt
 if [[ ${TEST_GENERATE_FAIL:-false} != false ]]; then exit 1; fi
 cp contract/openapi.json "$TEST_GENERATED"
+for output in generated.rs schemas.json; do
+  cp contract/openapi.json "a13n-service-cli/src/$output"
+done
+printf 'untracked handwritten CLI\n' > a13n-service-cli/src/runtime.rs
 if [[ $(jq '.paths | length' contract/openapi.json) != 0 ]]; then
   cp contract/openapi.json "$TEST_ADDED"
   if [[ -n "$TEST_REMOVED" ]]; then rm -f "$TEST_REMOVED"; fi
@@ -315,10 +323,11 @@ reject propose "$http"
 http_head=$(head)
 [[ "$http_head" != "$first_head" ]]
 git -C "$sdk" merge-base --is-ancestor "$first_head" "$http_head"
-for output in "$TEST_GENERATED" "$TEST_ADDED"; do
+for output in "$TEST_GENERATED" "$TEST_ADDED" a13n-service-cli/src/generated.rs a13n-service-cli/src/schemas.json; do
   git -C "$sdk" show "HEAD:$output" > "$work/actual"
   cmp "$work/actual" "$work/http.json"
 done
+! git -C "$sdk" cat-file -e HEAD:a13n-service-cli/src/runtime.rs 2>/dev/null
 if [[ -n "$TEST_REMOVED" ]]; then ! git -C "$sdk" cat-file -e "HEAD:$TEST_REMOVED" 2>/dev/null; fi
 [[ $(git -C "$sdk" show HEAD:handwritten.txt) == handwritten ]]
 ! git -C "$sdk" cat-file -e HEAD:unexpected.txt 2>/dev/null
