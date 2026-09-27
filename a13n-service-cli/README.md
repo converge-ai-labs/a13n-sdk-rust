@@ -2,6 +2,8 @@
 
 The companion CLI covers every HTTP operation in the pinned Service API. A generated Clap command tree and typed dispatch call the same `a13n` Rust SDK resources; the binary has no separate HTTP implementation or runtime OpenAPI download. It is an independent Cargo project with its own version and lockfile.
 
+See [CLI workflows](docs/README.md) for installation/build instructions, conditional updates, queued submissions, successor Runs, file transfers and script recovery. This page is the command behavior reference. Both are Markdown maintained in this repository; no separate SDK documentation site is required.
+
 ## Start
 
 ```bash
@@ -14,7 +16,7 @@ a13n-service-cli agents list --limit 20
 a13n-service-cli agents get agt_example --include-meta
 a13n-service-cli agents update agt_example --if-match '"etag-from-read"' --body @agent-update.json
 a13n-service-cli threads create --idempotency-key new-thread-1 --body @new-thread.json
-a13n-service-cli runs resume run_example --body @resume.json
+a13n-service-cli runs resume run_example --idempotency-key resume-1 --body @resume.json
 ```
 
 Use `--help` at any command depth, `--schema` for its pinned request schema, `--example` for a verified example or an explicitly labelled template, and `completion bash|zsh|fish|powershell|elvish` for offline shell completion. No credentials or Service are required for these discovery commands. Arguments are actual resource names followed by their action; the target ID is positional for leaf operations, while parent IDs use named flags: `threads inbox list --thread thread_id`, `assets content get --asset asset_id --output saved.bin`, `memories files get --memory memory_id --path 'folder/file.txt'`. Workspace/organization contexts always remain explicit, never inferred from tokens. Use root groups such as `organizations workspaces list --organization org_id` where two API scopes would otherwise collide. `--filter-workspace` on an organization catalogue, when present, is a query **filter**, not the command's credential workspace.

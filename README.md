@@ -4,6 +4,10 @@ Async Rust SDK for a13n Service. `Client::resources()` exposes every operation i
 
 The ordinary resource graph is the primary API. Thin helpers add acceptance references, exact Run/Entry waiting, lazy pagination and typed Thread SSE without implementing Service business logic.
 
+## Documentation
+
+Use the compile-checked examples below for the public API and the [application guide](docs/README.md) for client lifetime, resource discovery, Memory, recovery and compatibility. The [CLI README](a13n-service-cli/README.md) and [CLI workflows](a13n-service-cli/docs/README.md) document the separate executable. These are repository-owned Markdown guides; read the version matching your dependency.
+
 ## Installation
 
 The crate is named `a13n`. Use a published version when available; the source version `0.0.0` is a development placeholder, not a release promise. This repository also contains the separately versioned [CLI](a13n-service-cli/README.md).
