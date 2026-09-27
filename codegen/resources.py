@@ -131,7 +131,7 @@ def resource_name(path: str) -> str:
     return "".join(pascal(part) for part in parts) + "Resource"
 
 
-def generate_resources(document: dict, output: Path) -> None:
+def generate_resources(document: dict, output: Path) -> tuple[dict, list[dict]]:
     bindings = "\n".join(p.read_text() for p in (output / "apis").glob("*.rs"))
     signatures = {}
     for match in re.finditer(r"pub async fn (\w+)\((.*?)\)\s*->\s*Result<(.*?)>\s*\{", bindings, re.S):
@@ -380,3 +380,4 @@ def generate_resources(document: dict, output: Path) -> None:
     )
     (output / "resources.rs").write_text("\n".join(source) + "\n")
     generate_tests(document, nodes, tests, output)
+    return nodes, tests
