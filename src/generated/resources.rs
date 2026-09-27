@@ -3154,6 +3154,22 @@ impl<'a> WorkspaceResource<'a> {
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
+    /// Prepare Composer.
+    ///
+    /// `POST /api/v1/workspaces/{workspace_id}/agent-composer`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn agent_composer(&self) -> Result<Response<models::Agent>, Error> {
+        let request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/workspaces/{workspace_id}/agent-composer",
+            &self.0.ids,
+        )?;
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
     /// Archive Workspace.
     ///
     /// `POST /api/v1/workspaces/{workspace_id}/archive`.
@@ -3176,22 +3192,6 @@ impl<'a> WorkspaceResource<'a> {
             &self.0.ids,
         )?;
         request = request.header("If-Match", &options.if_match);
-        let response = self.0.client.json(request, &[200]).await?;
-        Ok(response)
-    }
-    /// Prepare Assistant.
-    ///
-    /// `POST /api/v1/workspaces/{workspace_id}/configuration-assistant`.
-    ///
-    /// Preserves the actual HTTP status and headers, including ETag and request ID.
-    ///
-    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
-    pub async fn configuration_assistant(&self) -> Result<Response<models::Agent>, Error> {
-        let request = self.0.client.request(
-            reqwest::Method::POST,
-            "/api/v1/workspaces/{workspace_id}/configuration-assistant",
-            &self.0.ids,
-        )?;
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
@@ -9356,15 +9356,15 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
     ),
     (
         "POST",
-        "/api/v1/workspaces/{workspace_id}/archive",
+        "/api/v1/workspaces/{workspace_id}/agent-composer",
         "WorkspaceResource",
-        "archive",
+        "agent_composer",
     ),
     (
         "POST",
-        "/api/v1/workspaces/{workspace_id}/configuration-assistant",
+        "/api/v1/workspaces/{workspace_id}/archive",
         "WorkspaceResource",
-        "configuration_assistant",
+        "archive",
     ),
     (
         "GET",

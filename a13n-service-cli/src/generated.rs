@@ -321,14 +321,14 @@ pub const OPERATIONS: &[(&str, &str, &str)] = &[
         "/api/v1/workspaces/{workspace_id}",
     ),
     (
+        "agent_composer",
+        "POST",
+        "/api/v1/workspaces/{workspace_id}/agent-composer",
+    ),
+    (
         "archive",
         "POST",
         "/api/v1/workspaces/{workspace_id}/archive",
-    ),
-    (
-        "configuration_assistant",
-        "POST",
-        "/api/v1/workspaces/{workspace_id}/configuration-assistant",
     ),
     (
         "agents list",
@@ -1148,8 +1148,8 @@ pub const EXAMPLES: &[&str] = &[
     "a13n-service-cli workspaces list",
     "a13n-service-cli workspaces get WORKSPACE_ID",
     "a13n-service-cli workspaces update WORKSPACE_ID --if-match IF_MATCH --body @request.json",
+    "a13n-service-cli --workspace WORKSPACE_ID agent_composer",
     "a13n-service-cli --workspace WORKSPACE_ID archive --if-match IF_MATCH",
-    "a13n-service-cli --workspace WORKSPACE_ID configuration_assistant",
     "a13n-service-cli --workspace WORKSPACE_ID agents list",
     "a13n-service-cli --workspace WORKSPACE_ID agents create --body @request.json",
     "a13n-service-cli --workspace WORKSPACE_ID agents validate --body @request.json",
@@ -1944,10 +1944,10 @@ fn operation_131() -> Command {
     Command::new("revoke").about("Revoke Workspace Invitation").long_about("Revoke Workspace Invitation (POST /api/v1/workspaces/{workspace_id}/invitations/{invitation_id}/revoke). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID workspaces invitations revoke INVITATION_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("invitation_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_77() -> Command {
-    Command::new("archive").about("Archive Workspace").long_about("Archive Workspace (POST /api/v1/workspaces/{workspace_id}/archive). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID archive --if-match IF_MATCH").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("agent_composer").about("Prepare Composer").long_about("The workspace's Agent Composer, created or brought up to date with the deployment's definition.\n\nRefused with `model_required` while the workspace has no model the caller can use. (POST /api/v1/workspaces/{workspace_id}/agent-composer). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID agent_composer").arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_78() -> Command {
-    Command::new("configuration_assistant").about("Prepare Assistant").long_about("The workspace's configuration assistant, created or brought up to date with the deployment's definition.\n\nRefused with `model_required` while the workspace has no model the caller can use. (POST /api/v1/workspaces/{workspace_id}/configuration-assistant). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID configuration_assistant").arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("archive").about("Archive Workspace").long_about("Archive Workspace (POST /api/v1/workspaces/{workspace_id}/archive). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID archive --if-match IF_MATCH").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_128() -> Command {
     let mut node = Command::new("agents")
@@ -3981,6 +3981,15 @@ pub async fn dispatch(
             output::response(response, config).await
         }
         77 => {
+            let response = client
+                .resources()
+                .workspaces()
+                .at(config.required("workspace_id")?)
+                .agent_composer()
+                .await?;
+            output::response(response, config).await
+        }
+        78 => {
             let options = WorkspaceArchiveOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
@@ -3989,15 +3998,6 @@ pub async fn dispatch(
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .archive(options)
-                .await?;
-            output::response(response, config).await
-        }
-        78 => {
-            let response = client
-                .resources()
-                .workspaces()
-                .at(config.required("workspace_id")?)
-                .configuration_assistant()
                 .await?;
             output::response(response, config).await
         }

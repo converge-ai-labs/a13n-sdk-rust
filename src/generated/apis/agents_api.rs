@@ -114,10 +114,10 @@ pub enum ListToolsetsApiV1WorkspacesWorkspaceIdToolsetsGetError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`prepare_assistant_api_v1_workspaces_workspace_id_configuration_assistant_post`]
+/// struct for typed errors of method [`prepare_composer_api_v1_workspaces_workspace_id_agent_composer_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PrepareAssistantApiV1WorkspacesWorkspaceIdConfigurationAssistantPostError {
+pub enum PrepareComposerApiV1WorkspacesWorkspaceIdAgentComposerPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
@@ -1071,19 +1071,19 @@ pub async fn list_toolsets_api_v1_workspaces_workspace_id_toolsets_get(
     }
 }
 
-/// The workspace's configuration assistant, created or brought up to date with the deployment's definition.  Refused with `model_required` while the workspace has no model the caller can use.
-pub async fn prepare_assistant_api_v1_workspaces_workspace_id_configuration_assistant_post(
+/// The workspace's Agent Composer, created or brought up to date with the deployment's definition.  Refused with `model_required` while the workspace has no model the caller can use.
+pub async fn prepare_composer_api_v1_workspaces_workspace_id_agent_composer_post(
     configuration: &configuration::Configuration,
     workspace_id: &str,
 ) -> Result<
     Response<models::Agent>,
-    Error<PrepareAssistantApiV1WorkspacesWorkspaceIdConfigurationAssistantPostError>,
+    Error<PrepareComposerApiV1WorkspacesWorkspaceIdAgentComposerPostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/configuration-assistant",
+        "{}/api/v1/workspaces/{workspace_id}/agent-composer",
         configuration.base_path,
         workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
     );
@@ -1141,9 +1141,8 @@ pub async fn prepare_assistant_api_v1_workspaces_workspace_id_configuration_assi
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            PrepareAssistantApiV1WorkspacesWorkspaceIdConfigurationAssistantPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<PrepareComposerApiV1WorkspacesWorkspaceIdAgentComposerPostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
