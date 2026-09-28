@@ -11,16 +11,19 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// Pending : Public projection of the exact sealed pending set; the native requests live in the state object.
+/// Pending : Public projection; complete native requests and private metadata stay in the checkpoint.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Pending {
-    #[serde(rename = "items")]
-    pub items: Vec<models::PendingItem>,
+    #[serde(rename = "approvals")]
+    pub approvals: Vec<models::PendingCall>,
+
+    #[serde(rename = "calls")]
+    pub calls: Vec<models::PendingCall>,
 }
 
 impl Pending {
-    /// Public projection of the exact sealed pending set; the native requests live in the state object.
-    pub fn new(items: Vec<models::PendingItem>) -> Pending {
-        Pending { items }
+    /// Public projection; complete native requests and private metadata stay in the checkpoint.
+    pub fn new(approvals: Vec<models::PendingCall>, calls: Vec<models::PendingCall>) -> Pending {
+        Pending { approvals, calls }
     }
 }

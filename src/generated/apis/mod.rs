@@ -137,5 +137,6 @@ pub mod runs_api;
 pub mod skills_api;
 pub mod subscriptions_api;
 pub mod tenancy_api;
+pub mod usage_api;
 
 pub mod configuration;

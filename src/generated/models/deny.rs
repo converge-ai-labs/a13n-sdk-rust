@@ -12,7 +12,7 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Reject {
+pub struct Deny {
     #[serde(rename = "action")]
     pub action: Action,
 
@@ -23,29 +23,25 @@ pub struct Reject {
         skip_serializing_if = "Option::is_none"
     )]
     pub reason: Option<Option<String>>,
-
-    #[serde(rename = "tool_call_id")]
-    pub tool_call_id: String,
 }
 
-impl Reject {
-    pub fn new(action: Action, tool_call_id: String) -> Reject {
-        Reject {
+impl Deny {
+    pub fn new(action: Action) -> Deny {
+        Deny {
             action,
             reason: None,
-            tool_call_id,
         }
     }
 }
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum Action {
-    #[serde(rename = "reject")]
-    Reject,
+    #[serde(rename = "deny")]
+    Deny,
 }
 
 impl Default for Action {
     fn default() -> Action {
-        Self::Reject
+        Self::Deny
     }
 }

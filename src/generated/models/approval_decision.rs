@@ -13,16 +13,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize)]
 #[serde(untagged)]
-pub enum Answer {
+pub enum ApprovalDecision {
     #[serde(rename = "approve")]
     Approve(Box<models::Approve>),
-    #[serde(rename = "reject")]
-    Reject(Box<models::Reject>),
-    #[serde(rename = "complete")]
-    Complete(Box<models::Complete>),
+    #[serde(rename = "deny")]
+    Deny(Box<models::Deny>),
 }
 
-impl Default for Answer {
+impl Default for ApprovalDecision {
     fn default() -> Self {
         Self::Approve(Default::default())
     }
@@ -30,18 +28,15 @@ impl Default for Answer {
 
 // Keep the discriminator in the branch payload. Serde's internally tagged
 // newtype representation otherwise removes it before the required field parses.
-impl<'de> Deserialize<'de> for Answer {
+impl<'de> Deserialize<'de> for ApprovalDecision {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let value = serde_json::Value::deserialize(deserializer)?;
         match value.get("action").and_then(serde_json::Value::as_str) {
             Some("approve") => serde_json::from_value(value)
                 .map(Self::Approve)
                 .map_err(serde::de::Error::custom),
-            Some("reject") => serde_json::from_value(value)
-                .map(Self::Reject)
-                .map_err(serde::de::Error::custom),
-            Some("complete") => serde_json::from_value(value)
-                .map(Self::Complete)
+            Some("deny") => serde_json::from_value(value)
+                .map(Self::Deny)
                 .map_err(serde::de::Error::custom),
             _ => Err(serde::de::Error::custom("Missing or unknown discriminator")),
         }

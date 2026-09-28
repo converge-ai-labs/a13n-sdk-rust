@@ -12,12 +12,9 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PendingItem {
+pub struct PendingCall {
     #[serde(rename = "arguments")]
     pub arguments: std::collections::HashMap<String, serde_json::Value>,
-
-    #[serde(rename = "kind")]
-    pub kind: models::PendingKind,
 
     #[serde(
         rename = "presentation",
@@ -34,16 +31,14 @@ pub struct PendingItem {
     pub tool_name: String,
 }
 
-impl PendingItem {
+impl PendingCall {
     pub fn new(
         arguments: std::collections::HashMap<String, serde_json::Value>,
-        kind: models::PendingKind,
         tool_call_id: String,
         tool_name: String,
-    ) -> PendingItem {
-        PendingItem {
+    ) -> PendingCall {
+        PendingCall {
             arguments,
-            kind,
             presentation: None,
             tool_call_id,
             tool_name,

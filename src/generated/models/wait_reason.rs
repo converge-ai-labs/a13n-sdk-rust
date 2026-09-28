@@ -16,10 +16,8 @@ use serde::{Deserialize, Serialize};
 pub enum WaitReason {
     #[serde(rename = "approval")]
     Approval,
-    #[serde(rename = "client_tool")]
-    ClientTool,
-    #[serde(rename = "user_input")]
-    UserInput,
+    #[serde(rename = "call")]
+    Call,
     #[serde(rename = "multiple")]
     Multiple,
 }
@@ -28,8 +26,7 @@ impl std::fmt::Display for WaitReason {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             Self::Approval => write!(f, "approval"),
-            Self::ClientTool => write!(f, "client_tool"),
-            Self::UserInput => write!(f, "user_input"),
+            Self::Call => write!(f, "call"),
             Self::Multiple => write!(f, "multiple"),
         }
     }
