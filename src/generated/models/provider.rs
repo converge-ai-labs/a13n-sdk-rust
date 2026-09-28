@@ -19,8 +19,8 @@ pub struct Provider {
     #[serde(rename = "created_at")]
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
 
-    #[serde(rename = "created_by_id")]
-    pub created_by_id: String,
+    #[serde(rename = "created_by_id", deserialize_with = "Option::deserialize")]
+    pub created_by_id: Option<String>,
 
     #[serde(rename = "credential_configured")]
     pub credential_configured: bool,
@@ -46,8 +46,8 @@ pub struct Provider {
     #[serde(rename = "updated_at")]
     pub updated_at: chrono::DateTime<chrono::FixedOffset>,
 
-    #[serde(rename = "updated_by_id")]
-    pub updated_by_id: String,
+    #[serde(rename = "updated_by_id", deserialize_with = "Option::deserialize")]
+    pub updated_by_id: Option<String>,
 
     #[serde(rename = "version")]
     pub version: i32,
@@ -60,7 +60,7 @@ impl Provider {
     pub fn new(
         config: std::collections::HashMap<String, serde_json::Value>,
         created_at: chrono::DateTime<chrono::FixedOffset>,
-        created_by_id: String,
+        created_by_id: Option<String>,
         credential_configured: bool,
         enabled: bool,
         header_names: Vec<String>,
@@ -69,7 +69,7 @@ impl Provider {
         organization_id: String,
         r#type: String,
         updated_at: chrono::DateTime<chrono::FixedOffset>,
-        updated_by_id: String,
+        updated_by_id: Option<String>,
         version: i32,
         workspace_id: String,
     ) -> Provider {
