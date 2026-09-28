@@ -5,7 +5,7 @@
 //! the second must replay with precisely that applied Last-Event-ID.
 use a13n::{
     Client, Secret,
-    streaming::{StreamOptions, ThreadFrame},
+    streaming::{StreamOptions, ThreadFrame, ThreadStream},
 };
 use reqwest::Certificate;
 use std::{error::Error as StdError, time::Duration};
@@ -103,13 +103,7 @@ async fn bridge(
     Ok(received)
 }
 
-pub async fn verify(
-    service: &str,
-    ca_pem: &[u8],
-    token: &str,
-    workspace: &str,
-    thread: &str,
-) -> Result<()> {
+pub async fn verify(service: &str, ca_pem: &[u8], token: &str, thread: &str) -> Result<()> {
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
     let url = format!("http://{}", listener.local_addr()?);
     let http = reqwest::Client::builder()
@@ -119,19 +113,16 @@ pub async fn verify(
     let forwarding = bridge(listener, http, service.to_owned(), token.to_owned());
     let observing = async {
         let client = Client::new(&url, Secret::new(token))?;
-        let handle = client
-            .resources()
-            .workspaces()
-            .at(workspace)
-            .threads()
-            .at(thread);
-        let mut stream = handle
-            .events(StreamOptions {
+        let handle = client.resources().threads().at(thread);
+        let mut stream = ThreadStream::open(
+            handle,
+            StreamOptions {
                 max_reconnects: 3,
                 reconnect_delay: Duration::from_millis(10),
                 ..Default::default()
-            })
-            .await?;
+            },
+        )
+        .await?;
         let mut cursors = Vec::new();
         while cursors.len() < 2 {
             let frame = stream

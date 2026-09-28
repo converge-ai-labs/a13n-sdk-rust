@@ -13,24 +13,24 @@ use serde::{Deserialize, Serialize};
 
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum SecretScope {
-    #[serde(rename = "workspace")]
-    Workspace,
-    #[serde(rename = "user")]
-    User,
+pub enum AgentSource {
+    #[serde(rename = "custom")]
+    Custom,
+    #[serde(rename = "builtin")]
+    Builtin,
 }
 
-impl std::fmt::Display for SecretScope {
+impl std::fmt::Display for AgentSource {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            Self::Workspace => write!(f, "workspace"),
-            Self::User => write!(f, "user"),
+            Self::Custom => write!(f, "custom"),
+            Self::Builtin => write!(f, "builtin"),
         }
     }
 }
 
-impl Default for SecretScope {
-    fn default() -> SecretScope {
-        Self::Workspace
+impl Default for AgentSource {
+    fn default() -> AgentSource {
+        Self::Custom
     }
 }

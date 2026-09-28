@@ -13,143 +13,139 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`add_mount_api_v1_workspaces_workspace_id_threads_thread_id_environments_post`]
+/// struct for typed errors of method [`add_mount_api_v1_threads_thread_id_environments_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum AddMountApiV1WorkspacesWorkspaceIdThreadsThreadIdEnvironmentsPostError {
+pub enum AddMountApiV1ThreadsThreadIdEnvironmentsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_environment_api_v1_workspaces_workspace_id_environments_post`]
+/// struct for typed errors of method [`create_environment_api_v1_environments_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsPostError {
+pub enum CreateEnvironmentApiV1EnvironmentsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_template_api_v1_workspaces_workspace_id_environment_templates_post`]
+/// struct for typed errors of method [`create_template_api_v1_environment_templates_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateTemplateApiV1WorkspacesWorkspaceIdEnvironmentTemplatesPostError {
+pub enum CreateTemplateApiV1EnvironmentTemplatesPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_environment_api_v1_workspaces_workspace_id_environments_environment_id_delete`]
+/// struct for typed errors of method [`delete_environment_api_v1_environments_environment_id_delete`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsEnvironmentIdDeleteError {
+pub enum DeleteEnvironmentApiV1EnvironmentsEnvironmentIdDeleteError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_environment_api_v1_workspaces_workspace_id_environments_environment_id_get`]
+/// struct for typed errors of method [`get_environment_api_v1_environments_environment_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsEnvironmentIdGetError {
+pub enum GetEnvironmentApiV1EnvironmentsEnvironmentIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_template_api_v1_workspaces_workspace_id_environment_templates_template_id_get`]
+/// struct for typed errors of method [`get_template_api_v1_environment_templates_template_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetTemplateApiV1WorkspacesWorkspaceIdEnvironmentTemplatesTemplateIdGetError {
+pub enum GetTemplateApiV1EnvironmentTemplatesTemplateIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_environments_api_v1_workspaces_workspace_id_environments_get`]
+/// struct for typed errors of method [`list_environments_api_v1_environments_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListEnvironmentsApiV1WorkspacesWorkspaceIdEnvironmentsGetError {
+pub enum ListEnvironmentsApiV1EnvironmentsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_mounts_api_v1_workspaces_workspace_id_threads_thread_id_environments_get`]
+/// struct for typed errors of method [`list_mounts_api_v1_threads_thread_id_environments_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListMountsApiV1WorkspacesWorkspaceIdThreadsThreadIdEnvironmentsGetError {
+pub enum ListMountsApiV1ThreadsThreadIdEnvironmentsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_templates_api_v1_workspaces_workspace_id_environment_templates_get`]
+/// struct for typed errors of method [`list_templates_api_v1_environment_templates_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListTemplatesApiV1WorkspacesWorkspaceIdEnvironmentTemplatesGetError {
+pub enum ListTemplatesApiV1EnvironmentTemplatesGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`remove_mount_api_v1_workspaces_workspace_id_threads_thread_id_environments_name_delete`]
+/// struct for typed errors of method [`remove_mount_api_v1_threads_thread_id_environments_name_delete`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RemoveMountApiV1WorkspacesWorkspaceIdThreadsThreadIdEnvironmentsNameDeleteError {
+pub enum RemoveMountApiV1ThreadsThreadIdEnvironmentsNameDeleteError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`stop_environment_api_v1_workspaces_workspace_id_environments_environment_id_stop_post`]
+/// struct for typed errors of method [`stop_environment_api_v1_environments_environment_id_stop_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum StopEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsEnvironmentIdStopPostError {
+pub enum StopEnvironmentApiV1EnvironmentsEnvironmentIdStopPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_environment_api_v1_workspaces_workspace_id_environments_environment_id_patch`]
+/// struct for typed errors of method [`update_environment_api_v1_environments_environment_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsEnvironmentIdPatchError {
+pub enum UpdateEnvironmentApiV1EnvironmentsEnvironmentIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_template_api_v1_workspaces_workspace_id_environment_templates_template_id_patch`]
+/// struct for typed errors of method [`update_template_api_v1_environment_templates_template_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateTemplateApiV1WorkspacesWorkspaceIdEnvironmentTemplatesTemplateIdPatchError {
+pub enum UpdateTemplateApiV1EnvironmentTemplatesTemplateIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn add_mount_api_v1_workspaces_workspace_id_threads_thread_id_environments_post(
+pub async fn add_mount_api_v1_threads_thread_id_environments_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     mount_create: models::MountCreate,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::MountView>,
-    Error<AddMountApiV1WorkspacesWorkspaceIdThreadsThreadIdEnvironmentsPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::MountView>, Error<AddMountApiV1ThreadsThreadIdEnvironmentsPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_body_mount_create = mount_create;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/environments",
+        "{}/api/v1/threads/{thread_id}/environments",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration
@@ -161,6 +157,9 @@ pub async fn add_mount_api_v1_workspaces_workspace_id_threads_thread_id_environm
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -210,7 +209,7 @@ pub async fn add_mount_api_v1_workspaces_workspace_id_threads_thread_id_environm
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AddMountApiV1WorkspacesWorkspaceIdThreadsThreadIdEnvironmentsPostError> =
+        let entity: Option<AddMountApiV1ThreadsThreadIdEnvironmentsPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -222,29 +221,25 @@ pub async fn add_mount_api_v1_workspaces_workspace_id_threads_thread_id_environm
 }
 
 /// Reserve a managed sandbox from a template (`creating`), or register an external envd target (`ready`).
-pub async fn create_environment_api_v1_workspaces_workspace_id_environments_post(
+pub async fn create_environment_api_v1_environments_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     body: models::Body,
-) -> Result<
-    Response<models::EnvironmentView>,
-    Error<CreateEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::EnvironmentView>, Error<CreateEnvironmentApiV1EnvironmentsPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_body_body = body;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/environments",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/environments", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -294,7 +289,7 @@ pub async fn create_environment_api_v1_workspaces_workspace_id_environments_post
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsPostError> =
+        let entity: Option<CreateEnvironmentApiV1EnvironmentsPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -305,29 +300,25 @@ pub async fn create_environment_api_v1_workspaces_workspace_id_environments_post
     }
 }
 
-pub async fn create_template_api_v1_workspaces_workspace_id_environment_templates_post(
+pub async fn create_template_api_v1_environment_templates_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     template_create: models::TemplateCreate,
-) -> Result<
-    Response<models::Template>,
-    Error<CreateTemplateApiV1WorkspacesWorkspaceIdEnvironmentTemplatesPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Template>, Error<CreateTemplateApiV1EnvironmentTemplatesPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_body_template_create = template_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/environment-templates",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/environment-templates", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -377,7 +368,7 @@ pub async fn create_template_api_v1_workspaces_workspace_id_environment_template
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateTemplateApiV1WorkspacesWorkspaceIdEnvironmentTemplatesPostError> =
+        let entity: Option<CreateTemplateApiV1EnvironmentTemplatesPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -388,24 +379,23 @@ pub async fn create_template_api_v1_workspaces_workspace_id_environment_template
     }
 }
 
-pub async fn delete_environment_api_v1_workspaces_workspace_id_environments_environment_id_delete(
+pub async fn delete_environment_api_v1_environments_environment_id_delete(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     environment_id: &str,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::EnvironmentView>,
-    Error<DeleteEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsEnvironmentIdDeleteError>,
+    Error<DeleteEnvironmentApiV1EnvironmentsEnvironmentIdDeleteError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_environment_id = environment_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/environments/{environment_id}",
+        "{}/api/v1/environments/{environment_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         environment_id = crate::generated::apis::urlencode(p_path_environment_id)
     );
     let mut req_builder = configuration
@@ -417,6 +407,9 @@ pub async fn delete_environment_api_v1_workspaces_workspace_id_environments_envi
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -465,9 +458,8 @@ pub async fn delete_environment_api_v1_workspaces_workspace_id_environments_envi
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            DeleteEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsEnvironmentIdDeleteError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<DeleteEnvironmentApiV1EnvironmentsEnvironmentIdDeleteError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -477,28 +469,30 @@ pub async fn delete_environment_api_v1_workspaces_workspace_id_environments_envi
     }
 }
 
-pub async fn get_environment_api_v1_workspaces_workspace_id_environments_environment_id_get(
+pub async fn get_environment_api_v1_environments_environment_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     environment_id: &str,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::EnvironmentView>,
-    Error<GetEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsEnvironmentIdGetError>,
+    Error<GetEnvironmentApiV1EnvironmentsEnvironmentIdGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_environment_id = environment_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/environments/{environment_id}",
+        "{}/api/v1/environments/{environment_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         environment_id = crate::generated::apis::urlencode(p_path_environment_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -539,9 +533,8 @@ pub async fn get_environment_api_v1_workspaces_workspace_id_environments_environ
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsEnvironmentIdGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<GetEnvironmentApiV1EnvironmentsEnvironmentIdGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -551,28 +544,28 @@ pub async fn get_environment_api_v1_workspaces_workspace_id_environments_environ
     }
 }
 
-pub async fn get_template_api_v1_workspaces_workspace_id_environment_templates_template_id_get(
+pub async fn get_template_api_v1_environment_templates_template_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     template_id: &str,
-) -> Result<
-    Response<models::Template>,
-    Error<GetTemplateApiV1WorkspacesWorkspaceIdEnvironmentTemplatesTemplateIdGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Template>, Error<GetTemplateApiV1EnvironmentTemplatesTemplateIdGetError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_template_id = template_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/environment-templates/{template_id}",
+        "{}/api/v1/environment-templates/{template_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         template_id = crate::generated::apis::urlencode(p_path_template_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -613,9 +606,8 @@ pub async fn get_template_api_v1_workspaces_workspace_id_environment_templates_t
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetTemplateApiV1WorkspacesWorkspaceIdEnvironmentTemplatesTemplateIdGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<GetTemplateApiV1EnvironmentTemplatesTemplateIdGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -625,27 +617,20 @@ pub async fn get_template_api_v1_workspaces_workspace_id_environment_templates_t
     }
 }
 
-pub async fn list_environments_api_v1_workspaces_workspace_id_environments_get(
+pub async fn list_environments_api_v1_environments_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     status: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::EnvironmentPage>,
-    Error<ListEnvironmentsApiV1WorkspacesWorkspaceIdEnvironmentsGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::EnvironmentPage>, Error<ListEnvironmentsApiV1EnvironmentsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_query_status = status;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/environments",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/environments", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref param_value) = p_query_status {
@@ -659,6 +644,9 @@ pub async fn list_environments_api_v1_workspaces_workspace_id_environments_get(
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -699,7 +687,7 @@ pub async fn list_environments_api_v1_workspaces_workspace_id_environments_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListEnvironmentsApiV1WorkspacesWorkspaceIdEnvironmentsGetError> =
+        let entity: Option<ListEnvironmentsApiV1EnvironmentsGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -710,28 +698,28 @@ pub async fn list_environments_api_v1_workspaces_workspace_id_environments_get(
     }
 }
 
-pub async fn list_mounts_api_v1_workspaces_workspace_id_threads_thread_id_environments_get(
+pub async fn list_mounts_api_v1_threads_thread_id_environments_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
-) -> Result<
-    Response<models::MountPage>,
-    Error<ListMountsApiV1WorkspacesWorkspaceIdThreadsThreadIdEnvironmentsGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::MountPage>, Error<ListMountsApiV1ThreadsThreadIdEnvironmentsGetError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/environments",
+        "{}/api/v1/threads/{thread_id}/environments",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -772,9 +760,8 @@ pub async fn list_mounts_api_v1_workspaces_workspace_id_threads_thread_id_enviro
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ListMountsApiV1WorkspacesWorkspaceIdThreadsThreadIdEnvironmentsGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ListMountsApiV1ThreadsThreadIdEnvironmentsGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -784,27 +771,20 @@ pub async fn list_mounts_api_v1_workspaces_workspace_id_threads_thread_id_enviro
     }
 }
 
-pub async fn list_templates_api_v1_workspaces_workspace_id_environment_templates_get(
+pub async fn list_templates_api_v1_environment_templates_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     label: Option<Vec<String>>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::TemplatePage>,
-    Error<ListTemplatesApiV1WorkspacesWorkspaceIdEnvironmentTemplatesGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::TemplatePage>, Error<ListTemplatesApiV1EnvironmentTemplatesGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_query_label = label;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/environment-templates",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/environment-templates", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref param_value) = p_query_label {
@@ -834,6 +814,9 @@ pub async fn list_templates_api_v1_workspaces_workspace_id_environment_templates
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -874,7 +857,7 @@ pub async fn list_templates_api_v1_workspaces_workspace_id_environment_templates
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListTemplatesApiV1WorkspacesWorkspaceIdEnvironmentTemplatesGetError> =
+        let entity: Option<ListTemplatesApiV1EnvironmentTemplatesGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -885,26 +868,22 @@ pub async fn list_templates_api_v1_workspaces_workspace_id_environment_templates
     }
 }
 
-pub async fn remove_mount_api_v1_workspaces_workspace_id_threads_thread_id_environments_name_delete(
+pub async fn remove_mount_api_v1_threads_thread_id_environments_name_delete(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     name: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<()>,
-    Error<RemoveMountApiV1WorkspacesWorkspaceIdThreadsThreadIdEnvironmentsNameDeleteError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<()>, Error<RemoveMountApiV1ThreadsThreadIdEnvironmentsNameDeleteError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_path_name = name;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/environments/{name}",
+        "{}/api/v1/threads/{thread_id}/environments/{name}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id),
         name = crate::generated::apis::urlencode(p_path_name)
     );
@@ -917,6 +896,9 @@ pub async fn remove_mount_api_v1_workspaces_workspace_id_threads_thread_id_envir
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -944,9 +926,8 @@ pub async fn remove_mount_api_v1_workspaces_workspace_id_threads_thread_id_envir
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            RemoveMountApiV1WorkspacesWorkspaceIdThreadsThreadIdEnvironmentsNameDeleteError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<RemoveMountApiV1ThreadsThreadIdEnvironmentsNameDeleteError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -956,24 +937,23 @@ pub async fn remove_mount_api_v1_workspaces_workspace_id_threads_thread_id_envir
     }
 }
 
-pub async fn stop_environment_api_v1_workspaces_workspace_id_environments_environment_id_stop_post(
+pub async fn stop_environment_api_v1_environments_environment_id_stop_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     environment_id: &str,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::EnvironmentView>,
-    Error<StopEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsEnvironmentIdStopPostError>,
+    Error<StopEnvironmentApiV1EnvironmentsEnvironmentIdStopPostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_environment_id = environment_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/environments/{environment_id}/stop",
+        "{}/api/v1/environments/{environment_id}/stop",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         environment_id = crate::generated::apis::urlencode(p_path_environment_id)
     );
     let mut req_builder = configuration
@@ -985,6 +965,9 @@ pub async fn stop_environment_api_v1_workspaces_workspace_id_environments_enviro
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1033,9 +1016,8 @@ pub async fn stop_environment_api_v1_workspaces_workspace_id_environments_enviro
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            StopEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsEnvironmentIdStopPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<StopEnvironmentApiV1EnvironmentsEnvironmentIdStopPostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1045,26 +1027,25 @@ pub async fn stop_environment_api_v1_workspaces_workspace_id_environments_enviro
     }
 }
 
-pub async fn update_environment_api_v1_workspaces_workspace_id_environments_environment_id_patch(
+pub async fn update_environment_api_v1_environments_environment_id_patch(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     environment_id: &str,
     environment_update: models::EnvironmentUpdate,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::EnvironmentView>,
-    Error<UpdateEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsEnvironmentIdPatchError>,
+    Error<UpdateEnvironmentApiV1EnvironmentsEnvironmentIdPatchError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_environment_id = environment_id;
     let p_body_environment_update = environment_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/environments/{environment_id}",
+        "{}/api/v1/environments/{environment_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         environment_id = crate::generated::apis::urlencode(p_path_environment_id)
     );
     let mut req_builder = configuration
@@ -1076,6 +1057,9 @@ pub async fn update_environment_api_v1_workspaces_workspace_id_environments_envi
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1125,9 +1109,8 @@ pub async fn update_environment_api_v1_workspaces_workspace_id_environments_envi
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UpdateEnvironmentApiV1WorkspacesWorkspaceIdEnvironmentsEnvironmentIdPatchError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UpdateEnvironmentApiV1EnvironmentsEnvironmentIdPatchError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1137,26 +1120,25 @@ pub async fn update_environment_api_v1_workspaces_workspace_id_environments_envi
     }
 }
 
-pub async fn update_template_api_v1_workspaces_workspace_id_environment_templates_template_id_patch(
+pub async fn update_template_api_v1_environment_templates_template_id_patch(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     template_id: &str,
     template_update: models::TemplateUpdate,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::Template>,
-    Error<UpdateTemplateApiV1WorkspacesWorkspaceIdEnvironmentTemplatesTemplateIdPatchError>,
+    Error<UpdateTemplateApiV1EnvironmentTemplatesTemplateIdPatchError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_template_id = template_id;
     let p_body_template_update = template_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/environment-templates/{template_id}",
+        "{}/api/v1/environment-templates/{template_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         template_id = crate::generated::apis::urlencode(p_path_template_id)
     );
     let mut req_builder = configuration
@@ -1168,6 +1150,9 @@ pub async fn update_template_api_v1_workspaces_workspace_id_environment_template
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1217,9 +1202,8 @@ pub async fn update_template_api_v1_workspaces_workspace_id_environment_template
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UpdateTemplateApiV1WorkspacesWorkspaceIdEnvironmentTemplatesTemplateIdPatchError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UpdateTemplateApiV1EnvironmentTemplatesTemplateIdPatchError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

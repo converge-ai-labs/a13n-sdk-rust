@@ -37,9 +37,6 @@ pub struct Agent {
     #[serde(rename = "image_url", deserialize_with = "Option::deserialize")]
     pub image_url: Option<String>,
 
-    #[serde(rename = "key")]
-    pub key: String,
-
     #[serde(rename = "labels")]
     pub labels: std::collections::HashMap<String, String>,
 
@@ -50,7 +47,7 @@ pub struct Agent {
     pub organization_id: String,
 
     #[serde(rename = "source")]
-    pub source: String,
+    pub source: models::AgentSource,
 
     #[serde(rename = "updated_at")]
     pub updated_at: chrono::DateTime<chrono::FixedOffset>,
@@ -74,11 +71,10 @@ impl Agent {
         description: String,
         id: String,
         image_url: Option<String>,
-        key: String,
         labels: std::collections::HashMap<String, String>,
         name: String,
         organization_id: String,
-        source: String,
+        source: models::AgentSource,
         updated_at: chrono::DateTime<chrono::FixedOffset>,
         updated_by_id: String,
         version: i32,
@@ -92,7 +88,6 @@ impl Agent {
             description,
             id,
             image_url,
-            key,
             labels,
             name,
             organization_id,

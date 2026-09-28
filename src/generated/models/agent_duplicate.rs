@@ -17,9 +17,6 @@ pub struct AgentDuplicate {
     #[serde(rename = "description", skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
-    #[serde(rename = "key")]
-    pub key: String,
-
     #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
     pub labels: Option<std::collections::HashMap<String, String>>,
 
@@ -37,10 +34,9 @@ pub struct AgentDuplicate {
 
 impl AgentDuplicate {
     /// A new head whose first revision copies `revision_id`, by default the source's default revision.
-    pub fn new(key: String, name: String) -> AgentDuplicate {
+    pub fn new(name: String) -> AgentDuplicate {
         AgentDuplicate {
             description: None,
-            key,
             labels: None,
             name,
             revision_id: None,

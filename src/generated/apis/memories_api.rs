@@ -13,242 +13,238 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`add_mount_api_v1_workspaces_workspace_id_threads_thread_id_memories_post`]
+/// struct for typed errors of method [`add_mount_api_v1_threads_thread_id_memories_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum AddMountApiV1WorkspacesWorkspaceIdThreadsThreadIdMemoriesPostError {
+pub enum AddMountApiV1ThreadsThreadIdMemoriesPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`add_record_api_v1_workspaces_workspace_id_memories_memory_id_records_post`]
+/// struct for typed errors of method [`add_record_api_v1_memories_memory_id_records_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum AddRecordApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsPostError {
+pub enum AddRecordApiV1MemoriesMemoryIdRecordsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_file_api_v1_workspaces_workspace_id_memories_memory_id_files_post`]
+/// struct for typed errors of method [`create_file_api_v1_memories_memory_id_files_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesPostError {
+pub enum CreateFileApiV1MemoriesMemoryIdFilesPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_memory_api_v1_workspaces_workspace_id_memories_post`]
+/// struct for typed errors of method [`create_memory_api_v1_memories_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateMemoryApiV1WorkspacesWorkspaceIdMemoriesPostError {
+pub enum CreateMemoryApiV1MemoriesPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_file_api_v1_workspaces_workspace_id_memories_memory_id_files_path_delete`]
+/// struct for typed errors of method [`delete_file_api_v1_memories_memory_id_files_path_delete`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesPathDeleteError {
+pub enum DeleteFileApiV1MemoriesMemoryIdFilesPathDeleteError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_memory_api_v1_workspaces_workspace_id_memories_memory_id_delete`]
+/// struct for typed errors of method [`delete_memory_api_v1_memories_memory_id_delete`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteMemoryApiV1WorkspacesWorkspaceIdMemoriesMemoryIdDeleteError {
+pub enum DeleteMemoryApiV1MemoriesMemoryIdDeleteError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_record_api_v1_workspaces_workspace_id_memories_memory_id_records_record_id_delete`]
+/// struct for typed errors of method [`delete_record_api_v1_memories_memory_id_records_record_id_delete`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteRecordApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsRecordIdDeleteError {
+pub enum DeleteRecordApiV1MemoriesMemoryIdRecordsRecordIdDeleteError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_memory_api_v1_workspaces_workspace_id_memories_memory_id_get`]
+/// struct for typed errors of method [`get_memory_api_v1_memories_memory_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetMemoryApiV1WorkspacesWorkspaceIdMemoriesMemoryIdGetError {
+pub enum GetMemoryApiV1MemoriesMemoryIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_revision_api_v1_workspaces_workspace_id_memories_memory_id_revisions_seq_get`]
+/// struct for typed errors of method [`get_revision_api_v1_memories_memory_id_revisions_seq_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetRevisionApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRevisionsSeqGetError {
+pub enum GetRevisionApiV1MemoriesMemoryIdRevisionsSeqGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_files_api_v1_workspaces_workspace_id_memories_memory_id_files_get`]
+/// struct for typed errors of method [`list_files_api_v1_memories_memory_id_files_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListFilesApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesGetError {
+pub enum ListFilesApiV1MemoriesMemoryIdFilesGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_memories_api_v1_workspaces_workspace_id_memories_get`]
+/// struct for typed errors of method [`list_memories_api_v1_memories_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListMemoriesApiV1WorkspacesWorkspaceIdMemoriesGetError {
+pub enum ListMemoriesApiV1MemoriesGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_mounts_api_v1_workspaces_workspace_id_threads_thread_id_memories_get`]
+/// struct for typed errors of method [`list_mounts_api_v1_threads_thread_id_memories_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListMountsApiV1WorkspacesWorkspaceIdThreadsThreadIdMemoriesGetError {
+pub enum ListMountsApiV1ThreadsThreadIdMemoriesGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_records_api_v1_workspaces_workspace_id_memories_memory_id_records_get`]
+/// struct for typed errors of method [`list_records_api_v1_memories_memory_id_records_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListRecordsApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsGetError {
+pub enum ListRecordsApiV1MemoriesMemoryIdRecordsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_revisions_api_v1_workspaces_workspace_id_memories_memory_id_revisions_get`]
+/// struct for typed errors of method [`list_revisions_api_v1_memories_memory_id_revisions_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListRevisionsApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRevisionsGetError {
+pub enum ListRevisionsApiV1MemoriesMemoryIdRevisionsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`move_file_api_v1_workspaces_workspace_id_memories_memory_id_files_move_post`]
+/// struct for typed errors of method [`move_file_api_v1_memories_memory_id_files_move_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum MoveFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesMovePostError {
+pub enum MoveFileApiV1MemoriesMemoryIdFilesMovePostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`purge_history_api_v1_workspaces_workspace_id_memories_memory_id_revisions_delete`]
+/// struct for typed errors of method [`purge_history_api_v1_memories_memory_id_revisions_delete`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PurgeHistoryApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRevisionsDeleteError {
+pub enum PurgeHistoryApiV1MemoriesMemoryIdRevisionsDeleteError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`read_file_api_v1_workspaces_workspace_id_memories_memory_id_files_path_get`]
+/// struct for typed errors of method [`read_file_api_v1_memories_memory_id_files_path_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReadFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesPathGetError {
+pub enum ReadFileApiV1MemoriesMemoryIdFilesPathGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`remove_mount_api_v1_workspaces_workspace_id_threads_thread_id_memories_name_delete`]
+/// struct for typed errors of method [`remove_mount_api_v1_threads_thread_id_memories_name_delete`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RemoveMountApiV1WorkspacesWorkspaceIdThreadsThreadIdMemoriesNameDeleteError {
+pub enum RemoveMountApiV1ThreadsThreadIdMemoriesNameDeleteError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`replace_file_api_v1_workspaces_workspace_id_memories_memory_id_files_path_put`]
+/// struct for typed errors of method [`replace_file_api_v1_memories_memory_id_files_path_put`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReplaceFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesPathPutError {
+pub enum ReplaceFileApiV1MemoriesMemoryIdFilesPathPutError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`restore_revision_api_v1_workspaces_workspace_id_memories_memory_id_revisions_seq_restore_post`]
+/// struct for typed errors of method [`restore_revision_api_v1_memories_memory_id_revisions_seq_restore_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RestoreRevisionApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRevisionsSeqRestorePostError {
+pub enum RestoreRevisionApiV1MemoriesMemoryIdRevisionsSeqRestorePostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`search_records_api_v1_workspaces_workspace_id_memories_memory_id_records_search_post`]
+/// struct for typed errors of method [`search_records_api_v1_memories_memory_id_records_search_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum SearchRecordsApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsSearchPostError {
+pub enum SearchRecordsApiV1MemoriesMemoryIdRecordsSearchPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_memory_api_v1_workspaces_workspace_id_memories_memory_id_patch`]
+/// struct for typed errors of method [`update_memory_api_v1_memories_memory_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateMemoryApiV1WorkspacesWorkspaceIdMemoriesMemoryIdPatchError {
+pub enum UpdateMemoryApiV1MemoriesMemoryIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_mount_api_v1_workspaces_workspace_id_threads_thread_id_memories_name_patch`]
+/// struct for typed errors of method [`update_mount_api_v1_threads_thread_id_memories_name_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateMountApiV1WorkspacesWorkspaceIdThreadsThreadIdMemoriesNamePatchError {
+pub enum UpdateMountApiV1ThreadsThreadIdMemoriesNamePatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_record_api_v1_workspaces_workspace_id_memories_memory_id_records_record_id_put`]
+/// struct for typed errors of method [`update_record_api_v1_memories_memory_id_records_record_id_put`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateRecordApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsRecordIdPutError {
+pub enum UpdateRecordApiV1MemoriesMemoryIdRecordsRecordIdPutError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn add_mount_api_v1_workspaces_workspace_id_threads_thread_id_memories_post(
+pub async fn add_mount_api_v1_threads_thread_id_memories_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     memory_mount: models::MemoryMount,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::MemoryMount>,
-    Error<AddMountApiV1WorkspacesWorkspaceIdThreadsThreadIdMemoriesPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::MemoryMount>, Error<AddMountApiV1ThreadsThreadIdMemoriesPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_body_memory_mount = memory_mount;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/memories",
+        "{}/api/v1/threads/{thread_id}/memories",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration
@@ -260,6 +256,9 @@ pub async fn add_mount_api_v1_workspaces_workspace_id_threads_thread_id_memories
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -309,7 +308,7 @@ pub async fn add_mount_api_v1_workspaces_workspace_id_threads_thread_id_memories
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AddMountApiV1WorkspacesWorkspaceIdThreadsThreadIdMemoriesPostError> =
+        let entity: Option<AddMountApiV1ThreadsThreadIdMemoriesPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -320,24 +319,21 @@ pub async fn add_mount_api_v1_workspaces_workspace_id_threads_thread_id_memories
     }
 }
 
-pub async fn add_record_api_v1_workspaces_workspace_id_memories_memory_id_records_post(
+pub async fn add_record_api_v1_memories_memory_id_records_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     memory_record_text: models::MemoryRecordText,
-) -> Result<
-    Response<models::MemoryRecordView>,
-    Error<AddRecordApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::MemoryRecordView>, Error<AddRecordApiV1MemoriesMemoryIdRecordsPostError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_body_memory_record_text = memory_record_text;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/records",
+        "{}/api/v1/memories/{memory_id}/records",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id)
     );
     let mut req_builder = configuration
@@ -346,6 +342,9 @@ pub async fn add_record_api_v1_workspaces_workspace_id_memories_memory_id_record
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -395,7 +394,7 @@ pub async fn add_record_api_v1_workspaces_workspace_id_memories_memory_id_record
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AddRecordApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsPostError> =
+        let entity: Option<AddRecordApiV1MemoriesMemoryIdRecordsPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -406,24 +405,20 @@ pub async fn add_record_api_v1_workspaces_workspace_id_memories_memory_id_record
     }
 }
 
-pub async fn create_file_api_v1_workspaces_workspace_id_memories_memory_id_files_post(
+pub async fn create_file_api_v1_memories_memory_id_files_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     memory_file_create: models::MemoryFileCreate,
-) -> Result<
-    Response<models::MemoryFile>,
-    Error<CreateFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::MemoryFile>, Error<CreateFileApiV1MemoriesMemoryIdFilesPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_body_memory_file_create = memory_file_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/files",
+        "{}/api/v1/memories/{memory_id}/files",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id)
     );
     let mut req_builder = configuration
@@ -432,6 +427,9 @@ pub async fn create_file_api_v1_workspaces_workspace_id_memories_memory_id_files
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -481,7 +479,7 @@ pub async fn create_file_api_v1_workspaces_workspace_id_memories_memory_id_files
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesPostError> =
+        let entity: Option<CreateFileApiV1MemoriesMemoryIdFilesPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -492,27 +490,25 @@ pub async fn create_file_api_v1_workspaces_workspace_id_memories_memory_id_files
     }
 }
 
-pub async fn create_memory_api_v1_workspaces_workspace_id_memories_post(
+pub async fn create_memory_api_v1_memories_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_create: models::MemoryCreate,
-) -> Result<Response<models::Memory>, Error<CreateMemoryApiV1WorkspacesWorkspaceIdMemoriesPostError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Memory>, Error<CreateMemoryApiV1MemoriesPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_body_memory_create = memory_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/memories", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -562,7 +558,7 @@ pub async fn create_memory_api_v1_workspaces_workspace_id_memories_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateMemoryApiV1WorkspacesWorkspaceIdMemoriesPostError> =
+        let entity: Option<CreateMemoryApiV1MemoriesPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -573,26 +569,22 @@ pub async fn create_memory_api_v1_workspaces_workspace_id_memories_post(
     }
 }
 
-pub async fn delete_file_api_v1_workspaces_workspace_id_memories_memory_id_files_path_delete(
+pub async fn delete_file_api_v1_memories_memory_id_files_path_delete(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     path: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<()>,
-    Error<DeleteFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesPathDeleteError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<()>, Error<DeleteFileApiV1MemoriesMemoryIdFilesPathDeleteError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_path_path = path;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/files/{path}",
+        "{}/api/v1/memories/{memory_id}/files/{path}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id),
         path = crate::generated::apis::urlencode(p_path_path)
     );
@@ -606,6 +598,9 @@ pub async fn delete_file_api_v1_workspaces_workspace_id_memories_memory_id_files
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
     }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
@@ -632,9 +627,8 @@ pub async fn delete_file_api_v1_workspaces_workspace_id_memories_memory_id_files
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            DeleteFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesPathDeleteError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<DeleteFileApiV1MemoriesMemoryIdFilesPathDeleteError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -644,22 +638,20 @@ pub async fn delete_file_api_v1_workspaces_workspace_id_memories_memory_id_files
     }
 }
 
-pub async fn delete_memory_api_v1_workspaces_workspace_id_memories_memory_id_delete(
+pub async fn delete_memory_api_v1_memories_memory_id_delete(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     if_match: Option<&str>,
-) -> Result<Response<()>, Error<DeleteMemoryApiV1WorkspacesWorkspaceIdMemoriesMemoryIdDeleteError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<Response<()>, Error<DeleteMemoryApiV1MemoriesMemoryIdDeleteError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}",
+        "{}/api/v1/memories/{memory_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id)
     );
     let mut req_builder = configuration
@@ -672,6 +664,9 @@ pub async fn delete_memory_api_v1_workspaces_workspace_id_memories_memory_id_del
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
     }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
@@ -698,7 +693,7 @@ pub async fn delete_memory_api_v1_workspaces_workspace_id_memories_memory_id_del
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteMemoryApiV1WorkspacesWorkspaceIdMemoriesMemoryIdDeleteError> =
+        let entity: Option<DeleteMemoryApiV1MemoriesMemoryIdDeleteError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -709,24 +704,20 @@ pub async fn delete_memory_api_v1_workspaces_workspace_id_memories_memory_id_del
     }
 }
 
-pub async fn delete_record_api_v1_workspaces_workspace_id_memories_memory_id_records_record_id_delete(
+pub async fn delete_record_api_v1_memories_memory_id_records_record_id_delete(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     record_id: &str,
-) -> Result<
-    Response<()>,
-    Error<DeleteRecordApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsRecordIdDeleteError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<()>, Error<DeleteRecordApiV1MemoriesMemoryIdRecordsRecordIdDeleteError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_path_record_id = record_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/records/{record_id}",
+        "{}/api/v1/memories/{memory_id}/records/{record_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id),
         record_id = crate::generated::apis::urlencode(p_path_record_id)
     );
@@ -736,6 +727,9 @@ pub async fn delete_record_api_v1_workspaces_workspace_id_memories_memory_id_rec
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -763,9 +757,8 @@ pub async fn delete_record_api_v1_workspaces_workspace_id_memories_memory_id_rec
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            DeleteRecordApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsRecordIdDeleteError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<DeleteRecordApiV1MemoriesMemoryIdRecordsRecordIdDeleteError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -775,28 +768,27 @@ pub async fn delete_record_api_v1_workspaces_workspace_id_memories_memory_id_rec
     }
 }
 
-pub async fn get_memory_api_v1_workspaces_workspace_id_memories_memory_id_get(
+pub async fn get_memory_api_v1_memories_memory_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
-) -> Result<
-    Response<models::Memory>,
-    Error<GetMemoryApiV1WorkspacesWorkspaceIdMemoriesMemoryIdGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Memory>, Error<GetMemoryApiV1MemoriesMemoryIdGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}",
+        "{}/api/v1/memories/{memory_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -837,7 +829,7 @@ pub async fn get_memory_api_v1_workspaces_workspace_id_memories_memory_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetMemoryApiV1WorkspacesWorkspaceIdMemoriesMemoryIdGetError> =
+        let entity: Option<GetMemoryApiV1MemoriesMemoryIdGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -848,24 +840,23 @@ pub async fn get_memory_api_v1_workspaces_workspace_id_memories_memory_id_get(
     }
 }
 
-pub async fn get_revision_api_v1_workspaces_workspace_id_memories_memory_id_revisions_seq_get(
+pub async fn get_revision_api_v1_memories_memory_id_revisions_seq_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     seq: i32,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::MemoryRevisionDetail>,
-    Error<GetRevisionApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRevisionsSeqGetError>,
+    Error<GetRevisionApiV1MemoriesMemoryIdRevisionsSeqGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_path_seq = seq;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/revisions/{seq}",
+        "{}/api/v1/memories/{memory_id}/revisions/{seq}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id),
         seq = p_path_seq
     );
@@ -873,6 +864,9 @@ pub async fn get_revision_api_v1_workspaces_workspace_id_memories_memory_id_revi
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -913,9 +907,8 @@ pub async fn get_revision_api_v1_workspaces_workspace_id_memories_memory_id_revi
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetRevisionApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRevisionsSeqGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<GetRevisionApiV1MemoriesMemoryIdRevisionsSeqGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -925,28 +918,24 @@ pub async fn get_revision_api_v1_workspaces_workspace_id_memories_memory_id_revi
     }
 }
 
-pub async fn list_files_api_v1_workspaces_workspace_id_memories_memory_id_files_get(
+pub async fn list_files_api_v1_memories_memory_id_files_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     prefix: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::MemoryFilePage>,
-    Error<ListFilesApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::MemoryFilePage>, Error<ListFilesApiV1MemoriesMemoryIdFilesGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_query_prefix = prefix;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/files",
+        "{}/api/v1/memories/{memory_id}/files",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -962,6 +951,9 @@ pub async fn list_files_api_v1_workspaces_workspace_id_memories_memory_id_files_
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1002,7 +994,7 @@ pub async fn list_files_api_v1_workspaces_workspace_id_memories_memory_id_files_
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListFilesApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesGetError> =
+        let entity: Option<ListFilesApiV1MemoriesMemoryIdFilesGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1013,31 +1005,24 @@ pub async fn list_files_api_v1_workspaces_workspace_id_memories_memory_id_files_
     }
 }
 
-pub async fn list_memories_api_v1_workspaces_workspace_id_memories_get(
+pub async fn list_memories_api_v1_memories_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     label: Option<Vec<String>>,
     kind: Option<&str>,
     r#type: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::MemoryPage>,
-    Error<ListMemoriesApiV1WorkspacesWorkspaceIdMemoriesGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::MemoryPage>, Error<ListMemoriesApiV1MemoriesGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_query_label = label;
     let p_query_kind = kind;
     let p_query_type = r#type;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/memories", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref param_value) = p_query_label {
@@ -1073,6 +1058,9 @@ pub async fn list_memories_api_v1_workspaces_workspace_id_memories_get(
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1113,8 +1101,7 @@ pub async fn list_memories_api_v1_workspaces_workspace_id_memories_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListMemoriesApiV1WorkspacesWorkspaceIdMemoriesGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListMemoriesApiV1MemoriesGetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1124,28 +1111,28 @@ pub async fn list_memories_api_v1_workspaces_workspace_id_memories_get(
     }
 }
 
-pub async fn list_mounts_api_v1_workspaces_workspace_id_threads_thread_id_memories_get(
+pub async fn list_mounts_api_v1_threads_thread_id_memories_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
-) -> Result<
-    Response<models::MemoryMountPage>,
-    Error<ListMountsApiV1WorkspacesWorkspaceIdThreadsThreadIdMemoriesGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::MemoryMountPage>, Error<ListMountsApiV1ThreadsThreadIdMemoriesGetError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/memories",
+        "{}/api/v1/threads/{thread_id}/memories",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1186,7 +1173,7 @@ pub async fn list_mounts_api_v1_workspaces_workspace_id_threads_thread_id_memori
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListMountsApiV1WorkspacesWorkspaceIdThreadsThreadIdMemoriesGetError> =
+        let entity: Option<ListMountsApiV1ThreadsThreadIdMemoriesGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1197,26 +1184,25 @@ pub async fn list_mounts_api_v1_workspaces_workspace_id_threads_thread_id_memori
     }
 }
 
-pub async fn list_records_api_v1_workspaces_workspace_id_memories_memory_id_records_get(
+pub async fn list_records_api_v1_memories_memory_id_records_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::MemoryRecordPage>,
-    Error<ListRecordsApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsGetError>,
+    Error<ListRecordsApiV1MemoriesMemoryIdRecordsGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/records",
+        "{}/api/v1/memories/{memory_id}/records",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -1229,6 +1215,9 @@ pub async fn list_records_api_v1_workspaces_workspace_id_memories_memory_id_reco
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1269,7 +1258,7 @@ pub async fn list_records_api_v1_workspaces_workspace_id_memories_memory_id_reco
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListRecordsApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsGetError> =
+        let entity: Option<ListRecordsApiV1MemoriesMemoryIdRecordsGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1280,30 +1269,29 @@ pub async fn list_records_api_v1_workspaces_workspace_id_memories_memory_id_reco
     }
 }
 
-pub async fn list_revisions_api_v1_workspaces_workspace_id_memories_memory_id_revisions_get(
+pub async fn list_revisions_api_v1_memories_memory_id_revisions_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     path: Option<&str>,
     run_id: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::MemoryRevisionPage>,
-    Error<ListRevisionsApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRevisionsGetError>,
+    Error<ListRevisionsApiV1MemoriesMemoryIdRevisionsGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_query_path = path;
     let p_query_run_id = run_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/revisions",
+        "{}/api/v1/memories/{memory_id}/revisions",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -1322,6 +1310,9 @@ pub async fn list_revisions_api_v1_workspaces_workspace_id_memories_memory_id_re
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1362,9 +1353,8 @@ pub async fn list_revisions_api_v1_workspaces_workspace_id_memories_memory_id_re
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ListRevisionsApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRevisionsGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ListRevisionsApiV1MemoriesMemoryIdRevisionsGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1375,26 +1365,22 @@ pub async fn list_revisions_api_v1_workspaces_workspace_id_memories_memory_id_re
 }
 
 /// Move the source file `If-Match` names; the destination must be free.
-pub async fn move_file_api_v1_workspaces_workspace_id_memories_memory_id_files_move_post(
+pub async fn move_file_api_v1_memories_memory_id_files_move_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     memory_file_move: models::MemoryFileMove,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::MemoryFile>,
-    Error<MoveFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesMovePostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::MemoryFile>, Error<MoveFileApiV1MemoriesMemoryIdFilesMovePostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_body_memory_file_move = memory_file_move;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/files/move",
+        "{}/api/v1/memories/{memory_id}/files/move",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id)
     );
     let mut req_builder = configuration
@@ -1406,6 +1392,9 @@ pub async fn move_file_api_v1_workspaces_workspace_id_memories_memory_id_files_m
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1455,7 +1444,7 @@ pub async fn move_file_api_v1_workspaces_workspace_id_memories_memory_id_files_m
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<MoveFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesMovePostError> =
+        let entity: Option<MoveFileApiV1MemoriesMemoryIdFilesMovePostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1467,24 +1456,23 @@ pub async fn move_file_api_v1_workspaces_workspace_id_memories_memory_id_files_m
 }
 
 /// Delete every retained revision of one file path.
-pub async fn purge_history_api_v1_workspaces_workspace_id_memories_memory_id_revisions_delete(
+pub async fn purge_history_api_v1_memories_memory_id_revisions_delete(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     path: &str,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::HistoryPurge>,
-    Error<PurgeHistoryApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRevisionsDeleteError>,
+    Error<PurgeHistoryApiV1MemoriesMemoryIdRevisionsDeleteError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_query_path = path;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/revisions",
+        "{}/api/v1/memories/{memory_id}/revisions",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id)
     );
     let mut req_builder = configuration
@@ -1494,6 +1482,9 @@ pub async fn purge_history_api_v1_workspaces_workspace_id_memories_memory_id_rev
     req_builder = req_builder.query(&[("path", &p_query_path.to_string())]);
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1542,9 +1533,8 @@ pub async fn purge_history_api_v1_workspaces_workspace_id_memories_memory_id_rev
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            PurgeHistoryApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRevisionsDeleteError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<PurgeHistoryApiV1MemoriesMemoryIdRevisionsDeleteError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1554,24 +1544,20 @@ pub async fn purge_history_api_v1_workspaces_workspace_id_memories_memory_id_rev
     }
 }
 
-pub async fn read_file_api_v1_workspaces_workspace_id_memories_memory_id_files_path_get(
+pub async fn read_file_api_v1_memories_memory_id_files_path_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     path: &str,
-) -> Result<
-    Response<models::MemoryFile>,
-    Error<ReadFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesPathGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::MemoryFile>, Error<ReadFileApiV1MemoriesMemoryIdFilesPathGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_path_path = path;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/files/{path}",
+        "{}/api/v1/memories/{memory_id}/files/{path}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id),
         path = crate::generated::apis::urlencode(p_path_path)
     );
@@ -1579,6 +1565,9 @@ pub async fn read_file_api_v1_workspaces_workspace_id_memories_memory_id_files_p
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1619,7 +1608,7 @@ pub async fn read_file_api_v1_workspaces_workspace_id_memories_memory_id_files_p
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ReadFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesPathGetError> =
+        let entity: Option<ReadFileApiV1MemoriesMemoryIdFilesPathGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1630,26 +1619,22 @@ pub async fn read_file_api_v1_workspaces_workspace_id_memories_memory_id_files_p
     }
 }
 
-pub async fn remove_mount_api_v1_workspaces_workspace_id_threads_thread_id_memories_name_delete(
+pub async fn remove_mount_api_v1_threads_thread_id_memories_name_delete(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     name: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<()>,
-    Error<RemoveMountApiV1WorkspacesWorkspaceIdThreadsThreadIdMemoriesNameDeleteError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<()>, Error<RemoveMountApiV1ThreadsThreadIdMemoriesNameDeleteError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_path_name = name;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/memories/{name}",
+        "{}/api/v1/threads/{thread_id}/memories/{name}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id),
         name = crate::generated::apis::urlencode(p_path_name)
     );
@@ -1662,6 +1647,9 @@ pub async fn remove_mount_api_v1_workspaces_workspace_id_threads_thread_id_memor
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1689,9 +1677,8 @@ pub async fn remove_mount_api_v1_workspaces_workspace_id_threads_thread_id_memor
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            RemoveMountApiV1WorkspacesWorkspaceIdThreadsThreadIdMemoriesNameDeleteError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<RemoveMountApiV1ThreadsThreadIdMemoriesNameDeleteError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1701,28 +1688,25 @@ pub async fn remove_mount_api_v1_workspaces_workspace_id_threads_thread_id_memor
     }
 }
 
-pub async fn replace_file_api_v1_workspaces_workspace_id_memories_memory_id_files_path_put(
+pub async fn replace_file_api_v1_memories_memory_id_files_path_put(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     path: &str,
     memory_file_replace: models::MemoryFileReplace,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::MemoryFile>,
-    Error<ReplaceFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesPathPutError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::MemoryFile>, Error<ReplaceFileApiV1MemoriesMemoryIdFilesPathPutError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_path_path = path;
     let p_body_memory_file_replace = memory_file_replace;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/files/{path}",
+        "{}/api/v1/memories/{memory_id}/files/{path}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id),
         path = crate::generated::apis::urlencode(p_path_path)
     );
@@ -1733,6 +1717,9 @@ pub async fn replace_file_api_v1_workspaces_workspace_id_memories_memory_id_file
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1782,7 +1769,7 @@ pub async fn replace_file_api_v1_workspaces_workspace_id_memories_memory_id_file
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ReplaceFileApiV1WorkspacesWorkspaceIdMemoriesMemoryIdFilesPathPutError> =
+        let entity: Option<ReplaceFileApiV1MemoriesMemoryIdFilesPathPutError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1794,26 +1781,25 @@ pub async fn replace_file_api_v1_workspaces_workspace_id_memories_memory_id_file
 }
 
 /// Set the path back to the content the change replaced; `If-Match` names the file there, if any.
-pub async fn restore_revision_api_v1_workspaces_workspace_id_memories_memory_id_revisions_seq_restore_post(
+pub async fn restore_revision_api_v1_memories_memory_id_revisions_seq_restore_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     seq: i32,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::MemoryFileState>,
-    Error<RestoreRevisionApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRevisionsSeqRestorePostError>,
+    Error<RestoreRevisionApiV1MemoriesMemoryIdRevisionsSeqRestorePostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_path_seq = seq;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/revisions/{seq}/restore",
+        "{}/api/v1/memories/{memory_id}/revisions/{seq}/restore",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id),
         seq = p_path_seq
     );
@@ -1826,6 +1812,9 @@ pub async fn restore_revision_api_v1_workspaces_workspace_id_memories_memory_id_
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1874,9 +1863,8 @@ pub async fn restore_revision_api_v1_workspaces_workspace_id_memories_memory_id_
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            RestoreRevisionApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRevisionsSeqRestorePostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<RestoreRevisionApiV1MemoriesMemoryIdRevisionsSeqRestorePostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1887,24 +1875,23 @@ pub async fn restore_revision_api_v1_workspaces_workspace_id_memories_memory_id_
 }
 
 /// The records most similar to the query; the query travels in the body, never the URL.
-pub async fn search_records_api_v1_workspaces_workspace_id_memories_memory_id_records_search_post(
+pub async fn search_records_api_v1_memories_memory_id_records_search_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     memory_record_search: models::MemoryRecordSearch,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::MemoryRecordPage>,
-    Error<SearchRecordsApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsSearchPostError>,
+    Error<SearchRecordsApiV1MemoriesMemoryIdRecordsSearchPostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_body_memory_record_search = memory_record_search;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/records/search",
+        "{}/api/v1/memories/{memory_id}/records/search",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id)
     );
     let mut req_builder = configuration
@@ -1913,6 +1900,9 @@ pub async fn search_records_api_v1_workspaces_workspace_id_memories_memory_id_re
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1962,9 +1952,8 @@ pub async fn search_records_api_v1_workspaces_workspace_id_memories_memory_id_re
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            SearchRecordsApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsSearchPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<SearchRecordsApiV1MemoriesMemoryIdRecordsSearchPostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1974,26 +1963,22 @@ pub async fn search_records_api_v1_workspaces_workspace_id_memories_memory_id_re
     }
 }
 
-pub async fn update_memory_api_v1_workspaces_workspace_id_memories_memory_id_patch(
+pub async fn update_memory_api_v1_memories_memory_id_patch(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     memory_update: models::MemoryUpdate,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Memory>,
-    Error<UpdateMemoryApiV1WorkspacesWorkspaceIdMemoriesMemoryIdPatchError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Memory>, Error<UpdateMemoryApiV1MemoriesMemoryIdPatchError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_body_memory_update = memory_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}",
+        "{}/api/v1/memories/{memory_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id)
     );
     let mut req_builder = configuration
@@ -2005,6 +1990,9 @@ pub async fn update_memory_api_v1_workspaces_workspace_id_memories_memory_id_pat
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2054,7 +2042,7 @@ pub async fn update_memory_api_v1_workspaces_workspace_id_memories_memory_id_pat
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateMemoryApiV1WorkspacesWorkspaceIdMemoriesMemoryIdPatchError> =
+        let entity: Option<UpdateMemoryApiV1MemoriesMemoryIdPatchError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -2065,28 +2053,27 @@ pub async fn update_memory_api_v1_workspaces_workspace_id_memories_memory_id_pat
     }
 }
 
-pub async fn update_mount_api_v1_workspaces_workspace_id_threads_thread_id_memories_name_patch(
+pub async fn update_mount_api_v1_threads_thread_id_memories_name_patch(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     name: &str,
     memory_mount_update: models::MemoryMountUpdate,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::MemoryMount>,
-    Error<UpdateMountApiV1WorkspacesWorkspaceIdThreadsThreadIdMemoriesNamePatchError>,
+    Error<UpdateMountApiV1ThreadsThreadIdMemoriesNamePatchError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_path_name = name;
     let p_body_memory_mount_update = memory_mount_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/memories/{name}",
+        "{}/api/v1/threads/{thread_id}/memories/{name}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id),
         name = crate::generated::apis::urlencode(p_path_name)
     );
@@ -2099,6 +2086,9 @@ pub async fn update_mount_api_v1_workspaces_workspace_id_threads_thread_id_memor
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2148,9 +2138,8 @@ pub async fn update_mount_api_v1_workspaces_workspace_id_threads_thread_id_memor
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UpdateMountApiV1WorkspacesWorkspaceIdThreadsThreadIdMemoriesNamePatchError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UpdateMountApiV1ThreadsThreadIdMemoriesNamePatchError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2161,26 +2150,25 @@ pub async fn update_mount_api_v1_workspaces_workspace_id_threads_thread_id_memor
 }
 
 /// Replace the record's text; records carry no version, so the last writer wins.
-pub async fn update_record_api_v1_workspaces_workspace_id_memories_memory_id_records_record_id_put(
+pub async fn update_record_api_v1_memories_memory_id_records_record_id_put(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     memory_id: &str,
     record_id: &str,
     memory_record_text: models::MemoryRecordText,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::MemoryRecordView>,
-    Error<UpdateRecordApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsRecordIdPutError>,
+    Error<UpdateRecordApiV1MemoriesMemoryIdRecordsRecordIdPutError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_memory_id = memory_id;
     let p_path_record_id = record_id;
     let p_body_memory_record_text = memory_record_text;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/memories/{memory_id}/records/{record_id}",
+        "{}/api/v1/memories/{memory_id}/records/{record_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         memory_id = crate::generated::apis::urlencode(p_path_memory_id),
         record_id = crate::generated::apis::urlencode(p_path_record_id)
     );
@@ -2188,6 +2176,9 @@ pub async fn update_record_api_v1_workspaces_workspace_id_memories_memory_id_rec
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2237,9 +2228,8 @@ pub async fn update_record_api_v1_workspaces_workspace_id_memories_memory_id_rec
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UpdateRecordApiV1WorkspacesWorkspaceIdMemoriesMemoryIdRecordsRecordIdPutError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UpdateRecordApiV1MemoriesMemoryIdRecordsRecordIdPutError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

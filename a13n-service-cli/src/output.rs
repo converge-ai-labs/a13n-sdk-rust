@@ -6,7 +6,48 @@ use a13n::{
 use clap::ArgMatches;
 use serde::Serialize;
 use serde_json::{Value, json};
-use std::io::IsTerminal;
+use std::{
+    io::IsTerminal,
+    path::{Path, PathBuf},
+    sync::atomic::{AtomicU64, Ordering},
+};
+
+static DOWNLOAD_ID: AtomicU64 = AtomicU64::new(0);
+
+/// Cleanup also runs when a timeout or Ctrl-C drops an in-flight download.
+struct PendingDownload(PathBuf);
+impl Drop for PendingDownload {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_file(&self.0);
+    }
+}
+fn temporary_destination(
+    destination: &Path,
+) -> Result<(tokio::fs::File, PendingDownload), CliError> {
+    let name = destination
+        .file_name()
+        .ok_or_else(|| CliError::input("invalid output path"))?;
+    let parent = destination.parent().unwrap_or_else(|| Path::new("."));
+    for _ in 0..16 {
+        let mut suffix = name.to_os_string();
+        suffix.push(format!(
+            ".a13n-{}-{}.part",
+            std::process::id(),
+            DOWNLOAD_ID.fetch_add(1, Ordering::Relaxed)
+        ));
+        let path = parent.join(suffix);
+        match std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&path)
+        {
+            Ok(file) => return Ok((tokio::fs::File::from_std(file), PendingDownload(path))),
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(_) => return Err(CliError::input("cannot open output file")),
+        }
+    }
+    Err(CliError::input("cannot allocate a unique output file"))
+}
 use tokio::io::{AsyncWriteExt, stdout};
 
 fn request_id(headers: &reqwest::header::HeaderMap) -> Option<&str> {
@@ -14,7 +55,10 @@ fn request_id(headers: &reqwest::header::HeaderMap) -> Option<&str> {
         .get("x-request-id")
         .and_then(|value| value.to_str().ok())
 }
-fn envelope<T: Serialize>(response: Response<T>, config: &Effective) -> Result<Value, CliError> {
+pub(crate) fn envelope<T: Serialize>(
+    response: Response<T>,
+    config: &Effective,
+) -> Result<Value, CliError> {
     let etag = response.etag().map(str::to_owned);
     let data = serde_json::to_value(response.data)
         .map_err(|_| CliError::protocol("cannot serialize response"))?;
@@ -111,9 +155,7 @@ pub async fn binary(mut response: BinaryResponse, matches: &ArgMatches) -> Resul
             .await
             .map_err(|_| CliError::input("cannot flush stdout"))?;
     } else {
-        let mut out = tokio::fs::File::create(destination)
-            .await
-            .map_err(|_| CliError::input("cannot open output file"))?;
+        let (mut out, pending) = temporary_destination(Path::new(destination))?;
         while let Some(chunk) = response.chunk().await? {
             out.write_all(&chunk)
                 .await
@@ -122,6 +164,10 @@ pub async fn binary(mut response: BinaryResponse, matches: &ArgMatches) -> Resul
         out.flush()
             .await
             .map_err(|_| CliError::input("cannot flush output file"))?;
+        drop(out);
+        tokio::fs::rename(&pending.0, destination)
+            .await
+            .map_err(|_| CliError::input("cannot replace output file"))?;
     }
     Ok(())
 }

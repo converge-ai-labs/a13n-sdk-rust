@@ -1,7 +1,7 @@
 use crate::{CliError, config::Effective, output, required};
 use a13n::{
     Client,
-    streaming::{ItemKind, ItemState, StreamOptions, ThreadFrame},
+    streaming::{ItemKind, ItemState, StreamOptions, ThreadFrame, ThreadStream},
 };
 pub(crate) fn item_kind(kind: &ItemKind) -> &'static str {
     match kind {
@@ -19,16 +19,35 @@ pub(crate) fn item_state(state: &ItemState) -> &'static str {
         ItemState::Failed => "failed",
     }
 }
-use clap::{Arg, ArgMatches, Command, value_parser};
+use clap::{Arg, ArgAction, ArgMatches, Command, value_parser};
 use serde_json::json;
 use std::time::Duration;
 use tokio::io::AsyncWriteExt;
 
 pub fn commands(mut api: Command) -> Command {
+    api = api.mut_subcommand("agents", |agents| {
+        agents
+        .subcommand(Command::new("start")
+            .about("Submit the first text message to an Agent in a new Thread")
+            .arg(Arg::new("id").required(true).help("Agent ID"))
+            .arg(Arg::new("text").long("text").required(true))
+            .arg(Arg::new("idempotency_key").long("idempotency-key").required(true))
+            .arg(Arg::new("wait").long("wait").action(ArgAction::SetTrue)))
+        .subcommand(Command::new("send")
+            .about("Continue a Thread using the specified Agent; Threads have no permanent Agent")
+            .arg(Arg::new("id").required(true).help("Agent ID"))
+            .arg(Arg::new("thread_id").long("thread").required(true))
+            .arg(Arg::new("text").long("text").required(true))
+            .arg(Arg::new("idempotency_key").long("idempotency-key").required(true))
+            .arg(Arg::new("wait").long("wait").action(ArgAction::SetTrue)))
+    });
     api = api.mut_subcommand("runs", |runs| runs.subcommand(Command::new("wait")
         .about("Wait for exactly this Run to reach completed, waiting, failed or cancelled; never follows successors")
         .arg(Arg::new("id").required(true))
-        .arg(Arg::new("interval_ms").long("interval-ms").default_value("500").value_parser(value_parser!(u64).range(1..)))));
+        .arg(Arg::new("interval_ms").long("interval-ms").default_value("500").value_parser(value_parser!(u64).range(1..))))
+        .subcommand(Command::new("result")
+            .about("Read authoritative committed items of one Run")
+            .arg(Arg::new("id").required(true))));
     api.mut_subcommand("threads", |threads| {
         threads.subcommand(Command::new("events")
             .about("Observe Thread frames as JSONL; changed/gap/reset are readback hints, not reconstructed state")
@@ -46,24 +65,50 @@ pub async fn run(
     client: &Client,
     config: &Effective,
 ) -> Result<(), CliError> {
-    let workspace = client
-        .resources()
-        .workspaces()
-        .at(config.required("workspace_id")?);
+    let resources = client.resources();
     match matches.subcommand() {
-        Some(("runs", runs)) => {
-            let (_, leaf) = runs
+        Some(("agents", agents)) => {
+            let (action, leaf) = agents
                 .subcommand()
-                .ok_or_else(|| CliError::input("missing wait command"))?;
-            let interval =
-                Duration::from_millis(*leaf.get_one::<u64>("interval_ms").unwrap_or(&500));
-            let result = workspace
-                .runs()
-                .at(required(leaf, "id")?)
-                .wait(interval)
-                .await?;
-            output::response(result, config).await
+                .ok_or_else(|| CliError::input("missing Agent command"))?;
+            let agent = client.agent(required(leaf, "id")?);
+            let key = required(leaf, "idempotency_key")?;
+            let text = required(leaf, "text")?;
+            let mut interaction = match action {
+                "start" => agent.start(text, key).await?,
+                "send" => agent.send(required(leaf, "thread_id")?, text, key).await?,
+                _ => return Err(CliError::input("unknown Agent command")),
+            };
+            if leaf.get_flag("wait") {
+                let outcome = interaction.result().await?;
+                let receipt = output::envelope(interaction.receipt, config)?;
+                let run = output::envelope(outcome.snapshot, config)?;
+                output::print(&json!({"submitted":receipt,"outcome":run}), config).await
+            } else {
+                output::response(interaction.receipt, config).await
+            }
         }
+        Some(("runs", runs)) => match runs.subcommand() {
+            Some(("wait", leaf)) => {
+                let interval =
+                    Duration::from_millis(*leaf.get_one::<u64>("interval_ms").unwrap_or(&500));
+                let outcome = client
+                    .run(required(leaf, "id")?)
+                    .wait_with(Duration::from_secs(config.timeout), interval)
+                    .await?;
+                output::response(outcome.snapshot, config).await
+            }
+            Some(("result", leaf)) => {
+                let result = resources
+                    .runs()
+                    .at(required(leaf, "id")?)
+                    .items()
+                    .get(Default::default())
+                    .await?;
+                output::response(result, config).await
+            }
+            _ => Err(CliError::input("unknown Run command")),
+        },
         Some(("threads", threads)) => match threads.subcommand() {
             Some(("inbox", inbox)) => {
                 let (_, leaf) = inbox
@@ -71,24 +116,23 @@ pub async fn run(
                     .ok_or_else(|| CliError::input("missing wait command"))?;
                 let interval =
                     Duration::from_millis(*leaf.get_one::<u64>("interval_ms").unwrap_or(&500));
-                let result = workspace
-                    .threads()
-                    .at(required(leaf, "thread_id")?)
-                    .inbox()
-                    .at(required(leaf, "id")?)
+                let result = client
+                    .entry(required(leaf, "thread_id")?, required(leaf, "id")?)
                     .wait(interval)
                     .await?;
                 output::response(result, config).await
             }
             Some(("events", leaf)) => {
-                let thread = workspace.threads().at(required(leaf, "thread_id")?);
-                let mut stream = thread
-                    .events(StreamOptions {
+                let thread = resources.threads().at(required(leaf, "thread_id")?);
+                let mut stream = ThreadStream::open(
+                    thread,
+                    StreamOptions {
                         after: leaf.get_one::<String>("after").cloned(),
                         max_reconnects: *leaf.get_one::<usize>("max_reconnects").unwrap_or(&0),
                         ..Default::default()
-                    })
-                    .await?;
+                    },
+                )
+                .await?;
                 let mut stdout = tokio::io::stdout();
                 while let Some(frame) = stream.next().await? {
                     let applied = stream.applied_cursor();

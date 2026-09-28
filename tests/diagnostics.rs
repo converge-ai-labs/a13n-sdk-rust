@@ -1,7 +1,8 @@
 mod common;
 use a13n::{
-    Client, Error, ProtocolKind, TransportKind, TransportStage, resources::*,
-    streaming::StreamOptions,
+    Client, Error, ProtocolKind, TransportKind, TransportStage,
+    resources::*,
+    streaming::{StreamOptions, ThreadStream},
 };
 use common::{Reply, sample, server};
 use std::{error::Error as _, time::Duration};
@@ -113,16 +114,13 @@ async fn response_diagnostics_preserve_metadata_without_printing_it() {
 async fn stream_diagnostics_do_not_change_recovery_or_cursor_semantics() {
     let origin = server(|_| Reply::bytes(200, "application/json", b"private".to_vec())).await;
     let client = common::client(&origin);
-    let error = client
-        .resources()
-        .workspaces()
-        .at("w")
-        .threads()
-        .at("t")
-        .events(StreamOptions::default())
-        .await
-        .err()
-        .unwrap();
+    let error = ThreadStream::open(
+        client.resources().threads().at("t"),
+        StreamOptions::default(),
+    )
+    .await
+    .err()
+    .unwrap();
     assert!(
         matches!(&error, Error::Protocol(e) if e.kind == ProtocolKind::UnexpectedContentType && e.status == Some(200))
     );
@@ -130,15 +128,12 @@ async fn stream_diagnostics_do_not_change_recovery_or_cursor_semantics() {
 
     let origin = server(|_| Reply::sse("event: changed\ndata: private\n\n")).await;
     let client = common::client(&origin);
-    let mut stream = client
-        .resources()
-        .workspaces()
-        .at("w")
-        .threads()
-        .at("t")
-        .events(StreamOptions::default())
-        .await
-        .unwrap();
+    let mut stream = ThreadStream::open(
+        client.resources().threads().at("t"),
+        StreamOptions::default(),
+    )
+    .await
+    .unwrap();
     let error = stream.next().await.unwrap_err();
     assert!(matches!(&error, Error::Protocol(e) if e.kind == ProtocolKind::InvalidFrame));
     assert_eq!(stream.applied_cursor(), None);
@@ -182,11 +177,9 @@ async fn domain_enums_keep_wire_values_for_paths_and_queries() {
     );
     client
         .resources()
-        .workspaces()
-        .at("w")
         .skills()
         .list(SkillsListOptions {
-            source: Some(SkillSource::Github),
+            source: Some(SkillsSource::Github),
             ..Default::default()
         })
         .await

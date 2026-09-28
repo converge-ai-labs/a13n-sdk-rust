@@ -13,143 +13,138 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`archive_skill_api_v1_workspaces_workspace_id_skills_skill_id_archive_post`]
+/// struct for typed errors of method [`archive_skill_api_v1_skills_skill_id_archive_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ArchiveSkillApiV1WorkspacesWorkspaceIdSkillsSkillIdArchivePostError {
+pub enum ArchiveSkillApiV1SkillsSkillIdArchivePostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_revision_api_v1_workspaces_workspace_id_skills_skill_id_revisions_post`]
+/// struct for typed errors of method [`create_revision_api_v1_skills_skill_id_revisions_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateRevisionApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsPostError {
+pub enum CreateRevisionApiV1SkillsSkillIdRevisionsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_skill_api_v1_workspaces_workspace_id_skills_post`]
+/// struct for typed errors of method [`create_skill_api_v1_skills_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateSkillApiV1WorkspacesWorkspaceIdSkillsPostError {
+pub enum CreateSkillApiV1SkillsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_revision_api_v1_workspaces_workspace_id_skills_skill_id_revisions_revision_id_get`]
+/// struct for typed errors of method [`get_revision_api_v1_skills_skill_id_revisions_revision_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetRevisionApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsRevisionIdGetError {
+pub enum GetRevisionApiV1SkillsSkillIdRevisionsRevisionIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_skill_api_v1_workspaces_workspace_id_skills_skill_id_get`]
+/// struct for typed errors of method [`get_skill_api_v1_skills_skill_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetSkillApiV1WorkspacesWorkspaceIdSkillsSkillIdGetError {
+pub enum GetSkillApiV1SkillsSkillIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_revisions_api_v1_workspaces_workspace_id_skills_skill_id_revisions_get`]
+/// struct for typed errors of method [`list_revisions_api_v1_skills_skill_id_revisions_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListRevisionsApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsGetError {
+pub enum ListRevisionsApiV1SkillsSkillIdRevisionsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_skills_api_v1_workspaces_workspace_id_skills_get`]
+/// struct for typed errors of method [`list_skills_api_v1_skills_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListSkillsApiV1WorkspacesWorkspaceIdSkillsGetError {
+pub enum ListSkillsApiV1SkillsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`read_archive_api_v1_workspaces_workspace_id_skills_skill_id_revisions_revision_id_content_get`]
+/// struct for typed errors of method [`read_archive_api_v1_skills_skill_id_revisions_revision_id_content_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReadArchiveApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsRevisionIdContentGetError {
+pub enum ReadArchiveApiV1SkillsSkillIdRevisionsRevisionIdContentGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`read_file_api_v1_workspaces_workspace_id_skills_skill_id_revisions_revision_id_files_path_get`]
+/// struct for typed errors of method [`read_file_api_v1_skills_skill_id_revisions_revision_id_files_path_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReadFileApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsRevisionIdFilesPathGetError {
+pub enum ReadFileApiV1SkillsSkillIdRevisionsRevisionIdFilesPathGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`set_default_revision_api_v1_workspaces_workspace_id_skills_skill_id_revisions_revision_id_set_default_post`]
+/// struct for typed errors of method [`set_default_revision_api_v1_skills_skill_id_revisions_revision_id_set_default_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum SetDefaultRevisionApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsRevisionIdSetDefaultPostError
-{
+pub enum SetDefaultRevisionApiV1SkillsSkillIdRevisionsRevisionIdSetDefaultPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`unarchive_skill_api_v1_workspaces_workspace_id_skills_skill_id_unarchive_post`]
+/// struct for typed errors of method [`unarchive_skill_api_v1_skills_skill_id_unarchive_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UnarchiveSkillApiV1WorkspacesWorkspaceIdSkillsSkillIdUnarchivePostError {
+pub enum UnarchiveSkillApiV1SkillsSkillIdUnarchivePostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_skill_api_v1_workspaces_workspace_id_skills_skill_id_patch`]
+/// struct for typed errors of method [`update_skill_api_v1_skills_skill_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateSkillApiV1WorkspacesWorkspaceIdSkillsSkillIdPatchError {
+pub enum UpdateSkillApiV1SkillsSkillIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`validate_package_api_v1_workspaces_workspace_id_skills_validate_post`]
+/// struct for typed errors of method [`validate_package_api_v1_skills_validate_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ValidatePackageApiV1WorkspacesWorkspaceIdSkillsValidatePostError {
+pub enum ValidatePackageApiV1SkillsValidatePostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
 /// Archived skills keep their revisions readable and pinned; they refuse new revisions and new pins.
-pub async fn archive_skill_api_v1_workspaces_workspace_id_skills_skill_id_archive_post(
+pub async fn archive_skill_api_v1_skills_skill_id_archive_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     skill_id: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Skill>,
-    Error<ArchiveSkillApiV1WorkspacesWorkspaceIdSkillsSkillIdArchivePostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Skill>, Error<ArchiveSkillApiV1SkillsSkillIdArchivePostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_skill_id = skill_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/skills/{skill_id}/archive",
+        "{}/api/v1/skills/{skill_id}/archive",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         skill_id = crate::generated::apis::urlencode(p_path_skill_id)
     );
     let mut req_builder = configuration
@@ -161,6 +156,9 @@ pub async fn archive_skill_api_v1_workspaces_workspace_id_skills_skill_id_archiv
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -209,7 +207,7 @@ pub async fn archive_skill_api_v1_workspaces_workspace_id_skills_skill_id_archiv
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ArchiveSkillApiV1WorkspacesWorkspaceIdSkillsSkillIdArchivePostError> =
+        let entity: Option<ArchiveSkillApiV1SkillsSkillIdArchivePostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -221,26 +219,25 @@ pub async fn archive_skill_api_v1_workspaces_workspace_id_skills_skill_id_archiv
 }
 
 /// A package whose manifest equals the default revision's creates nothing and returns that revision.
-pub async fn create_revision_api_v1_workspaces_workspace_id_skills_skill_id_revisions_post(
+pub async fn create_revision_api_v1_skills_skill_id_revisions_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     skill_id: &str,
     skill_revision_create: models::SkillRevisionCreate,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::SkillRevision>,
-    Error<CreateRevisionApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsPostError>,
+    Error<CreateRevisionApiV1SkillsSkillIdRevisionsPostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_skill_id = skill_id;
     let p_body_skill_revision_create = skill_revision_create;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/skills/{skill_id}/revisions",
+        "{}/api/v1/skills/{skill_id}/revisions",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         skill_id = crate::generated::apis::urlencode(p_path_skill_id)
     );
     let mut req_builder = configuration
@@ -252,6 +249,9 @@ pub async fn create_revision_api_v1_workspaces_workspace_id_skills_skill_id_revi
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -301,9 +301,8 @@ pub async fn create_revision_api_v1_workspaces_workspace_id_skills_skill_id_revi
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            CreateRevisionApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<CreateRevisionApiV1SkillsSkillIdRevisionsPostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -313,26 +312,25 @@ pub async fn create_revision_api_v1_workspaces_workspace_id_skills_skill_id_revi
     }
 }
 
-pub async fn create_skill_api_v1_workspaces_workspace_id_skills_post(
+pub async fn create_skill_api_v1_skills_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     skill_create: models::SkillCreate,
-) -> Result<Response<models::Skill>, Error<CreateSkillApiV1WorkspacesWorkspaceIdSkillsPostError>> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Skill>, Error<CreateSkillApiV1SkillsPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_body_skill_create = skill_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/skills",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/skills", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -382,8 +380,7 @@ pub async fn create_skill_api_v1_workspaces_workspace_id_skills_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateSkillApiV1WorkspacesWorkspaceIdSkillsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateSkillApiV1SkillsPostError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -393,24 +390,23 @@ pub async fn create_skill_api_v1_workspaces_workspace_id_skills_post(
     }
 }
 
-pub async fn get_revision_api_v1_workspaces_workspace_id_skills_skill_id_revisions_revision_id_get(
+pub async fn get_revision_api_v1_skills_skill_id_revisions_revision_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     skill_id: &str,
     revision_id: &str,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::SkillRevision>,
-    Error<GetRevisionApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsRevisionIdGetError>,
+    Error<GetRevisionApiV1SkillsSkillIdRevisionsRevisionIdGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_skill_id = skill_id;
     let p_path_revision_id = revision_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/skills/{skill_id}/revisions/{revision_id}",
+        "{}/api/v1/skills/{skill_id}/revisions/{revision_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         skill_id = crate::generated::apis::urlencode(p_path_skill_id),
         revision_id = crate::generated::apis::urlencode(p_path_revision_id)
     );
@@ -418,6 +414,9 @@ pub async fn get_revision_api_v1_workspaces_workspace_id_skills_skill_id_revisio
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -458,9 +457,8 @@ pub async fn get_revision_api_v1_workspaces_workspace_id_skills_skill_id_revisio
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetRevisionApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsRevisionIdGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<GetRevisionApiV1SkillsSkillIdRevisionsRevisionIdGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -470,26 +468,27 @@ pub async fn get_revision_api_v1_workspaces_workspace_id_skills_skill_id_revisio
     }
 }
 
-pub async fn get_skill_api_v1_workspaces_workspace_id_skills_skill_id_get(
+pub async fn get_skill_api_v1_skills_skill_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     skill_id: &str,
-) -> Result<Response<models::Skill>, Error<GetSkillApiV1WorkspacesWorkspaceIdSkillsSkillIdGetError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Skill>, Error<GetSkillApiV1SkillsSkillIdGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_skill_id = skill_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/skills/{skill_id}",
+        "{}/api/v1/skills/{skill_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         skill_id = crate::generated::apis::urlencode(p_path_skill_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -530,7 +529,7 @@ pub async fn get_skill_api_v1_workspaces_workspace_id_skills_skill_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetSkillApiV1WorkspacesWorkspaceIdSkillsSkillIdGetError> =
+        let entity: Option<GetSkillApiV1SkillsSkillIdGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -541,26 +540,25 @@ pub async fn get_skill_api_v1_workspaces_workspace_id_skills_skill_id_get(
     }
 }
 
-pub async fn list_revisions_api_v1_workspaces_workspace_id_skills_skill_id_revisions_get(
+pub async fn list_revisions_api_v1_skills_skill_id_revisions_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     skill_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::SkillRevisionPage>,
-    Error<ListRevisionsApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsGetError>,
+    Error<ListRevisionsApiV1SkillsSkillIdRevisionsGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_skill_id = skill_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/skills/{skill_id}/revisions",
+        "{}/api/v1/skills/{skill_id}/revisions",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         skill_id = crate::generated::apis::urlencode(p_path_skill_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -573,6 +571,9 @@ pub async fn list_revisions_api_v1_workspaces_workspace_id_skills_skill_id_revis
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -613,7 +614,7 @@ pub async fn list_revisions_api_v1_workspaces_workspace_id_skills_skill_id_revis
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListRevisionsApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsGetError> =
+        let entity: Option<ListRevisionsApiV1SkillsSkillIdRevisionsGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -624,32 +625,27 @@ pub async fn list_revisions_api_v1_workspaces_workspace_id_skills_skill_id_revis
     }
 }
 
-/// Skills of the workspace. `q` matches the key, name or description, ignoring case; `source` the kind of source the default revision was read from; `archived` keeps only archived skills, or only open ones.
-pub async fn list_skills_api_v1_workspaces_workspace_id_skills_get(
+/// Skills of the workspace. `q` matches the name or description, ignoring case; `source` the kind of source the default revision was read from; `archived` keeps only archived skills, or only open ones.
+pub async fn list_skills_api_v1_skills_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     label: Option<Vec<String>>,
     q: Option<&str>,
     source: Option<&str>,
     archived: Option<bool>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<Response<models::SkillPage>, Error<ListSkillsApiV1WorkspacesWorkspaceIdSkillsGetError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::SkillPage>, Error<ListSkillsApiV1SkillsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_query_label = label;
     let p_query_q = q;
     let p_query_source = source;
     let p_query_archived = archived;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/skills",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/skills", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref param_value) = p_query_label {
@@ -688,6 +684,9 @@ pub async fn list_skills_api_v1_workspaces_workspace_id_skills_get(
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -728,8 +727,7 @@ pub async fn list_skills_api_v1_workspaces_workspace_id_skills_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListSkillsApiV1WorkspacesWorkspaceIdSkillsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListSkillsApiV1SkillsGetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -740,24 +738,21 @@ pub async fn list_skills_api_v1_workspaces_workspace_id_skills_get(
 }
 
 /// The revision's package as a zip archive.
-pub async fn read_archive_api_v1_workspaces_workspace_id_skills_skill_id_revisions_revision_id_content_get(
+pub async fn read_archive_api_v1_skills_skill_id_revisions_revision_id_content_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     skill_id: &str,
     revision_id: &str,
-) -> Result<
-    reqwest::Response,
-    Error<ReadArchiveApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsRevisionIdContentGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<reqwest::Response, Error<ReadArchiveApiV1SkillsSkillIdRevisionsRevisionIdContentGetError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_skill_id = skill_id;
     let p_path_revision_id = revision_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/skills/{skill_id}/revisions/{revision_id}/content",
+        "{}/api/v1/skills/{skill_id}/revisions/{revision_id}/content",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         skill_id = crate::generated::apis::urlencode(p_path_skill_id),
         revision_id = crate::generated::apis::urlencode(p_path_revision_id)
     );
@@ -765,6 +760,9 @@ pub async fn read_archive_api_v1_workspaces_workspace_id_skills_skill_id_revisio
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -780,9 +778,8 @@ pub async fn read_archive_api_v1_workspaces_workspace_id_skills_skill_id_revisio
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ReadArchiveApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsRevisionIdContentGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ReadArchiveApiV1SkillsSkillIdRevisionsRevisionIdContentGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -793,26 +790,23 @@ pub async fn read_archive_api_v1_workspaces_workspace_id_skills_skill_id_revisio
 }
 
 /// One package file, by the path the revision's manifest lists.
-pub async fn read_file_api_v1_workspaces_workspace_id_skills_skill_id_revisions_revision_id_files_path_get(
+pub async fn read_file_api_v1_skills_skill_id_revisions_revision_id_files_path_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     skill_id: &str,
     revision_id: &str,
     path: &str,
-) -> Result<
-    reqwest::Response,
-    Error<ReadFileApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsRevisionIdFilesPathGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<reqwest::Response, Error<ReadFileApiV1SkillsSkillIdRevisionsRevisionIdFilesPathGetError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_skill_id = skill_id;
     let p_path_revision_id = revision_id;
     let p_path_path = path;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/skills/{skill_id}/revisions/{revision_id}/files/{path}",
+        "{}/api/v1/skills/{skill_id}/revisions/{revision_id}/files/{path}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         skill_id = crate::generated::apis::urlencode(p_path_skill_id),
         revision_id = crate::generated::apis::urlencode(p_path_revision_id),
         path = crate::generated::apis::urlencode(p_path_path)
@@ -821,6 +815,9 @@ pub async fn read_file_api_v1_workspaces_workspace_id_skills_skill_id_revisions_
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -836,9 +833,8 @@ pub async fn read_file_api_v1_workspaces_workspace_id_skills_skill_id_revisions_
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ReadFileApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsRevisionIdFilesPathGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ReadFileApiV1SkillsSkillIdRevisionsRevisionIdFilesPathGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -848,17 +844,25 @@ pub async fn read_file_api_v1_workspaces_workspace_id_skills_skill_id_revisions_
     }
 }
 
-pub async fn set_default_revision_api_v1_workspaces_workspace_id_skills_skill_id_revisions_revision_id_set_default_post(configuration: &configuration::Configuration, workspace_id: &str, skill_id: &str, revision_id: &str, if_match: Option<&str>) -> Result<Response<models::Skill>, Error<SetDefaultRevisionApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsRevisionIdSetDefaultPostError>>{
+pub async fn set_default_revision_api_v1_skills_skill_id_revisions_revision_id_set_default_post(
+    configuration: &configuration::Configuration,
+    skill_id: &str,
+    revision_id: &str,
+    if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<
+    Response<models::Skill>,
+    Error<SetDefaultRevisionApiV1SkillsSkillIdRevisionsRevisionIdSetDefaultPostError>,
+> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_skill_id = skill_id;
     let p_path_revision_id = revision_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/skills/{skill_id}/revisions/{revision_id}/set-default",
+        "{}/api/v1/skills/{skill_id}/revisions/{revision_id}/set-default",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         skill_id = crate::generated::apis::urlencode(p_path_skill_id),
         revision_id = crate::generated::apis::urlencode(p_path_revision_id)
     );
@@ -871,6 +875,9 @@ pub async fn set_default_revision_api_v1_workspaces_workspace_id_skills_skill_id
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -919,7 +926,9 @@ pub async fn set_default_revision_api_v1_workspaces_workspace_id_skills_skill_id
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<SetDefaultRevisionApiV1WorkspacesWorkspaceIdSkillsSkillIdRevisionsRevisionIdSetDefaultPostError> = serde_json::from_str(&content).ok();
+        let entity: Option<
+            SetDefaultRevisionApiV1SkillsSkillIdRevisionsRevisionIdSetDefaultPostError,
+        > = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -929,24 +938,20 @@ pub async fn set_default_revision_api_v1_workspaces_workspace_id_skills_skill_id
     }
 }
 
-pub async fn unarchive_skill_api_v1_workspaces_workspace_id_skills_skill_id_unarchive_post(
+pub async fn unarchive_skill_api_v1_skills_skill_id_unarchive_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     skill_id: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Skill>,
-    Error<UnarchiveSkillApiV1WorkspacesWorkspaceIdSkillsSkillIdUnarchivePostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Skill>, Error<UnarchiveSkillApiV1SkillsSkillIdUnarchivePostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_skill_id = skill_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/skills/{skill_id}/unarchive",
+        "{}/api/v1/skills/{skill_id}/unarchive",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         skill_id = crate::generated::apis::urlencode(p_path_skill_id)
     );
     let mut req_builder = configuration
@@ -959,6 +964,9 @@ pub async fn unarchive_skill_api_v1_workspaces_workspace_id_skills_skill_id_unar
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
     }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
@@ -1006,9 +1014,8 @@ pub async fn unarchive_skill_api_v1_workspaces_workspace_id_skills_skill_id_unar
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UnarchiveSkillApiV1WorkspacesWorkspaceIdSkillsSkillIdUnarchivePostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UnarchiveSkillApiV1SkillsSkillIdUnarchivePostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1019,26 +1026,22 @@ pub async fn unarchive_skill_api_v1_workspaces_workspace_id_skills_skill_id_unar
 }
 
 /// Name, description and labels; an archived skill changes only by unarchiving.
-pub async fn update_skill_api_v1_workspaces_workspace_id_skills_skill_id_patch(
+pub async fn update_skill_api_v1_skills_skill_id_patch(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     skill_id: &str,
     skill_update: models::SkillUpdate,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Skill>,
-    Error<UpdateSkillApiV1WorkspacesWorkspaceIdSkillsSkillIdPatchError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Skill>, Error<UpdateSkillApiV1SkillsSkillIdPatchError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_skill_id = skill_id;
     let p_body_skill_update = skill_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/skills/{skill_id}",
+        "{}/api/v1/skills/{skill_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         skill_id = crate::generated::apis::urlencode(p_path_skill_id)
     );
     let mut req_builder = configuration
@@ -1050,6 +1053,9 @@ pub async fn update_skill_api_v1_workspaces_workspace_id_skills_skill_id_patch(
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1099,7 +1105,7 @@ pub async fn update_skill_api_v1_workspaces_workspace_id_skills_skill_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateSkillApiV1WorkspacesWorkspaceIdSkillsSkillIdPatchError> =
+        let entity: Option<UpdateSkillApiV1SkillsSkillIdPatchError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1111,29 +1117,25 @@ pub async fn update_skill_api_v1_workspaces_workspace_id_skills_skill_id_patch(
 }
 
 /// The manifest the package would give a new skill or revision, checked as creation checks it; nothing is stored.
-pub async fn validate_package_api_v1_workspaces_workspace_id_skills_validate_post(
+pub async fn validate_package_api_v1_skills_validate_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     skill_validate: models::SkillValidate,
-) -> Result<
-    Response<models::SkillManifest>,
-    Error<ValidatePackageApiV1WorkspacesWorkspaceIdSkillsValidatePostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::SkillManifest>, Error<ValidatePackageApiV1SkillsValidatePostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_body_skill_validate = skill_validate;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/skills/validate",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/skills/validate", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1183,7 +1185,7 @@ pub async fn validate_package_api_v1_workspaces_workspace_id_skills_validate_pos
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ValidatePackageApiV1WorkspacesWorkspaceIdSkillsValidatePostError> =
+        let entity: Option<ValidatePackageApiV1SkillsValidatePostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,

@@ -30,8 +30,13 @@ pub struct ModelCreate {
     #[serde(rename = "enabled", skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
 
-    #[serde(rename = "key")]
-    pub key: String,
+    #[serde(
+        rename = "key",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub key: Option<Option<String>>,
 
     #[serde(rename = "name")]
     pub name: String,
@@ -46,29 +51,19 @@ pub struct ModelCreate {
 
     #[serde(rename = "provider_id")]
     pub provider_id: String,
-
-    #[serde(rename = "workspace_id", deserialize_with = "Option::deserialize")]
-    pub workspace_id: Option<String>,
 }
 
 impl ModelCreate {
-    pub fn new(
-        config: models::ModelConfigInput,
-        key: String,
-        name: String,
-        provider_id: String,
-        workspace_id: Option<String>,
-    ) -> ModelCreate {
+    pub fn new(config: models::ModelConfigInput, name: String, provider_id: String) -> ModelCreate {
         ModelCreate {
             catalog_ref: None,
             config: Box::new(config),
             description: None,
             enabled: None,
-            key,
+            key: None,
             name,
             pricing: None,
             provider_id,
-            workspace_id,
         }
     }
 }

@@ -31,9 +31,6 @@ pub struct Model {
     #[serde(rename = "enabled")]
     pub enabled: bool,
 
-    #[serde(rename = "id")]
-    pub id: String,
-
     #[serde(rename = "key")]
     pub key: String,
 
@@ -58,8 +55,8 @@ pub struct Model {
     #[serde(rename = "version")]
     pub version: i32,
 
-    #[serde(rename = "workspace_id", deserialize_with = "Option::deserialize")]
-    pub workspace_id: Option<String>,
+    #[serde(rename = "workspace_id")]
+    pub workspace_id: String,
 }
 
 impl Model {
@@ -70,7 +67,6 @@ impl Model {
         created_by_id: String,
         description: String,
         enabled: bool,
-        id: String,
         key: String,
         name: String,
         organization_id: String,
@@ -79,7 +75,7 @@ impl Model {
         updated_at: chrono::DateTime<chrono::FixedOffset>,
         updated_by_id: String,
         version: i32,
-        workspace_id: Option<String>,
+        workspace_id: String,
     ) -> Model {
         Model {
             catalog_ref: if let Some(x) = catalog_ref {
@@ -92,7 +88,6 @@ impl Model {
             created_by_id,
             description,
             enabled,
-            id,
             key,
             name,
             organization_id,

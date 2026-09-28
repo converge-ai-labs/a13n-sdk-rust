@@ -13,94 +13,92 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`create_subscription_api_v1_workspaces_workspace_id_subscriptions_post`]
+/// struct for typed errors of method [`create_subscription_api_v1_subscriptions_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateSubscriptionApiV1WorkspacesWorkspaceIdSubscriptionsPostError {
+pub enum CreateSubscriptionApiV1SubscriptionsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_subscription_api_v1_workspaces_workspace_id_subscriptions_subscription_id_delete`]
+/// struct for typed errors of method [`delete_subscription_api_v1_subscriptions_subscription_id_delete`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteSubscriptionApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdDeleteError {
+pub enum DeleteSubscriptionApiV1SubscriptionsSubscriptionIdDeleteError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_subscription_api_v1_workspaces_workspace_id_subscriptions_subscription_id_get`]
+/// struct for typed errors of method [`get_subscription_api_v1_subscriptions_subscription_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetSubscriptionApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdGetError {
+pub enum GetSubscriptionApiV1SubscriptionsSubscriptionIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_deliveries_api_v1_workspaces_workspace_id_subscriptions_subscription_id_deliveries_get`]
+/// struct for typed errors of method [`list_deliveries_api_v1_subscriptions_subscription_id_deliveries_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListDeliveriesApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdDeliveriesGetError {
+pub enum ListDeliveriesApiV1SubscriptionsSubscriptionIdDeliveriesGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_subscriptions_api_v1_workspaces_workspace_id_subscriptions_get`]
+/// struct for typed errors of method [`list_subscriptions_api_v1_subscriptions_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListSubscriptionsApiV1WorkspacesWorkspaceIdSubscriptionsGetError {
+pub enum ListSubscriptionsApiV1SubscriptionsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`redeliver_api_v1_workspaces_workspace_id_subscriptions_subscription_id_deliveries_delivery_id_redeliver_post`]
+/// struct for typed errors of method [`redeliver_api_v1_subscriptions_subscription_id_deliveries_delivery_id_redeliver_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RedeliverApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdDeliveriesDeliveryIdRedeliverPostError
-{
+pub enum RedeliverApiV1SubscriptionsSubscriptionIdDeliveriesDeliveryIdRedeliverPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_subscription_api_v1_workspaces_workspace_id_subscriptions_subscription_id_patch`]
+/// struct for typed errors of method [`update_subscription_api_v1_subscriptions_subscription_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateSubscriptionApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdPatchError {
+pub enum UpdateSubscriptionApiV1SubscriptionsSubscriptionIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
 /// The response is the only time the signing secret is returned.
-pub async fn create_subscription_api_v1_workspaces_workspace_id_subscriptions_post(
+pub async fn create_subscription_api_v1_subscriptions_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     subscription_create: models::SubscriptionCreate,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::CreatedSubscription>,
-    Error<CreateSubscriptionApiV1WorkspacesWorkspaceIdSubscriptionsPostError>,
+    Error<CreateSubscriptionApiV1SubscriptionsPostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_body_subscription_create = subscription_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/subscriptions",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/subscriptions", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -150,7 +148,7 @@ pub async fn create_subscription_api_v1_workspaces_workspace_id_subscriptions_po
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateSubscriptionApiV1WorkspacesWorkspaceIdSubscriptionsPostError> =
+        let entity: Option<CreateSubscriptionApiV1SubscriptionsPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -161,24 +159,20 @@ pub async fn create_subscription_api_v1_workspaces_workspace_id_subscriptions_po
     }
 }
 
-pub async fn delete_subscription_api_v1_workspaces_workspace_id_subscriptions_subscription_id_delete(
+pub async fn delete_subscription_api_v1_subscriptions_subscription_id_delete(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     subscription_id: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<()>,
-    Error<DeleteSubscriptionApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdDeleteError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<()>, Error<DeleteSubscriptionApiV1SubscriptionsSubscriptionIdDeleteError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_subscription_id = subscription_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/subscriptions/{subscription_id}",
+        "{}/api/v1/subscriptions/{subscription_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         subscription_id = crate::generated::apis::urlencode(p_path_subscription_id)
     );
     let mut req_builder = configuration
@@ -190,6 +184,9 @@ pub async fn delete_subscription_api_v1_workspaces_workspace_id_subscriptions_su
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -217,9 +214,8 @@ pub async fn delete_subscription_api_v1_workspaces_workspace_id_subscriptions_su
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            DeleteSubscriptionApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdDeleteError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<DeleteSubscriptionApiV1SubscriptionsSubscriptionIdDeleteError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -229,28 +225,30 @@ pub async fn delete_subscription_api_v1_workspaces_workspace_id_subscriptions_su
     }
 }
 
-pub async fn get_subscription_api_v1_workspaces_workspace_id_subscriptions_subscription_id_get(
+pub async fn get_subscription_api_v1_subscriptions_subscription_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     subscription_id: &str,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::Subscription>,
-    Error<GetSubscriptionApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdGetError>,
+    Error<GetSubscriptionApiV1SubscriptionsSubscriptionIdGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_subscription_id = subscription_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/subscriptions/{subscription_id}",
+        "{}/api/v1/subscriptions/{subscription_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         subscription_id = crate::generated::apis::urlencode(p_path_subscription_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -291,9 +289,8 @@ pub async fn get_subscription_api_v1_workspaces_workspace_id_subscriptions_subsc
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetSubscriptionApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<GetSubscriptionApiV1SubscriptionsSubscriptionIdGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -303,26 +300,25 @@ pub async fn get_subscription_api_v1_workspaces_workspace_id_subscriptions_subsc
     }
 }
 
-pub async fn list_deliveries_api_v1_workspaces_workspace_id_subscriptions_subscription_id_deliveries_get(
+pub async fn list_deliveries_api_v1_subscriptions_subscription_id_deliveries_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     subscription_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::DeliveryPage>,
-    Error<ListDeliveriesApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdDeliveriesGetError>,
+    Error<ListDeliveriesApiV1SubscriptionsSubscriptionIdDeliveriesGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_subscription_id = subscription_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/subscriptions/{subscription_id}/deliveries",
+        "{}/api/v1/subscriptions/{subscription_id}/deliveries",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         subscription_id = crate::generated::apis::urlencode(p_path_subscription_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -335,6 +331,9 @@ pub async fn list_deliveries_api_v1_workspaces_workspace_id_subscriptions_subscr
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -375,9 +374,8 @@ pub async fn list_deliveries_api_v1_workspaces_workspace_id_subscriptions_subscr
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ListDeliveriesApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdDeliveriesGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ListDeliveriesApiV1SubscriptionsSubscriptionIdDeliveriesGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -387,25 +385,19 @@ pub async fn list_deliveries_api_v1_workspaces_workspace_id_subscriptions_subscr
     }
 }
 
-pub async fn list_subscriptions_api_v1_workspaces_workspace_id_subscriptions_get(
+pub async fn list_subscriptions_api_v1_subscriptions_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::SubscriptionPage>,
-    Error<ListSubscriptionsApiV1WorkspacesWorkspaceIdSubscriptionsGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::SubscriptionPage>, Error<ListSubscriptionsApiV1SubscriptionsGetError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/subscriptions",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/subscriptions", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref param_value) = p_query_limit {
@@ -416,6 +408,9 @@ pub async fn list_subscriptions_api_v1_workspaces_workspace_id_subscriptions_get
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -456,7 +451,7 @@ pub async fn list_subscriptions_api_v1_workspaces_workspace_id_subscriptions_get
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListSubscriptionsApiV1WorkspacesWorkspaceIdSubscriptionsGetError> =
+        let entity: Option<ListSubscriptionsApiV1SubscriptionsGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -467,16 +462,23 @@ pub async fn list_subscriptions_api_v1_workspaces_workspace_id_subscriptions_get
     }
 }
 
-pub async fn redeliver_api_v1_workspaces_workspace_id_subscriptions_subscription_id_deliveries_delivery_id_redeliver_post(configuration: &configuration::Configuration, workspace_id: &str, subscription_id: &str, delivery_id: &str) -> Result<Response<models::WebhookDelivery>, Error<RedeliverApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdDeliveriesDeliveryIdRedeliverPostError>>{
+pub async fn redeliver_api_v1_subscriptions_subscription_id_deliveries_delivery_id_redeliver_post(
+    configuration: &configuration::Configuration,
+    subscription_id: &str,
+    delivery_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<
+    Response<models::WebhookDelivery>,
+    Error<RedeliverApiV1SubscriptionsSubscriptionIdDeliveriesDeliveryIdRedeliverPostError>,
+> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_subscription_id = subscription_id;
     let p_path_delivery_id = delivery_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/subscriptions/{subscription_id}/deliveries/{delivery_id}/redeliver",
+        "{}/api/v1/subscriptions/{subscription_id}/deliveries/{delivery_id}/redeliver",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         subscription_id = crate::generated::apis::urlencode(p_path_subscription_id),
         delivery_id = crate::generated::apis::urlencode(p_path_delivery_id)
     );
@@ -486,6 +488,9 @@ pub async fn redeliver_api_v1_workspaces_workspace_id_subscriptions_subscription
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -534,7 +539,9 @@ pub async fn redeliver_api_v1_workspaces_workspace_id_subscriptions_subscription
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RedeliverApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdDeliveriesDeliveryIdRedeliverPostError> = serde_json::from_str(&content).ok();
+        let entity: Option<
+            RedeliverApiV1SubscriptionsSubscriptionIdDeliveriesDeliveryIdRedeliverPostError,
+        > = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -544,26 +551,25 @@ pub async fn redeliver_api_v1_workspaces_workspace_id_subscriptions_subscription
     }
 }
 
-pub async fn update_subscription_api_v1_workspaces_workspace_id_subscriptions_subscription_id_patch(
+pub async fn update_subscription_api_v1_subscriptions_subscription_id_patch(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     subscription_id: &str,
     subscription_update: models::SubscriptionUpdate,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::Subscription>,
-    Error<UpdateSubscriptionApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdPatchError>,
+    Error<UpdateSubscriptionApiV1SubscriptionsSubscriptionIdPatchError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_subscription_id = subscription_id;
     let p_body_subscription_update = subscription_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/subscriptions/{subscription_id}",
+        "{}/api/v1/subscriptions/{subscription_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         subscription_id = crate::generated::apis::urlencode(p_path_subscription_id)
     );
     let mut req_builder = configuration
@@ -575,6 +581,9 @@ pub async fn update_subscription_api_v1_workspaces_workspace_id_subscriptions_su
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -624,9 +633,8 @@ pub async fn update_subscription_api_v1_workspaces_workspace_id_subscriptions_su
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UpdateSubscriptionApiV1WorkspacesWorkspaceIdSubscriptionsSubscriptionIdPatchError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UpdateSubscriptionApiV1SubscriptionsSubscriptionIdPatchError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

@@ -24,9 +24,6 @@ pub struct TemplateCreate {
     )]
     pub description: Option<Option<String>>,
 
-    #[serde(rename = "key")]
-    pub key: String,
-
     #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
     pub labels: Option<std::collections::HashMap<String, String>>,
 
@@ -38,11 +35,10 @@ pub struct TemplateCreate {
 }
 
 impl TemplateCreate {
-    pub fn new(key: String, name: String, provider_id: String) -> TemplateCreate {
+    pub fn new(name: String, provider_id: String) -> TemplateCreate {
         TemplateCreate {
             config: None,
             description: None,
-            key,
             labels: None,
             name,
             provider_id,

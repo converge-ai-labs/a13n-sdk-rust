@@ -11,7 +11,7 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// AgentReviewer : The model reviewing calls whose permission is `review`, selected by model ID.
+/// AgentReviewer : The model reviewing calls whose permission is `review`, selected by model key.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AgentReviewer {
     #[serde(
@@ -58,7 +58,7 @@ pub struct AgentReviewer {
 }
 
 impl AgentReviewer {
-    /// The model reviewing calls whose permission is `review`, selected by model ID.
+    /// The model reviewing calls whose permission is `review`, selected by model key.
     pub fn new(model: String) -> AgentReviewer {
         AgentReviewer {
             instruction: None,

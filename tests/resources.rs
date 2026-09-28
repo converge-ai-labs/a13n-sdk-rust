@@ -13,12 +13,7 @@ use std::{
 async fn explicit_bindings_cas_headers_and_nullable_bodies() {
     let mut server = server(|_| Reply::json(200, sample("Agent"))).await;
     let client = client(&server);
-    let resource = client
-        .resources()
-        .workspaces()
-        .at("ws/key")
-        .agents()
-        .at("agent /+中");
+    let resource = client.resources().agents().at("agent /+中");
     assert!(server.requests.try_recv().is_err());
     let body = models::AgentUpdate {
         name: Some(None),
@@ -35,6 +30,7 @@ async fn explicit_bindings_cas_headers_and_nullable_bodies() {
             &body,
             AgentUpdateOptions {
                 if_match: "\"v1\"".into(),
+                ..Default::default()
             },
         )
         .await
@@ -45,7 +41,7 @@ async fn explicit_bindings_cas_headers_and_nullable_bodies() {
     assert_eq!(request.method, "PATCH");
     assert_eq!(
         request.target,
-        "/prefix/api/v1/workspaces/ws%2Fkey/agents/agent%20%2F+%E4%B8%AD"
+        "/prefix/api/v1/agents/agent%20%2F+%E4%B8%AD"
     );
     assert!(request.headers.contains("if-match: \"v1\""));
     assert_eq!(request.json(), json!({"name":null,"labels":{"team":"dev"}}));
@@ -56,7 +52,10 @@ async fn explicit_bindings_cas_headers_and_nullable_bodies() {
         ));
     }
     client.close();
-    assert!(matches!(resource.get().await, Err(Error::Closed)));
+    assert!(matches!(
+        resource.get(Default::default()).await,
+        Err(Error::Closed)
+    ));
 }
 #[tokio::test]
 async fn paging_is_lazy_owned_repeated_query_and_loop_checked() {
@@ -68,12 +67,7 @@ async fn paging_is_lazy_owned_repeated_query_and_loop_checked() {
         limit: Some(2),
         ..Default::default()
     };
-    let mut pages = client
-        .resources()
-        .workspaces()
-        .at("ws")
-        .agents()
-        .pages(original.clone());
+    let mut pages = client.resources().agents().pages(original.clone());
     original.q = Some("changed".into());
     assert!(server.requests.try_recv().is_err());
     assert_eq!(pages.next().await.unwrap().unwrap().etag(), Some("\"v1\""));
@@ -147,13 +141,12 @@ async fn structured_failures_bounds_no_retry_and_redirect_policy() {
     assert!(matches!(
         client
             .resources()
-            .workspaces()
-            .at("w")
             .threads()
             .create(
                 &models::NewThread::new("a".into(), text_payload("hi")),
                 ThreadsCreateOptions {
-                    idempotency_key: "same".into()
+                    idempotency_key: "same".into(),
+                    ..Default::default()
                 }
             )
             .await,
@@ -188,6 +181,52 @@ async fn structured_failures_bounds_no_retry_and_redirect_policy() {
     callback.requests.recv().await.unwrap();
     assert!(callback.requests.try_recv().is_err());
 }
+#[tokio::test]
+async fn explicit_workspace_header_replaces_session_default_once_and_unscoped_stays_clean() {
+    let mut server = server(|request| {
+        if request.target.contains("/agents/") {
+            Reply::json(200, sample("Agent"))
+        } else {
+            Reply::json(200, sample("Workspace"))
+        }
+    })
+    .await;
+    let client = Client::builder(&server.url)
+        .workspace("workspace_A")
+        .build()
+        .unwrap();
+    client
+        .resources()
+        .agents()
+        .at("a")
+        .get(AgentGetOptions {
+            x_workspace_id: Some("workspace_B".into()),
+        })
+        .await
+        .unwrap();
+    client
+        .resources()
+        .agents()
+        .at("a")
+        .get(Default::default())
+        .await
+        .unwrap();
+    client.resources().workspaces().at("w").get().await.unwrap();
+    let scope = |headers: &str| -> Vec<String> {
+        headers
+            .lines()
+            .filter(|line| line.starts_with("x-workspace-id:"))
+            .map(str::to_owned)
+            .collect()
+    };
+    let explicit = server.requests.recv().await.unwrap();
+    assert_eq!(scope(&explicit.headers), ["x-workspace-id: workspace_b"]);
+    let default = server.requests.recv().await.unwrap();
+    assert_eq!(scope(&default.headers), ["x-workspace-id: workspace_a"]);
+    let unscoped = server.requests.recv().await.unwrap();
+    assert!(scope(&unscoped.headers).is_empty());
+}
+
 #[tokio::test]
 async fn session_uses_current_csrf_and_shared_cookie_jar() {
     let mut server = server(|_| Reply::json(200, sample("Workspace"))).await;
@@ -270,12 +309,14 @@ async fn streaming_download_and_owned_uploads_preserve_mime_and_shutdown() {
         content_type: "application/octet-stream".into(),
         body: vec![7; 300000].into(),
     };
-    workspace
+    client
+        .resources()
         .uploads()
         .create(
             file,
             UploadsCreateOptions {
                 idempotency_key: "upload".into(),
+                ..Default::default()
             },
         )
         .await
@@ -323,7 +364,12 @@ async fn streaming_download_and_owned_uploads_preserve_mime_and_shutdown() {
     ));
     let mut response = tokio::time::timeout(
         Duration::from_secs(1),
-        workspace.assets().at("a").content().get(),
+        client
+            .resources()
+            .assets()
+            .at("a")
+            .content()
+            .get(Default::default()),
     )
     .await
     .unwrap()
@@ -342,6 +388,7 @@ async fn submitted_uses_canonical_scope_and_queued_entry_has_no_run() {
     receipt["thread"]["workspace_id"] = json!("ws_canonical");
     receipt["thread"]["id"] = json!("thread_canonical");
     receipt["entry"]["id"] = json!("entry_canonical");
+    receipt["entry"]["thread_id"] = json!("thread_canonical");
     receipt["run"] = serde_json::Value::Null;
     let mut server = server(move |request| {
         if request.method == "POST" {
@@ -353,26 +400,31 @@ async fn submitted_uses_canonical_scope_and_queued_entry_has_no_run() {
     .await;
     let client = client(&server);
     let body = models::NewThread::new("agent".into(), text_payload("hi"));
-    let submitted = client
+    let raw = client
         .resources()
-        .workspaces()
-        .at("workspace-key")
         .threads()
         .create(
             &body,
             ThreadsCreateOptions {
                 idempotency_key: "request".into(),
+                ..Default::default()
             },
         )
         .await
         .unwrap();
+    let submitted = Submitted::bind(&client, raw).unwrap();
     assert!(submitted.run.is_none());
     assert_eq!(submitted.receipt.status, 200);
-    submitted.thread.get().await.unwrap();
+    submitted
+        .thread
+        .resource()
+        .get(Default::default())
+        .await
+        .unwrap();
     server.requests.recv().await.unwrap();
     assert_eq!(
         server.requests.recv().await.unwrap().target,
-        "/prefix/api/v1/workspaces/ws_canonical/threads/thread_canonical"
+        "/prefix/api/v1/threads/thread_canonical"
     );
 }
 #[tokio::test]
@@ -383,29 +435,27 @@ async fn waits_use_exact_identity_and_cancel_requests_and_sleeps() {
         let n = calls.fetch_add(1, Ordering::SeqCst);
         if request.target.contains("/runs/") {
             let mut run = sample("RunView");
+            run["id"] = json!("exact");
             run["status"] = json!(if n == 0 { "running" } else { "waiting" });
             Reply::json(200, run)
         } else {
             let mut entry = sample("EntryView");
+            entry["id"] = json!("e");
+            entry["thread_id"] = json!("t");
             entry["status"] = json!(if n == 2 { "assigned" } else { "consumed" });
             Reply::json(200, entry)
         }
     })
     .await;
     let client = client(&server);
-    let workspace = client.resources().workspaces().at("w");
-    let result = workspace
-        .runs()
-        .at("exact")
-        .wait(Duration::from_millis(1))
+    let result = client
+        .run("exact")
+        .wait_with(Duration::from_secs(1), Duration::from_millis(1))
         .await
         .unwrap();
-    assert_eq!(result.data.status, models::RunStatus::Waiting);
-    let result = workspace
-        .threads()
-        .at("t")
-        .inbox()
-        .at("e")
+    assert_eq!(result.snapshot.data.status, models::RunStatus::Waiting);
+    let result = client
+        .entry("t", "e")
         .wait(Duration::from_millis(1))
         .await
         .unwrap();
@@ -440,24 +490,21 @@ async fn waits_use_exact_identity_and_cancel_requests_and_sleeps() {
     .await;
     let client = Arc::new(common::client(&hung));
     let caller = client.clone();
-    let pending = tokio::spawn(async move {
-        caller
-            .resources()
-            .workspaces()
-            .at("w")
-            .runs()
-            .at("r")
-            .wait(Duration::ZERO)
-            .await
-    });
+    let pending = tokio::spawn(async move { caller.run("r").wait().await.map(|_| ()) });
     hung.requests.recv().await.unwrap();
     client.close();
     assert!(matches!(pending.await.unwrap(), Err(Error::Closed)));
-    let sleeping = common::server(|_| Reply::json(200, sample("RunView"))).await;
+    let sleeping = common::server(|_| {
+        let mut run = sample("RunView");
+        run["id"] = json!("r");
+        run["status"] = json!("running");
+        Reply::json(200, run)
+    })
+    .await;
     let client = common::client(&sleeping);
-    let run = client.resources().workspaces().at("w").runs().at("r");
+    let run = client.run("r");
     assert!(
-        tokio::time::timeout(Duration::from_millis(30), run.wait(Duration::from_secs(30)))
+        tokio::time::timeout(Duration::from_millis(30), run.wait())
             .await
             .is_err()
     );

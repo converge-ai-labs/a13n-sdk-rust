@@ -48,11 +48,21 @@ pub struct ApiError {
     pub retry_after: Option<String>,
     pub headers: header::HeaderMap,
 }
+/// An accepted Entry that settled without incorporation. The snapshot is
+/// retained for inspection; its payload is never included in formatted errors.
+#[derive(Debug)]
+pub struct SubmissionError {
+    pub thread_id: String,
+    pub entry_id: String,
+    pub entry: Response<crate::generated::models::EntryView>,
+}
 #[derive(Debug)]
 pub enum Error {
     Api(Box<ApiError>),
     Transport(TransportError),
     Protocol(ProtocolError),
+    Submission(Box<SubmissionError>),
+    Timeout,
     InvalidInput,
     Closed,
 }
@@ -62,6 +72,14 @@ impl fmt::Display for Error {
             Self::Api(e) => write!(f, "{}: {} ({})", e.code, e.message, e.status),
             Self::Transport(error) => error.fmt(f),
             Self::Protocol(error) => error.fmt(f),
+            Self::Submission(error) => write!(
+                f,
+                "Entry {} settled as {} without incorporation",
+                error.entry_id, error.entry.data.status
+            ),
+            Self::Timeout => {
+                f.write_str("Local observation deadline elapsed; remote work may continue")
+            }
             Self::InvalidInput => f.write_str(
                 "Invalid Service URL, resource identifier, content type, or precondition",
             ),
@@ -102,12 +120,14 @@ pub struct Client {
     http: Mutex<Option<reqwest::Client>>,
     pub(crate) shutdown: CancellationToken,
     csrf: Option<CsrfSource>,
+    workspace: Option<header::HeaderValue>,
     response_limit: usize,
 }
 
 pub struct ClientBuilder {
     base_url: String,
     token: Secret,
+    workspace: Option<String>,
     http: reqwest::ClientBuilder,
     csrf: Option<CsrfSource>,
     session: Option<Arc<reqwest::cookie::Jar>>,
@@ -116,6 +136,12 @@ pub struct ClientBuilder {
 impl ClientBuilder {
     pub fn bearer(mut self, token: Secret) -> Self {
         self.token = token;
+        self
+    }
+    /// Select the workspace of a login session for workspace-scoped requests.
+    /// API keys already carry their workspace; leave this unset for API keys.
+    pub fn workspace(mut self, id: impl Into<String>) -> Self {
+        self.workspace = Some(id.into());
         self
     }
     /// Customize TLS and connection settings before SDK redirect/retry policy.
@@ -147,6 +173,7 @@ impl ClientBuilder {
             || base_url.fragment().is_some()
             || self.response_limit == 0
             || (self.session.is_some() && !self.token.0.is_empty())
+            || self.workspace.as_ref().is_some_and(String::is_empty)
         {
             return Err(Error::InvalidInput);
         }
@@ -157,6 +184,12 @@ impl ClientBuilder {
             value.set_sensitive(true);
             headers.insert(header::AUTHORIZATION, value);
         }
+        let workspace = self
+            .workspace
+            .as_deref()
+            .map(header::HeaderValue::from_str)
+            .transpose()
+            .map_err(|_| Error::InvalidInput)?;
         let http = match self.session {
             Some(jar) => self.http.cookie_provider(jar),
             None => self.http,
@@ -172,6 +205,7 @@ impl ClientBuilder {
             http: Mutex::new(Some(http)),
             shutdown: CancellationToken::new(),
             csrf: self.csrf,
+            workspace,
             response_limit: self.response_limit,
         })
     }
@@ -181,6 +215,7 @@ impl Client {
         ClientBuilder {
             base_url: base_url.into(),
             token: Secret::default(),
+            workspace: None,
             http: reqwest::Client::builder().no_proxy(),
             csrf: None,
             session: None,
@@ -263,6 +298,21 @@ impl Client {
             request = request.header("X-CSRF-Token", csrf);
         }
         Ok(request)
+    }
+    /// Resolve operation scope before sending: an explicit header replaces the
+    /// session default rather than appending a second, conflicting header.
+    pub(crate) fn scoped_request(
+        &self,
+        request: reqwest::RequestBuilder,
+        explicit: Option<&str>,
+    ) -> reqwest::RequestBuilder {
+        if let Some(value) = explicit {
+            request.header("X-Workspace-ID", value)
+        } else if let Some(value) = &self.workspace {
+            request.header("X-Workspace-ID", value)
+        } else {
+            request
+        }
     }
     pub(crate) async fn send(
         &self,

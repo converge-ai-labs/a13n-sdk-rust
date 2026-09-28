@@ -25,9 +25,6 @@ pub struct Workspace {
     #[serde(rename = "image_url", deserialize_with = "Option::deserialize")]
     pub image_url: Option<String>,
 
-    #[serde(rename = "key")]
-    pub key: String,
-
     #[serde(rename = "name")]
     pub name: String,
 
@@ -53,7 +50,6 @@ impl Workspace {
         created_at: chrono::DateTime<chrono::FixedOffset>,
         id: String,
         image_url: Option<String>,
-        key: String,
         name: String,
         organization_id: String,
         permissions: Vec<models::Verb>,
@@ -66,7 +62,6 @@ impl Workspace {
             created_at,
             id,
             image_url,
-            key,
             name,
             organization_id,
             permissions,

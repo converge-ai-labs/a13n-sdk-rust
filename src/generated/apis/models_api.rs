@@ -13,28 +13,28 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`create_model_api_v1_organizations_organization_id_models_post`]
+/// struct for typed errors of method [`create_model_api_v1_models_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateModelApiV1OrganizationsOrganizationIdModelsPostError {
+pub enum CreateModelApiV1ModelsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_media_defaults_api_v1_workspaces_workspace_id_media_understanding_defaults_get`]
+/// struct for typed errors of method [`get_media_defaults_api_v1_media_understanding_defaults_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetMediaDefaultsApiV1WorkspacesWorkspaceIdMediaUnderstandingDefaultsGetError {
+pub enum GetMediaDefaultsApiV1MediaUnderstandingDefaultsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_model_api_v1_organizations_organization_id_models_model_id_get`]
+/// struct for typed errors of method [`get_model_api_v1_models_key_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetModelApiV1OrganizationsOrganizationIdModelsModelIdGetError {
+pub enum GetModelApiV1ModelsKeyGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
@@ -48,57 +48,53 @@ pub enum GetModelCatalogApiV1ModelCatalogGetError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_models_api_v1_organizations_organization_id_models_get`]
+/// struct for typed errors of method [`list_models_api_v1_models_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListModelsApiV1OrganizationsOrganizationIdModelsGetError {
+pub enum ListModelsApiV1ModelsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`replace_media_defaults_api_v1_workspaces_workspace_id_media_understanding_defaults_put`]
+/// struct for typed errors of method [`replace_media_defaults_api_v1_media_understanding_defaults_put`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReplaceMediaDefaultsApiV1WorkspacesWorkspaceIdMediaUnderstandingDefaultsPutError {
+pub enum ReplaceMediaDefaultsApiV1MediaUnderstandingDefaultsPutError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_model_api_v1_organizations_organization_id_models_model_id_patch`]
+/// struct for typed errors of method [`update_model_api_v1_models_key_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateModelApiV1OrganizationsOrganizationIdModelsModelIdPatchError {
+pub enum UpdateModelApiV1ModelsKeyPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// Needs `write` on the model's scope and on its provider, whose credential the model spends.
-pub async fn create_model_api_v1_organizations_organization_id_models_post(
+/// Needs `write` on the workspace and on the model's provider, whose credential the model spends.
+pub async fn create_model_api_v1_models_post(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     model_create: models::ModelCreate,
-) -> Result<
-    Response<models::Model>,
-    Error<CreateModelApiV1OrganizationsOrganizationIdModelsPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Model>, Error<CreateModelApiV1ModelsPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_body_model_create = model_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/models",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
-    );
+    let uri_str = format!("{}/api/v1/models", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -148,8 +144,7 @@ pub async fn create_model_api_v1_organizations_organization_id_models_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateModelApiV1OrganizationsOrganizationIdModelsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateModelApiV1ModelsPostError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -159,25 +154,27 @@ pub async fn create_model_api_v1_organizations_organization_id_models_post(
     }
 }
 
-pub async fn get_media_defaults_api_v1_workspaces_workspace_id_media_understanding_defaults_get(
+pub async fn get_media_defaults_api_v1_media_understanding_defaults_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::MediaDefaults>,
-    Error<GetMediaDefaultsApiV1WorkspacesWorkspaceIdMediaUnderstandingDefaultsGetError>,
+    Error<GetMediaDefaultsApiV1MediaUnderstandingDefaultsGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/media-understanding-defaults",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
+        "{}/api/v1/media-understanding-defaults",
+        configuration.base_path
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -218,9 +215,8 @@ pub async fn get_media_defaults_api_v1_workspaces_workspace_id_media_understandi
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetMediaDefaultsApiV1WorkspacesWorkspaceIdMediaUnderstandingDefaultsGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<GetMediaDefaultsApiV1MediaUnderstandingDefaultsGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -230,28 +226,27 @@ pub async fn get_media_defaults_api_v1_workspaces_workspace_id_media_understandi
     }
 }
 
-pub async fn get_model_api_v1_organizations_organization_id_models_model_id_get(
+pub async fn get_model_api_v1_models_key_get(
     configuration: &configuration::Configuration,
-    organization_id: &str,
-    model_id: &str,
-) -> Result<
-    Response<models::Model>,
-    Error<GetModelApiV1OrganizationsOrganizationIdModelsModelIdGetError>,
-> {
+    key: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Model>, Error<GetModelApiV1ModelsKeyGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_path_model_id = model_id;
+    let p_path_key = key;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/models/{model_id}",
+        "{}/api/v1/models/{key}",
         configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
-        model_id = crate::generated::apis::urlencode(p_path_model_id)
+        key = crate::generated::apis::urlencode(p_path_key)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -292,8 +287,7 @@ pub async fn get_model_api_v1_organizations_organization_id_models_model_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetModelApiV1OrganizationsOrganizationIdModelsModelIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetModelApiV1ModelsKeyGetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -363,32 +357,20 @@ pub async fn get_model_catalog_api_v1_model_catalog_get(
     }
 }
 
-pub async fn list_models_api_v1_organizations_organization_id_models_get(
+pub async fn list_models_api_v1_models_get(
     configuration: &configuration::Configuration,
-    organization_id: &str,
-    workspace_id: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::ModelPage>,
-    Error<ListModelsApiV1OrganizationsOrganizationIdModelsGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ModelPage>, Error<ListModelsApiV1ModelsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_query_workspace_id = workspace_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/models",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
-    );
+    let uri_str = format!("{}/api/v1/models", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
-    if let Some(ref param_value) = p_query_workspace_id {
-        req_builder = req_builder.query(&[("workspace_id", &param_value.to_string())]);
-    }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
     }
@@ -397,6 +379,9 @@ pub async fn list_models_api_v1_organizations_organization_id_models_get(
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -437,8 +422,7 @@ pub async fn list_models_api_v1_organizations_organization_id_models_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListModelsApiV1OrganizationsOrganizationIdModelsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListModelsApiV1ModelsGetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -449,24 +433,23 @@ pub async fn list_models_api_v1_organizations_organization_id_models_get(
 }
 
 /// Replaces all three kinds; each model must declare it understands its kind. Requires workspace admin.
-pub async fn replace_media_defaults_api_v1_workspaces_workspace_id_media_understanding_defaults_put(
+pub async fn replace_media_defaults_api_v1_media_understanding_defaults_put(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     media_understanding_selection: models::MediaUnderstandingSelection,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::MediaDefaults>,
-    Error<ReplaceMediaDefaultsApiV1WorkspacesWorkspaceIdMediaUnderstandingDefaultsPutError>,
+    Error<ReplaceMediaDefaultsApiV1MediaUnderstandingDefaultsPutError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_body_media_understanding_selection = media_understanding_selection;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/media-understanding-defaults",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
+        "{}/api/v1/media-understanding-defaults",
+        configuration.base_path
     );
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
 
@@ -475,6 +458,9 @@ pub async fn replace_media_defaults_api_v1_workspaces_workspace_id_media_underst
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -524,9 +510,8 @@ pub async fn replace_media_defaults_api_v1_workspaces_workspace_id_media_underst
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ReplaceMediaDefaultsApiV1WorkspacesWorkspaceIdMediaUnderstandingDefaultsPutError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ReplaceMediaDefaultsApiV1MediaUnderstandingDefaultsPutError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -537,27 +522,23 @@ pub async fn replace_media_defaults_api_v1_workspaces_workspace_id_media_underst
 }
 
 /// A configuration change also needs `write` on the model's provider.
-pub async fn update_model_api_v1_organizations_organization_id_models_model_id_patch(
+pub async fn update_model_api_v1_models_key_patch(
     configuration: &configuration::Configuration,
-    organization_id: &str,
-    model_id: &str,
+    key: &str,
     model_update: models::ModelUpdate,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Model>,
-    Error<UpdateModelApiV1OrganizationsOrganizationIdModelsModelIdPatchError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Model>, Error<UpdateModelApiV1ModelsKeyPatchError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_path_model_id = model_id;
+    let p_path_key = key;
     let p_body_model_update = model_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/models/{model_id}",
+        "{}/api/v1/models/{key}",
         configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
-        model_id = crate::generated::apis::urlencode(p_path_model_id)
+        key = crate::generated::apis::urlencode(p_path_key)
     );
     let mut req_builder = configuration
         .client
@@ -568,6 +549,9 @@ pub async fn update_model_api_v1_organizations_organization_id_models_model_id_p
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -617,7 +601,7 @@ pub async fn update_model_api_v1_organizations_organization_id_models_model_id_p
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateModelApiV1OrganizationsOrganizationIdModelsModelIdPatchError> =
+        let entity: Option<UpdateModelApiV1ModelsKeyPatchError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,

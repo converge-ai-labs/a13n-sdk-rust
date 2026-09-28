@@ -134,7 +134,6 @@ pub mod memories_api;
 pub mod models_api;
 pub mod providers_api;
 pub mod runs_api;
-pub mod secrets_api;
 pub mod skills_api;
 pub mod subscriptions_api;
 pub mod tenancy_api;

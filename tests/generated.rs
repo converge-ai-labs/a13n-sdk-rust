@@ -149,7 +149,7 @@ async fn lowlevel_sse_does_not_buffer_and_shares_shutdown_inside_execute() {
     let client = std::sync::Arc::new(client(&server));
     let caller = client.clone();
     let task = tokio::spawn(async move {
-        caller.execute(async |api| {let mut response=apis::runs_api::thread_stream_api_v1_workspaces_workspace_id_threads_thread_id_stream_get(api,"w","t",None).await?;assert_eq!(response.status(),200);while response.chunk().await.map_err(apis::Error::from)?.is_some() {} Ok::<_,apis::Error<apis::runs_api::ThreadStreamApiV1WorkspacesWorkspaceIdThreadsThreadIdStreamGetError>>(())}).await
+        caller.execute(async |api| {let mut response=apis::runs_api::thread_stream_api_v1_threads_thread_id_stream_get(api,"t",None,None).await?;assert_eq!(response.status(),200);while response.chunk().await.map_err(apis::Error::from)?.is_some() {} Ok::<_,apis::Error<apis::runs_api::ThreadStreamApiV1ThreadsThreadIdStreamGetError>>(())}).await
     });
     server.requests.recv().await.unwrap();
     client.close();

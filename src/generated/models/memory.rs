@@ -43,9 +43,6 @@ pub struct Memory {
     #[serde(rename = "inherited_guide")]
     pub inherited_guide: String,
 
-    #[serde(rename = "key")]
-    pub key: String,
-
     #[serde(rename = "kind")]
     pub kind: models::MemoryKind,
 
@@ -92,7 +89,6 @@ impl Memory {
         history_bytes: Option<i32>,
         id: String,
         inherited_guide: String,
-        key: String,
         kind: models::MemoryKind,
         labels: std::collections::HashMap<String, String>,
         name: String,
@@ -116,7 +112,6 @@ impl Memory {
             history_bytes,
             id,
             inherited_guide,
-            key,
             kind,
             labels,
             name,

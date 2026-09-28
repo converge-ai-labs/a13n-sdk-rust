@@ -37,9 +37,6 @@ pub struct Skill {
     #[serde(rename = "id")]
     pub id: String,
 
-    #[serde(rename = "key")]
-    pub key: String,
-
     #[serde(rename = "labels")]
     pub labels: std::collections::HashMap<String, String>,
 
@@ -71,7 +68,6 @@ impl Skill {
         default_revision_id: Option<String>,
         description: String,
         id: String,
-        key: String,
         labels: std::collections::HashMap<String, String>,
         name: String,
         organization_id: String,
@@ -92,7 +88,6 @@ impl Skill {
             default_revision_id,
             description,
             id,
-            key,
             labels,
             name,
             organization_id,
