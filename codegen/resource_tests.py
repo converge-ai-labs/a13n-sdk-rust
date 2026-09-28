@@ -119,7 +119,7 @@ def generate_tests(document: dict, nodes: dict, tests: list, output: Path) -> No
                 reply = f"Reply::bytes({code},{json.dumps(next(iter(media)))},vec![1,2,3])"
             else:
                 reply = f'Reply::bytes({code},"application/octet-stream",Vec::new())'
-            result = "response.receipt" if op["result"] == "models::Submitted" else "response"
+            result = "response"
             cases.append(
                 "{"
                 + f'let mut server=server(|_|{reply}).await;let client=client(&server);let response={invoke};assert_eq!({result}.status.as_u16(),{code});assert_eq!({result}.headers["x-request-id"],"req_test");let request=server.requests.recv().await.unwrap();assert_eq!(request.method,{json.dumps(op["verb"].upper())});assert_eq!(request.target.split(\'?\').next().unwrap(),{json.dumps("/prefix" + expected)});'

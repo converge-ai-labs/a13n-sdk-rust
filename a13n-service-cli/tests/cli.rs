@@ -92,7 +92,7 @@ fn every_label_resource_uses_the_sdk_http_contract() {
                 }
                 let request = String::from_utf8(bytes).unwrap();
                 assert!(request.starts_with(&format!(
-                    "{} /api/v1/workspaces/ws_test/{collection}/resource_test HTTP/1.1",
+                    "{} /api/v1/{collection}/resource_test HTTP/1.1",
                     if replace { "PATCH" } else { "GET" }
                 )));
                 assert!(
@@ -131,7 +131,6 @@ fn every_label_resource_uses_the_sdk_http_contract() {
                 kind,
                 "resource_test",
             ]);
-            command.args(["--workspace", "ws_test"]);
             if replace {
                 command.args([
                     "--set",
@@ -154,22 +153,17 @@ fn every_label_resource_uses_the_sdk_http_contract() {
 }
 
 #[test]
-fn every_resource_requires_explicit_workspace() {
-    for kind in [
-        "agent",
-        "session",
-        "thread",
-        "run",
-        "skill",
-        "environment-template",
-    ] {
-        let output = Command::new(env!("CARGO_BIN_EXE_a13n-service-cli"))
-            .args(["labels", kind, "resource_test"])
-            .output()
-            .unwrap();
-        assert!(!output.status.success());
-        assert!(String::from_utf8_lossy(&output.stderr).contains("--workspace"));
-    }
+fn generated_business_plan_needs_no_workspace() {
+    let output = Command::new(env!("CARGO_BIN_EXE_a13n-service-cli"))
+        .args(["agents", "get", "agt_example", "--dry-run"])
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(normalized_stdout(&output).contains("/api/v1/agents/agt_example"));
 }
 
 #[test]
@@ -207,4 +201,69 @@ fn replacement_rejects_non_string_values_before_network() {
         .unwrap();
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("string-to-string map"));
+}
+
+#[test]
+fn failed_download_preserves_existing_destination_and_removes_temporary_file() {
+    use std::{
+        io::{Read, Write},
+        net::TcpListener,
+        thread,
+        time::{Duration, SystemTime, UNIX_EPOCH},
+    };
+    let directory = std::env::temp_dir().join(format!(
+        "a13n-cli-download-{}-{}",
+        std::process::id(),
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    std::fs::create_dir(&directory).unwrap();
+    let target = directory.join("saved.bin");
+    std::fs::write(&target, b"original bytes").unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let base = format!("http://{}", listener.local_addr().unwrap());
+    let server = thread::spawn(move || {
+        let (mut socket, _) = listener.accept().unwrap();
+        socket
+            .set_read_timeout(Some(Duration::from_secs(10)))
+            .unwrap();
+        let mut request = Vec::new();
+        let mut bytes = [0; 4096];
+        while !request.windows(4).any(|item| item == b"\r\n\r\n") {
+            let count = socket.read(&mut bytes).unwrap();
+            assert!(count > 0);
+            request.extend_from_slice(&bytes[..count]);
+        }
+        assert!(
+            String::from_utf8_lossy(&request)
+                .starts_with("GET /api/v1/assets/asset_test/content HTTP/1.1")
+        );
+        socket.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 100\r\nConnection: close\r\n\r\npartial").unwrap();
+    });
+    let output = Command::new(env!("CARGO_BIN_EXE_a13n-service-cli"))
+        .env("A13N_TOKEN", "test-token")
+        .args([
+            "--base-url",
+            &base,
+            "assets",
+            "content",
+            "get",
+            "--asset",
+            "asset_test",
+            "--output",
+            target.to_str().unwrap(),
+        ])
+        .output()
+        .unwrap();
+    server.join().unwrap();
+    assert!(!output.status.success(), "truncated body must fail");
+    assert_eq!(std::fs::read(&target).unwrap(), b"original bytes");
+    assert_eq!(
+        std::fs::read_dir(&directory).unwrap().count(),
+        1,
+        "temporary download leaked"
+    );
+    std::fs::remove_dir_all(directory).unwrap();
 }

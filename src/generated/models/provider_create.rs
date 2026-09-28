@@ -35,13 +35,10 @@ pub struct ProviderCreate {
 
     #[serde(rename = "type")]
     pub r#type: String,
-
-    #[serde(rename = "workspace_id", deserialize_with = "Option::deserialize")]
-    pub workspace_id: Option<String>,
 }
 
 impl ProviderCreate {
-    pub fn new(name: String, r#type: String, workspace_id: Option<String>) -> ProviderCreate {
+    pub fn new(name: String, r#type: String) -> ProviderCreate {
         ProviderCreate {
             config: None,
             credential: None,
@@ -49,7 +46,6 @@ impl ProviderCreate {
             extra_headers: None,
             name,
             r#type,
-            workspace_id,
         }
     }
 }

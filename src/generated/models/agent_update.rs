@@ -22,14 +22,6 @@ pub struct AgentUpdate {
     pub description: Option<Option<String>>,
 
     #[serde(
-        rename = "key",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub key: Option<Option<String>>,
-
-    #[serde(
         rename = "labels",
         default,
         with = "::serde_with::rust::double_option",
@@ -50,7 +42,6 @@ impl AgentUpdate {
     pub fn new() -> AgentUpdate {
         AgentUpdate {
             description: None,
-            key: None,
             labels: None,
             name: None,
         }

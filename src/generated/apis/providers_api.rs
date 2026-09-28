@@ -13,91 +13,91 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`create_provider_api_v1_organizations_organization_id_connector_providers_post`]
+/// struct for typed errors of method [`create_provider_api_v1_connector_providers_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateProviderApiV1OrganizationsOrganizationIdConnectorProvidersPostError {
+pub enum CreateProviderApiV1ConnectorProvidersPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_provider_api_v1_organizations_organization_id_environment_providers_post`]
+/// struct for typed errors of method [`create_provider_api_v1_environment_providers_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateProviderApiV1OrganizationsOrganizationIdEnvironmentProvidersPostError {
+pub enum CreateProviderApiV1EnvironmentProvidersPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_provider_api_v1_organizations_organization_id_memory_providers_post`]
+/// struct for typed errors of method [`create_provider_api_v1_memory_providers_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateProviderApiV1OrganizationsOrganizationIdMemoryProvidersPostError {
+pub enum CreateProviderApiV1MemoryProvidersPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_provider_api_v1_organizations_organization_id_model_providers_post`]
+/// struct for typed errors of method [`create_provider_api_v1_model_providers_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateProviderApiV1OrganizationsOrganizationIdModelProvidersPostError {
+pub enum CreateProviderApiV1ModelProvidersPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_provider_api_v1_organizations_organization_id_web_providers_post`]
+/// struct for typed errors of method [`create_provider_api_v1_web_providers_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateProviderApiV1OrganizationsOrganizationIdWebProvidersPostError {
+pub enum CreateProviderApiV1WebProvidersPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_provider_api_v1_organizations_organization_id_connector_providers_provider_id_get`]
+/// struct for typed errors of method [`get_provider_api_v1_connector_providers_provider_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetProviderApiV1OrganizationsOrganizationIdConnectorProvidersProviderIdGetError {
+pub enum GetProviderApiV1ConnectorProvidersProviderIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_provider_api_v1_organizations_organization_id_environment_providers_provider_id_get`]
+/// struct for typed errors of method [`get_provider_api_v1_environment_providers_provider_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetProviderApiV1OrganizationsOrganizationIdEnvironmentProvidersProviderIdGetError {
+pub enum GetProviderApiV1EnvironmentProvidersProviderIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_provider_api_v1_organizations_organization_id_memory_providers_provider_id_get`]
+/// struct for typed errors of method [`get_provider_api_v1_memory_providers_provider_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetProviderApiV1OrganizationsOrganizationIdMemoryProvidersProviderIdGetError {
+pub enum GetProviderApiV1MemoryProvidersProviderIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_provider_api_v1_organizations_organization_id_model_providers_provider_id_get`]
+/// struct for typed errors of method [`get_provider_api_v1_model_providers_provider_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetProviderApiV1OrganizationsOrganizationIdModelProvidersProviderIdGetError {
+pub enum GetProviderApiV1ModelProvidersProviderIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_provider_api_v1_organizations_organization_id_web_providers_provider_id_get`]
+/// struct for typed errors of method [`get_provider_api_v1_web_providers_provider_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetProviderApiV1OrganizationsOrganizationIdWebProvidersProviderIdGetError {
+pub enum GetProviderApiV1WebProvidersProviderIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
@@ -112,164 +112,160 @@ pub enum ListProviderTypesApiV1ProviderTypesKindGetError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_providers_api_v1_organizations_organization_id_connector_providers_get`]
+/// struct for typed errors of method [`list_providers_api_v1_connector_providers_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListProvidersApiV1OrganizationsOrganizationIdConnectorProvidersGetError {
+pub enum ListProvidersApiV1ConnectorProvidersGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_providers_api_v1_organizations_organization_id_environment_providers_get`]
+/// struct for typed errors of method [`list_providers_api_v1_environment_providers_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListProvidersApiV1OrganizationsOrganizationIdEnvironmentProvidersGetError {
+pub enum ListProvidersApiV1EnvironmentProvidersGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_providers_api_v1_organizations_organization_id_memory_providers_get`]
+/// struct for typed errors of method [`list_providers_api_v1_memory_providers_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListProvidersApiV1OrganizationsOrganizationIdMemoryProvidersGetError {
+pub enum ListProvidersApiV1MemoryProvidersGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_providers_api_v1_organizations_organization_id_model_providers_get`]
+/// struct for typed errors of method [`list_providers_api_v1_model_providers_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListProvidersApiV1OrganizationsOrganizationIdModelProvidersGetError {
+pub enum ListProvidersApiV1ModelProvidersGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_providers_api_v1_organizations_organization_id_web_providers_get`]
+/// struct for typed errors of method [`list_providers_api_v1_web_providers_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListProvidersApiV1OrganizationsOrganizationIdWebProvidersGetError {
+pub enum ListProvidersApiV1WebProvidersGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`test_provider_api_v1_organizations_organization_id_connector_providers_provider_id_test_post`]
+/// struct for typed errors of method [`test_provider_api_v1_connector_providers_provider_id_test_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum TestProviderApiV1OrganizationsOrganizationIdConnectorProvidersProviderIdTestPostError {
+pub enum TestProviderApiV1ConnectorProvidersProviderIdTestPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`test_provider_api_v1_organizations_organization_id_environment_providers_provider_id_test_post`]
+/// struct for typed errors of method [`test_provider_api_v1_environment_providers_provider_id_test_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum TestProviderApiV1OrganizationsOrganizationIdEnvironmentProvidersProviderIdTestPostError {
+pub enum TestProviderApiV1EnvironmentProvidersProviderIdTestPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`test_provider_api_v1_organizations_organization_id_memory_providers_provider_id_test_post`]
+/// struct for typed errors of method [`test_provider_api_v1_memory_providers_provider_id_test_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum TestProviderApiV1OrganizationsOrganizationIdMemoryProvidersProviderIdTestPostError {
+pub enum TestProviderApiV1MemoryProvidersProviderIdTestPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`test_provider_api_v1_organizations_organization_id_model_providers_provider_id_test_post`]
+/// struct for typed errors of method [`test_provider_api_v1_model_providers_provider_id_test_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum TestProviderApiV1OrganizationsOrganizationIdModelProvidersProviderIdTestPostError {
+pub enum TestProviderApiV1ModelProvidersProviderIdTestPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`test_provider_api_v1_organizations_organization_id_web_providers_provider_id_test_post`]
+/// struct for typed errors of method [`test_provider_api_v1_web_providers_provider_id_test_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum TestProviderApiV1OrganizationsOrganizationIdWebProvidersProviderIdTestPostError {
+pub enum TestProviderApiV1WebProvidersProviderIdTestPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_provider_api_v1_organizations_organization_id_connector_providers_provider_id_patch`]
+/// struct for typed errors of method [`update_provider_api_v1_connector_providers_provider_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateProviderApiV1OrganizationsOrganizationIdConnectorProvidersProviderIdPatchError {
+pub enum UpdateProviderApiV1ConnectorProvidersProviderIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_provider_api_v1_organizations_organization_id_environment_providers_provider_id_patch`]
+/// struct for typed errors of method [`update_provider_api_v1_environment_providers_provider_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateProviderApiV1OrganizationsOrganizationIdEnvironmentProvidersProviderIdPatchError {
+pub enum UpdateProviderApiV1EnvironmentProvidersProviderIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_provider_api_v1_organizations_organization_id_memory_providers_provider_id_patch`]
+/// struct for typed errors of method [`update_provider_api_v1_memory_providers_provider_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateProviderApiV1OrganizationsOrganizationIdMemoryProvidersProviderIdPatchError {
+pub enum UpdateProviderApiV1MemoryProvidersProviderIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_provider_api_v1_organizations_organization_id_model_providers_provider_id_patch`]
+/// struct for typed errors of method [`update_provider_api_v1_model_providers_provider_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateProviderApiV1OrganizationsOrganizationIdModelProvidersProviderIdPatchError {
+pub enum UpdateProviderApiV1ModelProvidersProviderIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_provider_api_v1_organizations_organization_id_web_providers_provider_id_patch`]
+/// struct for typed errors of method [`update_provider_api_v1_web_providers_provider_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateProviderApiV1OrganizationsOrganizationIdWebProvidersProviderIdPatchError {
+pub enum UpdateProviderApiV1WebProvidersProviderIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn create_provider_api_v1_organizations_organization_id_connector_providers_post(
+pub async fn create_provider_api_v1_connector_providers_post(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_create: models::ProviderCreate,
-) -> Result<
-    Response<models::Provider>,
-    Error<CreateProviderApiV1OrganizationsOrganizationIdConnectorProvidersPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Provider>, Error<CreateProviderApiV1ConnectorProvidersPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_body_provider_create = provider_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/connector-providers",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
-    );
+    let uri_str = format!("{}/api/v1/connector-providers", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -319,175 +315,7 @@ pub async fn create_provider_api_v1_organizations_organization_id_connector_prov
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            CreateProviderApiV1OrganizationsOrganizationIdConnectorProvidersPostError,
-        > = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn create_provider_api_v1_organizations_organization_id_environment_providers_post(
-    configuration: &configuration::Configuration,
-    organization_id: &str,
-    provider_create: models::ProviderCreate,
-) -> Result<
-    Response<models::Provider>,
-    Error<CreateProviderApiV1OrganizationsOrganizationIdEnvironmentProvidersPostError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_body_provider_create = provider_create;
-
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/environment-providers",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
-        let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
-        };
-        req_builder = req_builder.header("X-CSRF-Token", value);
-    };
-    req_builder = req_builder.json(&p_body_provider_create);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Provider`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Provider`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<
-            CreateProviderApiV1OrganizationsOrganizationIdEnvironmentProvidersPostError,
-        > = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn create_provider_api_v1_organizations_organization_id_memory_providers_post(
-    configuration: &configuration::Configuration,
-    organization_id: &str,
-    provider_create: models::ProviderCreate,
-) -> Result<
-    Response<models::Provider>,
-    Error<CreateProviderApiV1OrganizationsOrganizationIdMemoryProvidersPostError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_body_provider_create = provider_create;
-
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/memory-providers",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
-        let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
-        };
-        req_builder = req_builder.header("X-CSRF-Token", value);
-    };
-    req_builder = req_builder.json(&p_body_provider_create);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Provider`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Provider`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<CreateProviderApiV1OrganizationsOrganizationIdMemoryProvidersPostError> =
+        let entity: Option<CreateProviderApiV1ConnectorProvidersPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -498,29 +326,25 @@ pub async fn create_provider_api_v1_organizations_organization_id_memory_provide
     }
 }
 
-pub async fn create_provider_api_v1_organizations_organization_id_model_providers_post(
+pub async fn create_provider_api_v1_environment_providers_post(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_create: models::ProviderCreate,
-) -> Result<
-    Response<models::Provider>,
-    Error<CreateProviderApiV1OrganizationsOrganizationIdModelProvidersPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Provider>, Error<CreateProviderApiV1EnvironmentProvidersPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_body_provider_create = provider_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/model-providers",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
-    );
+    let uri_str = format!("{}/api/v1/environment-providers", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -570,7 +394,7 @@ pub async fn create_provider_api_v1_organizations_organization_id_model_provider
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateProviderApiV1OrganizationsOrganizationIdModelProvidersPostError> =
+        let entity: Option<CreateProviderApiV1EnvironmentProvidersPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -581,29 +405,25 @@ pub async fn create_provider_api_v1_organizations_organization_id_model_provider
     }
 }
 
-pub async fn create_provider_api_v1_organizations_organization_id_web_providers_post(
+pub async fn create_provider_api_v1_memory_providers_post(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_create: models::ProviderCreate,
-) -> Result<
-    Response<models::Provider>,
-    Error<CreateProviderApiV1OrganizationsOrganizationIdWebProvidersPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Provider>, Error<CreateProviderApiV1MemoryProvidersPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_body_provider_create = provider_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/web-providers",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
-    );
+    let uri_str = format!("{}/api/v1/memory-providers", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -653,7 +473,7 @@ pub async fn create_provider_api_v1_organizations_organization_id_web_providers_
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateProviderApiV1OrganizationsOrganizationIdWebProvidersPostError> =
+        let entity: Option<CreateProviderApiV1MemoryProvidersPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -664,32 +484,38 @@ pub async fn create_provider_api_v1_organizations_organization_id_web_providers_
     }
 }
 
-pub async fn get_provider_api_v1_organizations_organization_id_connector_providers_provider_id_get(
+pub async fn create_provider_api_v1_model_providers_post(
     configuration: &configuration::Configuration,
-    organization_id: &str,
-    provider_id: &str,
-) -> Result<
-    Response<models::Provider>,
-    Error<GetProviderApiV1OrganizationsOrganizationIdConnectorProvidersProviderIdGetError>,
-> {
+    provider_create: models::ProviderCreate,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Provider>, Error<CreateProviderApiV1ModelProvidersPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_path_provider_id = provider_id;
+    let p_body_provider_create = provider_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/connector-providers/{provider_id}",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
-        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+    let uri_str = format!("{}/api/v1/model-providers", configuration.base_path);
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+    req_builder = req_builder.json(&p_body_provider_create);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -726,9 +552,8 @@ pub async fn get_provider_api_v1_organizations_organization_id_connector_provide
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetProviderApiV1OrganizationsOrganizationIdConnectorProvidersProviderIdGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<CreateProviderApiV1ModelProvidersPostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -738,32 +563,38 @@ pub async fn get_provider_api_v1_organizations_organization_id_connector_provide
     }
 }
 
-pub async fn get_provider_api_v1_organizations_organization_id_environment_providers_provider_id_get(
+pub async fn create_provider_api_v1_web_providers_post(
     configuration: &configuration::Configuration,
-    organization_id: &str,
-    provider_id: &str,
-) -> Result<
-    Response<models::Provider>,
-    Error<GetProviderApiV1OrganizationsOrganizationIdEnvironmentProvidersProviderIdGetError>,
-> {
+    provider_create: models::ProviderCreate,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Provider>, Error<CreateProviderApiV1WebProvidersPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_path_provider_id = provider_id;
+    let p_body_provider_create = provider_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/environment-providers/{provider_id}",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
-        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+    let uri_str = format!("{}/api/v1/web-providers", configuration.base_path);
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+    req_builder = req_builder.json(&p_body_provider_create);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -800,9 +631,8 @@ pub async fn get_provider_api_v1_organizations_organization_id_environment_provi
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetProviderApiV1OrganizationsOrganizationIdEnvironmentProvidersProviderIdGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<CreateProviderApiV1WebProvidersPostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -812,28 +642,28 @@ pub async fn get_provider_api_v1_organizations_organization_id_environment_provi
     }
 }
 
-pub async fn get_provider_api_v1_organizations_organization_id_memory_providers_provider_id_get(
+pub async fn get_provider_api_v1_connector_providers_provider_id_get(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_id: &str,
-) -> Result<
-    Response<models::Provider>,
-    Error<GetProviderApiV1OrganizationsOrganizationIdMemoryProvidersProviderIdGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Provider>, Error<GetProviderApiV1ConnectorProvidersProviderIdGetError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/memory-providers/{provider_id}",
+        "{}/api/v1/connector-providers/{provider_id}",
         configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -874,9 +704,8 @@ pub async fn get_provider_api_v1_organizations_organization_id_memory_providers_
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetProviderApiV1OrganizationsOrganizationIdMemoryProvidersProviderIdGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<GetProviderApiV1ConnectorProvidersProviderIdGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -886,28 +715,28 @@ pub async fn get_provider_api_v1_organizations_organization_id_memory_providers_
     }
 }
 
-pub async fn get_provider_api_v1_organizations_organization_id_model_providers_provider_id_get(
+pub async fn get_provider_api_v1_environment_providers_provider_id_get(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_id: &str,
-) -> Result<
-    Response<models::Provider>,
-    Error<GetProviderApiV1OrganizationsOrganizationIdModelProvidersProviderIdGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Provider>, Error<GetProviderApiV1EnvironmentProvidersProviderIdGetError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/model-providers/{provider_id}",
+        "{}/api/v1/environment-providers/{provider_id}",
         configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -948,9 +777,8 @@ pub async fn get_provider_api_v1_organizations_organization_id_model_providers_p
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetProviderApiV1OrganizationsOrganizationIdModelProvidersProviderIdGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<GetProviderApiV1EnvironmentProvidersProviderIdGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -960,28 +788,27 @@ pub async fn get_provider_api_v1_organizations_organization_id_model_providers_p
     }
 }
 
-pub async fn get_provider_api_v1_organizations_organization_id_web_providers_provider_id_get(
+pub async fn get_provider_api_v1_memory_providers_provider_id_get(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_id: &str,
-) -> Result<
-    Response<models::Provider>,
-    Error<GetProviderApiV1OrganizationsOrganizationIdWebProvidersProviderIdGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Provider>, Error<GetProviderApiV1MemoryProvidersProviderIdGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/web-providers/{provider_id}",
+        "{}/api/v1/memory-providers/{provider_id}",
         configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1022,9 +849,152 @@ pub async fn get_provider_api_v1_organizations_organization_id_web_providers_pro
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetProviderApiV1OrganizationsOrganizationIdWebProvidersProviderIdGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<GetProviderApiV1MemoryProvidersProviderIdGetError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn get_provider_api_v1_model_providers_provider_id_get(
+    configuration: &configuration::Configuration,
+    provider_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Provider>, Error<GetProviderApiV1ModelProvidersProviderIdGetError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/model-providers/{provider_id}",
+        configuration.base_path,
+        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Provider`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Provider`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetProviderApiV1ModelProvidersProviderIdGetError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn get_provider_api_v1_web_providers_provider_id_get(
+    configuration: &configuration::Configuration,
+    provider_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Provider>, Error<GetProviderApiV1WebProvidersProviderIdGetError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/web-providers/{provider_id}",
+        configuration.base_path,
+        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Provider`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Provider`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetProviderApiV1WebProvidersProviderIdGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1104,32 +1074,20 @@ pub async fn list_provider_types_api_v1_provider_types_kind_get(
     }
 }
 
-pub async fn list_providers_api_v1_organizations_organization_id_connector_providers_get(
+pub async fn list_providers_api_v1_connector_providers_get(
     configuration: &configuration::Configuration,
-    organization_id: &str,
-    workspace_id: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::ProviderPage>,
-    Error<ListProvidersApiV1OrganizationsOrganizationIdConnectorProvidersGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ProviderPage>, Error<ListProvidersApiV1ConnectorProvidersGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_query_workspace_id = workspace_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/connector-providers",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
-    );
+    let uri_str = format!("{}/api/v1/connector-providers", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
-    if let Some(ref param_value) = p_query_workspace_id {
-        req_builder = req_builder.query(&[("workspace_id", &param_value.to_string())]);
-    }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
     }
@@ -1138,6 +1096,9 @@ pub async fn list_providers_api_v1_organizations_organization_id_connector_provi
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1178,179 +1139,7 @@ pub async fn list_providers_api_v1_organizations_organization_id_connector_provi
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ListProvidersApiV1OrganizationsOrganizationIdConnectorProvidersGetError,
-        > = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn list_providers_api_v1_organizations_organization_id_environment_providers_get(
-    configuration: &configuration::Configuration,
-    organization_id: &str,
-    workspace_id: Option<&str>,
-    limit: Option<i32>,
-    cursor: Option<&str>,
-) -> Result<
-    Response<models::ProviderPage>,
-    Error<ListProvidersApiV1OrganizationsOrganizationIdEnvironmentProvidersGetError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_query_workspace_id = workspace_id;
-    let p_query_limit = limit;
-    let p_query_cursor = cursor;
-
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/environment-providers",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref param_value) = p_query_workspace_id {
-        req_builder = req_builder.query(&[("workspace_id", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_limit {
-        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_cursor {
-        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
-    }
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ProviderPage`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ProviderPage`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<
-            ListProvidersApiV1OrganizationsOrganizationIdEnvironmentProvidersGetError,
-        > = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn list_providers_api_v1_organizations_organization_id_memory_providers_get(
-    configuration: &configuration::Configuration,
-    organization_id: &str,
-    workspace_id: Option<&str>,
-    limit: Option<i32>,
-    cursor: Option<&str>,
-) -> Result<
-    Response<models::ProviderPage>,
-    Error<ListProvidersApiV1OrganizationsOrganizationIdMemoryProvidersGetError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_query_workspace_id = workspace_id;
-    let p_query_limit = limit;
-    let p_query_cursor = cursor;
-
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/memory-providers",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref param_value) = p_query_workspace_id {
-        req_builder = req_builder.query(&[("workspace_id", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_limit {
-        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_cursor {
-        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
-    }
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ProviderPage`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ProviderPage`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<ListProvidersApiV1OrganizationsOrganizationIdMemoryProvidersGetError> =
+        let entity: Option<ListProvidersApiV1ConnectorProvidersGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1361,32 +1150,20 @@ pub async fn list_providers_api_v1_organizations_organization_id_memory_provider
     }
 }
 
-pub async fn list_providers_api_v1_organizations_organization_id_model_providers_get(
+pub async fn list_providers_api_v1_environment_providers_get(
     configuration: &configuration::Configuration,
-    organization_id: &str,
-    workspace_id: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::ProviderPage>,
-    Error<ListProvidersApiV1OrganizationsOrganizationIdModelProvidersGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ProviderPage>, Error<ListProvidersApiV1EnvironmentProvidersGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_query_workspace_id = workspace_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/model-providers",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
-    );
+    let uri_str = format!("{}/api/v1/environment-providers", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
-    if let Some(ref param_value) = p_query_workspace_id {
-        req_builder = req_builder.query(&[("workspace_id", &param_value.to_string())]);
-    }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
     }
@@ -1395,6 +1172,9 @@ pub async fn list_providers_api_v1_organizations_organization_id_model_providers
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1435,7 +1215,7 @@ pub async fn list_providers_api_v1_organizations_organization_id_model_providers
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListProvidersApiV1OrganizationsOrganizationIdModelProvidersGetError> =
+        let entity: Option<ListProvidersApiV1EnvironmentProvidersGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1446,32 +1226,20 @@ pub async fn list_providers_api_v1_organizations_organization_id_model_providers
     }
 }
 
-pub async fn list_providers_api_v1_organizations_organization_id_web_providers_get(
+pub async fn list_providers_api_v1_memory_providers_get(
     configuration: &configuration::Configuration,
-    organization_id: &str,
-    workspace_id: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::ProviderPage>,
-    Error<ListProvidersApiV1OrganizationsOrganizationIdWebProvidersGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ProviderPage>, Error<ListProvidersApiV1MemoryProvidersGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_query_workspace_id = workspace_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/web-providers",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
-    );
+    let uri_str = format!("{}/api/v1/memory-providers", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
-    if let Some(ref param_value) = p_query_workspace_id {
-        req_builder = req_builder.query(&[("workspace_id", &param_value.to_string())]);
-    }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
     }
@@ -1480,6 +1248,9 @@ pub async fn list_providers_api_v1_organizations_organization_id_web_providers_g
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1520,7 +1291,7 @@ pub async fn list_providers_api_v1_organizations_organization_id_web_providers_g
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListProvidersApiV1OrganizationsOrganizationIdWebProvidersGetError> =
+        let entity: Option<ListProvidersApiV1MemoryProvidersGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1531,41 +1302,34 @@ pub async fn list_providers_api_v1_organizations_organization_id_web_providers_g
     }
 }
 
-pub async fn test_provider_api_v1_organizations_organization_id_connector_providers_provider_id_test_post(
+pub async fn list_providers_api_v1_model_providers_get(
     configuration: &configuration::Configuration,
-    organization_id: &str,
-    provider_id: &str,
-) -> Result<
-    Response<models::ProviderTest>,
-    Error<TestProviderApiV1OrganizationsOrganizationIdConnectorProvidersProviderIdTestPostError>,
-> {
+    limit: Option<i32>,
+    cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ProviderPage>, Error<ListProvidersApiV1ModelProvidersGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_path_provider_id = provider_id;
+    let p_query_limit = limit;
+    let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/connector-providers/{provider_id}/test",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
-        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
+    let uri_str = format!("{}/api/v1/model-providers", configuration.base_path);
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
-        let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
-        };
-        req_builder = req_builder.header("X-CSRF-Token", value);
     };
 
     let req = req_builder.build()?;
@@ -1592,20 +1356,19 @@ pub async fn test_provider_api_v1_organizations_organization_id_connector_provid
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ProviderTest`",
+                    "Received `text/plain` content type response that cannot be converted to `models::ProviderPage`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ProviderTest`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ProviderPage`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            TestProviderApiV1OrganizationsOrganizationIdConnectorProvidersProviderIdTestPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ListProvidersApiV1ModelProvidersGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1615,41 +1378,34 @@ pub async fn test_provider_api_v1_organizations_organization_id_connector_provid
     }
 }
 
-pub async fn test_provider_api_v1_organizations_organization_id_environment_providers_provider_id_test_post(
+pub async fn list_providers_api_v1_web_providers_get(
     configuration: &configuration::Configuration,
-    organization_id: &str,
-    provider_id: &str,
-) -> Result<
-    Response<models::ProviderTest>,
-    Error<TestProviderApiV1OrganizationsOrganizationIdEnvironmentProvidersProviderIdTestPostError>,
-> {
+    limit: Option<i32>,
+    cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ProviderPage>, Error<ListProvidersApiV1WebProvidersGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_path_provider_id = provider_id;
+    let p_query_limit = limit;
+    let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/environment-providers/{provider_id}/test",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
-        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
+    let uri_str = format!("{}/api/v1/web-providers", configuration.base_path);
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
-        let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
-        };
-        req_builder = req_builder.header("X-CSRF-Token", value);
     };
 
     let req = req_builder.build()?;
@@ -1676,20 +1432,19 @@ pub async fn test_provider_api_v1_organizations_organization_id_environment_prov
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ProviderTest`",
+                    "Received `text/plain` content type response that cannot be converted to `models::ProviderPage`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ProviderTest`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ProviderPage`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            TestProviderApiV1OrganizationsOrganizationIdEnvironmentProvidersProviderIdTestPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ListProvidersApiV1WebProvidersGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1699,22 +1454,21 @@ pub async fn test_provider_api_v1_organizations_organization_id_environment_prov
     }
 }
 
-pub async fn test_provider_api_v1_organizations_organization_id_memory_providers_provider_id_test_post(
+pub async fn test_provider_api_v1_connector_providers_provider_id_test_post(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_id: &str,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::ProviderTest>,
-    Error<TestProviderApiV1OrganizationsOrganizationIdMemoryProvidersProviderIdTestPostError>,
+    Error<TestProviderApiV1ConnectorProvidersProviderIdTestPostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/memory-providers/{provider_id}/test",
+        "{}/api/v1/connector-providers/{provider_id}/test",
         configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id)
     );
     let mut req_builder = configuration
@@ -1723,6 +1477,9 @@ pub async fn test_provider_api_v1_organizations_organization_id_memory_providers
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1771,9 +1528,8 @@ pub async fn test_provider_api_v1_organizations_organization_id_memory_providers
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            TestProviderApiV1OrganizationsOrganizationIdMemoryProvidersProviderIdTestPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<TestProviderApiV1ConnectorProvidersProviderIdTestPostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1783,22 +1539,21 @@ pub async fn test_provider_api_v1_organizations_organization_id_memory_providers
     }
 }
 
-pub async fn test_provider_api_v1_organizations_organization_id_model_providers_provider_id_test_post(
+pub async fn test_provider_api_v1_environment_providers_provider_id_test_post(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_id: &str,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::ProviderTest>,
-    Error<TestProviderApiV1OrganizationsOrganizationIdModelProvidersProviderIdTestPostError>,
+    Error<TestProviderApiV1EnvironmentProvidersProviderIdTestPostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/model-providers/{provider_id}/test",
+        "{}/api/v1/environment-providers/{provider_id}/test",
         configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id)
     );
     let mut req_builder = configuration
@@ -1807,6 +1562,9 @@ pub async fn test_provider_api_v1_organizations_organization_id_model_providers_
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1855,9 +1613,8 @@ pub async fn test_provider_api_v1_organizations_organization_id_model_providers_
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            TestProviderApiV1OrganizationsOrganizationIdModelProvidersProviderIdTestPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<TestProviderApiV1EnvironmentProvidersProviderIdTestPostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1867,22 +1624,21 @@ pub async fn test_provider_api_v1_organizations_organization_id_model_providers_
     }
 }
 
-pub async fn test_provider_api_v1_organizations_organization_id_web_providers_provider_id_test_post(
+pub async fn test_provider_api_v1_memory_providers_provider_id_test_post(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_id: &str,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::ProviderTest>,
-    Error<TestProviderApiV1OrganizationsOrganizationIdWebProvidersProviderIdTestPostError>,
+    Error<TestProviderApiV1MemoryProvidersProviderIdTestPostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/web-providers/{provider_id}/test",
+        "{}/api/v1/memory-providers/{provider_id}/test",
         configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id)
     );
     let mut req_builder = configuration
@@ -1891,6 +1647,9 @@ pub async fn test_provider_api_v1_organizations_organization_id_web_providers_pr
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1939,9 +1698,178 @@ pub async fn test_provider_api_v1_organizations_organization_id_web_providers_pr
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            TestProviderApiV1OrganizationsOrganizationIdWebProvidersProviderIdTestPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<TestProviderApiV1MemoryProvidersProviderIdTestPostError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn test_provider_api_v1_model_providers_provider_id_test_post(
+    configuration: &configuration::Configuration,
+    provider_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<
+    Response<models::ProviderTest>,
+    Error<TestProviderApiV1ModelProvidersProviderIdTestPostError>,
+> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/model-providers/{provider_id}/test",
+        configuration.base_path,
+        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ProviderTest`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ProviderTest`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<TestProviderApiV1ModelProvidersProviderIdTestPostError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn test_provider_api_v1_web_providers_provider_id_test_post(
+    configuration: &configuration::Configuration,
+    provider_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<
+    Response<models::ProviderTest>,
+    Error<TestProviderApiV1WebProvidersProviderIdTestPostError>,
+> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/web-providers/{provider_id}/test",
+        configuration.base_path,
+        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ProviderTest`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ProviderTest`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<TestProviderApiV1WebProvidersProviderIdTestPostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1952,26 +1880,25 @@ pub async fn test_provider_api_v1_organizations_organization_id_web_providers_pr
 }
 
 /// A `config` change must also replace or remove a stored credential: it never follows a new endpoint.
-pub async fn update_provider_api_v1_organizations_organization_id_connector_providers_provider_id_patch(
+pub async fn update_provider_api_v1_connector_providers_provider_id_patch(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_id: &str,
     provider_update: models::ProviderUpdate,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::Provider>,
-    Error<UpdateProviderApiV1OrganizationsOrganizationIdConnectorProvidersProviderIdPatchError>,
+    Error<UpdateProviderApiV1ConnectorProvidersProviderIdPatchError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_path_provider_id = provider_id;
     let p_body_provider_update = provider_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/connector-providers/{provider_id}",
+        "{}/api/v1/connector-providers/{provider_id}",
         configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id)
     );
     let mut req_builder = configuration
@@ -1983,6 +1910,9 @@ pub async fn update_provider_api_v1_organizations_organization_id_connector_prov
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2032,9 +1962,8 @@ pub async fn update_provider_api_v1_organizations_organization_id_connector_prov
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UpdateProviderApiV1OrganizationsOrganizationIdConnectorProvidersProviderIdPatchError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UpdateProviderApiV1ConnectorProvidersProviderIdPatchError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2045,26 +1974,25 @@ pub async fn update_provider_api_v1_organizations_organization_id_connector_prov
 }
 
 /// A `config` change must also replace or remove a stored credential: it never follows a new endpoint.
-pub async fn update_provider_api_v1_organizations_organization_id_environment_providers_provider_id_patch(
+pub async fn update_provider_api_v1_environment_providers_provider_id_patch(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_id: &str,
     provider_update: models::ProviderUpdate,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::Provider>,
-    Error<UpdateProviderApiV1OrganizationsOrganizationIdEnvironmentProvidersProviderIdPatchError>,
+    Error<UpdateProviderApiV1EnvironmentProvidersProviderIdPatchError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_path_provider_id = provider_id;
     let p_body_provider_update = provider_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/environment-providers/{provider_id}",
+        "{}/api/v1/environment-providers/{provider_id}",
         configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id)
     );
     let mut req_builder = configuration
@@ -2076,6 +2004,9 @@ pub async fn update_provider_api_v1_organizations_organization_id_environment_pr
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2125,9 +2056,8 @@ pub async fn update_provider_api_v1_organizations_organization_id_environment_pr
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UpdateProviderApiV1OrganizationsOrganizationIdEnvironmentProvidersProviderIdPatchError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UpdateProviderApiV1EnvironmentProvidersProviderIdPatchError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2138,26 +2068,23 @@ pub async fn update_provider_api_v1_organizations_organization_id_environment_pr
 }
 
 /// A `config` change must also replace or remove a stored credential: it never follows a new endpoint.
-pub async fn update_provider_api_v1_organizations_organization_id_memory_providers_provider_id_patch(
+pub async fn update_provider_api_v1_memory_providers_provider_id_patch(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_id: &str,
     provider_update: models::ProviderUpdate,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Provider>,
-    Error<UpdateProviderApiV1OrganizationsOrganizationIdMemoryProvidersProviderIdPatchError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Provider>, Error<UpdateProviderApiV1MemoryProvidersProviderIdPatchError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_path_provider_id = provider_id;
     let p_body_provider_update = provider_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/memory-providers/{provider_id}",
+        "{}/api/v1/memory-providers/{provider_id}",
         configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id)
     );
     let mut req_builder = configuration
@@ -2169,6 +2096,9 @@ pub async fn update_provider_api_v1_organizations_organization_id_memory_provide
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2218,9 +2148,8 @@ pub async fn update_provider_api_v1_organizations_organization_id_memory_provide
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UpdateProviderApiV1OrganizationsOrganizationIdMemoryProvidersProviderIdPatchError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UpdateProviderApiV1MemoryProvidersProviderIdPatchError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2231,26 +2160,23 @@ pub async fn update_provider_api_v1_organizations_organization_id_memory_provide
 }
 
 /// A `config` change must also replace or remove a stored credential: it never follows a new endpoint.
-pub async fn update_provider_api_v1_organizations_organization_id_model_providers_provider_id_patch(
+pub async fn update_provider_api_v1_model_providers_provider_id_patch(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_id: &str,
     provider_update: models::ProviderUpdate,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Provider>,
-    Error<UpdateProviderApiV1OrganizationsOrganizationIdModelProvidersProviderIdPatchError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Provider>, Error<UpdateProviderApiV1ModelProvidersProviderIdPatchError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_path_provider_id = provider_id;
     let p_body_provider_update = provider_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/model-providers/{provider_id}",
+        "{}/api/v1/model-providers/{provider_id}",
         configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id)
     );
     let mut req_builder = configuration
@@ -2262,6 +2188,9 @@ pub async fn update_provider_api_v1_organizations_organization_id_model_provider
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2311,9 +2240,8 @@ pub async fn update_provider_api_v1_organizations_organization_id_model_provider
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UpdateProviderApiV1OrganizationsOrganizationIdModelProvidersProviderIdPatchError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UpdateProviderApiV1ModelProvidersProviderIdPatchError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2324,26 +2252,23 @@ pub async fn update_provider_api_v1_organizations_organization_id_model_provider
 }
 
 /// A `config` change must also replace or remove a stored credential: it never follows a new endpoint.
-pub async fn update_provider_api_v1_organizations_organization_id_web_providers_provider_id_patch(
+pub async fn update_provider_api_v1_web_providers_provider_id_patch(
     configuration: &configuration::Configuration,
-    organization_id: &str,
     provider_id: &str,
     provider_update: models::ProviderUpdate,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Provider>,
-    Error<UpdateProviderApiV1OrganizationsOrganizationIdWebProvidersProviderIdPatchError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Provider>, Error<UpdateProviderApiV1WebProvidersProviderIdPatchError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
     let p_path_provider_id = provider_id;
     let p_body_provider_update = provider_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/web-providers/{provider_id}",
+        "{}/api/v1/web-providers/{provider_id}",
         configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id)
     );
     let mut req_builder = configuration
@@ -2355,6 +2280,9 @@ pub async fn update_provider_api_v1_organizations_organization_id_web_providers_
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2404,9 +2332,8 @@ pub async fn update_provider_api_v1_organizations_organization_id_web_providers_
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UpdateProviderApiV1OrganizationsOrganizationIdWebProvidersProviderIdPatchError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UpdateProviderApiV1WebProvidersProviderIdPatchError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

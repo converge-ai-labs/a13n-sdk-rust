@@ -52,8 +52,8 @@ pub struct Provider {
     #[serde(rename = "version")]
     pub version: i32,
 
-    #[serde(rename = "workspace_id", deserialize_with = "Option::deserialize")]
-    pub workspace_id: Option<String>,
+    #[serde(rename = "workspace_id")]
+    pub workspace_id: String,
 }
 
 impl Provider {
@@ -71,7 +71,7 @@ impl Provider {
         updated_at: chrono::DateTime<chrono::FixedOffset>,
         updated_by_id: String,
         version: i32,
-        workspace_id: Option<String>,
+        workspace_id: String,
     ) -> Provider {
         Provider {
             config,

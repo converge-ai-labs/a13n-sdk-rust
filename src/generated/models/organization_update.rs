@@ -14,14 +14,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationUpdate {
     #[serde(
-        rename = "key",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub key: Option<Option<String>>,
-
-    #[serde(
         rename = "name",
         default,
         with = "::serde_with::rust::double_option",
@@ -32,9 +24,6 @@ pub struct OrganizationUpdate {
 
 impl OrganizationUpdate {
     pub fn new() -> OrganizationUpdate {
-        OrganizationUpdate {
-            key: None,
-            name: None,
-        }
+        OrganizationUpdate { name: None }
     }
 }

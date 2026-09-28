@@ -33,9 +33,6 @@ pub struct MemoryCreate {
     )]
     pub guide: Option<Option<String>>,
 
-    #[serde(rename = "key")]
-    pub key: String,
-
     #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
     pub labels: Option<std::collections::HashMap<String, String>>,
 
@@ -64,12 +61,11 @@ pub struct MemoryCreate {
 
 impl MemoryCreate {
     /// `postgres` makes a file memory the Service stores; a Memory Provider's type makes a record memory in that provider's backend, under a new namespace or the existing one `namespace` adopts.
-    pub fn new(key: String, name: String) -> MemoryCreate {
+    pub fn new(name: String) -> MemoryCreate {
         MemoryCreate {
             always_load: None,
             description: None,
             guide: None,
-            key,
             labels: None,
             name,
             namespace: None,

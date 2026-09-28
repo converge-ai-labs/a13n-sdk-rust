@@ -52,6 +52,8 @@ impl From<Error> for CliError {
             }
             Error::Transport(_) => Self {kind:"transport",message:"Service transport failed. A mutation may have succeeded; inspect server state before replaying it.".into(),exit:5,status:None,code:None,request_id:None},
             Error::Protocol(_) => Self::protocol("Service response violates the pinned contract"),
+            Error::Submission(error) => Self::protocol(format!("Entry {} settled as {} without incorporation", error.entry_id, error.entry.data.status)),
+            Error::Timeout => Self::protocol("Local observation deadline elapsed; remote work may continue"),
             Error::InvalidInput => Self::input("invalid URL, resource identifier or request precondition"),
             Error::Closed => Self::protocol("client closed during operation"),
         }
@@ -76,12 +78,9 @@ fn command() -> Command {
                 .global(true)
                 .help("Service origin"),
         )
-        .arg(
-            Arg::new("workspace")
-                .long("workspace")
-                .global(true)
-                .help("Explicit workspace ID or key"),
-        )
+        .arg(Arg::new("workspace").long("workspace").global(true).help(
+            "Session workspace ID; API keys already select their workspace (omit for API keys)",
+        ))
         .arg(
             Arg::new("organization")
                 .long("organization")
@@ -132,7 +131,7 @@ fn command() -> Command {
             Arg::new("timeout")
                 .long("timeout")
                 .global(true)
-                .default_value("30")
+                .default_value("300")
                 .value_parser(value_parser!(u64).range(1..))
                 .help("Whole-operation timeout in seconds"),
         )
@@ -274,7 +273,7 @@ async fn run(args: impl IntoIterator<Item = OsString>) -> Result<(), CliError> {
             return Ok(());
         }
         return Err(CliError::input(
-            "--dry-run is available only for generated API commands; labels and observation helpers do not have local plans",
+            "--dry-run is available only for generated API commands; semantic and observation commands have no local plan",
         ));
     }
     if let Some((index, leaf)) = generated::selected(&matches)
@@ -287,6 +286,9 @@ async fn run(args: impl IntoIterator<Item = OsString>) -> Result<(), CliError> {
         ));
     }
     let mut builder = Client::builder(&config.base_url);
+    if let Some(workspace) = &config.workspace {
+        builder = builder.workspace(workspace.clone());
+    }
     if let Ok(token) = env::var(&config.token_env)
         && !token.is_empty()
     {
@@ -344,7 +346,7 @@ mod tests {
     use super::*;
     #[test]
     fn generated_commands_have_offline_schema_for_every_operation() {
-        assert_eq!(generated::OPERATIONS.len(), 230);
+        assert_eq!(generated::OPERATIONS.len(), 225);
         for (name, _, _) in generated::OPERATIONS {
             let arguments = std::iter::once("a13n-service-cli".to_owned())
                 .chain(name.split_whitespace().map(str::to_owned))
@@ -377,7 +379,7 @@ mod tests {
     fn rejects_nested_credentials_typo_without_rejecting_open_config() {
         let index = generated::OPERATIONS
             .iter()
-            .position(|item| item.0 == "workspaces connections create")
+            .position(|item| item.0 == "connections create")
             .unwrap();
         let bad = json!({"type":"mcp","name":"test","config":{"url":"https://example.net"},
             "credential":{"token":"fixture-value","tokne":"bad"}});

@@ -31,9 +31,6 @@ pub struct Template {
     #[serde(rename = "id")]
     pub id: String,
 
-    #[serde(rename = "key")]
-    pub key: String,
-
     #[serde(rename = "labels")]
     pub labels: std::collections::HashMap<String, String>,
 
@@ -67,7 +64,6 @@ impl Template {
         description: Option<String>,
         enabled: bool,
         id: String,
-        key: String,
         labels: std::collections::HashMap<String, String>,
         name: String,
         organization_id: String,
@@ -84,7 +80,6 @@ impl Template {
             description,
             enabled,
             id,
-            key,
             labels,
             name,
             organization_id,

@@ -194,9 +194,7 @@ def main() -> None:
             flush=True,
         )
 
-        memory = call(
-            "memories", "create", body={"key": f"cli-{uuid.uuid4().hex}", "name": "CLI acceptance"}, status=201
-        )["data"]
+        memory = call("memories", "create", body={"name": "CLI acceptance"}, status=201)["data"]
         memory_id = memory["id"]
         path = "projects/计划 #1%.md"
         created = call(
@@ -341,6 +339,38 @@ def main() -> None:
         waited = call("runs", "wait", run_id)
         assert waited["data"]["id"] == run_id and waited["data"]["status"] == "completed"
         print("Copied CLI verified HTTPS: request file input, 201/200 idempotent replay and exact Run wait", flush=True)
+        ordinary = json.loads(
+            execute(
+                "--include-meta",
+                "agents",
+                "start",
+                agent,
+                "--text",
+                "CLI Agent helper acceptance.",
+                "--idempotency-key",
+                str(uuid.uuid4()),
+                "--wait",
+            ).stdout
+        )
+        assert ordinary["outcome"]["data"]["status"] == "completed"
+        ordinary_thread = ordinary["submitted"]["data"]["thread"]["id"]
+        continued = json.loads(
+            execute(
+                "--include-meta",
+                "agents",
+                "send",
+                agent,
+                "--thread",
+                ordinary_thread,
+                "--text",
+                "CLI Agent follow-up.",
+                "--idempotency-key",
+                str(uuid.uuid4()),
+                "--wait",
+            ).stdout
+        )
+        assert continued["submitted"]["data"]["thread"]["id"] == ordinary_thread
+        assert continued["outcome"]["data"]["status"] == "completed"
 
         queued_source = call(
             "threads",

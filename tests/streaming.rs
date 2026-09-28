@@ -1,7 +1,7 @@
 mod common;
 use a13n::{
     Error,
-    streaming::{StreamOptions, ThreadFrame},
+    streaming::{StreamOptions, ThreadFrame, ThreadStream},
 };
 use common::*;
 use std::{
@@ -26,13 +26,7 @@ async fn all_variants_and_cursor_acknowledgement_are_typed() {
     );
     let server = server(move |_| Reply::sse(&wire)).await;
     let client = client(&server);
-    let mut stream = client
-        .resources()
-        .workspaces()
-        .at("ws")
-        .threads()
-        .at("th")
-        .events(options())
+    let mut stream = ThreadStream::open(client.resources().threads().at("th"), options())
         .await
         .unwrap();
     assert_eq!(stream.response().unwrap().0, 200);
@@ -79,13 +73,7 @@ async fn cancellation_keeps_partial_line_utf8_and_frame_state() {
     })
     .await;
     let client = client(&server);
-    let mut stream = client
-        .resources()
-        .workspaces()
-        .at("w")
-        .threads()
-        .at("t")
-        .events(options())
+    let mut stream = ThreadStream::open(client.resources().threads().at("t"), options())
         .await
         .unwrap();
     assert!(
@@ -106,13 +94,7 @@ async fn cancellation_keeps_partial_line_utf8_and_frame_state() {
 async fn parent_close_rejects_buffered_frames_before_ack() {
     let server = server(|_| Reply::sse(&BOUNDARY.repeat(2))).await;
     let client = client(&server);
-    let mut stream = client
-        .resources()
-        .workspaces()
-        .at("w")
-        .threads()
-        .at("t")
-        .events(options())
+    let mut stream = ThreadStream::open(client.resources().threads().at("t"), options())
         .await
         .unwrap();
     assert!(stream.next().await.unwrap().is_some());
@@ -130,18 +112,15 @@ async fn reconnect_sends_only_applied_cursor_and_progress_resets_budget() {
     })
     .await;
     let client = client(&server);
-    let mut stream = client
-        .resources()
-        .workspaces()
-        .at("w")
-        .threads()
-        .at("t")
-        .events(StreamOptions {
+    let mut stream = ThreadStream::open(
+        client.resources().threads().at("t"),
+        StreamOptions {
             max_reconnects: 1,
             ..options()
-        })
-        .await
-        .unwrap();
+        },
+    )
+    .await
+    .unwrap();
     for n in 1..=3 {
         assert_eq!(
             stream.next().await.unwrap().unwrap().cursor(),
@@ -171,18 +150,15 @@ async fn hints_do_not_reset_retry_budget() {
     })
     .await;
     let client = client(&server);
-    let mut stream = client
-        .resources()
-        .workspaces()
-        .at("w")
-        .threads()
-        .at("t")
-        .events(StreamOptions {
+    let mut stream = ThreadStream::open(
+        client.resources().threads().at("t"),
+        StreamOptions {
             max_reconnects: 1,
             ..options()
-        })
-        .await
-        .unwrap();
+        },
+    )
+    .await
+    .unwrap();
     assert!(stream.next().await.unwrap().is_some());
     assert!(stream.next().await.unwrap().is_some());
     assert!(matches!(stream.next().await, Err(Error::Transport(_))));
@@ -203,18 +179,15 @@ async fn recovery_delay_survives_cancelled_read_and_parent_close() {
     })
     .await;
     let client = client(&server);
-    let mut stream = client
-        .resources()
-        .workspaces()
-        .at("w")
-        .threads()
-        .at("t")
-        .events(StreamOptions {
+    let mut stream = ThreadStream::open(
+        client.resources().threads().at("t"),
+        StreamOptions {
             max_reconnects: 3,
             ..options()
-        })
-        .await
-        .unwrap();
+        },
+    )
+    .await
+    .unwrap();
     stream.next().await.unwrap();
     server.requests.recv().await.unwrap();
     assert!(
@@ -247,18 +220,15 @@ async fn malformed_frames_utf8_limits_and_auth_are_terminal() {
     ] {
         let server = server(move |_| Reply::sse(wire)).await;
         let client = client(&server);
-        let mut stream = client
-            .resources()
-            .workspaces()
-            .at("w")
-            .threads()
-            .at("t")
-            .events(StreamOptions {
+        let mut stream = ThreadStream::open(
+            client.resources().threads().at("t"),
+            StreamOptions {
                 max_reconnects: 2,
                 ..options()
-            })
-            .await
-            .unwrap();
+            },
+        )
+        .await
+        .unwrap();
         assert!(
             matches!(stream.next().await, Err(Error::Protocol(_))),
             "{wire}"
@@ -267,35 +237,29 @@ async fn malformed_frames_utf8_limits_and_auth_are_terminal() {
     for body in [vec![0xff, b'\n'], vec![b'x'; 100]] {
         let server = server(move |_| Reply::bytes(200, "text/event-stream", body.clone())).await;
         let client = client(&server);
-        let mut stream = client
-            .resources()
-            .workspaces()
-            .at("w")
-            .threads()
-            .at("t")
-            .events(StreamOptions {
+        let mut stream = ThreadStream::open(
+            client.resources().threads().at("t"),
+            StreamOptions {
                 max_frame_bytes: 50,
                 ..options()
-            })
-            .await
-            .unwrap();
+            },
+        )
+        .await
+        .unwrap();
         assert!(matches!(stream.next().await, Err(Error::Protocol(_))));
     }
     for status in [401, 403, 404, 409, 500] {
         let mut server = server(move |_| Reply::json(status, serde_json::json!({}))).await;
         let client = client(&server);
         assert!(matches!(
-            client
-                .resources()
-                .workspaces()
-                .at("w")
-                .threads()
-                .at("t")
-                .events(StreamOptions {
+            ThreadStream::open(
+                client.resources().threads().at("t"),
+                StreamOptions {
                     max_reconnects: 3,
                     ..options()
-                })
-                .await,
+                }
+            )
+            .await,
             Err(Error::Api(_))
         ));
         server.requests.recv().await.unwrap();

@@ -11,7 +11,7 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// SkillCreate : `key`, `name` and `description` default to what the package's SKILL.md declares.
+/// SkillCreate : `name` and `description` default to what the package's SKILL.md declares.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SkillCreate {
     #[serde(
@@ -21,14 +21,6 @@ pub struct SkillCreate {
         skip_serializing_if = "Option::is_none"
     )]
     pub description: Option<Option<String>>,
-
-    #[serde(
-        rename = "key",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub key: Option<Option<String>>,
 
     #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
     pub labels: Option<std::collections::HashMap<String, String>>,
@@ -46,11 +38,10 @@ pub struct SkillCreate {
 }
 
 impl SkillCreate {
-    /// `key`, `name` and `description` default to what the package's SKILL.md declares.
+    /// `name` and `description` default to what the package's SKILL.md declares.
     pub fn new(source: models::Source) -> SkillCreate {
         SkillCreate {
             description: None,
-            key: None,
             labels: None,
             name: None,
             source: Box::new(source),

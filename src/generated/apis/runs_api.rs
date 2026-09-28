@@ -13,303 +13,300 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`archive_thread_api_v1_workspaces_workspace_id_threads_thread_id_archive_post`]
+/// struct for typed errors of method [`archive_thread_api_v1_threads_thread_id_archive_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ArchiveThreadApiV1WorkspacesWorkspaceIdThreadsThreadIdArchivePostError {
+pub enum ArchiveThreadApiV1ThreadsThreadIdArchivePostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_session_api_v1_workspaces_workspace_id_sessions_post`]
+/// struct for typed errors of method [`create_session_api_v1_sessions_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateSessionApiV1WorkspacesWorkspaceIdSessionsPostError {
+pub enum CreateSessionApiV1SessionsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_thread_api_v1_workspaces_workspace_id_threads_post`]
+/// struct for typed errors of method [`create_thread_api_v1_threads_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateThreadApiV1WorkspacesWorkspaceIdThreadsPostError {
+pub enum CreateThreadApiV1ThreadsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`edit_entry_api_v1_workspaces_workspace_id_threads_thread_id_inbox_entry_id_patch`]
+/// struct for typed errors of method [`edit_entry_api_v1_threads_thread_id_inbox_entry_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum EditEntryApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxEntryIdPatchError {
+pub enum EditEntryApiV1ThreadsThreadIdInboxEntryIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`fork_run_api_v1_workspaces_workspace_id_runs_run_id_fork_post`]
+/// struct for typed errors of method [`fork_run_api_v1_runs_run_id_fork_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ForkRunApiV1WorkspacesWorkspaceIdRunsRunIdForkPostError {
+pub enum ForkRunApiV1RunsRunIdForkPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_entry_api_v1_workspaces_workspace_id_threads_thread_id_inbox_entry_id_get`]
+/// struct for typed errors of method [`get_entry_api_v1_threads_thread_id_inbox_entry_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetEntryApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxEntryIdGetError {
+pub enum GetEntryApiV1ThreadsThreadIdInboxEntryIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_run_api_v1_workspaces_workspace_id_runs_run_id_get`]
+/// struct for typed errors of method [`get_run_api_v1_runs_run_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetRunApiV1WorkspacesWorkspaceIdRunsRunIdGetError {
+pub enum GetRunApiV1RunsRunIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_session_api_v1_workspaces_workspace_id_sessions_session_id_get`]
+/// struct for typed errors of method [`get_session_api_v1_sessions_session_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetSessionApiV1WorkspacesWorkspaceIdSessionsSessionIdGetError {
+pub enum GetSessionApiV1SessionsSessionIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_thread_api_v1_workspaces_workspace_id_threads_thread_id_get`]
+/// struct for typed errors of method [`get_thread_api_v1_threads_thread_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetThreadApiV1WorkspacesWorkspaceIdThreadsThreadIdGetError {
+pub enum GetThreadApiV1ThreadsThreadIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_trace_api_v1_workspaces_workspace_id_traces_trace_id_get`]
+/// struct for typed errors of method [`get_trace_api_v1_traces_trace_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetTraceApiV1WorkspacesWorkspaceIdTracesTraceIdGetError {
+pub enum GetTraceApiV1TracesTraceIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_trace_backend_api_v1_workspaces_workspace_id_trace_backend_get`]
+/// struct for typed errors of method [`get_trace_backend_api_v1_trace_backend_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetTraceBackendApiV1WorkspacesWorkspaceIdTraceBackendGetError {
+pub enum GetTraceBackendApiV1TraceBackendGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`interrupt_run_api_v1_workspaces_workspace_id_runs_run_id_interrupt_post`]
+/// struct for typed errors of method [`interrupt_run_api_v1_runs_run_id_interrupt_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum InterruptRunApiV1WorkspacesWorkspaceIdRunsRunIdInterruptPostError {
+pub enum InterruptRunApiV1RunsRunIdInterruptPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_attempt_spans_api_v1_workspaces_workspace_id_runs_run_id_attempts_attempt_id_trace_get`]
+/// struct for typed errors of method [`list_attempt_spans_api_v1_runs_run_id_attempts_attempt_id_trace_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListAttemptSpansApiV1WorkspacesWorkspaceIdRunsRunIdAttemptsAttemptIdTraceGetError {
+pub enum ListAttemptSpansApiV1RunsRunIdAttemptsAttemptIdTraceGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_inbox_api_v1_workspaces_workspace_id_threads_thread_id_inbox_get`]
+/// struct for typed errors of method [`list_inbox_api_v1_threads_thread_id_inbox_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListInboxApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxGetError {
+pub enum ListInboxApiV1ThreadsThreadIdInboxGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_sessions_api_v1_workspaces_workspace_id_sessions_get`]
+/// struct for typed errors of method [`list_sessions_api_v1_sessions_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListSessionsApiV1WorkspacesWorkspaceIdSessionsGetError {
+pub enum ListSessionsApiV1SessionsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_thread_runs_api_v1_workspaces_workspace_id_threads_thread_id_runs_get`]
+/// struct for typed errors of method [`list_thread_runs_api_v1_threads_thread_id_runs_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListThreadRunsApiV1WorkspacesWorkspaceIdThreadsThreadIdRunsGetError {
+pub enum ListThreadRunsApiV1ThreadsThreadIdRunsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_threads_api_v1_workspaces_workspace_id_threads_get`]
+/// struct for typed errors of method [`list_threads_api_v1_threads_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListThreadsApiV1WorkspacesWorkspaceIdThreadsGetError {
+pub enum ListThreadsApiV1ThreadsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_trace_spans_api_v1_workspaces_workspace_id_traces_trace_id_spans_get`]
+/// struct for typed errors of method [`list_trace_spans_api_v1_traces_trace_id_spans_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListTraceSpansApiV1WorkspacesWorkspaceIdTracesTraceIdSpansGetError {
+pub enum ListTraceSpansApiV1TracesTraceIdSpansGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_traces_api_v1_workspaces_workspace_id_traces_get`]
+/// struct for typed errors of method [`list_traces_api_v1_traces_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListTracesApiV1WorkspacesWorkspaceIdTracesGetError {
+pub enum ListTracesApiV1TracesGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`reorder_inbox_api_v1_workspaces_workspace_id_threads_thread_id_inbox_order_put`]
+/// struct for typed errors of method [`reorder_inbox_api_v1_threads_thread_id_inbox_order_put`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReorderInboxApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxOrderPutError {
+pub enum ReorderInboxApiV1ThreadsThreadIdInboxOrderPutError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`resume_run_api_v1_workspaces_workspace_id_runs_run_id_resume_post`]
+/// struct for typed errors of method [`resume_run_api_v1_runs_run_id_resume_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ResumeRunApiV1WorkspacesWorkspaceIdRunsRunIdResumePostError {
+pub enum ResumeRunApiV1RunsRunIdResumePostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`run_attempts_api_v1_workspaces_workspace_id_runs_run_id_attempts_get`]
+/// struct for typed errors of method [`run_attempts_api_v1_runs_run_id_attempts_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RunAttemptsApiV1WorkspacesWorkspaceIdRunsRunIdAttemptsGetError {
+pub enum RunAttemptsApiV1RunsRunIdAttemptsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`run_items_api_v1_workspaces_workspace_id_runs_run_id_items_get`]
+/// struct for typed errors of method [`run_items_api_v1_runs_run_id_items_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RunItemsApiV1WorkspacesWorkspaceIdRunsRunIdItemsGetError {
+pub enum RunItemsApiV1RunsRunIdItemsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`run_lineage_api_v1_workspaces_workspace_id_runs_run_id_lineage_get`]
+/// struct for typed errors of method [`run_lineage_api_v1_runs_run_id_lineage_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RunLineageApiV1WorkspacesWorkspaceIdRunsRunIdLineageGetError {
+pub enum RunLineageApiV1RunsRunIdLineageGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`submit_message_api_v1_workspaces_workspace_id_threads_thread_id_inbox_post`]
+/// struct for typed errors of method [`submit_message_api_v1_threads_thread_id_inbox_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum SubmitMessageApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxPostError {
+pub enum SubmitMessageApiV1ThreadsThreadIdInboxPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`summarize_usage_api_v1_workspaces_workspace_id_usage_get`]
+/// struct for typed errors of method [`summarize_usage_api_v1_usage_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum SummarizeUsageApiV1WorkspacesWorkspaceIdUsageGetError {
+pub enum SummarizeUsageApiV1UsageGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`thread_stream_api_v1_workspaces_workspace_id_threads_thread_id_stream_get`]
+/// struct for typed errors of method [`thread_stream_api_v1_threads_thread_id_stream_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ThreadStreamApiV1WorkspacesWorkspaceIdThreadsThreadIdStreamGetError {
+pub enum ThreadStreamApiV1ThreadsThreadIdStreamGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_run_api_v1_workspaces_workspace_id_runs_run_id_patch`]
+/// struct for typed errors of method [`update_run_api_v1_runs_run_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateRunApiV1WorkspacesWorkspaceIdRunsRunIdPatchError {
+pub enum UpdateRunApiV1RunsRunIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_session_api_v1_workspaces_workspace_id_sessions_session_id_patch`]
+/// struct for typed errors of method [`update_session_api_v1_sessions_session_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateSessionApiV1WorkspacesWorkspaceIdSessionsSessionIdPatchError {
+pub enum UpdateSessionApiV1SessionsSessionIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_thread_api_v1_workspaces_workspace_id_threads_thread_id_patch`]
+/// struct for typed errors of method [`update_thread_api_v1_threads_thread_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateThreadApiV1WorkspacesWorkspaceIdThreadsThreadIdPatchError {
+pub enum UpdateThreadApiV1ThreadsThreadIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`withdraw_entry_api_v1_workspaces_workspace_id_threads_thread_id_inbox_entry_id_delete`]
+/// struct for typed errors of method [`withdraw_entry_api_v1_threads_thread_id_inbox_entry_id_delete`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum WithdrawEntryApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxEntryIdDeleteError {
+pub enum WithdrawEntryApiV1ThreadsThreadIdInboxEntryIdDeleteError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn archive_thread_api_v1_workspaces_workspace_id_threads_thread_id_archive_post(
+pub async fn archive_thread_api_v1_threads_thread_id_archive_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::ThreadView>,
-    Error<ArchiveThreadApiV1WorkspacesWorkspaceIdThreadsThreadIdArchivePostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ThreadView>, Error<ArchiveThreadApiV1ThreadsThreadIdArchivePostError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/archive",
+        "{}/api/v1/threads/{thread_id}/archive",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration
@@ -321,6 +318,9 @@ pub async fn archive_thread_api_v1_workspaces_workspace_id_threads_thread_id_arc
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -369,7 +369,7 @@ pub async fn archive_thread_api_v1_workspaces_workspace_id_threads_thread_id_arc
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ArchiveThreadApiV1WorkspacesWorkspaceIdThreadsThreadIdArchivePostError> =
+        let entity: Option<ArchiveThreadApiV1ThreadsThreadIdArchivePostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -380,29 +380,25 @@ pub async fn archive_thread_api_v1_workspaces_workspace_id_threads_thread_id_arc
     }
 }
 
-pub async fn create_session_api_v1_workspaces_workspace_id_sessions_post(
+pub async fn create_session_api_v1_sessions_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     session_create: models::SessionCreate,
-) -> Result<
-    Response<models::SessionView>,
-    Error<CreateSessionApiV1WorkspacesWorkspaceIdSessionsPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::SessionView>, Error<CreateSessionApiV1SessionsPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_body_session_create = session_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/sessions",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/sessions", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -452,7 +448,7 @@ pub async fn create_session_api_v1_workspaces_workspace_id_sessions_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateSessionApiV1WorkspacesWorkspaceIdSessionsPostError> =
+        let entity: Option<CreateSessionApiV1SessionsPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -464,25 +460,18 @@ pub async fn create_session_api_v1_workspaces_workspace_id_sessions_post(
 }
 
 /// Create a thread (and its session unless one is named) with its first message.
-pub async fn create_thread_api_v1_workspaces_workspace_id_threads_post(
+pub async fn create_thread_api_v1_threads_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     idempotency_key: &str,
     new_thread: models::NewThread,
-) -> Result<
-    Response<models::Submitted>,
-    Error<CreateThreadApiV1WorkspacesWorkspaceIdThreadsPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Submitted>, Error<CreateThreadApiV1ThreadsPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_header_idempotency_key = idempotency_key;
     let p_body_new_thread = new_thread;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/threads", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
@@ -491,6 +480,9 @@ pub async fn create_thread_api_v1_workspaces_workspace_id_threads_post(
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
     req_builder = req_builder.header("Idempotency-Key", p_header_idempotency_key.to_string());
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
@@ -539,8 +531,7 @@ pub async fn create_thread_api_v1_workspaces_workspace_id_threads_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateThreadApiV1WorkspacesWorkspaceIdThreadsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateThreadApiV1ThreadsPostError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -550,28 +541,25 @@ pub async fn create_thread_api_v1_workspaces_workspace_id_threads_post(
     }
 }
 
-pub async fn edit_entry_api_v1_workspaces_workspace_id_threads_thread_id_inbox_entry_id_patch(
+pub async fn edit_entry_api_v1_threads_thread_id_inbox_entry_id_patch(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     entry_id: &str,
     entry_update: models::EntryUpdate,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Submitted>,
-    Error<EditEntryApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxEntryIdPatchError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Submitted>, Error<EditEntryApiV1ThreadsThreadIdInboxEntryIdPatchError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_path_entry_id = entry_id;
     let p_body_entry_update = entry_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/inbox/{entry_id}",
+        "{}/api/v1/threads/{thread_id}/inbox/{entry_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id),
         entry_id = crate::generated::apis::urlencode(p_path_entry_id)
     );
@@ -584,6 +572,9 @@ pub async fn edit_entry_api_v1_workspaces_workspace_id_threads_thread_id_inbox_e
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -633,9 +624,8 @@ pub async fn edit_entry_api_v1_workspaces_workspace_id_threads_thread_id_inbox_e
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            EditEntryApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxEntryIdPatchError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<EditEntryApiV1ThreadsThreadIdInboxEntryIdPatchError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -646,26 +636,22 @@ pub async fn edit_entry_api_v1_workspaces_workspace_id_threads_thread_id_inbox_e
 }
 
 /// A new thread in the run's session that continues from this run's committed history.
-pub async fn fork_run_api_v1_workspaces_workspace_id_runs_run_id_fork_post(
+pub async fn fork_run_api_v1_runs_run_id_fork_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     run_id: &str,
     idempotency_key: &str,
     fork: models::Fork,
-) -> Result<
-    Response<models::Submitted>,
-    Error<ForkRunApiV1WorkspacesWorkspaceIdRunsRunIdForkPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Submitted>, Error<ForkRunApiV1RunsRunIdForkPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_run_id = run_id;
     let p_header_idempotency_key = idempotency_key;
     let p_body_fork = fork;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/runs/{run_id}/fork",
+        "{}/api/v1/runs/{run_id}/fork",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         run_id = crate::generated::apis::urlencode(p_path_run_id)
     );
     let mut req_builder = configuration
@@ -676,6 +662,9 @@ pub async fn fork_run_api_v1_workspaces_workspace_id_runs_run_id_fork_post(
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
     req_builder = req_builder.header("Idempotency-Key", p_header_idempotency_key.to_string());
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
@@ -724,7 +713,7 @@ pub async fn fork_run_api_v1_workspaces_workspace_id_runs_run_id_fork_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ForkRunApiV1WorkspacesWorkspaceIdRunsRunIdForkPostError> =
+        let entity: Option<ForkRunApiV1RunsRunIdForkPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -736,24 +725,20 @@ pub async fn fork_run_api_v1_workspaces_workspace_id_runs_run_id_fork_post(
 }
 
 /// One entry and its disposition; edits name the thread's ETag.
-pub async fn get_entry_api_v1_workspaces_workspace_id_threads_thread_id_inbox_entry_id_get(
+pub async fn get_entry_api_v1_threads_thread_id_inbox_entry_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     entry_id: &str,
-) -> Result<
-    Response<models::EntryView>,
-    Error<GetEntryApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxEntryIdGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::EntryView>, Error<GetEntryApiV1ThreadsThreadIdInboxEntryIdGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_path_entry_id = entry_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/inbox/{entry_id}",
+        "{}/api/v1/threads/{thread_id}/inbox/{entry_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id),
         entry_id = crate::generated::apis::urlencode(p_path_entry_id)
     );
@@ -761,6 +746,9 @@ pub async fn get_entry_api_v1_workspaces_workspace_id_threads_thread_id_inbox_en
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -801,7 +789,7 @@ pub async fn get_entry_api_v1_workspaces_workspace_id_threads_thread_id_inbox_en
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetEntryApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxEntryIdGetError> =
+        let entity: Option<GetEntryApiV1ThreadsThreadIdInboxEntryIdGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -812,25 +800,27 @@ pub async fn get_entry_api_v1_workspaces_workspace_id_threads_thread_id_inbox_en
     }
 }
 
-pub async fn get_run_api_v1_workspaces_workspace_id_runs_run_id_get(
+pub async fn get_run_api_v1_runs_run_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     run_id: &str,
-) -> Result<Response<models::RunView>, Error<GetRunApiV1WorkspacesWorkspaceIdRunsRunIdGetError>> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::RunView>, Error<GetRunApiV1RunsRunIdGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_run_id = run_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/runs/{run_id}",
+        "{}/api/v1/runs/{run_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         run_id = crate::generated::apis::urlencode(p_path_run_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -871,8 +861,7 @@ pub async fn get_run_api_v1_workspaces_workspace_id_runs_run_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetRunApiV1WorkspacesWorkspaceIdRunsRunIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetRunApiV1RunsRunIdGetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -882,28 +871,27 @@ pub async fn get_run_api_v1_workspaces_workspace_id_runs_run_id_get(
     }
 }
 
-pub async fn get_session_api_v1_workspaces_workspace_id_sessions_session_id_get(
+pub async fn get_session_api_v1_sessions_session_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     session_id: &str,
-) -> Result<
-    Response<models::SessionView>,
-    Error<GetSessionApiV1WorkspacesWorkspaceIdSessionsSessionIdGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::SessionView>, Error<GetSessionApiV1SessionsSessionIdGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_session_id = session_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/sessions/{session_id}",
+        "{}/api/v1/sessions/{session_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         session_id = crate::generated::apis::urlencode(p_path_session_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -944,7 +932,7 @@ pub async fn get_session_api_v1_workspaces_workspace_id_sessions_session_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetSessionApiV1WorkspacesWorkspaceIdSessionsSessionIdGetError> =
+        let entity: Option<GetSessionApiV1SessionsSessionIdGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -955,28 +943,27 @@ pub async fn get_session_api_v1_workspaces_workspace_id_sessions_session_id_get(
     }
 }
 
-pub async fn get_thread_api_v1_workspaces_workspace_id_threads_thread_id_get(
+pub async fn get_thread_api_v1_threads_thread_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
-) -> Result<
-    Response<models::ThreadView>,
-    Error<GetThreadApiV1WorkspacesWorkspaceIdThreadsThreadIdGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ThreadView>, Error<GetThreadApiV1ThreadsThreadIdGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}",
+        "{}/api/v1/threads/{thread_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1017,7 +1004,7 @@ pub async fn get_thread_api_v1_workspaces_workspace_id_threads_thread_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetThreadApiV1WorkspacesWorkspaceIdThreadsThreadIdGetError> =
+        let entity: Option<GetThreadApiV1ThreadsThreadIdGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1029,26 +1016,27 @@ pub async fn get_thread_api_v1_workspaces_workspace_id_threads_thread_id_get(
 }
 
 /// The trace's root span.
-pub async fn get_trace_api_v1_workspaces_workspace_id_traces_trace_id_get(
+pub async fn get_trace_api_v1_traces_trace_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     trace_id: &str,
-) -> Result<Response<models::Span>, Error<GetTraceApiV1WorkspacesWorkspaceIdTracesTraceIdGetError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Span>, Error<GetTraceApiV1TracesTraceIdGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_trace_id = trace_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/traces/{trace_id}",
+        "{}/api/v1/traces/{trace_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         trace_id = crate::generated::apis::urlencode(p_path_trace_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1089,7 +1077,7 @@ pub async fn get_trace_api_v1_workspaces_workspace_id_traces_trace_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetTraceApiV1WorkspacesWorkspaceIdTracesTraceIdGetError> =
+        let entity: Option<GetTraceApiV1TracesTraceIdGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1101,25 +1089,21 @@ pub async fn get_trace_api_v1_workspaces_workspace_id_traces_trace_id_get(
 }
 
 /// The backend trace queries read, and how far back they find a trace.
-pub async fn get_trace_backend_api_v1_workspaces_workspace_id_trace_backend_get(
+pub async fn get_trace_backend_api_v1_trace_backend_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
-) -> Result<
-    Response<models::TraceBackend>,
-    Error<GetTraceBackendApiV1WorkspacesWorkspaceIdTraceBackendGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::TraceBackend>, Error<GetTraceBackendApiV1TraceBackendGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/trace-backend",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/trace-backend", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1160,7 +1144,7 @@ pub async fn get_trace_backend_api_v1_workspaces_workspace_id_trace_backend_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetTraceBackendApiV1WorkspacesWorkspaceIdTraceBackendGetError> =
+        let entity: Option<GetTraceBackendApiV1TraceBackendGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1171,22 +1155,18 @@ pub async fn get_trace_backend_api_v1_workspaces_workspace_id_trace_backend_get(
     }
 }
 
-pub async fn interrupt_run_api_v1_workspaces_workspace_id_runs_run_id_interrupt_post(
+pub async fn interrupt_run_api_v1_runs_run_id_interrupt_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     run_id: &str,
-) -> Result<
-    Response<models::RunView>,
-    Error<InterruptRunApiV1WorkspacesWorkspaceIdRunsRunIdInterruptPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::RunView>, Error<InterruptRunApiV1RunsRunIdInterruptPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_run_id = run_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/runs/{run_id}/interrupt",
+        "{}/api/v1/runs/{run_id}/interrupt",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         run_id = crate::generated::apis::urlencode(p_path_run_id)
     );
     let mut req_builder = configuration
@@ -1195,6 +1175,9 @@ pub async fn interrupt_run_api_v1_workspaces_workspace_id_runs_run_id_interrupt_
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1243,7 +1226,7 @@ pub async fn interrupt_run_api_v1_workspaces_workspace_id_runs_run_id_interrupt_
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<InterruptRunApiV1WorkspacesWorkspaceIdRunsRunIdInterruptPostError> =
+        let entity: Option<InterruptRunApiV1RunsRunIdInterruptPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1255,28 +1238,27 @@ pub async fn interrupt_run_api_v1_workspaces_workspace_id_runs_run_id_interrupt_
 }
 
 /// The attempt's spans, including its inline child runs.
-pub async fn list_attempt_spans_api_v1_workspaces_workspace_id_runs_run_id_attempts_attempt_id_trace_get(
+pub async fn list_attempt_spans_api_v1_runs_run_id_attempts_attempt_id_trace_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     run_id: &str,
     attempt_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::SpanPage>,
-    Error<ListAttemptSpansApiV1WorkspacesWorkspaceIdRunsRunIdAttemptsAttemptIdTraceGetError>,
+    Error<ListAttemptSpansApiV1RunsRunIdAttemptsAttemptIdTraceGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_run_id = run_id;
     let p_path_attempt_id = attempt_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/runs/{run_id}/attempts/{attempt_id}/trace",
+        "{}/api/v1/runs/{run_id}/attempts/{attempt_id}/trace",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         run_id = crate::generated::apis::urlencode(p_path_run_id),
         attempt_id = crate::generated::apis::urlencode(p_path_attempt_id)
     );
@@ -1290,6 +1272,9 @@ pub async fn list_attempt_spans_api_v1_workspaces_workspace_id_runs_run_id_attem
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1330,9 +1315,8 @@ pub async fn list_attempt_spans_api_v1_workspaces_workspace_id_runs_run_id_attem
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ListAttemptSpansApiV1WorkspacesWorkspaceIdRunsRunIdAttemptsAttemptIdTraceGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ListAttemptSpansApiV1RunsRunIdAttemptsAttemptIdTraceGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1343,28 +1327,24 @@ pub async fn list_attempt_spans_api_v1_workspaces_workspace_id_runs_run_id_attem
 }
 
 /// In inbox order.
-pub async fn list_inbox_api_v1_workspaces_workspace_id_threads_thread_id_inbox_get(
+pub async fn list_inbox_api_v1_threads_thread_id_inbox_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     status: Option<Vec<models::EntryStatus>>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::EntryPage>,
-    Error<ListInboxApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::EntryPage>, Error<ListInboxApiV1ThreadsThreadIdInboxGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_query_status = status;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/inbox",
+        "{}/api/v1/threads/{thread_id}/inbox",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -1396,6 +1376,9 @@ pub async fn list_inbox_api_v1_workspaces_workspace_id_threads_thread_id_inbox_g
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1436,7 +1419,7 @@ pub async fn list_inbox_api_v1_workspaces_workspace_id_threads_thread_id_inbox_g
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListInboxApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxGetError> =
+        let entity: Option<ListInboxApiV1ThreadsThreadIdInboxGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1447,9 +1430,8 @@ pub async fn list_inbox_api_v1_workspaces_workspace_id_threads_thread_id_inbox_g
     }
 }
 
-pub async fn list_sessions_api_v1_workspaces_workspace_id_sessions_get(
+pub async fn list_sessions_api_v1_sessions_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     q: Option<&str>,
     agent_id: Option<&str>,
     status: Option<Vec<models::RunStatus>>,
@@ -1459,12 +1441,9 @@ pub async fn list_sessions_api_v1_workspaces_workspace_id_sessions_get(
     label: Option<Vec<String>>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::SessionPage>,
-    Error<ListSessionsApiV1WorkspacesWorkspaceIdSessionsGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::SessionPage>, Error<ListSessionsApiV1SessionsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_query_q = q;
     let p_query_agent_id = agent_id;
     let p_query_status = status;
@@ -1474,12 +1453,9 @@ pub async fn list_sessions_api_v1_workspaces_workspace_id_sessions_get(
     let p_query_label = label;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/sessions",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/sessions", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref param_value) = p_query_q {
@@ -1560,6 +1536,9 @@ pub async fn list_sessions_api_v1_workspaces_workspace_id_sessions_get(
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
@@ -1599,8 +1578,7 @@ pub async fn list_sessions_api_v1_workspaces_workspace_id_sessions_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListSessionsApiV1WorkspacesWorkspaceIdSessionsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListSessionsApiV1SessionsGetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1611,26 +1589,22 @@ pub async fn list_sessions_api_v1_workspaces_workspace_id_sessions_get(
 }
 
 /// Newest first.
-pub async fn list_thread_runs_api_v1_workspaces_workspace_id_threads_thread_id_runs_get(
+pub async fn list_thread_runs_api_v1_threads_thread_id_runs_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::RunPage>,
-    Error<ListThreadRunsApiV1WorkspacesWorkspaceIdThreadsThreadIdRunsGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::RunPage>, Error<ListThreadRunsApiV1ThreadsThreadIdRunsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/runs",
+        "{}/api/v1/threads/{thread_id}/runs",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -1643,6 +1617,9 @@ pub async fn list_thread_runs_api_v1_workspaces_workspace_id_threads_thread_id_r
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1683,7 +1660,7 @@ pub async fn list_thread_runs_api_v1_workspaces_workspace_id_threads_thread_id_r
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListThreadRunsApiV1WorkspacesWorkspaceIdThreadsThreadIdRunsGetError> =
+        let entity: Option<ListThreadRunsApiV1ThreadsThreadIdRunsGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1694,27 +1671,22 @@ pub async fn list_thread_runs_api_v1_workspaces_workspace_id_threads_thread_id_r
     }
 }
 
-pub async fn list_threads_api_v1_workspaces_workspace_id_threads_get(
+pub async fn list_threads_api_v1_threads_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     session_id: Option<&str>,
     label: Option<Vec<String>>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<Response<models::ThreadPage>, Error<ListThreadsApiV1WorkspacesWorkspaceIdThreadsGetError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ThreadPage>, Error<ListThreadsApiV1ThreadsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_query_session_id = session_id;
     let p_query_label = label;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/threads", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref param_value) = p_query_session_id {
@@ -1747,6 +1719,9 @@ pub async fn list_threads_api_v1_workspaces_workspace_id_threads_get(
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1787,8 +1762,7 @@ pub async fn list_threads_api_v1_workspaces_workspace_id_threads_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListThreadsApiV1WorkspacesWorkspaceIdThreadsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListThreadsApiV1ThreadsGetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1799,26 +1773,22 @@ pub async fn list_threads_api_v1_workspaces_workspace_id_threads_get(
 }
 
 /// The trace's spans.
-pub async fn list_trace_spans_api_v1_workspaces_workspace_id_traces_trace_id_spans_get(
+pub async fn list_trace_spans_api_v1_traces_trace_id_spans_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     trace_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::SpanPage>,
-    Error<ListTraceSpansApiV1WorkspacesWorkspaceIdTracesTraceIdSpansGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::SpanPage>, Error<ListTraceSpansApiV1TracesTraceIdSpansGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_trace_id = trace_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/traces/{trace_id}/spans",
+        "{}/api/v1/traces/{trace_id}/spans",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         trace_id = crate::generated::apis::urlencode(p_path_trace_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -1831,6 +1801,9 @@ pub async fn list_trace_spans_api_v1_workspaces_workspace_id_traces_trace_id_spa
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1871,7 +1844,7 @@ pub async fn list_trace_spans_api_v1_workspaces_workspace_id_traces_trace_id_spa
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListTraceSpansApiV1WorkspacesWorkspaceIdTracesTraceIdSpansGetError> =
+        let entity: Option<ListTraceSpansApiV1TracesTraceIdSpansGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1883,9 +1856,8 @@ pub async fn list_trace_spans_api_v1_workspaces_workspace_id_traces_trace_id_spa
 }
 
 /// Trace root spans, one per attempt. A cursor keeps the window of the first page.
-pub async fn list_traces_api_v1_workspaces_workspace_id_traces_get(
+pub async fn list_traces_api_v1_traces_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     session_id: Option<&str>,
     thread_id: Option<&str>,
     run_id: Option<&str>,
@@ -1894,9 +1866,9 @@ pub async fn list_traces_api_v1_workspaces_workspace_id_traces_get(
     started_before: Option<chrono::DateTime<chrono::FixedOffset>>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<Response<models::SpanPage>, Error<ListTracesApiV1WorkspacesWorkspaceIdTracesGetError>> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::SpanPage>, Error<ListTracesApiV1TracesGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_query_session_id = session_id;
     let p_query_thread_id = thread_id;
     let p_query_run_id = run_id;
@@ -1905,12 +1877,9 @@ pub async fn list_traces_api_v1_workspaces_workspace_id_traces_get(
     let p_query_started_before = started_before;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/traces",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/traces", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref param_value) = p_query_session_id {
@@ -1956,6 +1925,9 @@ pub async fn list_traces_api_v1_workspaces_workspace_id_traces_get(
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
@@ -1995,8 +1967,7 @@ pub async fn list_traces_api_v1_workspaces_workspace_id_traces_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListTracesApiV1WorkspacesWorkspaceIdTracesGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListTracesApiV1TracesGetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2006,26 +1977,23 @@ pub async fn list_traces_api_v1_workspaces_workspace_id_traces_get(
     }
 }
 
-pub async fn reorder_inbox_api_v1_workspaces_workspace_id_threads_thread_id_inbox_order_put(
+pub async fn reorder_inbox_api_v1_threads_thread_id_inbox_order_put(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     inbox_order: models::InboxOrder,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::ThreadView>,
-    Error<ReorderInboxApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxOrderPutError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ThreadView>, Error<ReorderInboxApiV1ThreadsThreadIdInboxOrderPutError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_body_inbox_order = inbox_order;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/inbox/order",
+        "{}/api/v1/threads/{thread_id}/inbox/order",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
@@ -2035,6 +2003,9 @@ pub async fn reorder_inbox_api_v1_workspaces_workspace_id_threads_thread_id_inbo
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2084,9 +2055,8 @@ pub async fn reorder_inbox_api_v1_workspaces_workspace_id_threads_thread_id_inbo
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ReorderInboxApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxOrderPutError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ReorderInboxApiV1ThreadsThreadIdInboxOrderPutError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2097,26 +2067,22 @@ pub async fn reorder_inbox_api_v1_workspaces_workspace_id_threads_thread_id_inbo
 }
 
 /// Answer the waiting run's approvals and client tools; the successor run continues from them.
-pub async fn resume_run_api_v1_workspaces_workspace_id_runs_run_id_resume_post(
+pub async fn resume_run_api_v1_runs_run_id_resume_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     run_id: &str,
     idempotency_key: &str,
     resume_request: models::ResumeRequest,
-) -> Result<
-    Response<models::RunView>,
-    Error<ResumeRunApiV1WorkspacesWorkspaceIdRunsRunIdResumePostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::RunView>, Error<ResumeRunApiV1RunsRunIdResumePostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_run_id = run_id;
     let p_header_idempotency_key = idempotency_key;
     let p_body_resume_request = resume_request;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/runs/{run_id}/resume",
+        "{}/api/v1/runs/{run_id}/resume",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         run_id = crate::generated::apis::urlencode(p_path_run_id)
     );
     let mut req_builder = configuration
@@ -2127,6 +2093,9 @@ pub async fn resume_run_api_v1_workspaces_workspace_id_runs_run_id_resume_post(
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
     req_builder = req_builder.header("Idempotency-Key", p_header_idempotency_key.to_string());
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
@@ -2175,7 +2144,7 @@ pub async fn resume_run_api_v1_workspaces_workspace_id_runs_run_id_resume_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ResumeRunApiV1WorkspacesWorkspaceIdRunsRunIdResumePostError> =
+        let entity: Option<ResumeRunApiV1RunsRunIdResumePostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -2186,28 +2155,27 @@ pub async fn resume_run_api_v1_workspaces_workspace_id_runs_run_id_resume_post(
     }
 }
 
-pub async fn run_attempts_api_v1_workspaces_workspace_id_runs_run_id_attempts_get(
+pub async fn run_attempts_api_v1_runs_run_id_attempts_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     run_id: &str,
-) -> Result<
-    Response<models::Attempts>,
-    Error<RunAttemptsApiV1WorkspacesWorkspaceIdRunsRunIdAttemptsGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Attempts>, Error<RunAttemptsApiV1RunsRunIdAttemptsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_run_id = run_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/runs/{run_id}/attempts",
+        "{}/api/v1/runs/{run_id}/attempts",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         run_id = crate::generated::apis::urlencode(p_path_run_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2248,7 +2216,7 @@ pub async fn run_attempts_api_v1_workspaces_workspace_id_runs_run_id_attempts_ge
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RunAttemptsApiV1WorkspacesWorkspaceIdRunsRunIdAttemptsGetError> =
+        let entity: Option<RunAttemptsApiV1RunsRunIdAttemptsGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -2259,28 +2227,27 @@ pub async fn run_attempts_api_v1_workspaces_workspace_id_runs_run_id_attempts_ge
     }
 }
 
-pub async fn run_items_api_v1_workspaces_workspace_id_runs_run_id_items_get(
+pub async fn run_items_api_v1_runs_run_id_items_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     run_id: &str,
-) -> Result<
-    Response<models::RunItems>,
-    Error<RunItemsApiV1WorkspacesWorkspaceIdRunsRunIdItemsGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::RunItems>, Error<RunItemsApiV1RunsRunIdItemsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_run_id = run_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/runs/{run_id}/items",
+        "{}/api/v1/runs/{run_id}/items",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         run_id = crate::generated::apis::urlencode(p_path_run_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2321,7 +2288,7 @@ pub async fn run_items_api_v1_workspaces_workspace_id_runs_run_id_items_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RunItemsApiV1WorkspacesWorkspaceIdRunsRunIdItemsGetError> =
+        let entity: Option<RunItemsApiV1RunsRunIdItemsGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -2333,24 +2300,20 @@ pub async fn run_items_api_v1_workspaces_workspace_id_runs_run_id_items_get(
 }
 
 /// The run and its ancestors, nearest first, across fork origins.
-pub async fn run_lineage_api_v1_workspaces_workspace_id_runs_run_id_lineage_get(
+pub async fn run_lineage_api_v1_runs_run_id_lineage_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     run_id: &str,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::RunPage>,
-    Error<RunLineageApiV1WorkspacesWorkspaceIdRunsRunIdLineageGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::RunPage>, Error<RunLineageApiV1RunsRunIdLineageGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_run_id = run_id;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/runs/{run_id}/lineage",
+        "{}/api/v1/runs/{run_id}/lineage",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         run_id = crate::generated::apis::urlencode(p_path_run_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -2360,6 +2323,9 @@ pub async fn run_lineage_api_v1_workspaces_workspace_id_runs_run_id_lineage_get(
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2400,7 +2366,7 @@ pub async fn run_lineage_api_v1_workspaces_workspace_id_runs_run_id_lineage_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RunLineageApiV1WorkspacesWorkspaceIdRunsRunIdLineageGetError> =
+        let entity: Option<RunLineageApiV1RunsRunIdLineageGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -2412,26 +2378,22 @@ pub async fn run_lineage_api_v1_workspaces_workspace_id_runs_run_id_lineage_get(
 }
 
 /// Append a message; it starts a run at once when the thread can accept it, or steers the active run.
-pub async fn submit_message_api_v1_workspaces_workspace_id_threads_thread_id_inbox_post(
+pub async fn submit_message_api_v1_threads_thread_id_inbox_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     idempotency_key: &str,
     message: models::Message,
-) -> Result<
-    Response<models::Submitted>,
-    Error<SubmitMessageApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Submitted>, Error<SubmitMessageApiV1ThreadsThreadIdInboxPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_header_idempotency_key = idempotency_key;
     let p_body_message = message;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/inbox",
+        "{}/api/v1/threads/{thread_id}/inbox",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration
@@ -2442,6 +2404,9 @@ pub async fn submit_message_api_v1_workspaces_workspace_id_threads_thread_id_inb
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
     req_builder = req_builder.header("Idempotency-Key", p_header_idempotency_key.to_string());
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
@@ -2490,7 +2455,7 @@ pub async fn submit_message_api_v1_workspaces_workspace_id_threads_thread_id_inb
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<SubmitMessageApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxPostError> =
+        let entity: Option<SubmitMessageApiV1ThreadsThreadIdInboxPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -2501,31 +2466,24 @@ pub async fn submit_message_api_v1_workspaces_workspace_id_threads_thread_id_inb
     }
 }
 
-pub async fn summarize_usage_api_v1_workspaces_workspace_id_usage_get(
+pub async fn summarize_usage_api_v1_usage_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     run_id: Option<&str>,
     thread_id: Option<&str>,
     session_id: Option<&str>,
     ingested_after: Option<chrono::DateTime<chrono::FixedOffset>>,
     ingested_before: Option<chrono::DateTime<chrono::FixedOffset>>,
-) -> Result<
-    Response<models::UsageSummary>,
-    Error<SummarizeUsageApiV1WorkspacesWorkspaceIdUsageGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::UsageSummary>, Error<SummarizeUsageApiV1UsageGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_query_run_id = run_id;
     let p_query_thread_id = thread_id;
     let p_query_session_id = session_id;
     let p_query_ingested_after = ingested_after;
     let p_query_ingested_before = ingested_before;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/usage",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/usage", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref param_value) = p_query_run_id {
@@ -2545,6 +2503,9 @@ pub async fn summarize_usage_api_v1_workspaces_workspace_id_usage_get(
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2585,8 +2546,7 @@ pub async fn summarize_usage_api_v1_workspaces_workspace_id_usage_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<SummarizeUsageApiV1WorkspacesWorkspaceIdUsageGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<SummarizeUsageApiV1UsageGetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2597,24 +2557,20 @@ pub async fn summarize_usage_api_v1_workspaces_workspace_id_usage_get(
 }
 
 /// Live output of the thread's runs over SSE: `delta` and `boundary` frames with `changed`, `reset`, `gap`.
-pub async fn thread_stream_api_v1_workspaces_workspace_id_threads_thread_id_stream_get(
+pub async fn thread_stream_api_v1_threads_thread_id_stream_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     last_event_id: Option<&str>,
-) -> Result<
-    reqwest::Response,
-    Error<ThreadStreamApiV1WorkspacesWorkspaceIdThreadsThreadIdStreamGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<reqwest::Response, Error<ThreadStreamApiV1ThreadsThreadIdStreamGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_header_last_event_id = last_event_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/stream",
+        "{}/api/v1/threads/{thread_id}/stream",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -2624,6 +2580,9 @@ pub async fn thread_stream_api_v1_workspaces_workspace_id_threads_thread_id_stre
     }
     if let Some(param_value) = p_header_last_event_id {
         req_builder = req_builder.header("Last-Event-ID", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2639,7 +2598,7 @@ pub async fn thread_stream_api_v1_workspaces_workspace_id_threads_thread_id_stre
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<ThreadStreamApiV1WorkspacesWorkspaceIdThreadsThreadIdStreamGetError> =
+        let entity: Option<ThreadStreamApiV1ThreadsThreadIdStreamGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -2651,24 +2610,22 @@ pub async fn thread_stream_api_v1_workspaces_workspace_id_threads_thread_id_stre
 }
 
 /// Labels only.
-pub async fn update_run_api_v1_workspaces_workspace_id_runs_run_id_patch(
+pub async fn update_run_api_v1_runs_run_id_patch(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     run_id: &str,
     run_labels: models::RunLabels,
     if_match: Option<&str>,
-) -> Result<Response<models::RunView>, Error<UpdateRunApiV1WorkspacesWorkspaceIdRunsRunIdPatchError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::RunView>, Error<UpdateRunApiV1RunsRunIdPatchError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_run_id = run_id;
     let p_body_run_labels = run_labels;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/runs/{run_id}",
+        "{}/api/v1/runs/{run_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         run_id = crate::generated::apis::urlencode(p_path_run_id)
     );
     let mut req_builder = configuration
@@ -2680,6 +2637,9 @@ pub async fn update_run_api_v1_workspaces_workspace_id_runs_run_id_patch(
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2729,8 +2689,7 @@ pub async fn update_run_api_v1_workspaces_workspace_id_runs_run_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateRunApiV1WorkspacesWorkspaceIdRunsRunIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateRunApiV1RunsRunIdPatchError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2740,26 +2699,22 @@ pub async fn update_run_api_v1_workspaces_workspace_id_runs_run_id_patch(
     }
 }
 
-pub async fn update_session_api_v1_workspaces_workspace_id_sessions_session_id_patch(
+pub async fn update_session_api_v1_sessions_session_id_patch(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     session_id: &str,
     session_update: models::SessionUpdate,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::SessionView>,
-    Error<UpdateSessionApiV1WorkspacesWorkspaceIdSessionsSessionIdPatchError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::SessionView>, Error<UpdateSessionApiV1SessionsSessionIdPatchError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_session_id = session_id;
     let p_body_session_update = session_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/sessions/{session_id}",
+        "{}/api/v1/sessions/{session_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         session_id = crate::generated::apis::urlencode(p_path_session_id)
     );
     let mut req_builder = configuration
@@ -2771,6 +2726,9 @@ pub async fn update_session_api_v1_workspaces_workspace_id_sessions_session_id_p
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2820,7 +2778,7 @@ pub async fn update_session_api_v1_workspaces_workspace_id_sessions_session_id_p
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateSessionApiV1WorkspacesWorkspaceIdSessionsSessionIdPatchError> =
+        let entity: Option<UpdateSessionApiV1SessionsSessionIdPatchError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -2831,26 +2789,22 @@ pub async fn update_session_api_v1_workspaces_workspace_id_sessions_session_id_p
     }
 }
 
-pub async fn update_thread_api_v1_workspaces_workspace_id_threads_thread_id_patch(
+pub async fn update_thread_api_v1_threads_thread_id_patch(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     thread_update: models::ThreadUpdate,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::ThreadView>,
-    Error<UpdateThreadApiV1WorkspacesWorkspaceIdThreadsThreadIdPatchError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ThreadView>, Error<UpdateThreadApiV1ThreadsThreadIdPatchError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_body_thread_update = thread_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}",
+        "{}/api/v1/threads/{thread_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration
@@ -2862,6 +2816,9 @@ pub async fn update_thread_api_v1_workspaces_workspace_id_threads_thread_id_patc
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -2911,7 +2868,7 @@ pub async fn update_thread_api_v1_workspaces_workspace_id_threads_thread_id_patc
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateThreadApiV1WorkspacesWorkspaceIdThreadsThreadIdPatchError> =
+        let entity: Option<UpdateThreadApiV1ThreadsThreadIdPatchError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -2923,26 +2880,25 @@ pub async fn update_thread_api_v1_workspaces_workspace_id_threads_thread_id_patc
 }
 
 /// Withdraw a pending entry; its tombstone keeps the request key.
-pub async fn withdraw_entry_api_v1_workspaces_workspace_id_threads_thread_id_inbox_entry_id_delete(
+pub async fn withdraw_entry_api_v1_threads_thread_id_inbox_entry_id_delete(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     thread_id: &str,
     entry_id: &str,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::Submitted>,
-    Error<WithdrawEntryApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxEntryIdDeleteError>,
+    Error<WithdrawEntryApiV1ThreadsThreadIdInboxEntryIdDeleteError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_thread_id = thread_id;
     let p_path_entry_id = entry_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/threads/{thread_id}/inbox/{entry_id}",
+        "{}/api/v1/threads/{thread_id}/inbox/{entry_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         thread_id = crate::generated::apis::urlencode(p_path_thread_id),
         entry_id = crate::generated::apis::urlencode(p_path_entry_id)
     );
@@ -2955,6 +2911,9 @@ pub async fn withdraw_entry_api_v1_workspaces_workspace_id_threads_thread_id_inb
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -3003,9 +2962,8 @@ pub async fn withdraw_entry_api_v1_workspaces_workspace_id_threads_thread_id_inb
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            WithdrawEntryApiV1WorkspacesWorkspaceIdThreadsThreadIdInboxEntryIdDeleteError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<WithdrawEntryApiV1ThreadsThreadIdInboxEntryIdDeleteError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

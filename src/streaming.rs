@@ -105,15 +105,16 @@ pub struct ThreadStream<'a> {
     retry_at: Option<Instant>,
     closed: bool,
 }
-impl<'a> ThreadResource<'a> {
-    pub async fn events(&self, options: StreamOptions) -> Result<ThreadStream<'a>, Error> {
+impl<'a> ThreadStream<'a> {
+    /// Advanced Thread-wide protocol reader; not a finite Agent interaction.
+    pub async fn open(thread: ThreadResource<'a>, options: StreamOptions) -> Result<Self, Error> {
         if options.max_frame_bytes == 0
             || options.after.as_deref().is_some_and(|v| !valid_cursor(v))
         {
             return Err(Error::InvalidInput);
         }
-        let mut stream = ThreadStream {
-            thread: self.clone(),
+        let mut stream = Self {
+            thread,
             parser: Parser::new(options.max_frame_bytes),
             applied: options.after.clone(),
             options,
@@ -255,6 +256,7 @@ impl ThreadStream<'_> {
                 .stream()
                 .get(ThreadStreamGetOptions {
                     last_event_id: self.applied.clone(),
+                    ..Default::default()
                 })
                 .await;
             match response {

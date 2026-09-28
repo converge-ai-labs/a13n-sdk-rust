@@ -11,7 +11,7 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// MediaUnderstandingSelection : The model describing each media kind a model cannot read; a kind without one is unavailable.
+/// MediaUnderstandingSelection : The model, by key, describing each media kind a model cannot read; a kind without one is unavailable.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaUnderstandingSelection {
     #[serde(
@@ -40,7 +40,7 @@ pub struct MediaUnderstandingSelection {
 }
 
 impl MediaUnderstandingSelection {
-    /// The model describing each media kind a model cannot read; a kind without one is unavailable.
+    /// The model, by key, describing each media kind a model cannot read; a kind without one is unavailable.
     pub fn new() -> MediaUnderstandingSelection {
         MediaUnderstandingSelection {
             audio: None,

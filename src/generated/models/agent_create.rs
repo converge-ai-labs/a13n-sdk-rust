@@ -19,9 +19,6 @@ pub struct AgentCreate {
     #[serde(rename = "description", skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
-    #[serde(rename = "key")]
-    pub key: String,
-
     #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
     pub labels: Option<std::collections::HashMap<String, String>>,
 
@@ -30,11 +27,10 @@ pub struct AgentCreate {
 }
 
 impl AgentCreate {
-    pub fn new(config: models::AgentConfigInput, key: String, name: String) -> AgentCreate {
+    pub fn new(config: models::AgentConfigInput, name: String) -> AgentCreate {
         AgentCreate {
             config: Box::new(config),
             description: None,
-            key,
             labels: None,
             name,
         }

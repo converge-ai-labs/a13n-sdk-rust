@@ -187,9 +187,7 @@ fn binary_download_streams_exact_bytes_and_requires_destination() {
     assert!(output.stdout.is_empty());
     assert_eq!(std::fs::read(&path).unwrap(), body);
     std::fs::remove_file(path).unwrap();
-    assert!(
-        server.join().unwrap()[0].starts_with("GET /api/v1/workspaces/ws/assets/asset_x/content ")
-    );
+    assert!(server.join().unwrap()[0].starts_with("GET /api/v1/assets/asset_x/content "));
     let output = binary(&[
         "--base-url",
         "http://127.0.0.1:1",

@@ -40,7 +40,16 @@ pub struct AgentConfigOutput {
     pub memory_mounts: Option<Vec<models::MemoryMount>>,
 
     #[serde(rename = "model")]
-    pub model: Box<models::AgentModel>,
+    pub model: String,
+
+    #[serde(
+        rename = "model_characteristics",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub model_characteristics: Option<Box<models::AgentModelCharacteristics>>,
+
+    #[serde(rename = "model_settings", skip_serializing_if = "Option::is_none")]
+    pub model_settings: Option<std::collections::HashMap<String, serde_json::Value>>,
 
     #[serde(
         rename = "output_spec",
@@ -69,12 +78,6 @@ pub struct AgentConfigOutput {
     )]
     pub reviewer: Option<Option<Box<models::AgentReviewer>>>,
 
-    #[serde(
-        rename = "secret_requirements",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub secret_requirements: Option<Vec<models::SecretRequirement>>,
-
     #[serde(rename = "skills", skip_serializing_if = "Option::is_none")]
     pub skills: Option<Vec<models::SkillSelection>>,
 
@@ -92,7 +95,7 @@ pub struct AgentConfigOutput {
 }
 
 impl AgentConfigOutput {
-    pub fn new(model: models::AgentModel) -> AgentConfigOutput {
+    pub fn new(model: String) -> AgentConfigOutput {
         AgentConfigOutput {
             client_tools: None,
             connection_tools: None,
@@ -100,12 +103,13 @@ impl AgentConfigOutput {
             instructions: None,
             media_understanding: None,
             memory_mounts: None,
-            model: Box::new(model),
+            model,
+            model_characteristics: None,
+            model_settings: None,
             output_spec: None,
             plugins: None,
             retries: None,
             reviewer: None,
-            secret_requirements: None,
             skills: None,
             subagent_mode: None,
             subagents: None,

@@ -28,10 +28,7 @@ pub async fn run(
         .ok_or_else(|| CliError::input("missing labels command"))?;
     let resource = required(matches, "resource")?;
     let id = required(matches, "id")?;
-    let workspace = client
-        .resources()
-        .workspaces()
-        .at(config.required("workspace_id")?);
+    let resources = client.resources();
     let set: Option<HashMap<String, String>> = matches
         .get_one::<String>("set")
         .map(|value| {
@@ -40,7 +37,7 @@ pub async fn run(
         })
         .transpose()?;
     macro_rules! read {($name:ident) => {{
-        let result = workspace.$name().at(id).get().await?;
+        let result = resources.$name().at(id).get(Default::default()).await?;
         let etag = result.etag().map(str::to_owned);
         let value = serde_json::json!({"labels":result.data.labels});
         if config.include_meta {println!("{}",serde_json::json!({"data":value,"status":result.status.as_u16(),"etag":etag,"request_id":result.headers.get("x-request-id").and_then(|value|value.to_str().ok())}));}
@@ -48,7 +45,7 @@ pub async fn run(
         Ok(())
     }};}
     macro_rules! update {($name:ident, $body:expr, $options:ident) => {{
-        let result: Response<_> = workspace.$name().at(id).update(&$body, $options {if_match:required(matches,"if_match")?.to_owned()}).await?;
+        let result: Response<_> = resources.$name().at(id).update(&$body, $options {if_match:required(matches,"if_match")?.to_owned(), ..Default::default()}).await?;
         let etag = result.etag().map(str::to_owned);
         let value = serde_json::json!({"labels":result.data.labels});
         if config.include_meta {println!("{}",serde_json::json!({"data":value,"status":result.status.as_u16(),"etag":etag,"request_id":result.headers.get("x-request-id").and_then(|value|value.to_str().ok())}));}

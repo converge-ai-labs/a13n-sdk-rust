@@ -11,7 +11,7 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// AgentOverrideOutput : What one run changes of its revision's configuration; an omitted or null field keeps the revision's.  `toolsets` replaces whole toolsets; `model`, `retries` and each subagent edge replace the fields they set, and a null edge removes it; every other field replaces the revision's value.
+/// AgentOverrideOutput : What one run changes of its revision's configuration; an omitted or null field keeps the revision's.  `toolsets` replaces whole toolsets; `retries` and each subagent edge replace the fields they set, and a null edge removes it; every other field replaces the revision's value.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AgentOverrideOutput {
     #[serde(
@@ -52,7 +52,23 @@ pub struct AgentOverrideOutput {
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub model: Option<Option<Box<models::ModelOverride>>>,
+    pub model: Option<Option<String>>,
+
+    #[serde(
+        rename = "model_characteristics",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub model_characteristics: Option<Option<Box<models::AgentModelCharacteristics>>>,
+
+    #[serde(
+        rename = "model_settings",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub model_settings: Option<Option<std::collections::HashMap<String, serde_json::Value>>>,
 
     #[serde(
         rename = "output_spec",
@@ -112,7 +128,7 @@ pub struct AgentOverrideOutput {
 }
 
 impl AgentOverrideOutput {
-    /// What one run changes of its revision's configuration; an omitted or null field keeps the revision's.  `toolsets` replaces whole toolsets; `model`, `retries` and each subagent edge replace the fields they set, and a null edge removes it; every other field replaces the revision's value.
+    /// What one run changes of its revision's configuration; an omitted or null field keeps the revision's.  `toolsets` replaces whole toolsets; `retries` and each subagent edge replace the fields they set, and a null edge removes it; every other field replaces the revision's value.
     pub fn new() -> AgentOverrideOutput {
         AgentOverrideOutput {
             client_tools: None,
@@ -120,6 +136,8 @@ impl AgentOverrideOutput {
             instructions: None,
             media_understanding: None,
             model: None,
+            model_characteristics: None,
+            model_settings: None,
             output_spec: None,
             plugins: None,
             retries: None,

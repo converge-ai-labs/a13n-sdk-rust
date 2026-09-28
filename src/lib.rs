@@ -1,5 +1,6 @@
 #![doc = include_str!("../README.md")]
 #![forbid(unsafe_code)]
+mod agent;
 mod client;
 mod error;
 pub use error::{ProtocolError, ProtocolKind, TransportError, TransportKind, TransportStage};
@@ -16,7 +17,11 @@ pub mod generated;
 mod interaction;
 pub mod resources;
 pub mod streaming;
+pub use agent::{Agent, Input, SendOptions, StartOptions};
 pub use client::{
-    ApiError, BinaryResponse, CallError, Client, ClientBuilder, Error, Response, Secret, UploadFile,
+    ApiError, BinaryResponse, CallError, Client, ClientBuilder, Error, Response, Secret,
+    SubmissionError, UploadFile,
 };
-pub use interaction::{Submitted, text_payload};
+pub use interaction::{
+    Entry, Interaction, Resumed, Run, RunOutcome, Submitted, Thread, text_payload,
+};

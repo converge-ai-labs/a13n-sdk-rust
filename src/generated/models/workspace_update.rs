@@ -14,14 +14,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct WorkspaceUpdate {
     #[serde(
-        rename = "key",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub key: Option<Option<String>>,
-
-    #[serde(
         rename = "name",
         default,
         with = "::serde_with::rust::double_option",
@@ -32,9 +24,6 @@ pub struct WorkspaceUpdate {
 
 impl WorkspaceUpdate {
     pub fn new() -> WorkspaceUpdate {
-        WorkspaceUpdate {
-            key: None,
-            name: None,
-        }
+        WorkspaceUpdate { name: None }
     }
 }

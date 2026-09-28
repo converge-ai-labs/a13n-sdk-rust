@@ -16,6 +16,12 @@ pub struct ModelConfigInput {
     #[serde(rename = "characteristics", skip_serializing_if = "Option::is_none")]
     pub characteristics: Option<Box<models::HarnessModelCharacteristicsInput>>,
 
+    #[serde(rename = "extra_body", skip_serializing_if = "Option::is_none")]
+    pub extra_body: Option<std::collections::HashMap<String, serde_json::Value>>,
+
+    #[serde(rename = "extra_headers", skip_serializing_if = "Option::is_none")]
+    pub extra_headers: Option<serde_json::Value>,
+
     #[serde(
         rename = "max_tokens",
         default,
@@ -51,6 +57,8 @@ impl ModelConfigInput {
     pub fn new(model_api: String, model_name: String) -> ModelConfigInput {
         ModelConfigInput {
             characteristics: None,
+            extra_body: None,
+            extra_headers: None,
             max_tokens: None,
             model_api,
             model_name,

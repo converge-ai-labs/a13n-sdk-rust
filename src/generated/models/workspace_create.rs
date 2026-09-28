@@ -13,15 +13,12 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct WorkspaceCreate {
-    #[serde(rename = "key")]
-    pub key: String,
-
     #[serde(rename = "name")]
     pub name: String,
 }
 
 impl WorkspaceCreate {
-    pub fn new(key: String, name: String) -> WorkspaceCreate {
-        WorkspaceCreate { key, name }
+    pub fn new(name: String) -> WorkspaceCreate {
+        WorkspaceCreate { name }
     }
 }

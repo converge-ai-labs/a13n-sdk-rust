@@ -15,80 +15,79 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use tokio::fs::File as TokioFile;
 use tokio_util::codec::{BytesCodec, FramedRead};
 
-/// struct for typed errors of method [`create_asset_api_v1_workspaces_workspace_id_assets_post`]
+/// struct for typed errors of method [`create_asset_api_v1_assets_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateAssetApiV1WorkspacesWorkspaceIdAssetsPostError {
+pub enum CreateAssetApiV1AssetsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_upload_api_v1_workspaces_workspace_id_uploads_post`]
+/// struct for typed errors of method [`create_upload_api_v1_uploads_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateUploadApiV1WorkspacesWorkspaceIdUploadsPostError {
+pub enum CreateUploadApiV1UploadsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_asset_api_v1_workspaces_workspace_id_assets_asset_id_get`]
+/// struct for typed errors of method [`get_asset_api_v1_assets_asset_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAssetApiV1WorkspacesWorkspaceIdAssetsAssetIdGetError {
+pub enum GetAssetApiV1AssetsAssetIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_assets_api_v1_workspaces_workspace_id_assets_get`]
+/// struct for typed errors of method [`list_assets_api_v1_assets_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListAssetsApiV1WorkspacesWorkspaceIdAssetsGetError {
+pub enum ListAssetsApiV1AssetsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`read_asset_content_api_v1_workspaces_workspace_id_assets_asset_id_content_get`]
+/// struct for typed errors of method [`read_asset_content_api_v1_assets_asset_id_content_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReadAssetContentApiV1WorkspacesWorkspaceIdAssetsAssetIdContentGetError {
+pub enum ReadAssetContentApiV1AssetsAssetIdContentGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`retire_asset_api_v1_workspaces_workspace_id_assets_asset_id_delete`]
+/// struct for typed errors of method [`retire_asset_api_v1_assets_asset_id_delete`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetireAssetApiV1WorkspacesWorkspaceIdAssetsAssetIdDeleteError {
+pub enum RetireAssetApiV1AssetsAssetIdDeleteError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn create_asset_api_v1_workspaces_workspace_id_assets_post(
+pub async fn create_asset_api_v1_assets_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     asset_create: models::AssetCreate,
-) -> Result<Response<models::Asset>, Error<CreateAssetApiV1WorkspacesWorkspaceIdAssetsPostError>> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Asset>, Error<CreateAssetApiV1AssetsPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_body_asset_create = asset_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/assets",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/assets", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -138,8 +137,7 @@ pub async fn create_asset_api_v1_workspaces_workspace_id_assets_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateAssetApiV1WorkspacesWorkspaceIdAssetsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateAssetApiV1AssetsPostError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -150,23 +148,18 @@ pub async fn create_asset_api_v1_workspaces_workspace_id_assets_post(
 }
 
 /// Repeating a request with the same `Idempotency-Key` and bytes returns the same upload.
-pub async fn create_upload_api_v1_workspaces_workspace_id_uploads_post(
+pub async fn create_upload_api_v1_uploads_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     idempotency_key: &str,
     file: std::path::PathBuf,
-) -> Result<Response<models::Upload>, Error<CreateUploadApiV1WorkspacesWorkspaceIdUploadsPostError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Upload>, Error<CreateUploadApiV1UploadsPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_header_idempotency_key = idempotency_key;
     let p_form_file = file;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/uploads",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/uploads", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
@@ -175,6 +168,9 @@ pub async fn create_upload_api_v1_workspaces_workspace_id_uploads_post(
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
     req_builder = req_builder.header("Idempotency-Key", p_header_idempotency_key.to_string());
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
@@ -233,8 +229,7 @@ pub async fn create_upload_api_v1_workspaces_workspace_id_uploads_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateUploadApiV1WorkspacesWorkspaceIdUploadsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateUploadApiV1UploadsPostError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -244,26 +239,27 @@ pub async fn create_upload_api_v1_workspaces_workspace_id_uploads_post(
     }
 }
 
-pub async fn get_asset_api_v1_workspaces_workspace_id_assets_asset_id_get(
+pub async fn get_asset_api_v1_assets_asset_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     asset_id: &str,
-) -> Result<Response<models::Asset>, Error<GetAssetApiV1WorkspacesWorkspaceIdAssetsAssetIdGetError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Asset>, Error<GetAssetApiV1AssetsAssetIdGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_asset_id = asset_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/assets/{asset_id}",
+        "{}/api/v1/assets/{asset_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         asset_id = crate::generated::apis::urlencode(p_path_asset_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -304,7 +300,7 @@ pub async fn get_asset_api_v1_workspaces_workspace_id_assets_asset_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetAssetApiV1WorkspacesWorkspaceIdAssetsAssetIdGetError> =
+        let entity: Option<GetAssetApiV1AssetsAssetIdGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -315,23 +311,18 @@ pub async fn get_asset_api_v1_workspaces_workspace_id_assets_asset_id_get(
     }
 }
 
-pub async fn list_assets_api_v1_workspaces_workspace_id_assets_get(
+pub async fn list_assets_api_v1_assets_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<Response<models::AssetPage>, Error<ListAssetsApiV1WorkspacesWorkspaceIdAssetsGetError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::AssetPage>, Error<ListAssetsApiV1AssetsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/assets",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/assets", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref param_value) = p_query_limit {
@@ -342,6 +333,9 @@ pub async fn list_assets_api_v1_workspaces_workspace_id_assets_get(
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -382,8 +376,7 @@ pub async fn list_assets_api_v1_workspaces_workspace_id_assets_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListAssetsApiV1WorkspacesWorkspaceIdAssetsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListAssetsApiV1AssetsGetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -393,28 +386,27 @@ pub async fn list_assets_api_v1_workspaces_workspace_id_assets_get(
     }
 }
 
-pub async fn read_asset_content_api_v1_workspaces_workspace_id_assets_asset_id_content_get(
+pub async fn read_asset_content_api_v1_assets_asset_id_content_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     asset_id: &str,
-) -> Result<
-    reqwest::Response,
-    Error<ReadAssetContentApiV1WorkspacesWorkspaceIdAssetsAssetIdContentGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<reqwest::Response, Error<ReadAssetContentApiV1AssetsAssetIdContentGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_asset_id = asset_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/assets/{asset_id}/content",
+        "{}/api/v1/assets/{asset_id}/content",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         asset_id = crate::generated::apis::urlencode(p_path_asset_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -430,7 +422,7 @@ pub async fn read_asset_content_api_v1_workspaces_workspace_id_assets_asset_id_c
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<ReadAssetContentApiV1WorkspacesWorkspaceIdAssetsAssetIdContentGetError> =
+        let entity: Option<ReadAssetContentApiV1AssetsAssetIdContentGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -441,24 +433,20 @@ pub async fn read_asset_content_api_v1_workspaces_workspace_id_assets_asset_id_c
     }
 }
 
-pub async fn retire_asset_api_v1_workspaces_workspace_id_assets_asset_id_delete(
+pub async fn retire_asset_api_v1_assets_asset_id_delete(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     asset_id: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Asset>,
-    Error<RetireAssetApiV1WorkspacesWorkspaceIdAssetsAssetIdDeleteError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Asset>, Error<RetireAssetApiV1AssetsAssetIdDeleteError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_asset_id = asset_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/assets/{asset_id}",
+        "{}/api/v1/assets/{asset_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         asset_id = crate::generated::apis::urlencode(p_path_asset_id)
     );
     let mut req_builder = configuration
@@ -470,6 +458,9 @@ pub async fn retire_asset_api_v1_workspaces_workspace_id_assets_asset_id_delete(
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -518,7 +509,7 @@ pub async fn retire_asset_api_v1_workspaces_workspace_id_assets_asset_id_delete(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RetireAssetApiV1WorkspacesWorkspaceIdAssetsAssetIdDeleteError> =
+        let entity: Option<RetireAssetApiV1AssetsAssetIdDeleteError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,

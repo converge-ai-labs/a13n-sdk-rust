@@ -170,7 +170,7 @@ def command(trie: dict, name: str, op_tests: list[dict], definitions: list[str])
 
 
 def chain(op: dict, owner: str) -> str:
-    parts = owner.split("/")
+    parts = owner.split("/") if owner else []
     expr = "client.resources()"
     for part in parts:
         if part.startswith("{"):
@@ -235,8 +235,6 @@ def dispatch_case(index: int, test: dict) -> str:
     call = f"{chain(op, owner)}.{test['method']}({', '.join(args)})"
     if op["result"] is None:
         result = f"let response = {call}.await?; output::binary(response, matches).await"
-    elif op["result"] == "models::Submitted":
-        result = f"let response = {call}.await?; output::response(response.receipt, config).await"
     elif test["method"] == "list" and any(p["name"] == "cursor" for p in op["parameters"]):
         result = f'if matches.get_flag("all") {{ output::pages({chain(op, owner)}.pages(options), config).await }} else {{let response = {call}.await?; output::response(response, config).await}}'
         # options is moved into .list only in the else branch.

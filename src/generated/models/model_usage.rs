@@ -25,8 +25,8 @@ pub struct ModelUsage {
     #[serde(rename = "input_tokens")]
     pub input_tokens: i32,
 
-    #[serde(rename = "model_id", deserialize_with = "Option::deserialize")]
-    pub model_id: Option<String>,
+    #[serde(rename = "model", deserialize_with = "Option::deserialize")]
+    pub model: Option<String>,
 
     #[serde(rename = "output_tokens")]
     pub output_tokens: i32,
@@ -41,7 +41,7 @@ impl ModelUsage {
         cache_write_tokens: i32,
         cost: Option<String>,
         input_tokens: i32,
-        model_id: Option<String>,
+        model: Option<String>,
         output_tokens: i32,
         requests: i32,
     ) -> ModelUsage {
@@ -50,7 +50,7 @@ impl ModelUsage {
             cache_write_tokens,
             cost,
             input_tokens,
-            model_id,
+            model,
             output_tokens,
             requests,
         }

@@ -15,177 +15,173 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use tokio::fs::File as TokioFile;
 use tokio_util::codec::{BytesCodec, FramedRead};
 
-/// struct for typed errors of method [`archive_agent_api_v1_workspaces_workspace_id_agents_agent_id_archive_post`]
+/// struct for typed errors of method [`archive_agent_api_v1_agents_agent_id_archive_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ArchiveAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdArchivePostError {
+pub enum ArchiveAgentApiV1AgentsAgentIdArchivePostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_agent_api_v1_workspaces_workspace_id_agents_post`]
+/// struct for typed errors of method [`create_agent_api_v1_agents_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateAgentApiV1WorkspacesWorkspaceIdAgentsPostError {
+pub enum CreateAgentApiV1AgentsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_revision_api_v1_workspaces_workspace_id_agents_agent_id_revisions_post`]
+/// struct for typed errors of method [`create_revision_api_v1_agents_agent_id_revisions_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateRevisionApiV1WorkspacesWorkspaceIdAgentsAgentIdRevisionsPostError {
+pub enum CreateRevisionApiV1AgentsAgentIdRevisionsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar_delete`]
+/// struct for typed errors of method [`delete_avatar_api_v1_agents_agent_id_avatar_delete`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteAvatarApiV1WorkspacesWorkspaceIdAgentsAgentIdAvatarDeleteError {
+pub enum DeleteAvatarApiV1AgentsAgentIdAvatarDeleteError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`duplicate_agent_api_v1_workspaces_workspace_id_agents_agent_id_duplicate_post`]
+/// struct for typed errors of method [`duplicate_agent_api_v1_agents_agent_id_duplicate_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DuplicateAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdDuplicatePostError {
+pub enum DuplicateAgentApiV1AgentsAgentIdDuplicatePostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_agent_api_v1_workspaces_workspace_id_agents_agent_id_get`]
+/// struct for typed errors of method [`get_agent_api_v1_agents_agent_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdGetError {
+pub enum GetAgentApiV1AgentsAgentIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar_get`]
+/// struct for typed errors of method [`get_avatar_api_v1_agents_agent_id_avatar_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAvatarApiV1WorkspacesWorkspaceIdAgentsAgentIdAvatarGetError {
+pub enum GetAvatarApiV1AgentsAgentIdAvatarGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_revision_api_v1_workspaces_workspace_id_agents_agent_id_revisions_revision_id_get`]
+/// struct for typed errors of method [`get_revision_api_v1_agents_agent_id_revisions_revision_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetRevisionApiV1WorkspacesWorkspaceIdAgentsAgentIdRevisionsRevisionIdGetError {
+pub enum GetRevisionApiV1AgentsAgentIdRevisionsRevisionIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_agents_api_v1_workspaces_workspace_id_agents_get`]
+/// struct for typed errors of method [`list_agents_api_v1_agents_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListAgentsApiV1WorkspacesWorkspaceIdAgentsGetError {
+pub enum ListAgentsApiV1AgentsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_revisions_api_v1_workspaces_workspace_id_agents_agent_id_revisions_get`]
+/// struct for typed errors of method [`list_revisions_api_v1_agents_agent_id_revisions_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListRevisionsApiV1WorkspacesWorkspaceIdAgentsAgentIdRevisionsGetError {
+pub enum ListRevisionsApiV1AgentsAgentIdRevisionsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_toolsets_api_v1_workspaces_workspace_id_toolsets_get`]
+/// struct for typed errors of method [`list_toolsets_api_v1_toolsets_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListToolsetsApiV1WorkspacesWorkspaceIdToolsetsGetError {
+pub enum ListToolsetsApiV1ToolsetsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`prepare_assistant_api_v1_workspaces_workspace_id_configuration_assistant_post`]
+/// struct for typed errors of method [`prepare_composer_api_v1_agent_composer_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PrepareAssistantApiV1WorkspacesWorkspaceIdConfigurationAssistantPostError {
+pub enum PrepareComposerApiV1AgentComposerPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`put_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar_put`]
+/// struct for typed errors of method [`put_avatar_api_v1_agents_agent_id_avatar_put`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PutAvatarApiV1WorkspacesWorkspaceIdAgentsAgentIdAvatarPutError {
+pub enum PutAvatarApiV1AgentsAgentIdAvatarPutError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`set_default_api_v1_workspaces_workspace_id_agents_agent_id_revisions_revision_id_set_default_post`]
+/// struct for typed errors of method [`set_default_api_v1_agents_agent_id_revisions_revision_id_set_default_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum SetDefaultApiV1WorkspacesWorkspaceIdAgentsAgentIdRevisionsRevisionIdSetDefaultPostError {
+pub enum SetDefaultApiV1AgentsAgentIdRevisionsRevisionIdSetDefaultPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`unarchive_agent_api_v1_workspaces_workspace_id_agents_agent_id_unarchive_post`]
+/// struct for typed errors of method [`unarchive_agent_api_v1_agents_agent_id_unarchive_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UnarchiveAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdUnarchivePostError {
+pub enum UnarchiveAgentApiV1AgentsAgentIdUnarchivePostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_agent_api_v1_workspaces_workspace_id_agents_agent_id_patch`]
+/// struct for typed errors of method [`update_agent_api_v1_agents_agent_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdPatchError {
+pub enum UpdateAgentApiV1AgentsAgentIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`validate_revision_api_v1_workspaces_workspace_id_agents_validate_post`]
+/// struct for typed errors of method [`validate_revision_api_v1_agents_validate_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ValidateRevisionApiV1WorkspacesWorkspaceIdAgentsValidatePostError {
+pub enum ValidateRevisionApiV1AgentsValidatePostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn archive_agent_api_v1_workspaces_workspace_id_agents_agent_id_archive_post(
+pub async fn archive_agent_api_v1_agents_agent_id_archive_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_id: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Agent>,
-    Error<ArchiveAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdArchivePostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Agent>, Error<ArchiveAgentApiV1AgentsAgentIdArchivePostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_agent_id = agent_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents/{agent_id}/archive",
+        "{}/api/v1/agents/{agent_id}/archive",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         agent_id = crate::generated::apis::urlencode(p_path_agent_id)
     );
     let mut req_builder = configuration
@@ -197,6 +193,9 @@ pub async fn archive_agent_api_v1_workspaces_workspace_id_agents_agent_id_archiv
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -245,7 +244,7 @@ pub async fn archive_agent_api_v1_workspaces_workspace_id_agents_agent_id_archiv
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ArchiveAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdArchivePostError> =
+        let entity: Option<ArchiveAgentApiV1AgentsAgentIdArchivePostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -256,26 +255,25 @@ pub async fn archive_agent_api_v1_workspaces_workspace_id_agents_agent_id_archiv
     }
 }
 
-pub async fn create_agent_api_v1_workspaces_workspace_id_agents_post(
+pub async fn create_agent_api_v1_agents_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_create: models::AgentCreate,
-) -> Result<Response<models::Agent>, Error<CreateAgentApiV1WorkspacesWorkspaceIdAgentsPostError>> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Agent>, Error<CreateAgentApiV1AgentsPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_body_agent_create = agent_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/agents", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -325,8 +323,7 @@ pub async fn create_agent_api_v1_workspaces_workspace_id_agents_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateAgentApiV1WorkspacesWorkspaceIdAgentsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateAgentApiV1AgentsPostError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -337,26 +334,25 @@ pub async fn create_agent_api_v1_workspaces_workspace_id_agents_post(
 }
 
 /// A configuration that validates to the default revision's creates nothing and returns that revision.
-pub async fn create_revision_api_v1_workspaces_workspace_id_agents_agent_id_revisions_post(
+pub async fn create_revision_api_v1_agents_agent_id_revisions_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_id: &str,
     agent_revision_create: models::AgentRevisionCreate,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::AgentRevision>,
-    Error<CreateRevisionApiV1WorkspacesWorkspaceIdAgentsAgentIdRevisionsPostError>,
+    Error<CreateRevisionApiV1AgentsAgentIdRevisionsPostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_agent_id = agent_id;
     let p_body_agent_revision_create = agent_revision_create;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents/{agent_id}/revisions",
+        "{}/api/v1/agents/{agent_id}/revisions",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         agent_id = crate::generated::apis::urlencode(p_path_agent_id)
     );
     let mut req_builder = configuration
@@ -368,6 +364,9 @@ pub async fn create_revision_api_v1_workspaces_workspace_id_agents_agent_id_revi
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -417,9 +416,8 @@ pub async fn create_revision_api_v1_workspaces_workspace_id_agents_agent_id_revi
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            CreateRevisionApiV1WorkspacesWorkspaceIdAgentsAgentIdRevisionsPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<CreateRevisionApiV1AgentsAgentIdRevisionsPostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -429,24 +427,20 @@ pub async fn create_revision_api_v1_workspaces_workspace_id_agents_agent_id_revi
     }
 }
 
-pub async fn delete_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar_delete(
+pub async fn delete_avatar_api_v1_agents_agent_id_avatar_delete(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_id: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Agent>,
-    Error<DeleteAvatarApiV1WorkspacesWorkspaceIdAgentsAgentIdAvatarDeleteError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Agent>, Error<DeleteAvatarApiV1AgentsAgentIdAvatarDeleteError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_agent_id = agent_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents/{agent_id}/avatar",
+        "{}/api/v1/agents/{agent_id}/avatar",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         agent_id = crate::generated::apis::urlencode(p_path_agent_id)
     );
     let mut req_builder = configuration
@@ -458,6 +452,9 @@ pub async fn delete_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -506,7 +503,7 @@ pub async fn delete_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteAvatarApiV1WorkspacesWorkspaceIdAgentsAgentIdAvatarDeleteError> =
+        let entity: Option<DeleteAvatarApiV1AgentsAgentIdAvatarDeleteError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -517,24 +514,20 @@ pub async fn delete_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar
     }
 }
 
-pub async fn duplicate_agent_api_v1_workspaces_workspace_id_agents_agent_id_duplicate_post(
+pub async fn duplicate_agent_api_v1_agents_agent_id_duplicate_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_id: &str,
     agent_duplicate: models::AgentDuplicate,
-) -> Result<
-    Response<models::Agent>,
-    Error<DuplicateAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdDuplicatePostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Agent>, Error<DuplicateAgentApiV1AgentsAgentIdDuplicatePostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_agent_id = agent_id;
     let p_body_agent_duplicate = agent_duplicate;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents/{agent_id}/duplicate",
+        "{}/api/v1/agents/{agent_id}/duplicate",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         agent_id = crate::generated::apis::urlencode(p_path_agent_id)
     );
     let mut req_builder = configuration
@@ -543,6 +536,9 @@ pub async fn duplicate_agent_api_v1_workspaces_workspace_id_agents_agent_id_dupl
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -592,9 +588,8 @@ pub async fn duplicate_agent_api_v1_workspaces_workspace_id_agents_agent_id_dupl
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            DuplicateAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdDuplicatePostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<DuplicateAgentApiV1AgentsAgentIdDuplicatePostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -604,26 +599,27 @@ pub async fn duplicate_agent_api_v1_workspaces_workspace_id_agents_agent_id_dupl
     }
 }
 
-pub async fn get_agent_api_v1_workspaces_workspace_id_agents_agent_id_get(
+pub async fn get_agent_api_v1_agents_agent_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_id: &str,
-) -> Result<Response<models::Agent>, Error<GetAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdGetError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Agent>, Error<GetAgentApiV1AgentsAgentIdGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_agent_id = agent_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents/{agent_id}",
+        "{}/api/v1/agents/{agent_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         agent_id = crate::generated::apis::urlencode(p_path_agent_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -664,7 +660,7 @@ pub async fn get_agent_api_v1_workspaces_workspace_id_agents_agent_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdGetError> =
+        let entity: Option<GetAgentApiV1AgentsAgentIdGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -675,26 +671,27 @@ pub async fn get_agent_api_v1_workspaces_workspace_id_agents_agent_id_get(
     }
 }
 
-pub async fn get_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar_get(
+pub async fn get_avatar_api_v1_agents_agent_id_avatar_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_id: &str,
-) -> Result<reqwest::Response, Error<GetAvatarApiV1WorkspacesWorkspaceIdAgentsAgentIdAvatarGetError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<reqwest::Response, Error<GetAvatarApiV1AgentsAgentIdAvatarGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_agent_id = agent_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents/{agent_id}/avatar",
+        "{}/api/v1/agents/{agent_id}/avatar",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         agent_id = crate::generated::apis::urlencode(p_path_agent_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -710,7 +707,7 @@ pub async fn get_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar_ge
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetAvatarApiV1WorkspacesWorkspaceIdAgentsAgentIdAvatarGetError> =
+        let entity: Option<GetAvatarApiV1AgentsAgentIdAvatarGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -721,24 +718,23 @@ pub async fn get_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar_ge
     }
 }
 
-pub async fn get_revision_api_v1_workspaces_workspace_id_agents_agent_id_revisions_revision_id_get(
+pub async fn get_revision_api_v1_agents_agent_id_revisions_revision_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_id: &str,
     revision_id: &str,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::AgentRevision>,
-    Error<GetRevisionApiV1WorkspacesWorkspaceIdAgentsAgentIdRevisionsRevisionIdGetError>,
+    Error<GetRevisionApiV1AgentsAgentIdRevisionsRevisionIdGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_agent_id = agent_id;
     let p_path_revision_id = revision_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents/{agent_id}/revisions/{revision_id}",
+        "{}/api/v1/agents/{agent_id}/revisions/{revision_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         agent_id = crate::generated::apis::urlencode(p_path_agent_id),
         revision_id = crate::generated::apis::urlencode(p_path_revision_id)
     );
@@ -746,6 +742,9 @@ pub async fn get_revision_api_v1_workspaces_workspace_id_agents_agent_id_revisio
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -786,9 +785,8 @@ pub async fn get_revision_api_v1_workspaces_workspace_id_agents_agent_id_revisio
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetRevisionApiV1WorkspacesWorkspaceIdAgentsAgentIdRevisionsRevisionIdGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<GetRevisionApiV1AgentsAgentIdRevisionsRevisionIdGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -798,34 +796,31 @@ pub async fn get_revision_api_v1_workspaces_workspace_id_agents_agent_id_revisio
     }
 }
 
-/// Agents of the workspace. `q` matches the key, name or description, ignoring case; `archived` keeps only archived agents, or only open ones; the skill filters keep those with a revision pinning that skill or revision.
-pub async fn list_agents_api_v1_workspaces_workspace_id_agents_get(
+/// Agents of the workspace. `q` matches the name or description, ignoring case; `archived` keeps only archived agents, or only open ones; `source=builtin` finds the Agent Composer; the skill filters keep those with a revision pinning that skill or that skill revision.
+pub async fn list_agents_api_v1_agents_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     label: Option<Vec<String>>,
     q: Option<&str>,
     archived: Option<bool>,
+    source: Option<&str>,
     skill_id: Option<&str>,
     skill_revision_id: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<Response<models::AgentPage>, Error<ListAgentsApiV1WorkspacesWorkspaceIdAgentsGetError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::AgentPage>, Error<ListAgentsApiV1AgentsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_query_label = label;
     let p_query_q = q;
     let p_query_archived = archived;
+    let p_query_source = source;
     let p_query_skill_id = skill_id;
     let p_query_skill_revision_id = skill_revision_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/agents", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref param_value) = p_query_label {
@@ -853,6 +848,9 @@ pub async fn list_agents_api_v1_workspaces_workspace_id_agents_get(
     if let Some(ref param_value) = p_query_archived {
         req_builder = req_builder.query(&[("archived", &param_value.to_string())]);
     }
+    if let Some(ref param_value) = p_query_source {
+        req_builder = req_builder.query(&[("source", &param_value.to_string())]);
+    }
     if let Some(ref param_value) = p_query_skill_id {
         req_builder = req_builder.query(&[("skill_id", &param_value.to_string())]);
     }
@@ -867,6 +865,9 @@ pub async fn list_agents_api_v1_workspaces_workspace_id_agents_get(
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -907,8 +908,7 @@ pub async fn list_agents_api_v1_workspaces_workspace_id_agents_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListAgentsApiV1WorkspacesWorkspaceIdAgentsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListAgentsApiV1AgentsGetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -918,26 +918,25 @@ pub async fn list_agents_api_v1_workspaces_workspace_id_agents_get(
     }
 }
 
-pub async fn list_revisions_api_v1_workspaces_workspace_id_agents_agent_id_revisions_get(
+pub async fn list_revisions_api_v1_agents_agent_id_revisions_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::AgentRevisionPage>,
-    Error<ListRevisionsApiV1WorkspacesWorkspaceIdAgentsAgentIdRevisionsGetError>,
+    Error<ListRevisionsApiV1AgentsAgentIdRevisionsGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_agent_id = agent_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents/{agent_id}/revisions",
+        "{}/api/v1/agents/{agent_id}/revisions",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         agent_id = crate::generated::apis::urlencode(p_path_agent_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -950,6 +949,9 @@ pub async fn list_revisions_api_v1_workspaces_workspace_id_agents_agent_id_revis
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -990,7 +992,7 @@ pub async fn list_revisions_api_v1_workspaces_workspace_id_agents_agent_id_revis
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListRevisionsApiV1WorkspacesWorkspaceIdAgentsAgentIdRevisionsGetError> =
+        let entity: Option<ListRevisionsApiV1AgentsAgentIdRevisionsGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1001,25 +1003,21 @@ pub async fn list_revisions_api_v1_workspaces_workspace_id_agents_agent_id_revis
     }
 }
 
-pub async fn list_toolsets_api_v1_workspaces_workspace_id_toolsets_get(
+pub async fn list_toolsets_api_v1_toolsets_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
-) -> Result<
-    Response<models::ToolsetCatalog>,
-    Error<ListToolsetsApiV1WorkspacesWorkspaceIdToolsetsGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ToolsetCatalog>, Error<ListToolsetsApiV1ToolsetsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/toolsets",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/toolsets", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1060,8 +1058,7 @@ pub async fn list_toolsets_api_v1_workspaces_workspace_id_toolsets_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListToolsetsApiV1WorkspacesWorkspaceIdToolsetsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListToolsetsApiV1ToolsetsGetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1071,28 +1068,24 @@ pub async fn list_toolsets_api_v1_workspaces_workspace_id_toolsets_get(
     }
 }
 
-/// The workspace's configuration assistant, created or brought up to date with the deployment's definition.  Refused with `model_required` while the workspace has no model the caller can use.
-pub async fn prepare_assistant_api_v1_workspaces_workspace_id_configuration_assistant_post(
+/// The workspace's Agent Composer, created or brought up to date with the deployment's definition.  Refused with `model_required` while the workspace has no model the caller can use.
+pub async fn prepare_composer_api_v1_agent_composer_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
-) -> Result<
-    Response<models::Agent>,
-    Error<PrepareAssistantApiV1WorkspacesWorkspaceIdConfigurationAssistantPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Agent>, Error<PrepareComposerApiV1AgentComposerPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/configuration-assistant",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/agent-composer", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1141,9 +1134,8 @@ pub async fn prepare_assistant_api_v1_workspaces_workspace_id_configuration_assi
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            PrepareAssistantApiV1WorkspacesWorkspaceIdConfigurationAssistantPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<PrepareComposerApiV1AgentComposerPostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1153,28 +1145,24 @@ pub async fn prepare_assistant_api_v1_workspaces_workspace_id_configuration_assi
     }
 }
 
-pub async fn put_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar_put(
+pub async fn put_avatar_api_v1_agents_agent_id_avatar_put(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_id: &str,
     content_type: &str,
     body: std::path::PathBuf,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Agent>,
-    Error<PutAvatarApiV1WorkspacesWorkspaceIdAgentsAgentIdAvatarPutError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Agent>, Error<PutAvatarApiV1AgentsAgentIdAvatarPutError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_agent_id = agent_id;
     let p_header_content_type = content_type;
     let p_body_body = body;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents/{agent_id}/avatar",
+        "{}/api/v1/agents/{agent_id}/avatar",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         agent_id = crate::generated::apis::urlencode(p_path_agent_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
@@ -1184,6 +1172,9 @@ pub async fn put_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar_pu
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     req_builder = req_builder.header("Content-Type", p_header_content_type.to_string());
     if let Some(ref token) = configuration.bearer_access_token {
@@ -1236,7 +1227,7 @@ pub async fn put_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar_pu
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PutAvatarApiV1WorkspacesWorkspaceIdAgentsAgentIdAvatarPutError> =
+        let entity: Option<PutAvatarApiV1AgentsAgentIdAvatarPutError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1247,26 +1238,25 @@ pub async fn put_avatar_api_v1_workspaces_workspace_id_agents_agent_id_avatar_pu
     }
 }
 
-pub async fn set_default_api_v1_workspaces_workspace_id_agents_agent_id_revisions_revision_id_set_default_post(
+pub async fn set_default_api_v1_agents_agent_id_revisions_revision_id_set_default_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_id: &str,
     revision_id: &str,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::Agent>,
-    Error<SetDefaultApiV1WorkspacesWorkspaceIdAgentsAgentIdRevisionsRevisionIdSetDefaultPostError>,
+    Error<SetDefaultApiV1AgentsAgentIdRevisionsRevisionIdSetDefaultPostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_agent_id = agent_id;
     let p_path_revision_id = revision_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents/{agent_id}/revisions/{revision_id}/set-default",
+        "{}/api/v1/agents/{agent_id}/revisions/{revision_id}/set-default",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         agent_id = crate::generated::apis::urlencode(p_path_agent_id),
         revision_id = crate::generated::apis::urlencode(p_path_revision_id)
     );
@@ -1280,6 +1270,9 @@ pub async fn set_default_api_v1_workspaces_workspace_id_agents_agent_id_revision
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
     }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
@@ -1327,9 +1320,8 @@ pub async fn set_default_api_v1_workspaces_workspace_id_agents_agent_id_revision
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            SetDefaultApiV1WorkspacesWorkspaceIdAgentsAgentIdRevisionsRevisionIdSetDefaultPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<SetDefaultApiV1AgentsAgentIdRevisionsRevisionIdSetDefaultPostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1339,24 +1331,20 @@ pub async fn set_default_api_v1_workspaces_workspace_id_agents_agent_id_revision
     }
 }
 
-pub async fn unarchive_agent_api_v1_workspaces_workspace_id_agents_agent_id_unarchive_post(
+pub async fn unarchive_agent_api_v1_agents_agent_id_unarchive_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_id: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Agent>,
-    Error<UnarchiveAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdUnarchivePostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Agent>, Error<UnarchiveAgentApiV1AgentsAgentIdUnarchivePostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_agent_id = agent_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents/{agent_id}/unarchive",
+        "{}/api/v1/agents/{agent_id}/unarchive",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         agent_id = crate::generated::apis::urlencode(p_path_agent_id)
     );
     let mut req_builder = configuration
@@ -1369,6 +1357,9 @@ pub async fn unarchive_agent_api_v1_workspaces_workspace_id_agents_agent_id_unar
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
     }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
@@ -1416,9 +1407,8 @@ pub async fn unarchive_agent_api_v1_workspaces_workspace_id_agents_agent_id_unar
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UnarchiveAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdUnarchivePostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UnarchiveAgentApiV1AgentsAgentIdUnarchivePostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1428,26 +1418,22 @@ pub async fn unarchive_agent_api_v1_workspaces_workspace_id_agents_agent_id_unar
     }
 }
 
-pub async fn update_agent_api_v1_workspaces_workspace_id_agents_agent_id_patch(
+pub async fn update_agent_api_v1_agents_agent_id_patch(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_id: &str,
     agent_update: models::AgentUpdate,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Agent>,
-    Error<UpdateAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdPatchError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Agent>, Error<UpdateAgentApiV1AgentsAgentIdPatchError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_agent_id = agent_id;
     let p_body_agent_update = agent_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents/{agent_id}",
+        "{}/api/v1/agents/{agent_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         agent_id = crate::generated::apis::urlencode(p_path_agent_id)
     );
     let mut req_builder = configuration
@@ -1459,6 +1445,9 @@ pub async fn update_agent_api_v1_workspaces_workspace_id_agents_agent_id_patch(
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1508,7 +1497,7 @@ pub async fn update_agent_api_v1_workspaces_workspace_id_agents_agent_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateAgentApiV1WorkspacesWorkspaceIdAgentsAgentIdPatchError> =
+        let entity: Option<UpdateAgentApiV1AgentsAgentIdPatchError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1520,27 +1509,25 @@ pub async fn update_agent_api_v1_workspaces_workspace_id_agents_agent_id_patch(
 }
 
 /// No content when creating a revision of the configuration would accept it, else the same `invalid_argument` error with the field's path relative to `config`; nothing is stored.
-pub async fn validate_revision_api_v1_workspaces_workspace_id_agents_validate_post(
+pub async fn validate_revision_api_v1_agents_validate_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     agent_validate: models::AgentValidate,
-) -> Result<Response<()>, Error<ValidateRevisionApiV1WorkspacesWorkspaceIdAgentsValidatePostError>>
-{
+    x_workspace_id: Option<&str>,
+) -> Result<Response<()>, Error<ValidateRevisionApiV1AgentsValidatePostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_body_agent_validate = agent_validate;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/agents/validate",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/agents/validate", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1569,7 +1556,7 @@ pub async fn validate_revision_api_v1_workspaces_workspace_id_agents_validate_po
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<ValidateRevisionApiV1WorkspacesWorkspaceIdAgentsValidatePostError> =
+        let entity: Option<ValidateRevisionApiV1AgentsValidatePostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,

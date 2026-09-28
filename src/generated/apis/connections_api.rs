@@ -13,10 +13,10 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`authorize_connection_api_v1_workspaces_workspace_id_connections_connection_id_authorize_post`]
+/// struct for typed errors of method [`authorize_connection_api_v1_connections_connection_id_authorize_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum AuthorizeConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdAuthorizePostError {
+pub enum AuthorizeConnectionApiV1ConnectionsConnectionIdAuthorizePostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
@@ -31,28 +31,28 @@ pub enum CompleteAuthorizationApiV1ConnectionsCallbackGetError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_connection_api_v1_workspaces_workspace_id_connections_post`]
+/// struct for typed errors of method [`create_connection_api_v1_connections_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateConnectionApiV1WorkspacesWorkspaceIdConnectionsPostError {
+pub enum CreateConnectionApiV1ConnectionsPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_app_api_v1_workspaces_workspace_id_connector_providers_provider_id_apps_app_get`]
+/// struct for typed errors of method [`get_app_api_v1_connector_providers_provider_id_apps_app_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAppApiV1WorkspacesWorkspaceIdConnectorProvidersProviderIdAppsAppGetError {
+pub enum GetAppApiV1ConnectorProvidersProviderIdAppsAppGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_connection_api_v1_workspaces_workspace_id_connections_connection_id_get`]
+/// struct for typed errors of method [`get_connection_api_v1_connections_connection_id_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdGetError {
+pub enum GetConnectionApiV1ConnectionsConnectionIdGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
@@ -66,28 +66,28 @@ pub enum GetRedirectUriApiV1ConnectionsRedirectUriGetError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_actions_api_v1_workspaces_workspace_id_connector_providers_provider_id_apps_app_actions_get`]
+/// struct for typed errors of method [`list_actions_api_v1_connector_providers_provider_id_apps_app_actions_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListActionsApiV1WorkspacesWorkspaceIdConnectorProvidersProviderIdAppsAppActionsGetError {
+pub enum ListActionsApiV1ConnectorProvidersProviderIdAppsAppActionsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_apps_api_v1_workspaces_workspace_id_connector_providers_provider_id_apps_get`]
+/// struct for typed errors of method [`list_apps_api_v1_connector_providers_provider_id_apps_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListAppsApiV1WorkspacesWorkspaceIdConnectorProvidersProviderIdAppsGetError {
+pub enum ListAppsApiV1ConnectorProvidersProviderIdAppsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_connections_api_v1_workspaces_workspace_id_connections_get`]
+/// struct for typed errors of method [`list_connections_api_v1_connections_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListConnectionsApiV1WorkspacesWorkspaceIdConnectionsGetError {
+pub enum ListConnectionsApiV1ConnectionsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
@@ -102,63 +102,62 @@ pub enum ListMcpServersApiV1McpServersGetError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_tools_api_v1_workspaces_workspace_id_connections_connection_id_tools_get`]
+/// struct for typed errors of method [`list_tools_api_v1_connections_connection_id_tools_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListToolsApiV1WorkspacesWorkspaceIdConnectionsConnectionIdToolsGetError {
+pub enum ListToolsApiV1ConnectionsConnectionIdToolsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`revoke_connection_api_v1_workspaces_workspace_id_connections_connection_id_revoke_post`]
+/// struct for typed errors of method [`revoke_connection_api_v1_connections_connection_id_revoke_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RevokeConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdRevokePostError {
+pub enum RevokeConnectionApiV1ConnectionsConnectionIdRevokePostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`test_connection_api_v1_workspaces_workspace_id_connections_connection_id_test_post`]
+/// struct for typed errors of method [`test_connection_api_v1_connections_connection_id_test_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum TestConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdTestPostError {
+pub enum TestConnectionApiV1ConnectionsConnectionIdTestPostError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_connection_api_v1_workspaces_workspace_id_connections_connection_id_patch`]
+/// struct for typed errors of method [`update_connection_api_v1_connections_connection_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdPatchError {
+pub enum UpdateConnectionApiV1ConnectionsConnectionIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
 /// A browser flow needs a login session and is bound to this browser by a cookie the callback checks; an API key authorizes only a client-credentials client, without a browser.
-pub async fn authorize_connection_api_v1_workspaces_workspace_id_connections_connection_id_authorize_post(
+pub async fn authorize_connection_api_v1_connections_connection_id_authorize_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     connection_id: &str,
     authorization_request: models::AuthorizationRequest,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::AuthorizationResult>,
-    Error<AuthorizeConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdAuthorizePostError>,
+    Error<AuthorizeConnectionApiV1ConnectionsConnectionIdAuthorizePostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_connection_id = connection_id;
     let p_body_authorization_request = authorization_request;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/connections/{connection_id}/authorize",
+        "{}/api/v1/connections/{connection_id}/authorize",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         connection_id = crate::generated::apis::urlencode(p_path_connection_id)
     );
     let mut req_builder = configuration
@@ -170,6 +169,9 @@ pub async fn authorize_connection_api_v1_workspaces_workspace_id_connections_con
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -219,9 +221,8 @@ pub async fn authorize_connection_api_v1_workspaces_workspace_id_connections_con
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            AuthorizeConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdAuthorizePostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<AuthorizeConnectionApiV1ConnectionsConnectionIdAuthorizePostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -316,29 +317,25 @@ pub async fn complete_authorization_api_v1_connections_callback_get(
     }
 }
 
-pub async fn create_connection_api_v1_workspaces_workspace_id_connections_post(
+pub async fn create_connection_api_v1_connections_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     connection_create: models::ConnectionCreate,
-) -> Result<
-    Response<models::Connection>,
-    Error<CreateConnectionApiV1WorkspacesWorkspaceIdConnectionsPostError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Connection>, Error<CreateConnectionApiV1ConnectionsPostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_body_connection_create = connection_create;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/connections",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/connections", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -388,7 +385,7 @@ pub async fn create_connection_api_v1_workspaces_workspace_id_connections_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateConnectionApiV1WorkspacesWorkspaceIdConnectionsPostError> =
+        let entity: Option<CreateConnectionApiV1ConnectionsPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -399,24 +396,23 @@ pub async fn create_connection_api_v1_workspaces_workspace_id_connections_post(
     }
 }
 
-pub async fn get_app_api_v1_workspaces_workspace_id_connector_providers_provider_id_apps_app_get(
+pub async fn get_app_api_v1_connector_providers_provider_id_apps_app_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     provider_id: &str,
     app: &str,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::ConnectorApp>,
-    Error<GetAppApiV1WorkspacesWorkspaceIdConnectorProvidersProviderIdAppsAppGetError>,
+    Error<GetAppApiV1ConnectorProvidersProviderIdAppsAppGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_provider_id = provider_id;
     let p_path_app = app;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/connector-providers/{provider_id}/apps/{app}",
+        "{}/api/v1/connector-providers/{provider_id}/apps/{app}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id),
         app = crate::generated::apis::urlencode(p_path_app)
     );
@@ -424,6 +420,9 @@ pub async fn get_app_api_v1_workspaces_workspace_id_connector_providers_provider
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -464,9 +463,8 @@ pub async fn get_app_api_v1_workspaces_workspace_id_connector_providers_provider
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetAppApiV1WorkspacesWorkspaceIdConnectorProvidersProviderIdAppsAppGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<GetAppApiV1ConnectorProvidersProviderIdAppsAppGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -476,28 +474,28 @@ pub async fn get_app_api_v1_workspaces_workspace_id_connector_providers_provider
     }
 }
 
-pub async fn get_connection_api_v1_workspaces_workspace_id_connections_connection_id_get(
+pub async fn get_connection_api_v1_connections_connection_id_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     connection_id: &str,
-) -> Result<
-    Response<models::Connection>,
-    Error<GetConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Connection>, Error<GetConnectionApiV1ConnectionsConnectionIdGetError>>
+{
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_connection_id = connection_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/connections/{connection_id}",
+        "{}/api/v1/connections/{connection_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         connection_id = crate::generated::apis::urlencode(p_path_connection_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -538,7 +536,7 @@ pub async fn get_connection_api_v1_workspaces_workspace_id_connections_connectio
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdGetError> =
+        let entity: Option<GetConnectionApiV1ConnectionsConnectionIdGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -613,24 +611,23 @@ pub async fn get_redirect_uri_api_v1_connections_redirect_uri_get(
     }
 }
 
-pub async fn list_actions_api_v1_workspaces_workspace_id_connector_providers_provider_id_apps_app_actions_get(
+pub async fn list_actions_api_v1_connector_providers_provider_id_apps_app_actions_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     provider_id: &str,
     app: &str,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::ConnectorActionPage>,
-    Error<ListActionsApiV1WorkspacesWorkspaceIdConnectorProvidersProviderIdAppsAppActionsGetError>,
+    Error<ListActionsApiV1ConnectorProvidersProviderIdAppsAppActionsGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_provider_id = provider_id;
     let p_path_app = app;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/connector-providers/{provider_id}/apps/{app}/actions",
+        "{}/api/v1/connector-providers/{provider_id}/apps/{app}/actions",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id),
         app = crate::generated::apis::urlencode(p_path_app)
     );
@@ -638,6 +635,9 @@ pub async fn list_actions_api_v1_workspaces_workspace_id_connector_providers_pro
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -678,9 +678,8 @@ pub async fn list_actions_api_v1_workspaces_workspace_id_connector_providers_pro
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ListActionsApiV1WorkspacesWorkspaceIdConnectorProvidersProviderIdAppsAppActionsGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ListActionsApiV1ConnectorProvidersProviderIdAppsAppActionsGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -690,30 +689,29 @@ pub async fn list_actions_api_v1_workspaces_workspace_id_connector_providers_pro
     }
 }
 
-pub async fn list_apps_api_v1_workspaces_workspace_id_connector_providers_provider_id_apps_get(
+pub async fn list_apps_api_v1_connector_providers_provider_id_apps_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     provider_id: &str,
     query: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
     refresh: Option<bool>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::ConnectorAppPage>,
-    Error<ListAppsApiV1WorkspacesWorkspaceIdConnectorProvidersProviderIdAppsGetError>,
+    Error<ListAppsApiV1ConnectorProvidersProviderIdAppsGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_provider_id = provider_id;
     let p_query_query = query;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
     let p_query_refresh = refresh;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/connector-providers/{provider_id}/apps",
+        "{}/api/v1/connector-providers/{provider_id}/apps",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         provider_id = crate::generated::apis::urlencode(p_path_provider_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -732,6 +730,9 @@ pub async fn list_apps_api_v1_workspaces_workspace_id_connector_providers_provid
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -772,9 +773,8 @@ pub async fn list_apps_api_v1_workspaces_workspace_id_connector_providers_provid
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ListAppsApiV1WorkspacesWorkspaceIdConnectorProvidersProviderIdAppsGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ListAppsApiV1ConnectorProvidersProviderIdAppsGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -784,25 +784,18 @@ pub async fn list_apps_api_v1_workspaces_workspace_id_connector_providers_provid
     }
 }
 
-pub async fn list_connections_api_v1_workspaces_workspace_id_connections_get(
+pub async fn list_connections_api_v1_connections_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::ConnectionPage>,
-    Error<ListConnectionsApiV1WorkspacesWorkspaceIdConnectionsGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ConnectionPage>, Error<ListConnectionsApiV1ConnectionsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/connections",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id)
-    );
+    let uri_str = format!("{}/api/v1/connections", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref param_value) = p_query_limit {
@@ -813,6 +806,9 @@ pub async fn list_connections_api_v1_workspaces_workspace_id_connections_get(
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -853,7 +849,7 @@ pub async fn list_connections_api_v1_workspaces_workspace_id_connections_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListConnectionsApiV1WorkspacesWorkspaceIdConnectionsGetError> =
+        let entity: Option<ListConnectionsApiV1ConnectionsGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -941,28 +937,27 @@ pub async fn list_mcp_servers_api_v1_mcp_servers_get(
     }
 }
 
-pub async fn list_tools_api_v1_workspaces_workspace_id_connections_connection_id_tools_get(
+pub async fn list_tools_api_v1_connections_connection_id_tools_get(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     connection_id: &str,
-) -> Result<
-    Response<models::ToolPage>,
-    Error<ListToolsApiV1WorkspacesWorkspaceIdConnectionsConnectionIdToolsGetError>,
-> {
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ToolPage>, Error<ListToolsApiV1ConnectionsConnectionIdToolsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_connection_id = connection_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/connections/{connection_id}/tools",
+        "{}/api/v1/connections/{connection_id}/tools",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         connection_id = crate::generated::apis::urlencode(p_path_connection_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1003,9 +998,8 @@ pub async fn list_tools_api_v1_workspaces_workspace_id_connections_connection_id
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ListToolsApiV1WorkspacesWorkspaceIdConnectionsConnectionIdToolsGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ListToolsApiV1ConnectionsConnectionIdToolsGetError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1015,24 +1009,23 @@ pub async fn list_tools_api_v1_workspaces_workspace_id_connections_connection_id
     }
 }
 
-pub async fn revoke_connection_api_v1_workspaces_workspace_id_connections_connection_id_revoke_post(
+pub async fn revoke_connection_api_v1_connections_connection_id_revoke_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     connection_id: &str,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::RevokedConnection>,
-    Error<RevokeConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdRevokePostError>,
+    Error<RevokeConnectionApiV1ConnectionsConnectionIdRevokePostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_connection_id = connection_id;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/connections/{connection_id}/revoke",
+        "{}/api/v1/connections/{connection_id}/revoke",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         connection_id = crate::generated::apis::urlencode(p_path_connection_id)
     );
     let mut req_builder = configuration
@@ -1044,6 +1037,9 @@ pub async fn revoke_connection_api_v1_workspaces_workspace_id_connections_connec
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1092,9 +1088,8 @@ pub async fn revoke_connection_api_v1_workspaces_workspace_id_connections_connec
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            RevokeConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdRevokePostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<RevokeConnectionApiV1ConnectionsConnectionIdRevokePostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1104,22 +1099,21 @@ pub async fn revoke_connection_api_v1_workspaces_workspace_id_connections_connec
     }
 }
 
-pub async fn test_connection_api_v1_workspaces_workspace_id_connections_connection_id_test_post(
+pub async fn test_connection_api_v1_connections_connection_id_test_post(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     connection_id: &str,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::ConnectionTest>,
-    Error<TestConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdTestPostError>,
+    Error<TestConnectionApiV1ConnectionsConnectionIdTestPostError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_connection_id = connection_id;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/connections/{connection_id}/test",
+        "{}/api/v1/connections/{connection_id}/test",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         connection_id = crate::generated::apis::urlencode(p_path_connection_id)
     );
     let mut req_builder = configuration
@@ -1128,6 +1122,9 @@ pub async fn test_connection_api_v1_workspaces_workspace_id_connections_connecti
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1176,9 +1173,8 @@ pub async fn test_connection_api_v1_workspaces_workspace_id_connections_connecti
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            TestConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdTestPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<TestConnectionApiV1ConnectionsConnectionIdTestPostError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1188,26 +1184,25 @@ pub async fn test_connection_api_v1_workspaces_workspace_id_connections_connecti
     }
 }
 
-pub async fn update_connection_api_v1_workspaces_workspace_id_connections_connection_id_patch(
+pub async fn update_connection_api_v1_connections_connection_id_patch(
     configuration: &configuration::Configuration,
-    workspace_id: &str,
     connection_id: &str,
     connection_update: models::ConnectionUpdate,
     if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::Connection>,
-    Error<UpdateConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdPatchError>,
+    Error<UpdateConnectionApiV1ConnectionsConnectionIdPatchError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
     let p_path_connection_id = connection_id;
     let p_body_connection_update = connection_update;
     let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/connections/{connection_id}",
+        "{}/api/v1/connections/{connection_id}",
         configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
         connection_id = crate::generated::apis::urlencode(p_path_connection_id)
     );
     let mut req_builder = configuration
@@ -1219,6 +1214,9 @@ pub async fn update_connection_api_v1_workspaces_workspace_id_connections_connec
     }
     if let Some(param_value) = p_header_if_match {
         req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
     }
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
@@ -1268,9 +1266,8 @@ pub async fn update_connection_api_v1_workspaces_workspace_id_connections_connec
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UpdateConnectionApiV1WorkspacesWorkspaceIdConnectionsConnectionIdPatchError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UpdateConnectionApiV1ConnectionsConnectionIdPatchError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

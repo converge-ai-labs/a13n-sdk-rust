@@ -33,25 +33,28 @@ fn key() -> String {
             .as_nanos()
     )
 }
-fn accepted<'a>(submitted: &'a a13n::Submitted<'_>) -> Result<&'a RunResource<'a>> {
+fn bound<'a>(client: &'a Client, raw: a13n::Response<m::Submitted>) -> Result<a13n::Submitted<'a>> {
+    Ok(a13n::Submitted::bind(client, raw)?)
+}
+fn accepted<'a>(submitted: &'a a13n::Submitted<'_>) -> Result<&'a a13n::Run<'a>> {
     submitted
         .run
         .as_ref()
         .ok_or_else(|| "Accepted submission has no Run".into())
 }
-async fn wait(run: &RunResource<'_>, expected: m::RunStatus) -> Result<()> {
+async fn wait(run: &a13n::Run<'_>, expected: m::RunStatus) -> Result<()> {
     let result = tokio::time::timeout(
         Duration::from_secs(80),
-        run.wait(Duration::from_millis(100)),
+        run.wait_with(Duration::from_secs(80), Duration::from_millis(100)),
     )
     .await??;
     ensure(
-        result.data.status == expected,
-        &format!("Unexpected Run status: {:?}", result.data.status),
+        result.snapshot.data.status == expected,
+        &format!("Unexpected Run status: {:?}", result.snapshot.data.status),
     )?;
-    let items = run.items().get().await?;
+    let items = run.items().get(Default::default()).await?;
     ensure(
-        items.data.run.id == result.data.id && items.data.complete,
+        items.data.run.id == result.snapshot.data.id && items.data.complete,
         "Run Items mismatch",
     )
 }
@@ -71,9 +74,7 @@ async fn offline() -> Result<()> {
                 input.contains("authorization: Bearer offline-token")
                     || input.contains("Authorization: Bearer offline-token")
             );
-            let (status, body, extra) = if input
-                .starts_with("GET /api/v1/workspaces/offline/threads")
-            {
+            let (status, body, extra) = if input.starts_with("GET /api/v1/threads") {
                 (
                     "200 OK",
                     r#"{"items":[],"next_cursor":null}"#,
@@ -101,11 +102,7 @@ async fn offline() -> Result<()> {
     });
     let client = Client::new(&base_url, Secret::new("offline-token"))?;
     let resources = client.resources();
-    let mut pages = resources
-        .workspaces()
-        .at("offline")
-        .threads()
-        .pages(ThreadsListOptions::default());
+    let mut pages = resources.threads().pages(ThreadsListOptions::default());
     let first = pages.next().await?.ok_or("Missing first page")?;
     ensure(
         first.status.as_u16() == 200
@@ -137,7 +134,7 @@ async fn offline() -> Result<()> {
         })
         .await?;
     ensure(
-        ProviderKind::Memory.as_str() == "memory" && SkillSource::Github.to_string() == "github",
+        ProviderKind::Memory.as_str() == "memory" && SkillsSource::Github.to_string() == "github",
         "Domain enum wire values",
     )?;
     let error = resources
@@ -220,7 +217,8 @@ async fn live() -> Result<()> {
         .http_builder(http)
         .build()?;
     let resources = client.resources();
-    let ws = resources.workspaces().at(required("A13N_WORKSPACE")?);
+    let workspace_id = required("A13N_WORKSPACE")?;
+    let ws = client.resources();
     let agent = required("A13N_AGENT")?;
     ensure(
         resources.healthz().get().await?.status.as_u16() == 200,
@@ -240,26 +238,39 @@ async fn live() -> Result<()> {
             .initialized,
         "HTTPS auth configuration",
     )?;
-    let canonical = ws.get().await?.data;
-    let key_ws = resources.workspaces().at(canonical.key.clone());
+    let canonical = resources.workspaces().at(&workspace_id).get().await?.data;
+    let key_ws = client.resources();
     let request = m::NewThread::new(
         agent.clone(),
         text_payload("[slow] [long] Rust SDK installed-crate acceptance."),
     );
     let idempotency_key = key();
-    let submitted = key_ws
-        .threads()
-        .create(
-            &request,
-            ThreadsCreateOptions {
-                idempotency_key: idempotency_key.clone(),
-            },
-        )
-        .await?;
-    let replay = key_ws
-        .threads()
-        .create(&request, ThreadsCreateOptions { idempotency_key })
-        .await?;
+    let submitted = bound(
+        &client,
+        key_ws
+            .threads()
+            .create(
+                &request,
+                ThreadsCreateOptions {
+                    idempotency_key: idempotency_key.clone(),
+                    ..Default::default()
+                },
+            )
+            .await?,
+    )?;
+    let replay = bound(
+        &client,
+        key_ws
+            .threads()
+            .create(
+                &request,
+                ThreadsCreateOptions {
+                    idempotency_key,
+                    ..Default::default()
+                },
+            )
+            .await?,
+    )?;
     ensure(
         submitted.receipt.status.as_u16() == 201
             && replay.receipt.status.as_u16() == 200
@@ -268,101 +279,134 @@ async fn live() -> Result<()> {
     )?;
     ensure(
         submitted.receipt.data.thread.workspace_id == canonical.id
-            && submitted.thread.get().await?.data.workspace_id == canonical.id,
+            && submitted
+                .thread
+                .resource()
+                .get(Default::default())
+                .await?
+                .data
+                .workspace_id
+                == canonical.id,
         "Canonical workspace binding",
     )?;
-    sse::verify(
-        &service,
-        &ca,
-        &token,
-        &canonical.id,
-        &submitted.receipt.data.thread.id,
-    )
-    .await?;
+    sse::verify(&service, &ca, &token, &submitted.receipt.data.thread.id).await?;
     wait(accepted(&submitted)?, m::RunStatus::Completed).await?;
     println!("Verified HTTPS: typed submission, 201/200 replay, canonical binding, Run readback");
 
-    let source = ws
-        .threads()
-        .create(
-            &m::NewThread::new(
-                agent.clone(),
-                text_payload("[interruptible] Wait for queued inbox."),
-            ),
-            ThreadsCreateOptions {
-                idempotency_key: key(),
-            },
-        )
+    // The ordinary installed-crate journey uses the finite authored Interaction,
+    // including natural stream termination and authoritative exact-Run readback.
+    let mut execution = client
+        .agent(&agent)
+        .start("[slow] [long] Rust finite Interaction acceptance.", key())
         .await?;
-    let queued = source
-        .thread
-        .inbox()
-        .create(
-            &m::Message::new(agent.clone(), text_payload("Queued.")),
-            InboxCreateOptions {
-                idempotency_key: key(),
-            },
-        )
-        .await?;
-    ensure(queued.run.is_none(), "Queued entry should have no Run")?;
-    wait(accepted(&source)?, m::RunStatus::Completed).await?;
-    let consumed = tokio::time::timeout(
-        Duration::from_secs(80),
-        queued.entry.wait(Duration::from_millis(100)),
-    )
-    .await??;
+    let mut frames = 0;
+    while tokio::time::timeout(Duration::from_secs(100), execution.next())
+        .await??
+        .is_some()
+    {
+        frames += 1;
+        ensure(
+            frames < 10_000,
+            "Finite Interaction exceeded bounded event count",
+        )?;
+    }
+    let outcome = execution.result().await?;
     ensure(
-        consumed.data.status == m::EntryStatus::Consumed,
-        "Queued entry consumption",
+        *outcome.status() == m::RunStatus::Completed,
+        "Finite Interaction Run status",
     )?;
-    let successor = ws.runs().at(consumed
-        .data
-        .assigned_run_id
-        .ok_or("Queued entry missing assigned Run")?);
-    wait(&successor, m::RunStatus::Completed).await?;
-    let interrupted = ws
-        .threads()
-        .create(
-            &m::NewThread::new(agent.clone(), text_payload("[interruptible] Interrupt me.")),
-            ThreadsCreateOptions {
-                idempotency_key: key(),
-            },
-        )
+    let items = outcome.run.items().get(Default::default()).await?;
+    ensure(
+        items.data.run.id == outcome.run.id && items.data.complete,
+        "Finite Interaction committed Run Items",
+    )?;
+
+    let source = bound(
+        &client,
+        ws.threads()
+            .create(
+                &m::NewThread::new(
+                    agent.clone(),
+                    text_payload("[interruptible] Wait for queued inbox."),
+                ),
+                ThreadsCreateOptions {
+                    idempotency_key: key(),
+                    ..Default::default()
+                },
+            )
+            .await?,
+    )?;
+    let mut queued = client
+        .agent(&agent)
+        .send(&source.thread.id, "Queued.", key())
         .await?;
-    accepted(&interrupted)?.interrupt().await?;
+    ensure(
+        queued.receipt.data.run.is_none(),
+        "Queued entry should have no Run",
+    )?;
+    wait(accepted(&source)?, m::RunStatus::Completed).await?;
+    let queued_result = tokio::time::timeout(Duration::from_secs(100), queued.result()).await??;
+    ensure(
+        *queued_result.status() == m::RunStatus::Completed,
+        "Queued interaction did not observe its exact incorporating Run",
+    )?;
+    let consumed = client
+        .entry(&queued.thread.id, &queued.receipt.data.entry.id)
+        .resource()
+        .get(Default::default())
+        .await?;
+    ensure(
+        consumed.data.status == m::EntryStatus::Consumed
+            && consumed.data.assigned_run_id.as_deref() == Some(queued_result.run.id.as_str()),
+        "Queued entry incorporation",
+    )?;
+    let interrupted = bound(
+        &client,
+        ws.threads()
+            .create(
+                &m::NewThread::new(agent.clone(), text_payload("[interruptible] Interrupt me.")),
+                ThreadsCreateOptions {
+                    idempotency_key: key(),
+                    ..Default::default()
+                },
+            )
+            .await?,
+    )?;
+    accepted(&interrupted)?
+        .resource()
+        .interrupt(Default::default())
+        .await?;
     wait(accepted(&interrupted)?, m::RunStatus::Cancelled).await?;
     let fork = m::Fork::new(agent.clone(), text_payload("Fork response."));
-    let forked = accepted(&submitted)?
-        .fork(
-            &fork,
-            RunForkOptions {
-                idempotency_key: key(),
-            },
-        )
-        .await?;
+    let forked = bound(
+        &client,
+        accepted(&submitted)?
+            .resource()
+            .fork(
+                &fork,
+                RunForkOptions {
+                    idempotency_key: key(),
+                    ..Default::default()
+                },
+            )
+            .await?,
+    )?;
     ensure(
         forked.receipt.data.thread.id != submitted.receipt.data.thread.id,
         "Fork Thread identity",
     )?;
     wait(accepted(&forked)?, m::RunStatus::Completed).await?;
-    let waiting = ws
-        .threads()
-        .create(
-            &m::NewThread::new(
-                required("A13N_CLIENT_TOOL_AGENT")?,
-                text_payload("[client] Review local SDK scenario."),
-            ),
-            ThreadsCreateOptions {
-                idempotency_key: key(),
-            },
-        )
+    let mut waiting = client
+        .agent(required("A13N_CLIENT_TOOL_AGENT")?)
+        .start("[client] Review local SDK scenario.", key())
         .await?;
-    wait(accepted(&waiting)?, m::RunStatus::Waiting).await?;
-    let pending = accepted(&waiting)?
-        .get()
-        .await?
-        .data
-        .pending
+    let waiting_outcome = waiting.result().await?;
+    ensure(
+        *waiting_outcome.status() == m::RunStatus::Waiting,
+        "Waiting client-tool outcome",
+    )?;
+    let pending = waiting_outcome
+        .pending()
         .ok_or("Waiting Run has no pending client action")?;
     ensure(pending.items.len() == 1, "Pending client-tool action count")?;
     let answer = m::Answer::Complete(Box::new(m::Complete::new(
@@ -372,28 +416,19 @@ async fn live() -> Result<()> {
     )));
     let mut request = m::ResumeRequest::new();
     request.answers = Some(vec![answer]);
-    let resumed = accepted(&waiting)?
-        .resume(
-            &request,
-            RunResumeOptions {
-                idempotency_key: key(),
-            },
-        )
-        .await?;
+    let resumed = waiting_outcome.run.resume(&request, key()).await?;
     ensure(
-        resumed.data.id != accepted(&waiting)?.get().await?.data.id,
+        resumed.receipt.data.id != waiting_outcome.run.id,
         "Resume should create successor Run",
     )?;
-    wait(&ws.runs().at(resumed.data.id), m::RunStatus::Completed).await?;
+    wait(&resumed.run, m::RunStatus::Completed).await?;
     println!(
         "Verified HTTPS: queued entry, interrupt, fork, client-tool resume and exact Run waits"
     );
 
     let models = resources
-        .organizations()
-        .at(required("A13N_ORGANIZATION")?)
         .models()
-        .list(OrganizationModelsListOptions::default())
+        .list(ModelsListOptions::default())
         .await?;
     ensure(
         !models.data.items.is_empty(),
@@ -419,17 +454,23 @@ async fn live() -> Result<()> {
             },
             UploadsCreateOptions {
                 idempotency_key: key(),
+                ..Default::default()
             },
         )
         .await?;
     let asset = ws
         .assets()
-        .create(&m::AssetCreate::new(
-            "Rust acceptance".into(),
-            uploaded.data.upload_id,
-        ))
+        .create(
+            &m::AssetCreate::new("Rust acceptance".into(), uploaded.data.upload_id),
+            AssetsCreateOptions::default(),
+        )
         .await?;
-    let mut download = ws.assets().at(asset.data.id).content().get().await?;
+    let mut download = ws
+        .assets()
+        .at(asset.data.id)
+        .content()
+        .get(Default::default())
+        .await?;
     let mut received = Vec::new();
     while let Some(bytes) = download.chunk().await? {
         received.extend_from_slice(&bytes);
@@ -439,7 +480,7 @@ async fn live() -> Result<()> {
         received == content && received.len() == 300_000,
         "300KB binary upload/download",
     )?;
-    let old = ws.agents().at(&agent).get().await?;
+    let old = ws.agents().at(&agent).get(Default::default()).await?;
     let etag = old.etag().ok_or("Agent ETag absent")?.to_owned();
     let changed = ws
         .agents()
@@ -451,6 +492,7 @@ async fn live() -> Result<()> {
             },
             AgentUpdateOptions {
                 if_match: etag.clone(),
+                ..Default::default()
             },
         )
         .await?;
@@ -463,7 +505,10 @@ async fn live() -> Result<()> {
         .at(&agent)
         .update(
             &m::AgentUpdate::default(),
-            AgentUpdateOptions { if_match: etag },
+            AgentUpdateOptions {
+                if_match: etag,
+                ..Default::default()
+            },
         )
         .await
         .expect_err("Stale ETag must fail");
@@ -487,10 +532,16 @@ async fn live() -> Result<()> {
             AgentAvatarReplaceOptions {
                 if_match: changed.etag().ok_or("Updated Agent ETag missing")?.into(),
                 content_type: "image/png".into(),
+                ..Default::default()
             },
         )
         .await?;
-    let mut avatar = ws.agents().at(&agent).avatar().get().await?;
+    let mut avatar = ws
+        .agents()
+        .at(&agent)
+        .avatar()
+        .get(Default::default())
+        .await?;
     let mut image = Vec::new();
     while let Some(chunk) = avatar.chunk().await? {
         image.extend_from_slice(&chunk);
@@ -505,36 +556,41 @@ async fn live() -> Result<()> {
     Ok(())
 }
 
-async fn memory(client: &Client, ws: &WorkspaceResource<'_>, agent: &str) -> Result<()> {
+async fn memory(client: &Client, ws: &ServiceResources<'_>, agent: &str) -> Result<()> {
     let provider = client
         .resources()
-        .organizations()
-        .at(required("A13N_ORGANIZATION")?)
         .memory_providers()
         .at(required("A13N_MEMORY_PROVIDER")?);
     ensure(
-        provider.test().await?.data.status == m::provider_test::Status::Succeeded,
+        provider.test(Default::default()).await?.data.status == m::provider_test::Status::Succeeded,
         "Memory provider probe",
     )?;
     let memory = ws
         .memories()
-        .create(&m::MemoryCreate::new(key(), "Rust acceptance".into()))
+        .create(
+            &m::MemoryCreate::new("Rust acceptance".into()),
+            Default::default(),
+        )
         .await?;
     let mem = ws.memories().at(memory.data.id.clone());
     let path = "projects/计划 #1%.md";
     let file = mem.files().at(path);
     let original = mem
         .files()
-        .create(&m::MemoryFileCreate::new("first".into(), path.into()))
+        .create(
+            &m::MemoryFileCreate::new("first".into(), path.into()),
+            Default::default(),
+        )
         .await?;
     ensure(
-        file.get().await?.data.content == "first",
+        file.get(Default::default()).await?.data.content == "first",
         "Encoded Unicode file path",
     )?;
     file.replace(
         &m::MemoryFileReplace::new("second".into()),
         MemoryFileReplaceOptions {
             if_match: original.etag().ok_or("File ETag missing")?.into(),
+            ..Default::default()
         },
     )
     .await?;
@@ -559,7 +615,13 @@ async fn memory(client: &Client, ws: &WorkspaceResource<'_>, agent: &str) -> Res
         .ok_or("Update revision missing")?
         .seq;
     file.delete(MemoryFileDeleteOptions {
-        if_match: file.get().await?.etag().ok_or("File ETag absent")?.into(),
+        if_match: file
+            .get(Default::default())
+            .await?
+            .etag()
+            .ok_or("File ETag absent")?
+            .into(),
+        ..Default::default()
     })
     .await?;
     let restore = mem
@@ -579,7 +641,14 @@ async fn memory(client: &Client, ws: &WorkspaceResource<'_>, agent: &str) -> Res
         .revisions()
         .at(original_seq)
         .restore(MemoryRevisionRestoreOptions {
-            if_match: Some(file.get().await?.etag().ok_or("File ETag absent")?.into()),
+            if_match: Some(
+                file.get(Default::default())
+                    .await?
+                    .etag()
+                    .ok_or("File ETag absent")?
+                    .into(),
+            ),
+            ..Default::default()
         })
         .await?;
     ensure(restore.data.file.is_none(), "Restore explicit null file")?;
@@ -593,19 +662,23 @@ async fn memory(client: &Client, ws: &WorkspaceResource<'_>, agent: &str) -> Res
         memory.data.id,
         "notes".into(),
     )]);
-    let submitted = ws
-        .threads()
-        .create(
-            &request,
-            ThreadsCreateOptions {
-                idempotency_key: key(),
-            },
-        )
-        .await?;
+    let submitted = bound(
+        client,
+        ws.threads()
+            .create(
+                &request,
+                ThreadsCreateOptions {
+                    idempotency_key: key(),
+                    ..Default::default()
+                },
+            )
+            .await?,
+    )?;
     wait(accepted(&submitted)?, m::RunStatus::Completed).await?;
-    let mount = submitted.thread.get().await?;
+    let mount = submitted.thread.resource().get(Default::default()).await?;
     submitted
         .thread
+        .resource()
         .memories()
         .at("notes")
         .update(
@@ -615,33 +688,53 @@ async fn memory(client: &Client, ws: &WorkspaceResource<'_>, agent: &str) -> Res
             },
             ThreadMemoryUpdateOptions {
                 if_match: mount.etag().ok_or("Thread ETag missing")?.into(),
+                ..Default::default()
             },
         )
         .await?;
     ensure(
-        accepted(&submitted)?.get().await?.data.memory_mounts[0].access == m::MemoryAccess::Read,
+        accepted(&submitted)?
+            .resource()
+            .get(RunGetOptions::default())
+            .await?
+            .data
+            .memory_mounts[0]
+            .access
+            == m::MemoryAccess::Read,
         "Frozen Run mounts",
     )?;
-    let mut record_memory = m::MemoryCreate::new(key(), "Rust records".into());
+    let mut record_memory = m::MemoryCreate::new("Rust records".into());
     record_memory.r#type = Some("mem0_oss".into());
     record_memory.provider_id = Some(Some(required("A13N_MEMORY_PROVIDER")?));
-    let record_memory = ws.memories().create(&record_memory).await?;
+    let record_memory = ws
+        .memories()
+        .create(&record_memory, Default::default())
+        .await?;
     let records = ws.memories().at(record_memory.data.id).records();
     let record = records
-        .create(&m::MemoryRecordText::new("prefers tea".into()))
+        .create(
+            &m::MemoryRecordText::new("prefers tea".into()),
+            Default::default(),
+        )
         .await?;
     records
         .at(&record.data.id)
-        .replace(&m::MemoryRecordText::new("prefers coffee".into()))
+        .replace(
+            &m::MemoryRecordText::new("prefers coffee".into()),
+            Default::default(),
+        )
         .await?;
     let mut search = m::MemoryRecordSearch::new("coffee".into());
     search.limit = Some(3);
-    let found = records.search(&search).await?;
+    let found = records.search(&search, Default::default()).await?;
     ensure(
         found.data.items.len() == 1 && found.data.items[0].id == record.data.id,
         "Record search",
     )?;
-    records.at(&record.data.id).delete().await?;
+    records
+        .at(&record.data.id)
+        .delete(Default::default())
+        .await?;
     ensure(
         records
             .list(MemoryRecordsListOptions::default())
