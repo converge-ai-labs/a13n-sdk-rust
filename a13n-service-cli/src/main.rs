@@ -346,7 +346,23 @@ mod tests {
     use super::*;
     #[test]
     fn generated_commands_have_offline_schema_for_every_operation() {
-        assert_eq!(generated::OPERATIONS.len(), 225);
+        let contract: serde_json::Value =
+            serde_json::from_str(include_str!("../../contract/openapi.json")).unwrap();
+        let count: usize = contract["paths"]
+            .as_object()
+            .unwrap()
+            .values()
+            .map(|path| {
+                path.as_object()
+                    .unwrap()
+                    .keys()
+                    .filter(|method| {
+                        matches!(method.as_str(), "get" | "post" | "put" | "patch" | "delete")
+                    })
+                    .count()
+            })
+            .sum();
+        assert_eq!(generated::OPERATIONS.len(), count);
         for (name, _, _) in generated::OPERATIONS {
             let arguments = std::iter::once("a13n-service-cli".to_owned())
                 .chain(name.split_whitespace().map(str::to_owned))

@@ -293,6 +293,73 @@ async fn live() -> Result<()> {
     wait(accepted(&submitted)?, m::RunStatus::Completed).await?;
     println!("Verified HTTPS: typed submission, 201/200 replay, canonical binding, Run readback");
 
+    let imported_history: Vec<std::collections::HashMap<String, serde_json::Value>> =
+        serde_json::from_value(serde_json::json!([
+            {"kind": "request", "parts": [{"part_kind": "user-prompt", "content": "Earlier question."}]},
+            {"kind": "response", "parts": [{"part_kind": "text", "content": "Earlier answer."}]}
+        ]))?;
+    let mut imported_request =
+        m::NewThread::new(agent.clone(), text_payload("Continue after import."));
+    imported_request.message_history = Some(imported_history.clone());
+    let imported = key_ws
+        .threads()
+        .create(
+            &imported_request,
+            ThreadsCreateOptions {
+                idempotency_key: key(),
+                ..Default::default()
+            },
+        )
+        .await?;
+    ensure(
+        imported.data.thread.message_history == imported_history,
+        "Low-level imported history receipt",
+    )?;
+    let imported_readback = key_ws
+        .threads()
+        .at(&imported.data.thread.id)
+        .get(Default::default())
+        .await?;
+    ensure(
+        imported_readback.data.message_history == imported_history,
+        "Low-level imported history readback",
+    )?;
+    let mut high = client
+        .agent(&agent)
+        .start_with(
+            "Summarize the prior conversation.",
+            key(),
+            a13n::StartOptions {
+                message_history: Some(imported_history.clone()),
+                ..Default::default()
+            },
+        )
+        .await?;
+    ensure(
+        high.receipt.data.thread.message_history == imported_history,
+        "High-level imported history receipt",
+    )?;
+    ensure(
+        *high.result().await?.status() == m::RunStatus::Completed,
+        "High-level imported history Run",
+    )?;
+    let mut followup = client
+        .agent(&agent)
+        .send(&high.thread.id, "Follow up without reimport.", key())
+        .await?;
+    ensure(
+        *followup.result().await?.status() == m::RunStatus::Completed,
+        "High-level follow-up Run",
+    )?;
+    let after_followup = high.thread.resource().get(Default::default()).await?;
+    ensure(
+        after_followup.data.message_history == imported_history,
+        "Follow-up must not reseed imported history",
+    )?;
+    println!(
+        "Verified HTTPS: low/high imported model context, Thread readback, no follow-up reseed"
+    );
+
     // The ordinary installed-crate journey uses the finite authored Interaction,
     // including natural stream termination and authoritative exact-Run readback.
     let mut execution = client
@@ -408,14 +475,21 @@ async fn live() -> Result<()> {
     let pending = waiting_outcome
         .pending()
         .ok_or("Waiting Run has no pending client action")?;
-    ensure(pending.items.len() == 1, "Pending client-tool action count")?;
-    let answer = m::Answer::Complete(Box::new(m::Complete::new(
-        m::complete::Action::Complete,
-        Some(serde_json::json!({"decision": "approved"})),
-        pending.items[0].tool_call_id.clone(),
-    )));
-    let mut request = m::ResumeRequest::new();
-    request.answers = Some(vec![answer]);
+    ensure(
+        pending.approvals.is_empty() && pending.calls.len() == 1,
+        "Pending client-tool call count",
+    )?;
+    let mut request = m::Resume::new(Default::default(), Default::default());
+    request.calls.insert(
+        pending.calls[0].tool_call_id.clone(),
+        m::CallResult::Returned(Box::new(m::Returned::new(
+            m::returned::Status::Returned,
+            Some(serde_json::json!({"decision": "approved"})),
+        ))),
+    );
+    request.input = Some(Some(Box::new(text_payload(
+        "Additional context on the reviewed task.",
+    ))));
     let resumed = waiting_outcome.run.resume(&request, key()).await?;
     ensure(
         resumed.receipt.data.id != waiting_outcome.run.id,

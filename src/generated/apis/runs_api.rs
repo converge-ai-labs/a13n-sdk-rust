@@ -238,15 +238,6 @@ pub enum SubmitMessageApiV1ThreadsThreadIdInboxPostError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`summarize_usage_api_v1_usage_get`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum SummarizeUsageApiV1UsageGetError {
-    Status400(models::ErrorEnvelope),
-    DefaultResponse(models::ErrorEnvelope),
-    UnknownValue(serde_json::Value),
-}
-
 /// struct for typed errors of method [`thread_stream_api_v1_threads_thread_id_stream_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -2066,18 +2057,18 @@ pub async fn reorder_inbox_api_v1_threads_thread_id_inbox_order_put(
     }
 }
 
-/// Answer the waiting run's approvals and client tools; the successor run continues from them.
+/// Answer the exact waiting run's approvals, client tools and user questions; the successor continues from them.
 pub async fn resume_run_api_v1_runs_run_id_resume_post(
     configuration: &configuration::Configuration,
     run_id: &str,
     idempotency_key: &str,
-    resume_request: models::ResumeRequest,
+    resume: models::Resume,
     x_workspace_id: Option<&str>,
 ) -> Result<Response<models::RunView>, Error<ResumeRunApiV1RunsRunIdResumePostError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_run_id = run_id;
     let p_header_idempotency_key = idempotency_key;
-    let p_body_resume_request = resume_request;
+    let p_body_resume = resume;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
@@ -2107,7 +2098,7 @@ pub async fn resume_run_api_v1_runs_run_id_resume_post(
         };
         req_builder = req_builder.header("X-CSRF-Token", value);
     };
-    req_builder = req_builder.json(&p_body_resume_request);
+    req_builder = req_builder.json(&p_body_resume);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -2457,96 +2448,6 @@ pub async fn submit_message_api_v1_threads_thread_id_inbox_post(
         let content = resp.text().await?;
         let entity: Option<SubmitMessageApiV1ThreadsThreadIdInboxPostError> =
             serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn summarize_usage_api_v1_usage_get(
-    configuration: &configuration::Configuration,
-    run_id: Option<&str>,
-    thread_id: Option<&str>,
-    session_id: Option<&str>,
-    ingested_after: Option<chrono::DateTime<chrono::FixedOffset>>,
-    ingested_before: Option<chrono::DateTime<chrono::FixedOffset>>,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::UsageSummary>, Error<SummarizeUsageApiV1UsageGetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_query_run_id = run_id;
-    let p_query_thread_id = thread_id;
-    let p_query_session_id = session_id;
-    let p_query_ingested_after = ingested_after;
-    let p_query_ingested_before = ingested_before;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!("{}/api/v1/usage", configuration.base_path);
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref param_value) = p_query_run_id {
-        req_builder = req_builder.query(&[("run_id", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_thread_id {
-        req_builder = req_builder.query(&[("thread_id", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_session_id {
-        req_builder = req_builder.query(&[("session_id", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_ingested_after {
-        req_builder = req_builder.query(&[("ingested_after", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_ingested_before {
-        req_builder = req_builder.query(&[("ingested_before", &param_value.to_string())]);
-    }
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::UsageSummary`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::UsageSummary`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<SummarizeUsageApiV1UsageGetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

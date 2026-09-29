@@ -11,16 +11,34 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// Resume : The normalized batch stored on the successor: one answer per pending call of the exact wait.
+/// Resume : The complete result batch, submitted and stored on the successor without omission defaults.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Resume {
-    #[serde(rename = "answers")]
-    pub answers: Vec<models::NormalizedAnswer>,
+    #[serde(rename = "approvals")]
+    pub approvals: std::collections::HashMap<String, models::ApprovalDecision>,
+
+    #[serde(rename = "calls")]
+    pub calls: std::collections::HashMap<String, models::CallResult>,
+
+    #[serde(
+        rename = "input",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub input: Option<Option<Box<models::MessagePayload>>>,
 }
 
 impl Resume {
-    /// The normalized batch stored on the successor: one answer per pending call of the exact wait.
-    pub fn new(answers: Vec<models::NormalizedAnswer>) -> Resume {
-        Resume { answers }
+    /// The complete result batch, submitted and stored on the successor without omission defaults.
+    pub fn new(
+        approvals: std::collections::HashMap<String, models::ApprovalDecision>,
+        calls: std::collections::HashMap<String, models::CallResult>,
+    ) -> Resume {
+        Resume {
+            approvals,
+            calls,
+            input: None,
+        }
     }
 }

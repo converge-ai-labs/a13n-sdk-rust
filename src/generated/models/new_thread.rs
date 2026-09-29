@@ -38,6 +38,10 @@ pub struct NewThread {
 
     #[serde(rename = "memories", skip_serializing_if = "Option::is_none")]
     pub memories: Option<Vec<models::MemoryMount>>,
+    /// Pydantic AI ModelMessage JSON objects, validated by the Service. Imports completed user text, model text and closed tool-call/JSON-result exchanges; no instructions, media or suspended execution. At most 256 messages and 256 KiB of normalized JSON.
+
+    #[serde(rename = "message_history", skip_serializing_if = "Option::is_none")]
+    pub message_history: Option<Vec<std::collections::HashMap<String, serde_json::Value>>>,
 
     #[serde(rename = "options", skip_serializing_if = "Option::is_none")]
     pub options: Option<Box<models::RunOptionsInput>>,
@@ -64,6 +68,7 @@ impl NewThread {
             kind: None,
             mcp_headers: None,
             memories: None,
+            message_history: None,
             options: None,
             payload: Box::new(payload),
             session_id: None,

@@ -5,7 +5,7 @@ Use `a13n-service-cli` to invoke an Agent on an existing Service from your shell
 ## Follow a task
 
 1. [Connect and configure profiles](connection-and-profiles.md) — choose URL, API-key environment variable and trusted CA without storing token bytes in JSON. An API key already selects its workspace.
-2. [Start, continue and wait for an Agent](agent-workflows.md) — observe one submission through its consumed Entry and exact Run, or handle a queued message and explicit client-tool resume.
+2. [Start, continue and wait for an Agent](agent-workflows.md) — import native model history on Thread creation, observe one submission through its consumed Entry, and resume an exact waiting Run with complete results and optional input.
 3. [Watch events and read committed Items](events-and-readback.md) — stream Thread-wide JSONL, persist only applied cursors and read authoritative Run Items after a gap or reset.
 4. [Transfer files and update safely](files-and-cas.md) — publish binary uploads as Assets, edit text Memory files and use current ETags for conditional updates.
 5. [Script without hiding failures](scripting-and-errors.md) — inspect command schemas offline, parse result metadata, distinguish nonzero exit categories and reconcile uncertain writes.

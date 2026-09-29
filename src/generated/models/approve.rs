@@ -15,17 +15,11 @@ use serde::{Deserialize, Serialize};
 pub struct Approve {
     #[serde(rename = "action")]
     pub action: Action,
-
-    #[serde(rename = "tool_call_id")]
-    pub tool_call_id: String,
 }
 
 impl Approve {
-    pub fn new(action: Action, tool_call_id: String) -> Approve {
-        Approve {
-            action,
-            tool_call_id,
-        }
+    pub fn new(action: Action) -> Approve {
+        Approve { action }
     }
 }
 ///

@@ -12,13 +12,16 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ResumeRequest {
-    #[serde(rename = "answers", skip_serializing_if = "Option::is_none")]
-    pub answers: Option<Vec<models::Answer>>,
+pub struct AgentUsagePage {
+    #[serde(rename = "items")]
+    pub items: Vec<models::AgentUsage>,
+
+    #[serde(rename = "next_cursor", deserialize_with = "Option::deserialize")]
+    pub next_cursor: Option<String>,
 }
 
-impl ResumeRequest {
-    pub fn new() -> ResumeRequest {
-        ResumeRequest { answers: None }
+impl AgentUsagePage {
+    pub fn new(items: Vec<models::AgentUsage>, next_cursor: Option<String>) -> AgentUsagePage {
+        AgentUsagePage { items, next_cursor }
     }
 }

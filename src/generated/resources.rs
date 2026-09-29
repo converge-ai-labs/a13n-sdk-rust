@@ -5486,7 +5486,7 @@ impl<'a> RunResource<'a> {
     /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
     pub async fn resume(
         &self,
-        body: &models::ResumeRequest,
+        body: &models::Resume,
         options: RunResumeOptions,
     ) -> Result<Response<models::RunView>, Error> {
         if options.idempotency_key.is_empty() {
@@ -8147,6 +8147,18 @@ pub struct UsageGetOptions {
     pub x_workspace_id: Option<String>,
 }
 impl<'a> UsageResource<'a> {
+    /// Access `agents` locally, sharing the client and explicit scope.
+    pub fn agents(&self) -> UsageAgentsResource<'a> {
+        UsageAgentsResource(self.0.clone())
+    }
+    /// Access `models` locally, sharing the client and explicit scope.
+    pub fn models(&self) -> UsageModelsResource<'a> {
+        UsageModelsResource(self.0.clone())
+    }
+    /// Access `overview` locally, sharing the client and explicit scope.
+    pub fn overview(&self) -> UsageOverviewResource<'a> {
+        UsageOverviewResource(self.0.clone())
+    }
     /// Summarize Usage.
     ///
     /// `GET /api/v1/usage`.
@@ -8180,6 +8192,205 @@ impl<'a> UsageResource<'a> {
         }
         if let Some(value) = &options.ingested_before {
             request = query(request, "ingested_before", value)?;
+        }
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct UsageAgentsResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`UsageAgentsResource::list`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct UsageAgentsListOptions {
+    /// Query parameter `start`. Required; an empty string is rejected locally.
+    pub start: chrono::DateTime<chrono::FixedOffset>,
+    /// Query parameter `end`. Required; an empty string is rejected locally.
+    pub end: chrono::DateTime<chrono::FixedOffset>,
+    /// Query parameter `limit`. `None` omits this parameter.
+    pub limit: Option<i32>,
+    /// Query parameter `cursor`. `None` omits this parameter.
+    pub cursor: Option<String>,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Page source owned by [`UsageAgentsResource::pages`].
+pub struct UsageAgentsPages<'a> {
+    resource: UsageAgentsResource<'a>,
+    options: UsageAgentsListOptions,
+}
+impl PageSource for UsageAgentsPages<'_> {
+    type Page = models::AgentUsagePage;
+    async fn fetch(&self, cursor: Option<String>) -> Result<Response<Self::Page>, Error> {
+        let mut options = self.options.clone();
+        options.cursor = cursor;
+        self.resource.list(options).await
+    }
+    fn cursor(page: &Self::Page) -> Option<String> {
+        page.next_cursor.clone()
+    }
+}
+impl<'a> UsageAgentsResource<'a> {
+    /// Usage Agents.
+    ///
+    /// `GET /api/v1/usage/agents`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn list(
+        &self,
+        options: UsageAgentsListOptions,
+    ) -> Result<Response<models::AgentUsagePage>, Error> {
+        let mut request =
+            self.0
+                .client
+                .request(reqwest::Method::GET, "/api/v1/usage/agents", &self.0.ids)?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = query(request, "start", &options.start)?;
+        request = query(request, "end", &options.end)?;
+        if let Some(value) = &options.limit {
+            request = query(request, "limit", value)?;
+        }
+        if let Some(value) = &options.cursor {
+            request = query(request, "cursor", value)?;
+        }
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Iterate cursor pages lazily with owned options. Each page retains status and headers; no prefetch occurs. Drop the pager to stop reads.
+    pub fn pages(&self, options: UsageAgentsListOptions) -> Pages<UsageAgentsPages<'a>> {
+        let cursor = options.cursor.clone();
+        Pages::new(
+            UsageAgentsPages {
+                resource: self.clone(),
+                options,
+            },
+            cursor,
+        )
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct UsageModelsResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`UsageModelsResource::list`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct UsageModelsListOptions {
+    /// Query parameter `start`. Required; an empty string is rejected locally.
+    pub start: chrono::DateTime<chrono::FixedOffset>,
+    /// Query parameter `end`. Required; an empty string is rejected locally.
+    pub end: chrono::DateTime<chrono::FixedOffset>,
+    /// Query parameter `limit`. `None` omits this parameter.
+    pub limit: Option<i32>,
+    /// Query parameter `cursor`. `None` omits this parameter.
+    pub cursor: Option<String>,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Page source owned by [`UsageModelsResource::pages`].
+pub struct UsageModelsPages<'a> {
+    resource: UsageModelsResource<'a>,
+    options: UsageModelsListOptions,
+}
+impl PageSource for UsageModelsPages<'_> {
+    type Page = models::ModelUsagePage;
+    async fn fetch(&self, cursor: Option<String>) -> Result<Response<Self::Page>, Error> {
+        let mut options = self.options.clone();
+        options.cursor = cursor;
+        self.resource.list(options).await
+    }
+    fn cursor(page: &Self::Page) -> Option<String> {
+        page.next_cursor.clone()
+    }
+}
+impl<'a> UsageModelsResource<'a> {
+    /// Usage Models.
+    ///
+    /// `GET /api/v1/usage/models`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn list(
+        &self,
+        options: UsageModelsListOptions,
+    ) -> Result<Response<models::ModelUsagePage>, Error> {
+        let mut request =
+            self.0
+                .client
+                .request(reqwest::Method::GET, "/api/v1/usage/models", &self.0.ids)?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = query(request, "start", &options.start)?;
+        request = query(request, "end", &options.end)?;
+        if let Some(value) = &options.limit {
+            request = query(request, "limit", value)?;
+        }
+        if let Some(value) = &options.cursor {
+            request = query(request, "cursor", value)?;
+        }
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Iterate cursor pages lazily with owned options. Each page retains status and headers; no prefetch occurs. Drop the pager to stop reads.
+    pub fn pages(&self, options: UsageModelsListOptions) -> Pages<UsageModelsPages<'a>> {
+        let cursor = options.cursor.clone();
+        Pages::new(
+            UsageModelsPages {
+                resource: self.clone(),
+                options,
+            },
+            cursor,
+        )
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct UsageOverviewResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`UsageOverviewResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct UsageOverviewGetOptions {
+    /// Query parameter `start`. Required; an empty string is rejected locally.
+    pub start: chrono::DateTime<chrono::FixedOffset>,
+    /// Query parameter `end`. Required; an empty string is rejected locally.
+    pub end: chrono::DateTime<chrono::FixedOffset>,
+    /// Query parameter `timezone`. `None` omits this parameter.
+    pub timezone: Option<String>,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> UsageOverviewResource<'a> {
+    /// Usage Overview.
+    ///
+    /// `GET /api/v1/usage/overview`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: UsageOverviewGetOptions,
+    ) -> Result<Response<models::UsageOverview>, Error> {
+        let mut request =
+            self.0
+                .client
+                .request(reqwest::Method::GET, "/api/v1/usage/overview", &self.0.ids)?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = query(request, "start", &options.start)?;
+        request = query(request, "end", &options.end)?;
+        if let Some(value) = &options.timezone {
+            request = query(request, "timezone", value)?;
         }
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
@@ -10913,6 +11124,14 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
     ),
     ("POST", "/api/v1/uploads", "UploadsResource", "create"),
     ("GET", "/api/v1/usage", "UsageResource", "get"),
+    ("GET", "/api/v1/usage/agents", "UsageAgentsResource", "list"),
+    ("GET", "/api/v1/usage/models", "UsageModelsResource", "list"),
+    (
+        "GET",
+        "/api/v1/usage/overview",
+        "UsageOverviewResource",
+        "get",
+    ),
     ("GET", "/api/v1/users/me", "UsersMeResource", "get"),
     ("PATCH", "/api/v1/users/me", "UsersMeResource", "update"),
     (
