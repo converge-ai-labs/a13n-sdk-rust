@@ -36,6 +36,10 @@ pub struct ThreadView {
 
     #[serde(rename = "mcp_headers")]
     pub mcp_headers: std::collections::HashMap<String, std::collections::HashMap<String, String>>,
+    /// Pydantic AI ModelMessage JSON objects, validated by the Service. Imports completed user text, model text and closed tool-call/JSON-result exchanges; no instructions, media or suspended execution. At most 256 messages and 256 KiB of normalized JSON.
+
+    #[serde(rename = "message_history")]
+    pub message_history: Vec<std::collections::HashMap<String, serde_json::Value>>,
 
     #[serde(rename = "origin")]
     pub origin: Origin,
@@ -78,6 +82,7 @@ impl ThreadView {
         labels: std::collections::HashMap<String, String>,
         last_run_id: Option<String>,
         mcp_headers: std::collections::HashMap<String, std::collections::HashMap<String, String>>,
+        message_history: Vec<std::collections::HashMap<String, serde_json::Value>>,
         origin: Origin,
         origin_run_id: Option<String>,
         origin_thread_id: Option<String>,
@@ -97,6 +102,7 @@ impl ThreadView {
             labels,
             last_run_id,
             mcp_headers,
+            message_history,
             origin,
             origin_run_id,
             origin_thread_id,

@@ -19,6 +19,14 @@ pub struct Resume {
 
     #[serde(rename = "calls")]
     pub calls: std::collections::HashMap<String, models::CallResult>,
+
+    #[serde(
+        rename = "input",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub input: Option<Option<Box<models::MessagePayload>>>,
 }
 
 impl Resume {
@@ -27,6 +35,10 @@ impl Resume {
         approvals: std::collections::HashMap<String, models::ApprovalDecision>,
         calls: std::collections::HashMap<String, models::CallResult>,
     ) -> Resume {
-        Resume { approvals, calls }
+        Resume {
+            approvals,
+            calls,
+            input: None,
+        }
     }
 }
