@@ -36,6 +36,9 @@ pub struct ModelConfigInput {
     #[serde(rename = "model_name")]
     pub model_name: String,
 
+    #[serde(rename = "settings", skip_serializing_if = "Option::is_none")]
+    pub settings: Option<std::collections::HashMap<String, serde_json::Value>>,
+
     #[serde(
         rename = "temperature",
         default,
@@ -62,6 +65,7 @@ impl ModelConfigInput {
             max_tokens: None,
             model_api,
             model_name,
+            settings: None,
             temperature: None,
             top_p: None,
         }
