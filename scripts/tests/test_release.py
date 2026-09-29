@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -33,6 +34,14 @@ from release_version import (  # noqa: E402
 )
 
 COMPONENT = COMPONENTS[0]
+
+
+def test_cli_release_installs_targets_for_the_selected_toolchain() -> None:
+    toolchain = tomllib.loads((ROOT / "rust-toolchain.toml").read_text())["toolchain"]["channel"]
+    workflow = (ROOT / ".github/workflows/release-a13n-service-cli.yml").read_text()
+    selected = [line.strip() for line in workflow.splitlines() if "uses: dtolnay/rust-toolchain@" in line]
+    assert selected == [f"uses: dtolnay/rust-toolchain@{toolchain}"]
+    assert "targets: ${{ matrix.target }}" in workflow
 
 
 def git(root: Path, *arguments: str) -> str:
