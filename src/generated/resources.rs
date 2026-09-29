@@ -1764,7 +1764,7 @@ impl<'a> ConnectorProvidersResource<'a> {
     pub fn at(&self, id: impl Into<String>) -> ConnectorProviderResource<'a> {
         ConnectorProviderResource(self.0.select(id.into()))
     }
-    /// List Providers.
+    /// List connector providers.
     ///
     /// `GET /api/v1/connector-providers`.
     ///
@@ -1807,7 +1807,7 @@ impl<'a> ConnectorProvidersResource<'a> {
             cursor,
         )
     }
-    /// Create Provider.
+    /// Create connector provider.
     ///
     /// `POST /api/v1/connector-providers`.
     ///
@@ -1864,7 +1864,7 @@ impl<'a> ConnectorProviderResource<'a> {
     pub fn apps(&self) -> ConnectorProviderAppsResource<'a> {
         ConnectorProviderAppsResource(self.0.clone())
     }
-    /// Get Provider.
+    /// Get connector provider.
     ///
     /// `GET /api/v1/connector-providers/{provider_id}`.
     ///
@@ -1887,7 +1887,7 @@ impl<'a> ConnectorProviderResource<'a> {
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
-    /// Update Provider.
+    /// Update connector provider.
     ///
     /// `PATCH /api/v1/connector-providers/{provider_id}`.
     ///
@@ -1920,7 +1920,7 @@ impl<'a> ConnectorProviderResource<'a> {
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
-    /// Test Provider.
+    /// Test connector provider.
     ///
     /// `POST /api/v1/connector-providers/{provider_id}/test`.
     ///
@@ -2148,7 +2148,7 @@ impl<'a> EnvironmentProvidersResource<'a> {
     pub fn at(&self, id: impl Into<String>) -> EnvironmentProviderResource<'a> {
         EnvironmentProviderResource(self.0.select(id.into()))
     }
-    /// List Providers.
+    /// List environment providers.
     ///
     /// `GET /api/v1/environment-providers`.
     ///
@@ -2191,7 +2191,7 @@ impl<'a> EnvironmentProvidersResource<'a> {
             cursor,
         )
     }
-    /// Create Provider.
+    /// Create environment provider.
     ///
     /// `POST /api/v1/environment-providers`.
     ///
@@ -2244,7 +2244,7 @@ pub struct EnvironmentProviderTestOptions {
     pub x_workspace_id: Option<String>,
 }
 impl<'a> EnvironmentProviderResource<'a> {
-    /// Get Provider.
+    /// Get environment provider.
     ///
     /// `GET /api/v1/environment-providers/{provider_id}`.
     ///
@@ -2267,7 +2267,7 @@ impl<'a> EnvironmentProviderResource<'a> {
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
-    /// Update Provider.
+    /// Update environment provider.
     ///
     /// `PATCH /api/v1/environment-providers/{provider_id}`.
     ///
@@ -2300,7 +2300,7 @@ impl<'a> EnvironmentProviderResource<'a> {
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
-    /// Test Provider.
+    /// Test environment provider.
     ///
     /// `POST /api/v1/environment-providers/{provider_id}/test`.
     ///
@@ -3909,7 +3909,7 @@ impl<'a> MemoryProvidersResource<'a> {
     pub fn at(&self, id: impl Into<String>) -> MemoryProviderResource<'a> {
         MemoryProviderResource(self.0.select(id.into()))
     }
-    /// List Providers.
+    /// List memory providers.
     ///
     /// `GET /api/v1/memory-providers`.
     ///
@@ -3949,7 +3949,7 @@ impl<'a> MemoryProvidersResource<'a> {
             cursor,
         )
     }
-    /// Create Provider.
+    /// Create memory provider.
     ///
     /// `POST /api/v1/memory-providers`.
     ///
@@ -4002,7 +4002,7 @@ pub struct MemoryProviderTestOptions {
     pub x_workspace_id: Option<String>,
 }
 impl<'a> MemoryProviderResource<'a> {
-    /// Get Provider.
+    /// Get memory provider.
     ///
     /// `GET /api/v1/memory-providers/{provider_id}`.
     ///
@@ -4025,7 +4025,7 @@ impl<'a> MemoryProviderResource<'a> {
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
-    /// Update Provider.
+    /// Update memory provider.
     ///
     /// `PATCH /api/v1/memory-providers/{provider_id}`.
     ///
@@ -4058,7 +4058,7 @@ impl<'a> MemoryProviderResource<'a> {
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
-    /// Test Provider.
+    /// Test memory provider.
     ///
     /// `POST /api/v1/memory-providers/{provider_id}/test`.
     ///
@@ -4144,7 +4144,7 @@ impl<'a> ModelProvidersResource<'a> {
     pub fn at(&self, id: impl Into<String>) -> ModelProviderResource<'a> {
         ModelProviderResource(self.0.select(id.into()))
     }
-    /// List Providers.
+    /// List model providers.
     ///
     /// `GET /api/v1/model-providers`.
     ///
@@ -4183,7 +4183,7 @@ impl<'a> ModelProvidersResource<'a> {
             cursor,
         )
     }
-    /// Create Provider.
+    /// Create model provider.
     ///
     /// `POST /api/v1/model-providers`.
     ///
@@ -4236,7 +4236,7 @@ pub struct ModelProviderTestOptions {
     pub x_workspace_id: Option<String>,
 }
 impl<'a> ModelProviderResource<'a> {
-    /// Get Provider.
+    /// Get model provider.
     ///
     /// `GET /api/v1/model-providers/{provider_id}`.
     ///
@@ -4259,7 +4259,7 @@ impl<'a> ModelProviderResource<'a> {
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
-    /// Update Provider.
+    /// Update model provider.
     ///
     /// `PATCH /api/v1/model-providers/{provider_id}`.
     ///
@@ -4292,7 +4292,7 @@ impl<'a> ModelProviderResource<'a> {
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
-    /// Test Provider.
+    /// Test model provider.
     ///
     /// `POST /api/v1/model-providers/{provider_id}/test`.
     ///
@@ -8974,7 +8974,7 @@ impl<'a> WebProvidersResource<'a> {
     pub fn at(&self, id: impl Into<String>) -> WebProviderResource<'a> {
         WebProviderResource(self.0.select(id.into()))
     }
-    /// List Providers.
+    /// List web providers.
     ///
     /// `GET /api/v1/web-providers`.
     ///
@@ -9013,7 +9013,7 @@ impl<'a> WebProvidersResource<'a> {
             cursor,
         )
     }
-    /// Create Provider.
+    /// Create web provider.
     ///
     /// `POST /api/v1/web-providers`.
     ///
@@ -9065,7 +9065,7 @@ pub struct WebProviderTestOptions {
     pub x_workspace_id: Option<String>,
 }
 impl<'a> WebProviderResource<'a> {
-    /// Get Provider.
+    /// Get web provider.
     ///
     /// `GET /api/v1/web-providers/{provider_id}`.
     ///
@@ -9088,7 +9088,7 @@ impl<'a> WebProviderResource<'a> {
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
-    /// Update Provider.
+    /// Update web provider.
     ///
     /// `PATCH /api/v1/web-providers/{provider_id}`.
     ///
@@ -9121,7 +9121,7 @@ impl<'a> WebProviderResource<'a> {
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
-    /// Test Provider.
+    /// Test web provider.
     ///
     /// `POST /api/v1/web-providers/{provider_id}/test`.
     ///
