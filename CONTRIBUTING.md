@@ -4,7 +4,7 @@ Write code, documentation, commit messages, Issues and pull requests in English.
 
 ## Development
 
-Use Rust 1.97.0 with rustfmt and Clippy to match generation and CI, plus Python 3.13, uv and Make. `rust-toolchain.toml` selects that toolchain automatically for local Cargo/rustfmt commands. Update it, `ci.yml`, and `sync-service-contract.yml` together; the manifest's `rust-version` remains the consumer minimum. `make install` resolves locked SDK, CLI and tooling dependencies. The SDK and CLI have separate Cargo manifests, lockfiles and workspaces; the CLI consumes the SDK through the path dependency `..`.
+Use Rust 1.97.0 with rustfmt and Clippy to match generation and CI, plus Python 3.13, uv and Make. `rust-toolchain.toml` selects that toolchain automatically for local Cargo/rustfmt commands. Update it, `ci.yml`, `sync-service-contract.yml`, and `release-a13n-service-cli.yml` together; the manifest's `rust-version` remains the consumer minimum. `make install` resolves locked SDK, CLI and tooling dependencies. The SDK and CLI have separate Cargo manifests, lockfiles and workspaces; the CLI consumes the SDK through the path dependency `..`.
 
 `make format` applies formatting. `make check` verifies both SDK and CLI Clippy plus tooling types/style; `make test` runs SDK, generator and workspace-boundary tests; `make package` verifies the SDK crate. `make accept-installed` packages the SDK and runs an independent consumer against the extracted `.crate`, not the source checkout. `make cli-check-all` checks, tests and builds the CLI. `make check-all` includes packaging through the installed-consumer gate. These commands require no Service or other SDK checkout.
 
