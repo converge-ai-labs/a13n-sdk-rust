@@ -7771,6 +7771,10 @@ pub struct ThreadStreamResource<'a>(pub(crate) Binding<'a>);
 /// Query and header options for [`ThreadStreamResource::get`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
 pub struct ThreadStreamGetOptions {
+    /// Query parameter `run`. `None` omits this parameter.
+    pub run: Option<String>,
+    /// Query parameter `position`. `None` omits this parameter.
+    pub position: Option<String>,
     /// Header parameter `Last-Event-ID`. `None` omits this parameter.
     pub last_event_id: Option<String>,
     /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
@@ -7796,6 +7800,12 @@ impl<'a> ThreadStreamResource<'a> {
             .0
             .client
             .scoped_request(request, options.x_workspace_id.as_deref());
+        if let Some(value) = &options.run {
+            request = query(request, "run", value)?;
+        }
+        if let Some(value) = &options.position {
+            request = query(request, "position", value)?;
+        }
         if let Some(value) = &options.last_event_id {
             request = request.header("Last-Event-ID", value);
         }

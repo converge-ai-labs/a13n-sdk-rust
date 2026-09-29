@@ -2172,7 +2172,7 @@ fn group_230() -> Command {
     node
 }
 fn operation_172() -> Command {
-    Command::new("get").about("Thread Stream").long_about("Live output of the thread's runs over SSE: `delta` and `boundary` frames with `changed`, `reset`, `gap`. (GET /api/v1/threads/{thread_id}/stream). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads stream get --thread THREAD_ID --output FILE").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("last_event_id").long("last-event-id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Thread Stream").long_about("Live output of the thread's runs over SSE: `delta` and `boundary` frames with `changed`, `reset`, `gap`. (GET /api/v1/threads/{thread_id}/stream). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads stream get --thread THREAD_ID --output FILE").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("run").long("run")).arg(Arg::new("position").long("position")).arg(Arg::new("last_event_id").long("last-event-id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_232() -> Command {
     let mut node = Command::new("toolsets")
@@ -5228,6 +5228,8 @@ pub async fn dispatch(
         }
         172 => {
             let options = ThreadStreamGetOptions {
+                run: input::optional(matches, "run")?,
+                position: input::optional(matches, "position")?,
                 last_event_id: input::optional(matches, "last_event_id")?,
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };

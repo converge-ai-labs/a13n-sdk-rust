@@ -2461,11 +2461,15 @@ pub async fn submit_message_api_v1_threads_thread_id_inbox_post(
 pub async fn thread_stream_api_v1_threads_thread_id_stream_get(
     configuration: &configuration::Configuration,
     thread_id: &str,
+    run: Option<&str>,
+    position: Option<&str>,
     last_event_id: Option<&str>,
     x_workspace_id: Option<&str>,
 ) -> Result<reqwest::Response, Error<ThreadStreamApiV1ThreadsThreadIdStreamGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
+    let p_query_run = run;
+    let p_query_position = position;
     let p_header_last_event_id = last_event_id;
     let p_header_x_workspace_id = x_workspace_id;
 
@@ -2476,6 +2480,12 @@ pub async fn thread_stream_api_v1_threads_thread_id_stream_get(
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
+    if let Some(ref param_value) = p_query_run {
+        req_builder = req_builder.query(&[("run", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_position {
+        req_builder = req_builder.query(&[("position", &param_value.to_string())]);
+    }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
