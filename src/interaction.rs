@@ -91,16 +91,17 @@ impl<'a> Run<'a> {
         }
         Ok(snapshot)
     }
-    /// Submit answers with an explicit key; the returned receipt binds a distinct successor Run.
+    /// Submit the complete typed result batch and optional ordinary message input together.
+    /// The explicit key identifies this one immutable intent; the receipt binds a distinct successor.
     pub async fn resume(
         &self,
-        answers: &models::ResumeRequest,
+        request: &models::Resume,
         idempotency_key: impl Into<String>,
     ) -> Result<Resumed<'a>, Error> {
         let receipt = self
             .resource
             .resume(
-                answers,
+                request,
                 RunResumeOptions {
                     idempotency_key: idempotency_key.into(),
                     ..Default::default()

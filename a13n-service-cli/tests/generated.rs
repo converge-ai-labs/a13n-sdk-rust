@@ -440,3 +440,120 @@ fn unknown_json_field_and_structured_error_do_not_leak_body() {
     assert_eq!(error["error"]["request_id"], "req-safe");
     server.join().unwrap();
 }
+
+#[test]
+fn generated_schemas_and_offline_plans_accept_import_and_atomic_resume() {
+    let create: serde_json::Value =
+        serde_json::from_slice(&binary(&["threads", "create", "--schema"]).stdout).unwrap();
+    assert_eq!(
+        create["components"]["schemas"]["NewThread"]["properties"]["message_history"]["$ref"],
+        "#/components/schemas/MessageHistory"
+    );
+    let resume: serde_json::Value =
+        serde_json::from_slice(&binary(&["runs", "resume", "--schema"]).stdout).unwrap();
+    assert_eq!(resume["$ref"], "#/components/schemas/Resume");
+    assert!(
+        resume["components"]["schemas"]["Resume"]["properties"]
+            .get("input")
+            .is_some()
+    );
+    for (arguments, path) in [
+        (
+            vec![
+                "threads",
+                "create",
+                "--idempotency-key",
+                "create-key",
+                "--body",
+                r#"{"agent_id":"a","payload":{"content":[{"type":"text","text":"Now"}]},"message_history":[{"kind":"request","parts":[{"part_kind":"user-prompt","content":"Before"}]}]}"#,
+            ],
+            "/api/v1/threads",
+        ),
+        (
+            vec![
+                "runs",
+                "resume",
+                "r",
+                "--idempotency-key",
+                "resume-key",
+                "--body",
+                r#"{"approvals":{},"calls":{"c":{"status":"returned","value":{"ok":true}}},"input":{"content":[{"type":"asset","asset_id":"asset_1"}]}}"#,
+            ],
+            "/api/v1/runs/r/resume",
+        ),
+    ] {
+        let output = binary(
+            &["--base-url", "https://service.invalid", "--dry-run"]
+                .into_iter()
+                .chain(arguments)
+                .collect::<Vec<_>>(),
+        );
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let plan: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(plan["path"], path);
+        assert_eq!(plan["body"], "[REDACTED]");
+        assert_eq!(plan["server_validated"], false);
+    }
+}
+
+#[test]
+fn generated_dispatch_preserves_import_objects_and_resume_input_on_the_wire() {
+    for (commands, expected_path, field, expected) in [
+        (
+            vec![
+                "threads",
+                "create",
+                "--idempotency-key",
+                "create-key",
+                "--body",
+                r#"{"agent_id":"a","payload":{"content":[{"type":"text","text":"Now"}]},"message_history":[{"kind":"request","parts":[{"part_kind":"user-prompt","content":"Before"}],"metadata":{"origin":"external"}}]}"#,
+            ],
+            "/api/v1/threads",
+            "message_history",
+            "external",
+        ),
+        (
+            vec![
+                "runs",
+                "resume",
+                "r",
+                "--idempotency-key",
+                "resume-key",
+                "--body",
+                r#"{"approvals":{},"calls":{"c":{"status":"returned","value":{"ok":true}}},"input":{"content":[{"type":"asset","asset_id":"asset_1"}]}}"#,
+            ],
+            "/api/v1/runs/r/resume",
+            "input",
+            "asset_1",
+        ),
+    ] {
+        // The local origin rejects the request after capture; no live Service or model is involved.
+        let (base, origin) = serve(vec![(
+            400,
+            vec![("Content-Type", "application/json")],
+            br#"{"error":{"code":"invalid_argument","message":"local fixture"}}"#.to_vec(),
+        )]);
+        let output = binary(
+            &["--base-url", &base]
+                .into_iter()
+                .chain(commands)
+                .collect::<Vec<_>>(),
+        );
+        assert!(!output.status.success());
+        let received = origin.join().unwrap();
+        assert_eq!(received.len(), 1);
+        assert!(received[0].starts_with(&format!("POST {expected_path} ")));
+        let body: serde_json::Value =
+            serde_json::from_str(received[0].split_once("\r\n\r\n").unwrap().1).unwrap();
+        if field == "message_history" {
+            assert_eq!(body[field][0]["metadata"]["origin"], expected);
+        } else {
+            assert_eq!(body[field]["content"][0]["asset_id"], expected);
+            assert_eq!(body["calls"]["c"]["value"]["ok"], true);
+        }
+    }
+}

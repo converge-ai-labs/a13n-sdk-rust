@@ -288,15 +288,25 @@ def main() -> None:
         assert received_image.read_bytes() == png
         print("Copied CLI verified HTTPS: 300KB multipart/binary and explicit PNG MIME", flush=True)
 
-        request = {"agent_id": agent, "payload": payload("[slow] [long] CLI installed-binary acceptance.")}
+        history = [
+            {"kind": "request", "parts": [{"part_kind": "user-prompt", "content": "Imported question."}]},
+            {"kind": "response", "parts": [{"part_kind": "text", "content": "Imported answer."}]},
+        ]
+        request = {
+            "agent_id": agent,
+            "payload": payload("[slow] [long] CLI installed-binary acceptance."),
+            "message_history": history,
+        }
         request_file = directory / "thread.json"
         request_file.write_text(json.dumps(request), encoding="utf-8")
         request_key = str(uuid.uuid4())
         first = call("threads", "create", "--body", f"@{request_file}", "--idempotency-key", request_key, status=201)
         replay = call("threads", "create", "--body", f"@{request_file}", "--idempotency-key", request_key, status=200)
         assert first["data"]["thread"]["id"] == replay["data"]["thread"]["id"]
+        assert first["data"]["thread"]["message_history"] == history
         run_id = first["data"]["run"]["id"]
         thread_id = first["data"]["thread"]["id"]
+        assert call("threads", "get", thread_id)["data"]["message_history"] == history
         if os.name != "nt":
             events_file = directory / "events.jsonl"
             errors_file = directory / "events.stderr"
@@ -338,7 +348,9 @@ def main() -> None:
             print("Copied CLI verified direct HTTPS: flushed SSE JSONL and local-only Ctrl-C", flush=True)
         waited = call("runs", "wait", run_id)
         assert waited["data"]["id"] == run_id and waited["data"]["status"] == "completed"
-        print("Copied CLI verified HTTPS: request file input, 201/200 idempotent replay and exact Run wait", flush=True)
+        print(
+            "Copied CLI verified HTTPS: native imported history/readback, 201/200 replay and exact Run wait", flush=True
+        )
         ordinary = json.loads(
             execute(
                 "--include-meta",
@@ -426,8 +438,8 @@ def main() -> None:
         )["data"]["run"]["id"]
         waiting = call("runs", "wait", waiting_id)["data"]
         assert waiting["status"] == "waiting", "Run wait must return a waiting Run without pretending success"
-        pending = waiting["pending"]["items"]
-        assert len(pending) == 1
+        pending = waiting["pending"]
+        assert not pending["approvals"] and len(pending["calls"]) == 1
         resumed = call(
             "runs",
             "resume",
@@ -435,20 +447,18 @@ def main() -> None:
             "--idempotency-key",
             str(uuid.uuid4()),
             body={
-                "answers": [
-                    {
-                        "action": "complete",
-                        "tool_call_id": pending[0]["tool_call_id"],
-                        "result": {"decision": "approved"},
-                    }
-                ]
+                "approvals": {},
+                "calls": {
+                    pending["calls"][0]["tool_call_id"]: {"status": "returned", "value": {"decision": "approved"}}
+                },
+                "input": payload("Additional context on the reviewed CLI task."),
             },
         )["data"]
         assert resumed["id"] != waiting_id, "Resume must expose the successor Run identity"
         assert call("runs", "wait", waiting_id)["data"]["id"] == waiting_id, "Wait silently followed a successor"
         assert call("runs", "wait", resumed["id"])["data"]["status"] == "completed"
         print(
-            "Copied CLI verified HTTPS: queued Entry wait, explicit interrupt, fork and successor-aware resume",
+            "Copied CLI verified HTTPS: queued Entry wait, interrupt, fork and atomic result-plus-input resume",
             flush=True,
         )
 

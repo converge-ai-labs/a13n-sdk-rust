@@ -383,6 +383,44 @@ async fn streaming_download_and_owned_uploads_preserve_mime_and_shutdown() {
     assert!(matches!(response.chunk().await, Err(Error::Closed)));
 }
 #[tokio::test]
+async fn low_level_thread_create_roundtrips_imported_native_message_objects() {
+    let history = json!([
+        {"kind":"request", "parts":[{"part_kind":"user-prompt", "content":"First"}],
+         "metadata":{"imported_from":"other-app"}},
+        {"kind":"response", "parts":[{"part_kind":"text", "content":"Second"}]}
+    ]);
+    let mut receipt = sample("Submitted");
+    receipt["thread"]["message_history"] = history.clone();
+    let mut server = server(move |_| Reply::json(201, receipt.clone())).await;
+    let client = client(&server);
+    let mut body = models::NewThread::new("agent".into(), text_payload("Continue"));
+    body.message_history = Some(serde_json::from_value(history.clone()).unwrap());
+    let response = client
+        .resources()
+        .threads()
+        .create(
+            &body,
+            ThreadsCreateOptions {
+                idempotency_key: "import-one".into(),
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status.as_u16(), 201);
+    assert_eq!(
+        serde_json::to_value(response.data.thread.message_history).unwrap(),
+        history
+    );
+    let sent = server.requests.recv().await.unwrap();
+    assert_eq!(sent.json()["message_history"], history);
+    assert_eq!(
+        sent.json()["message_history"][0]["metadata"]["imported_from"],
+        "other-app"
+    );
+}
+
+#[tokio::test]
 async fn submitted_uses_canonical_scope_and_queued_entry_has_no_run() {
     let mut receipt = sample("Submitted");
     receipt["thread"]["workspace_id"] = json!("ws_canonical");

@@ -1,12 +1,12 @@
 # Continue a waiting Run
 
-A Run can pause for a client tool, a human approval or a question. Inspect its **exact pending set** before taking action. `resume` accepts structured answers for client tools and approvals; a `user_input` question is answered with an ordinary message, not a structured answer.
+A waiting Run exposes two categories: `pending.approvals` for explicit authorization decisions and `pending.calls` for returned or failed tool results. Client tools, built-in questions and other human-operated calls are all **calls**. A normal message submitted with `agent.send` remains queued behind a waiting head; it cannot answer a question or close the wait. Resume the **exact waiting Run** with complete ID-keyed maps, not an array of loosely matched answers.
 
-Start with the sibling application from the [quick start](../README.md#get-started-from-source), and add `serde_json = "1"` under `[dependencies]`. Set `A13N_SERVICE_URL`, `A13N_API_TOKEN` and an existing `A13N_WAITING_RUN_ID`. For the demonstration client tool, configure an Agent tool named `lookup_inventory` with a string `sku` argument and make an `inventory.json` file in the application's directory, for example `printf '{"A-100":3}\n' > inventory.json`. Replace this file lookup with your real tool implementation in production. Provide a fresh `A13N_RESUME_KEY` for a structured answer, or `A13N_MESSAGE_KEY` for a question reply. An authorized person must review the printed request and type the approval decision interactively.
+Start with the [source-installed application](../README.md#get-started-from-source); add `serde_json = "1"` to `[dependencies]`. Supply `A13N_SERVICE_URL`, `A13N_API_TOKEN`, `A13N_WAITING_RUN_ID`, a fresh `A13N_RESUME_KEY` and `A13N_RESUME_INPUT` (ordinary text to accompany the result batch). If the request is an application tool named `lookup_inventory` with a string `sku`, provide actual inventory data, for example `printf '{"A-100":3}\n' > inventory.json`. For `ask_user_question`, supply `A13N_QUESTION_RESPONSE_JSON` in the Harness `UserQuestionAnswers` shape, such as `{"answers":{"Choose one":"A"}}` for the **actual** question text and allowed choice; the Service validates it against that pending call's arguments. Optional `A13N_ASSET_ID` must name an already-published Asset the successor may read. A reviewer must inspect a pending approval before typing its decision.
 
 ```rust
-use a13n::{Client, Secret, generated::models};
-use std::{env, error::Error, io};
+use a13n::{Client, Secret, generated::models, text_payload};
+use std::{collections::HashMap, env, error::Error, io};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -18,77 +18,72 @@ async fn main() -> Result<(), Box<dyn Error>> {
         return Ok(());
     }
     let pending = waiting.pending().ok_or("Waiting Run has no pending actions")?;
-    if pending.items.len() != 1 {
-        return Err("This example handles exactly one pending action; inspect the whole batch".into());
+    if pending.approvals.len() + pending.calls.len() != 1 {
+        return Err("Inspect every pending ID; this example handles exactly one".into());
     }
-    let item = &pending.items[0];
-    println!("Requested {:?}: {} {:#?}", item.kind, item.tool_name, item.arguments);
-
-    if item.kind == models::PendingKind::UserInput {
-        println!("Ask the person the question shown above, then type their reply:");
-        let mut reply = String::new();
-        io::stdin().read_line(&mut reply)?;
-        if reply.trim().is_empty() { return Err("An empty reply is not a decision".into()); }
-        let mut interaction = client.agent(&waiting.snapshot.data.agent_id)
-            .send(&waiting.snapshot.data.thread_id, reply.trim(), env::var("A13N_MESSAGE_KEY")?)
-            .await?;
-        println!("Question reply: Entry {}", interaction.receipt.data.entry.id);
-        println!("Successor status: {:?}", interaction.result().await?.status());
-        return Ok(());
-    }
-
-    let answer = if item.kind == models::PendingKind::ClientTool {
-        if item.tool_name != "lookup_inventory" {
-            return Err("Unknown client tool; do not invent a result".into());
-        }
-        let sku = item.arguments.get("sku").and_then(serde_json::Value::as_str)
-            .ok_or("lookup_inventory needs a string sku")?;
-        let inventory: serde_json::Value =
-            serde_json::from_str(&std::fs::read_to_string("inventory.json")?)?;
-        let quantity = inventory.get(sku).and_then(serde_json::Value::as_u64)
-            .ok_or("SKU not present in inventory data")?;
-        let result = serde_json::json!({"sku": sku, "quantity": quantity});
-        models::Answer::Complete(Box::new(models::Complete::new(
-            models::complete::Action::Complete, Some(result), item.tool_call_id.clone(),
-        )))
-    } else {
-        // The only other pending kind is approval. Never approve on behalf of a person.
-        println!("Reviewer: type approve or reject after checking the request:");
+    let mut approvals = HashMap::new();
+    let mut calls = HashMap::new();
+    if let Some(item) = pending.approvals.first() {
+        println!("Review approval {}: {} {:#?}", item.tool_call_id, item.tool_name, item.arguments);
+        println!("Reviewer: type approve or deny:");
         let mut decision = String::new();
         io::stdin().read_line(&mut decision)?;
-        match decision.trim() {
-            "approve" => models::Answer::Approve(Box::new(models::Approve::new(
-                models::approve::Action::Approve, item.tool_call_id.clone(),
+        let answer = match decision.trim() {
+            "approve" => models::ApprovalDecision::Approve(Box::new(models::Approve::new(
+                models::approve::Action::Approve,
             ))),
-            "reject" => {
-                println!("Reason for rejection:");
+            "deny" => {
+                println!("Reason for denial:");
                 let mut reason = String::new();
                 io::stdin().read_line(&mut reason)?;
-                if reason.trim().is_empty() { return Err("A rejection reason is required here".into()); }
-                let mut rejection = models::Reject::new(
-                    models::reject::Action::Reject, item.tool_call_id.clone(),
-                );
-                rejection.reason = Some(Some(reason.trim().into()));
-                models::Answer::Reject(Box::new(rejection))
+                if reason.trim().is_empty() { return Err("Denial needs a reason here".into()); }
+                let mut denial = models::Deny::new(models::deny::Action::Deny);
+                denial.reason = Some(Some(reason.trim().into()));
+                models::ApprovalDecision::Deny(Box::new(denial))
             }
-            _ => return Err("No explicit approval decision; Run remains waiting".into()),
-        }
-    };
-    let request = models::ResumeRequest { answers: Some(vec![answer]) };
+            _ => return Err("No explicit decision; Run remains waiting".into()),
+        };
+        approvals.insert(item.tool_call_id.clone(), answer);
+    } else if let Some(item) = pending.calls.first() {
+        println!("Review call {}: {} {:#?}", item.tool_call_id, item.tool_name, item.arguments);
+        let value = match item.tool_name.as_str() {
+            "lookup_inventory" => {
+                let sku = item.arguments.get("sku").and_then(serde_json::Value::as_str)
+                    .ok_or("lookup_inventory needs a string sku")?;
+                let inventory: serde_json::Value =
+                    serde_json::from_str(&std::fs::read_to_string("inventory.json")?)?;
+                let quantity = inventory.get(sku).and_then(serde_json::Value::as_u64)
+                    .ok_or("SKU absent in inventory; do not invent a result")?;
+                serde_json::json!({"sku": sku, "quantity": quantity})
+            }
+            "ask_user_question" => serde_json::from_str(&env::var("A13N_QUESTION_RESPONSE_JSON")?)?,
+            _ => return Err("Unknown call: run and verify its real operation first".into()),
+        };
+        calls.insert(item.tool_call_id.clone(), models::CallResult::Returned(Box::new(
+            models::Returned::new(models::returned::Status::Returned, Some(value)),
+        )));
+    }
+    let mut request = models::Resume::new(approvals, calls);
+    let mut input = text_payload(env::var("A13N_RESUME_INPUT")?);
+    if let Ok(asset_id) = env::var("A13N_ASSET_ID") {
+        input.content.push(models::Part::Asset(Box::new(models::AssetPart::new(
+            asset_id, models::asset_part::Type::Asset,
+        ))));
+    }
+    request.input = Some(Some(Box::new(input)));
     let successor = waiting.run.resume(&request, env::var("A13N_RESUME_KEY")?).await?;
     println!("Successor Run: {} (HTTP {})", successor.run.id, successor.receipt.status);
-    let result = successor.run.wait().await?;
-    println!("Successor status: {:?}", result.status());
+    println!("Successor status: {:?}", successor.run.wait().await?.status());
     Ok(())
 }
 ```
 
-Check with `cargo +1.97.0 check`, then run with an actual waiting Run and valid credentials. The program prints the pending kind, name and arguments, then the exact successor status. The inventory example refuses unknown tools, invalid arguments and missing SKUs rather than fabricating output. In your application, validate the tool's full argument contract and execute the **requested** operation before returning its result. For an approval, obtain an actual person's decision; for a question-only wait, the ordinary message closes the question with no-response and starts its successor. A resume is not a completion guarantee: inspect its distinct successor Run and committed Items. Waiting on the original still returns `waiting`.
+`cargo +1.97.0 check` compiles the example without a Service. A real run prints the exact pending ID/name/arguments and the **distinct** successor's status. `request.input` is ordinary text (and optionally an Asset reference), submitted in the **same immutable resume intent** as the answer maps. It cannot replace a missing call result, approve an action, or answer a question by itself. The Service validates referenced Assets against inherited configuration and frozen mounts; the SDK passes their IDs through. Wait on the successor and read its committed Items before treating it as completed.
 
-**Multiple actions:** this deliberately stops rather than answering an arbitrary first item. A resume normalizes the **entire** pending set: an omitted approval becomes a rejection ("No decision was given"), while an omitted client result or question becomes `no_response`. A `user_input` item never accepts a structured answer; ordinary messages cannot approve, reject or complete an approval or client tool. Build an explicit answer batch only for the actions your application or reviewers really handled.
+For a tool failure or an intentionally skipped question, put `models::CallResult::Failed(Box::new(models::Failed::new(message, models::failed::Status::Failed)))` under that pending call ID rather than inventing a successful result. For a batch of several pending IDs, inspect **both** arrays and fill both maps exactly; missing, unknown or category-mismatched IDs reject the entire request without a successor. Do not silently pick the first item or send an ordinary message to bypass a wait. A built-in question's returned value uses `{"answers": {question_text: selection_or_selections}, "response": "optional free text"}`; let the Service check the specific question/choice contract.
 
 ## If your message is still queued
 
-`agent.start(...)` and `agent.send(thread_id, ...)` return an `Interaction` immediately with `interaction.receipt` and `interaction.thread`. The receipt's `run` may be `null` while the Entry waits behind an approval. `interaction.result().await?` waits for **consumption**, not provisional assignment: an assigned Entry can return to pending. If you only have IDs after restarting, inspect `client.entry(thread_id, entry_id).resource().get(Default::default()).await?`; `Entry::wait(interval)` stops at consumed, failed or withdrawn. Only the consumed Entry's `assigned_run_id` names the incorporating Run. `Submitted::bind(&client, raw_receipt)?.wait()` offers the same consumed-Entry/exact-Run behavior for advanced raw submissions. Failed/withdrawn Entries yield `Error::Submission` with an Entry snapshot rather than an unrelated Run result.
+`agent.start(...)` and `agent.send(thread_id, ...)` return an `Interaction` with `interaction.receipt` and `interaction.thread`. The receipt's `run` may be `null` while its Entry waits behind another Run, including a waiting one. `interaction.result().await?` waits for **consumption**, not provisional assignment: an assigned Entry can return to pending. After restart, inspect `client.entry(thread_id, entry_id).resource().get(Default::default()).await?`; `Entry::wait(interval)` stops at consumed, failed or withdrawn. Only the consumed Entry's `assigned_run_id` names its incorporating Run. `Submitted::bind(&client, raw_receipt)?.wait()` has the same consumed-Entry/exact-Run behavior. Failed/withdrawn Entries yield `Error::Submission` with their snapshot rather than an unrelated Run result.
 
-The default Interaction observation budget is 300 seconds total across Entry and Run polling (500 ms interval), including in-flight reads. It does not renew when queueing ends. `Entry::wait(interval)` itself has no implicit deadline: wrap it in your own timeout when needed. A timeout or dropped future ends **local** observation; it does not approve, interrupt, resubmit or undo remote work. Save the original request key and receipt IDs for [readback and recovery](errors-and-recovery.md).
+The default Interaction observation budget is 300 seconds across Entry and Run polling (500 ms interval), including in-flight reads. `Entry::wait(interval)` has no implicit deadline: wrap it in your own timeout when needed. A timeout or dropped future ends **local** observation; it does not approve, interrupt, resubmit or undo remote work. Preserve the request key and receipt IDs for [readback and recovery](errors-and-recovery.md).

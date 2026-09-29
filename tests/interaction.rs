@@ -1,5 +1,5 @@
 mod common;
-use a13n::{Error, generated::models, streaming::ThreadFrame};
+use a13n::{Error, StartOptions, generated::models, streaming::ThreadFrame};
 use common::{Reply, client, sample, server};
 use serde_json::{Value, json};
 use std::{
@@ -80,6 +80,84 @@ async fn result_only_waits_for_consumed_entry_not_provisional_assignment() {
 }
 
 #[tokio::test]
+async fn start_imports_native_history_once_and_thread_readback_preserves_json() {
+    let history = json!([
+        {"kind":"request", "parts":[{"part_kind":"user-prompt", "content":"Earlier question"}],
+         "metadata":{"external":"value", "count": 3}},
+        {"kind":"response", "parts":[{"part_kind":"text", "content":"Earlier answer"}],
+         "usage":{"input_tokens": 5}}
+    ]);
+    let mut accepted = receipt();
+    accepted["thread"]["message_history"] = history.clone();
+    let mut thread = sample("ThreadView");
+    thread["id"] = json!("t");
+    thread["message_history"] = history.clone();
+    let mut fixture = server(move |request| {
+        if request.method == "POST" {
+            Reply::json(201, accepted.clone())
+        } else {
+            assert!(request.target.ends_with("/threads/t"));
+            Reply::json(200, thread.clone())
+        }
+    })
+    .await;
+    let sdk = client(&fixture);
+    let imported = serde_json::from_value(history.clone()).unwrap();
+    let interaction = sdk
+        .agent("agent_id")
+        .start_with(
+            "New question",
+            "import-once",
+            StartOptions {
+                message_history: Some(imported),
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        serde_json::to_value(&interaction.receipt.data.thread.message_history).unwrap(),
+        history
+    );
+    let readback = interaction
+        .thread
+        .resource()
+        .get(Default::default())
+        .await
+        .unwrap();
+    assert_eq!(
+        serde_json::to_value(&readback.data.message_history).unwrap(),
+        history
+    );
+    sdk.agent("agent_id")
+        .send("t", "Follow up", "new-message")
+        .await
+        .unwrap();
+    let first = fixture.requests.recv().await.unwrap();
+    assert_eq!(first.json()["message_history"], history);
+    assert_eq!(
+        first.json()["payload"]["content"][0]["text"],
+        "New question"
+    );
+    assert!(
+        !fixture
+            .requests
+            .recv()
+            .await
+            .unwrap()
+            .target
+            .contains("/inbox")
+    );
+    let followup = fixture.requests.recv().await.unwrap();
+    assert!(followup.target.ends_with("/threads/t/inbox"));
+    assert!(followup.json().get("message_history").is_none());
+    assert_eq!(
+        followup.json()["payload"]["content"][0]["text"],
+        "Follow up"
+    );
+}
+
+#[tokio::test]
 async fn send_rejects_receipt_for_a_different_thread() {
     let fixture = server(|_| Reply::json(200, receipt())).await;
     let sdk = client(&fixture);
@@ -102,10 +180,29 @@ async fn authored_run_resume_binds_distinct_successor_and_interrupts_only_explic
     .await;
     let sdk = client(&fixture);
     let run = sdk.run("r");
-    let resumed = run
-        .resume(&models::ResumeRequest::new(), "resume-once")
-        .await
-        .unwrap();
+    let mut request = models::Resume::new(Default::default(), Default::default());
+    request.approvals.insert(
+        "approval_1".into(),
+        models::ApprovalDecision::Approve(Box::new(models::Approve::new(
+            models::approve::Action::Approve,
+        ))),
+    );
+    request.calls.insert(
+        "call_1".into(),
+        models::CallResult::Returned(Box::new(models::Returned::new(
+            models::returned::Status::Returned,
+            Some(json!({"answers": {"Which?": "A"}})),
+        ))),
+    );
+    let mut payload = a13n::text_payload("Additional evidence");
+    payload
+        .content
+        .push(models::Part::Asset(Box::new(models::AssetPart::new(
+            "asset_1".into(),
+            models::asset_part::Type::Asset,
+        ))));
+    request.input = Some(Some(Box::new(payload)));
+    let resumed = run.resume(&request, "resume-once").await.unwrap();
     assert_eq!(resumed.run.id, "successor");
     assert_eq!(resumed.receipt.status.as_u16(), 201);
     assert!(matches!(
@@ -115,6 +212,19 @@ async fn authored_run_resume_binds_distinct_successor_and_interrupts_only_explic
     let request = fixture.requests.recv().await.unwrap();
     assert_eq!(request.method, "POST");
     assert!(request.headers.contains("idempotency-key: resume-once"));
+    assert_eq!(
+        request.json()["approvals"]["approval_1"]["action"],
+        "approve"
+    );
+    assert_eq!(
+        request.json()["calls"]["call_1"]["value"]["answers"]["Which?"],
+        "A"
+    );
+    assert_eq!(
+        request.json()["input"]["content"][0]["text"],
+        "Additional evidence"
+    );
+    assert_eq!(request.json()["input"]["content"][1]["asset_id"], "asset_1");
     let request = fixture.requests.recv().await.unwrap();
     assert!(request.target.ends_with("/runs/successor/interrupt"));
 }

@@ -32,6 +32,9 @@ pub struct StartOptions {
     pub environments: Option<Vec<models::MountCreate>>,
     pub mcp_headers: Option<serde_json::Value>,
     pub memories: Option<Vec<models::MemoryMount>>,
+    /// Completed native Pydantic AI ModelMessage JSON objects for an initial import.
+    /// The Service validates this history; it is not repeated by `send` or `resume`.
+    pub message_history: Option<Vec<std::collections::HashMap<String, serde_json::Value>>>,
     pub options: Option<Box<models::RunOptionsInput>>,
     pub session_id: Option<Option<String>>,
 }
@@ -89,6 +92,7 @@ impl<'a> Agent<'a> {
         body.environments = options.environments;
         body.mcp_headers = options.mcp_headers;
         body.memories = options.memories;
+        body.message_history = options.message_history;
         body.options = options.options;
         body.session_id = options.session_id;
         let submitted = self
