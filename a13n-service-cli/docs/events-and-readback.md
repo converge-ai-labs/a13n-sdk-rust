@@ -45,3 +45,36 @@ jq '{complete: .complete, dropped: .dropped, items: .items}' items.json
 ```
 
 A `runs wait` exit of zero may still mean waiting, failed or cancelled; check `.data.status` before treating Items as a completed answer. `complete` says whether the display is sealed, and `dropped` counts earliest Items lost to its display limit; even committed Items need not be a full historical transcript. If the Entry was failed or withdrawn, stop and inspect it instead of reading an unrelated Run. Saving only transient text risks missing committed output. `runs interrupt "$RUN"` is a separate **explicit remote mutation**, unlike Ctrl-C or a local timeout.
+
+## Resume from applied display coverage
+
+For advanced snapshot-plus-tail consumers, read Items for the exact known Run, apply that display, then open a **new** reader with its paired `run.id` and `position`. In the example above `RUN` is bound from the consumed Entry; to observe a still-running tail, you can read Items before `runs wait` once a checkpoint exists:
+
+```bash
+set -eu
+a13n-service-cli runs result "$RUN" > baseline.json
+jq '.items' baseline.json # Apply the committed display in your own consumer.
+BASELINE_RUN=$(jq -er '.run.id' baseline.json)
+POSITION=$(jq -er '.position' baseline.json) # Null: no checkpoint yet; wait before claiming coverage.
+HINT=$(jq -r '.resume_after // empty' baseline.json)
+if [ -n "$HINT" ]; then
+  a13n-service-cli threads events --thread "$THREAD" --run "$BASELINE_RUN" \
+    --position "$POSITION" --after "$HINT" --max-reconnects 3 > covered-events.jsonl
+else
+  a13n-service-cli threads events --thread "$THREAD" --run "$BASELINE_RUN" \
+    --position "$POSITION" --max-reconnects 3 > covered-events.jsonl
+fi
+# Press Ctrl-C when done; a sealed Run does not make this Thread-wide command finite.
+```
+
+`--run` and `--position` must be supplied together. Position is canonical nonnegative `attempt-sequence`, not a Redis cursor. Service validates that the Run belongs to the authorized Thread and that the attempt is not newer than its latest attempt. Optional `resume_after`/`--after` is a confirmed Redis seek hint covered by the snapshot. A missing, trimmed or incompatible hint falls back to retained replay filtered by coverage; hint absence alone does not imply a gap. Omitting both coverage flags retains cursor-only semantics, including a gap for a removed cursor.
+
+Delta/boundary JSONL includes the **prior** `applied_cursor` and `applied_position`: this line itself is only acknowledged after stdout flush, at the next read. Coverage advances only for contiguous deltas of the claimed Run and attempt. A gap, reset, attempt change or missing sequence freezes it until an explicit snapshot-based reopen; other Runs cannot advance it. Covered boundaries remain visible. A `gap` line has nullable `position` identifying the output readback must cover, not a resume hint. Do not apply later tail output across that hole or assume any snapshot read healed it. If readback is still behind the target, wait for a newer boundary or terminal progress before checking again. Unknown/null targets require reassessing continuity. Reset requires discarding superseded provisional output and reading Items for the new attempt. This command reports frames; it does not reconstruct or heal display state automatically.
+
+For custom decoders, the generated raw command exposes the same queries and header, and saves SSE bytes instead of JSONL:
+
+```bash
+a13n-service-cli threads stream get --thread "$THREAD" --run "$BASELINE_RUN" \
+  --position "$POSITION" --output raw-events.sse
+# Add --last-event-id "$HINT" only when a hint exists; Ctrl-C remains local cancellation.
+```

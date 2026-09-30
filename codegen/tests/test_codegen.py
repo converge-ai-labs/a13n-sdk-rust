@@ -172,3 +172,28 @@ def test_streaming_and_multimime_adapters_preserve_pinned_contract() -> None:
     assert streaming == 1
     assert multimime == 4
     assert document == json.loads((ROOT / "contract/openapi.json").read_text())
+
+
+def test_snapshot_stream_and_native_settings_contract_is_preserved() -> None:
+    document = json.loads((ROOT / "contract/openapi.json").read_text())
+    schemas = document["components"]["schemas"]
+    adapted = codegen.prepare(document)["components"]["schemas"]
+    for name in ["ModelConfig-Input", "ModelConfig-Output"]:
+        assert schemas[name]["properties"]["settings"]["additionalProperties"] == {
+            "$ref": "#/components/schemas/JsonValue"
+        }
+        assert adapted[name]["properties"]["settings"] == schemas[name]["properties"]["settings"]
+    assert "resume_after" not in schemas["RunItems"]["required"]
+    assert schemas["RunItems"]["properties"]["resume_after"]["anyOf"] == [{"type": "string"}, {"type": "null"}]
+    for name in ["AssetCreate", "UploadSource"]:
+        assert schemas[name]["properties"]["upload_id"]["pattern"] == r"^upl_[a-f0-9]{32}$"
+    for name in ["BootstrapInput", "PasswordChange", "PasswordResetConfirm"]:
+        assert schemas[name]["properties"]["password"]["minLength"] == 8
+    for name in ["LoginInput", "InvitationAccept"]:
+        assert schemas[name]["properties"]["password"]["minLength"] == 1
+    parameters = document["paths"]["/api/v1/threads/{thread_id}/stream"]["get"]["parameters"]
+    assert [(p["name"], p["in"]) for p in parameters if p["name"] in {"run", "position", "Last-Event-ID"}] == [
+        ("run", "query"),
+        ("position", "query"),
+        ("Last-Event-ID", "header"),
+    ]

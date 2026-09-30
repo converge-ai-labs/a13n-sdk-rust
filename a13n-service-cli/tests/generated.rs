@@ -557,3 +557,184 @@ fn generated_dispatch_preserves_import_objects_and_resume_input_on_the_wire() {
         }
     }
 }
+
+#[test]
+fn thread_events_require_paired_coverage_and_preserve_gap_targets_and_reconnect_baseline() {
+    for argument in ["--run", "--position"] {
+        let output = binary(&["threads", "events", "--thread", "t", argument, "1-2"]);
+        assert_eq!(output.status.code(), Some(2));
+    }
+    let output = binary(&[
+        "threads",
+        "events",
+        "--thread",
+        "t",
+        "--run",
+        "r",
+        "--position",
+        "01-2",
+    ]);
+    assert_eq!(output.status.code(), Some(2));
+    let first = b"event: boundary\nid: 100-2\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":2}\n\nevent: delta\nid: 100-3\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":3,\"event\":{},\"item\":null}\n\n".to_vec();
+    let second = b"event: gap\ndata: {\"run_id\":\"r\",\"position\":\"1-5\"}\n\nevent: gap\ndata: {\"run_id\":\"r\"}\n\nevent: delta\nid: 100-4\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":4,\"event\":{},\"item\":null}\n\n".to_vec();
+    let (base, origin) = serve(vec![
+        (200, vec![("Content-Type", "text/event-stream")], first),
+        (200, vec![("Content-Type", "text/event-stream")], second),
+        (
+            404,
+            vec![("Content-Type", "application/json")],
+            br#"{"error":{"code":"not_found","message":"end"}}"#.to_vec(),
+        ),
+    ]);
+    let output = binary(&[
+        "--base-url",
+        &base,
+        "threads",
+        "events",
+        "--thread",
+        "t",
+        "--run",
+        "r",
+        "--position",
+        "1-2",
+        "--after",
+        "100-2",
+        "--max-reconnects",
+        "1",
+    ]);
+    assert!(!output.status.success()); // The origin deliberately ends retries with a terminal refusal.
+    let frames: Vec<serde_json::Value> = String::from_utf8(output.stdout)
+        .unwrap()
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(frames[0]["type"], "boundary");
+    assert_eq!(frames[1]["applied_position"], "1-2");
+    assert_eq!(frames[2]["position"], "1-5");
+    assert!(frames[3]["position"].is_null());
+    assert_eq!(frames[4]["applied_position"], "1-3");
+    let requests = origin.join().unwrap();
+    assert!(requests[0].starts_with("GET /api/v1/threads/t/stream?run=r&position=1-2 "));
+    assert!(requests[1].starts_with("GET /api/v1/threads/t/stream?run=r&position=1-3 "));
+    assert!(
+        requests[1]
+            .to_ascii_lowercase()
+            .contains("last-event-id: 100-3")
+    );
+    assert!(requests[2].starts_with("GET /api/v1/threads/t/stream?run=r&position=1-3 "));
+    assert!(
+        requests[2]
+            .to_ascii_lowercase()
+            .contains("last-event-id: 100-4")
+    );
+}
+
+#[test]
+fn generated_stream_dispatch_forwards_both_queries_and_hint_without_a_reducer() {
+    let file = std::env::temp_dir().join(format!(
+        "a13n-stream-{}-{:?}",
+        std::process::id(),
+        thread::current().id()
+    ));
+    let (base, origin) = serve(vec![(
+        200,
+        vec![("Content-Type", "text/event-stream")],
+        b": heartbeat\n\n".to_vec(),
+    )]);
+    let output = binary(&[
+        "--base-url",
+        &base,
+        "threads",
+        "stream",
+        "get",
+        "--thread",
+        "t",
+        "--run",
+        "r",
+        "--position",
+        "1-2",
+        "--last-event-id",
+        "100-2",
+        "--output",
+        file.to_str().unwrap(),
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let requests = origin.join().unwrap();
+    assert!(requests[0].starts_with("GET /api/v1/threads/t/stream?run=r&position=1-2 "));
+    assert!(
+        requests[0]
+            .to_ascii_lowercase()
+            .contains("last-event-id: 100-2")
+    );
+    assert_eq!(std::fs::read(&file).unwrap(), b": heartbeat\n\n");
+    std::fs::remove_file(file).unwrap();
+}
+
+#[test]
+fn schemas_and_dispatch_preserve_native_settings_upload_ids_and_eight_character_passwords() {
+    let schema: serde_json::Value =
+        serde_json::from_slice(&binary(&["models", "create", "--schema"]).stdout).unwrap();
+    let schemas = &schema["components"]["schemas"];
+    assert_eq!(
+        schemas["AssetCreate"]["properties"]["upload_id"]["pattern"],
+        "^upl_[a-f0-9]{32}$"
+    );
+    assert_eq!(
+        schemas["UploadSource"]["properties"]["upload_id"]["pattern"],
+        "^upl_[a-f0-9]{32}$"
+    );
+    for name in ["BootstrapInput", "PasswordChange", "PasswordResetConfirm"] {
+        assert_eq!(schemas[name]["properties"]["password"]["minLength"], 8);
+    }
+    assert_eq!(
+        schemas["ModelConfig-Input"]["properties"]["settings"]["additionalProperties"]["$ref"],
+        "#/components/schemas/JsonValue"
+    );
+    for (commands, body) in [
+        (
+            vec!["models", "create"],
+            r#"{"name":"model","provider_id":"p","config":{"model_api":"provider:model","model_name":"model","settings":{"custom":{"choices":[true,null,2]},"timeout":2.5}}}"#,
+        ),
+        (
+            vec!["assets", "create"],
+            r#"{"name":"asset","upload_id":"upl_0123456789abcdef0123456789abcdef"}"#,
+        ),
+        (
+            vec!["auth", "bootstrap"],
+            r#"{"email":"test@example.org","password":"12345678"}"#,
+        ),
+        (
+            vec!["users", "me", "password"],
+            r#"{"current_password":"old","password":"12345678"}"#,
+        ),
+        (
+            vec!["auth", "password-reset", "confirm"],
+            r#"{"token":"token","password":"12345678"}"#,
+        ),
+    ] {
+        let (base, origin) = serve(vec![(
+            400,
+            vec![("Content-Type", "application/json")],
+            br#"{"error":{"code":"invalid_argument","message":"capture"}}"#.to_vec(),
+        )]);
+        let output = binary(
+            &["--base-url", &base]
+                .into_iter()
+                .chain(commands)
+                .chain(["--body", body])
+                .collect::<Vec<_>>(),
+        );
+        assert!(!output.status.success());
+        let requests = origin.join().unwrap();
+        let sent: serde_json::Value =
+            serde_json::from_str(requests[0].split_once("\r\n\r\n").unwrap().1).unwrap();
+        assert_eq!(
+            sent,
+            serde_json::from_str::<serde_json::Value>(body).unwrap()
+        );
+    }
+}

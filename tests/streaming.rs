@@ -266,3 +266,226 @@ async fn malformed_frames_utf8_limits_and_auth_are_terminal() {
         assert!(server.requests.try_recv().is_err());
     }
 }
+
+fn delta(run: &str, attempt: i64, sequence: i64, cursor: &str) -> String {
+    format!(
+        "event: delta\nid: {cursor}\ndata: {{\"run_id\":\"{run}\",\"attempt\":{attempt},\"sequence\":{sequence},\"event\":{{\"text\":\"tail\"}},\"item\":null}}\n\n"
+    )
+}
+
+#[tokio::test]
+async fn snapshot_coverage_advances_only_after_apply_and_reconnect_sends_both_positions() {
+    let calls = Arc::new(AtomicUsize::new(0));
+    let count = calls.clone();
+    let mut fixture = server(move |_| {
+        if count.fetch_add(1, Ordering::SeqCst) == 0 {
+            Reply::sse(&delta("r", 1, 3, "100-3"))
+        } else {
+            Reply::sse("event: gap\ndata: {\"run_id\":\"r\",\"position\":\"1-5\"}\n\n")
+        }
+    })
+    .await;
+    let client = common::client(&fixture);
+    let mut reader = ThreadStream::open(
+        client.resources().threads().at("t"),
+        StreamOptions {
+            run: Some("r".into()),
+            position: Some("1-2".into()),
+            after: Some("100-2".into()),
+            max_reconnects: 1,
+            ..options()
+        },
+    )
+    .await
+    .unwrap();
+    let initial = fixture.requests.recv().await.unwrap();
+    assert!(initial.target.contains("run=r") && initial.target.contains("position=1-2"));
+    assert!(initial.headers.contains("last-event-id: 100-2"));
+    assert!(matches!(
+        reader.next().await.unwrap(),
+        Some(ThreadFrame::Delta { .. })
+    ));
+    assert_eq!(reader.applied_cursor(), Some("100-2"));
+    assert_eq!(reader.applied_position(), Some("1-2"));
+    let gap = reader.next().await.unwrap().unwrap();
+    assert!(matches!(gap, ThreadFrame::Gap(ref data) if data.position.as_deref() == Some("1-5")));
+    assert_eq!(reader.applied_cursor(), Some("100-3"));
+    assert_eq!(reader.applied_position(), Some("1-3"));
+    let reconnect = fixture.requests.recv().await.unwrap();
+    assert!(reconnect.target.contains("run=r") && reconnect.target.contains("position=1-3"));
+    assert!(reconnect.headers.contains("last-event-id: 100-3"));
+    reader.close();
+}
+
+#[tokio::test]
+async fn gaps_resets_and_foreign_runs_never_advance_claimed_coverage() {
+    for signal in [
+        "event: gap\ndata: {\"run_id\":\"r\",\"position\":\"1-5\"}\n\n",
+        "event: gap\ndata: {\"run_id\":\"r\",\"position\":null}\n\n",
+        "event: reset\ndata: {\"run_id\":\"r\"}\n\n",
+    ] {
+        let wire = format!(
+            "{signal}{}{}",
+            delta("r", 1, 3, "100-3"),
+            delta("foreign", 1, 4, "100-4")
+        );
+        let fixture = server(move |_| Reply::sse(&wire)).await;
+        let client = common::client(&fixture);
+        let mut reader = ThreadStream::open(
+            client.resources().threads().at("t"),
+            StreamOptions {
+                run: Some("r".into()),
+                position: Some("1-2".into()),
+                ..options()
+            },
+        )
+        .await
+        .unwrap();
+        reader.next().await.unwrap();
+        reader.next().await.unwrap();
+        reader.next().await.unwrap();
+        assert_eq!(reader.applied_position(), Some("1-2"));
+        assert_eq!(reader.applied_cursor(), Some("100-3"));
+        reader.close();
+    }
+    let fixture = server(move |_| Reply::sse(&delta("r", 1, 3, "100-3"))).await;
+    let client = common::client(&fixture);
+    let mut unclaimed = ThreadStream::open(client.resources().threads().at("t"), options())
+        .await
+        .unwrap();
+    unclaimed.next().await.unwrap();
+    unclaimed.next().await.unwrap();
+    assert_eq!(unclaimed.applied_position(), None);
+}
+
+#[tokio::test]
+async fn covered_boundary_and_drop_do_not_ack_new_position() {
+    let wire = format!(
+        "event: boundary\nid: 100-2\ndata: {{\"run_id\":\"r\",\"attempt\":1,\"sequence\":2}}\n\n{}",
+        delta("r", 1, 3, "100-3")
+    );
+    let fixture = server(move |_| Reply::sse(&wire)).await;
+    let client = common::client(&fixture);
+    let mut reader = ThreadStream::open(
+        client.resources().threads().at("t"),
+        StreamOptions {
+            run: Some("r".into()),
+            position: Some("1-2".into()),
+            ..options()
+        },
+    )
+    .await
+    .unwrap();
+    assert!(matches!(
+        reader.next().await.unwrap(),
+        Some(ThreadFrame::Boundary { .. })
+    ));
+    reader.next().await.unwrap();
+    assert_eq!(reader.applied_cursor(), Some("100-2"));
+    assert_eq!(reader.applied_position(), Some("1-2"));
+    reader.close();
+    assert!(reader.next().await.unwrap().is_none());
+    assert_eq!(reader.applied_position(), Some("1-2"));
+}
+
+#[tokio::test]
+async fn coverage_options_and_gap_position_validate_only_wire_shape() {
+    let mut fixture = server(|_| Reply::sse("")).await;
+    let client = common::client(&fixture);
+    for (run, position) in [
+        (Some("r"), None),
+        (None, Some("1-0")),
+        (Some(""), Some("1-0")),
+        (Some("r"), Some("01-0")),
+        (Some("r"), Some("1-x")),
+        (Some("r"), Some("1-000")),
+    ] {
+        let result = ThreadStream::open(
+            client.resources().threads().at("t"),
+            StreamOptions {
+                run: run.map(str::to_owned),
+                position: position.map(str::to_owned),
+                ..options()
+            },
+        )
+        .await;
+        assert!(matches!(result, Err(Error::InvalidInput)));
+    }
+    assert!(fixture.requests.try_recv().is_err());
+    for payload in [
+        "{\"run_id\":\"r\"}",
+        "{\"run_id\":\"r\",\"position\":null}",
+        "{\"run_id\":\"r\",\"position\":\"12345678901234567890-0\"}",
+    ] {
+        let wire = format!("event: gap\ndata: {payload}\n\n");
+        let fixture = server(move |_| Reply::sse(&wire)).await;
+        let client = common::client(&fixture);
+        let mut reader = ThreadStream::open(client.resources().threads().at("t"), options())
+            .await
+            .unwrap();
+        assert!(matches!(
+            reader.next().await.unwrap(),
+            Some(ThreadFrame::Gap(_))
+        ));
+    }
+}
+
+#[tokio::test]
+async fn sequence_holes_boundaries_and_attempt_changes_freeze_coverage_until_reopen() {
+    for first in [
+        delta("r", 1, 4, "100-4"),
+        delta("r", 2, 3, "100-4"),
+        "event: boundary\nid: 100-4\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":4}\n\n"
+            .into(),
+    ] {
+        let wire = format!("{first}{}", delta("r", 1, 3, "100-5"));
+        let fixture = server(move |_| Reply::sse(&wire)).await;
+        let client = client(&fixture);
+        let mut reader = ThreadStream::open(
+            client.resources().threads().at("t"),
+            StreamOptions {
+                run: Some("r".into()),
+                position: Some("1-2".into()),
+                ..options()
+            },
+        )
+        .await
+        .unwrap();
+        reader.next().await.unwrap();
+        reader.next().await.unwrap();
+        reader.next().await.unwrap();
+        assert_eq!(reader.applied_position(), Some("1-2"));
+        assert_eq!(reader.applied_cursor(), Some("100-5"));
+    }
+}
+
+#[tokio::test]
+async fn coverage_with_missing_or_stale_hint_accepts_filtered_replay_without_local_gap() {
+    for hint in [None, Some("1-0")] {
+        let mut fixture = server(|_| Reply::sse(&format!("{}event: boundary\nid: 100-3\ndata: {{\"run_id\":\"r\",\"attempt\":1,\"sequence\":3}}\n\n", delta("r", 1, 3, "100-3")))).await;
+        let client = client(&fixture);
+        let mut reader = ThreadStream::open(
+            client.resources().threads().at("t"),
+            StreamOptions {
+                run: Some("r".into()),
+                position: Some("1-2".into()),
+                after: hint.map(str::to_owned),
+                ..options()
+            },
+        )
+        .await
+        .unwrap();
+        let request = fixture.requests.recv().await.unwrap();
+        assert!(request.target.ends_with("?run=r&position=1-2"));
+        assert_eq!(request.headers.contains("last-event-id:"), hint.is_some());
+        assert!(matches!(
+            reader.next().await.unwrap(),
+            Some(ThreadFrame::Delta { .. })
+        ));
+        assert!(matches!(
+            reader.next().await.unwrap(),
+            Some(ThreadFrame::Boundary { .. })
+        ));
+        assert_eq!(reader.applied_position(), Some("1-3"));
+    }
+}

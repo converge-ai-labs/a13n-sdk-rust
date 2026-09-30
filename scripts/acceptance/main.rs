@@ -198,6 +198,7 @@ async fn offline() -> Result<()> {
         "Parent shutdown",
     )?;
     server.await?;
+    sse::offline().await?;
     println!(
         "Installed crate local TCP: typed resource/enums/diagnostics, redaction, metadata, pagination, 428, nullable and close passed"
     );
@@ -289,7 +290,14 @@ async fn live() -> Result<()> {
                 == canonical.id,
         "Canonical workspace binding",
     )?;
-    sse::verify(&service, &ca, &token, &submitted.receipt.data.thread.id).await?;
+    sse::verify(
+        &service,
+        &ca,
+        &token,
+        &submitted.receipt.data.thread.id,
+        &accepted(&submitted)?.id,
+    )
+    .await?;
     wait(accepted(&submitted)?, m::RunStatus::Completed).await?;
     println!("Verified HTTPS: typed submission, 201/200 replay, canonical binding, Run readback");
 

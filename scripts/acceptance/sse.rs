@@ -29,7 +29,7 @@ async fn bridge(
     http: reqwest::Client,
     upstream: String,
     token: String,
-) -> Result<Vec<Option<String>>> {
+) -> Result<Vec<(String, Option<String>)>> {
     let mut received = Vec::new();
     for attempt in 0..2 {
         let (mut socket, _) = listener.accept().await?;
@@ -50,7 +50,11 @@ async fn bridge(
             .split_whitespace()
             .nth(1)
             .ok_or("Missing request target")?;
-        if !target.ends_with("/stream") {
+        if !target
+            .split('?')
+            .next()
+            .is_some_and(|path| path.ends_with("/stream"))
+        {
             return Err("SSE proxy received non-stream route".into());
         }
         let cursor = text
@@ -58,7 +62,7 @@ async fn bridge(
             .filter_map(|line| line.split_once(':'))
             .find(|(name, _)| name.eq_ignore_ascii_case("last-event-id"))
             .map(|(_, value)| value.trim().to_owned());
-        received.push(cursor.clone());
+        received.push((target.to_owned(), cursor.clone()));
         let mut outgoing = http
             .get(format!("{}{target}", upstream.trim_end_matches('/')))
             .bearer_auth(&token);
@@ -103,7 +107,34 @@ async fn bridge(
     Ok(received)
 }
 
-pub async fn verify(service: &str, ca_pem: &[u8], token: &str, thread: &str) -> Result<()> {
+pub async fn verify(
+    service: &str,
+    ca_pem: &[u8],
+    token: &str,
+    thread: &str,
+    run: &str,
+) -> Result<()> {
+    let direct = Client::builder(service)
+        .bearer(Secret::new(token))
+        .http_builder(
+            reqwest::Client::builder()
+                .no_proxy()
+                .add_root_certificate(Certificate::from_pem(ca_pem)?),
+        )
+        .build()?;
+    let snapshot = tokio::time::timeout(Duration::from_secs(80), async {
+        loop {
+            let items = direct.run(run).items().get(Default::default()).await?.data;
+            if items.position.is_some() {
+                return Ok::<_, a13n::Error>(items);
+            }
+            tokio::time::sleep(Duration::from_millis(100)).await;
+        }
+    })
+    .await??;
+    let position = snapshot.position.ok_or("Missing snapshot position")?;
+    let hint = snapshot.resume_after.flatten();
+    direct.close();
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
     let url = format!("http://{}", listener.local_addr()?);
     let http = reqwest::Client::builder()
@@ -117,6 +148,9 @@ pub async fn verify(service: &str, ca_pem: &[u8], token: &str, thread: &str) -> 
         let mut stream = ThreadStream::open(
             handle,
             StreamOptions {
+                run: Some(snapshot.run.id),
+                position: Some(position.clone()),
+                after: hint.clone(),
                 max_reconnects: 3,
                 reconnect_delay: Duration::from_millis(10),
                 ..Default::default()
@@ -134,23 +168,115 @@ pub async fn verify(service: &str, ca_pem: &[u8], token: &str, thread: &str) -> 
                 cursors.push(cursor);
             }
         }
+        let applied_position = stream
+            .applied_position()
+            .map(str::to_owned)
+            .ok_or("Lost applied position")?;
         stream.close();
         client.close();
-        Ok::<_, Box<dyn StdError>>(cursors)
+        Ok::<_, Box<dyn StdError>>((cursors, applied_position))
     };
-    let (received, cursors) = tokio::time::timeout(Duration::from_secs(90), async {
-        tokio::try_join!(forwarding, observing)
-    })
-    .await??;
+    let (received, (cursors, applied_position)) =
+        tokio::time::timeout(Duration::from_secs(90), async {
+            tokio::try_join!(forwarding, observing)
+        })
+        .await??;
     if received.len() != 2
-        || received[0].is_some()
-        || received[1].as_deref() != Some(&cursors[0])
+        || received[0].1 != hint
+        || !received[0]
+            .0
+            .contains(&format!("run={run}&position={position}"))
+        || !received[1]
+            .0
+            .contains(&format!("run={run}&position={applied_position}"))
+        || received[1].1.as_deref() != Some(&cursors[0])
         || cursors[0] == cursors[1]
     {
         return Err("SSE reconnect did not use the first applied cursor".into());
     }
     println!(
-        "Verified HTTPS upstream: injected SSE disconnect and applied Last-Event-ID reconnect"
+        "Verified HTTPS upstream: Items baseline, injected SSE disconnect and paired applied coverage/cursor reconnect"
+    );
+    Ok(())
+}
+
+/// Prove snapshot query/header wiring from the independently extracted crate.
+pub async fn offline() -> Result<()> {
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
+    let base = format!("http://{}", listener.local_addr()?);
+    let serving = tokio::spawn(async move {
+        for index in 0..3 {
+            let (mut socket, _) = listener.accept().await.unwrap();
+            let mut request = Vec::new();
+            loop {
+                let mut bytes = [0; 4096];
+                let count = socket.read(&mut bytes).await.unwrap();
+                assert!(count > 0);
+                request.extend_from_slice(&bytes[..count]);
+                if request.windows(4).any(|part| part == b"\r\n\r\n") {
+                    break;
+                }
+            }
+            let text = String::from_utf8(request).unwrap();
+            let (content_type, body) = match index {
+                0 => {
+                    assert!(text.starts_with("GET /api/v1/runs/r/items "));
+                    let mut snapshot = a13n::generated::models::RunItems::default();
+                    snapshot.run.id = "r".into();
+                    snapshot.position = Some("1-2".into());
+                    snapshot.resume_after = Some(Some("100-2".into()));
+                    (
+                        "application/json",
+                        serde_json::to_string(&snapshot).unwrap(),
+                    )
+                }
+                1 => {
+                    assert!(text.starts_with("GET /api/v1/threads/t/stream?run=r&position=1-2 "));
+                    assert!(text.to_ascii_lowercase().contains("last-event-id: 100-2"));
+                    ("text/event-stream", "event: delta\nid: 100-3\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":3,\"event\":{},\"item\":null}\n\n".into())
+                }
+                _ => {
+                    assert!(text.starts_with("GET /api/v1/threads/t/stream?run=r&position=1-3 "));
+                    assert!(text.to_ascii_lowercase().contains("last-event-id: 100-3"));
+                    (
+                        "text/event-stream",
+                        "event: gap\ndata: {\"run_id\":\"r\",\"position\":\"1-5\"}\n\n".into(),
+                    )
+                }
+            };
+            socket.write_all(format!("HTTP/1.1 200 OK\r\nContent-Type: {content_type}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}", body.len()).as_bytes()).await.unwrap();
+        }
+    });
+    let client = Client::new(&base, Secret::new("offline-token"))?;
+    let items = client.run("r").items().get(Default::default()).await?.data;
+    let mut reader = ThreadStream::open(
+        client.resources().threads().at("t"),
+        StreamOptions {
+            run: Some(items.run.id),
+            position: items.position,
+            after: items.resume_after.flatten(),
+            max_reconnects: 1,
+            reconnect_delay: Duration::from_millis(1),
+            ..Default::default()
+        },
+    )
+    .await?;
+    if !matches!(reader.next().await?, Some(ThreadFrame::Delta { .. }))
+        || reader.applied_position() != Some("1-2")
+    {
+        return Err("Installed stream acknowledged received rather than applied output".into());
+    }
+    if !matches!(reader.next().await?, Some(ThreadFrame::Gap(data)) if data.position.as_deref() == Some("1-5"))
+        || reader.applied_position() != Some("1-3")
+        || reader.applied_cursor() != Some("100-3")
+    {
+        return Err("Installed stream lost applied coverage or gap recovery target".into());
+    }
+    reader.close();
+    client.close();
+    serving.await?;
+    println!(
+        "Installed crate local TCP: Items baseline/hint, paired applied reconnect and optional gap target passed"
     );
     Ok(())
 }
