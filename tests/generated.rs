@@ -149,9 +149,85 @@ async fn lowlevel_sse_does_not_buffer_and_shares_shutdown_inside_execute() {
     let client = std::sync::Arc::new(client(&server));
     let caller = client.clone();
     let task = tokio::spawn(async move {
-        caller.execute(async |api| {let mut response=apis::runs_api::thread_stream_api_v1_threads_thread_id_stream_get(api,"t",None,None).await?;assert_eq!(response.status(),200);while response.chunk().await.map_err(apis::Error::from)?.is_some() {} Ok::<_,apis::Error<apis::runs_api::ThreadStreamApiV1ThreadsThreadIdStreamGetError>>(())}).await
+        caller.execute(async |api| {let mut response=apis::runs_api::thread_stream_api_v1_threads_thread_id_stream_get(api,"t",Some("r"),Some("1-0"),None,None).await?;assert_eq!(response.status(),200);while response.chunk().await.map_err(apis::Error::from)?.is_some() {} Ok::<_,apis::Error<apis::runs_api::ThreadStreamApiV1ThreadsThreadIdStreamGetError>>(())}).await
     });
-    server.requests.recv().await.unwrap();
+    let request = server.requests.recv().await.unwrap();
+    assert_eq!(
+        request.target,
+        "/prefix/api/v1/threads/t/stream?run=r&position=1-0"
+    );
     client.close();
     assert!(matches!(task.await.unwrap(), Err(CallError::Closed)));
+}
+
+#[test]
+fn display_resume_hint_and_native_model_settings_preserve_wire_values() {
+    for hint in [None, Some(Value::Null), Some(json!("100-2"))] {
+        let mut value = sample("RunItems");
+        value["position"] = json!("1-2");
+        if let Some(hint) = hint {
+            value["resume_after"] = hint;
+        }
+        roundtrip::<RunItems>(value);
+    }
+    for settings in [
+        json!({}),
+        json!({"provider_specific":{"enabled":true,"levels":[1,null,"auto"]},"timeout":2.5,"empty":null}),
+    ] {
+        let value =
+            json!({"model_api":"provider:model","model_name":"example","settings":settings});
+        roundtrip::<ModelConfigInput>(value.clone());
+        roundtrip::<ModelConfigOutput>(value);
+    }
+    roundtrip::<AssetCreate>(
+        json!({"name":"asset","upload_id":"upl_0123456789abcdef0123456789abcdef"}),
+    );
+    roundtrip::<BootstrapInput>(json!({"email":"test@example.org","password":"12345678"}));
+    roundtrip::<PasswordChange>(json!({"current_password":"old","password":"12345678"}));
+    roundtrip::<PasswordResetConfirm>(json!({"token":"token","password":"12345678"}));
+}
+
+#[tokio::test]
+async fn generated_resources_forward_native_model_settings_and_upload_id() {
+    let mut fixture = server(|_| {
+        Reply::json(
+            400,
+            json!({"error":{"code":"invalid_argument","message":"fixture"}}),
+        )
+    })
+    .await;
+    let client = client(&fixture);
+    let body: ModelCreate = serde_json::from_value(json!({"name":"model","provider_id":"provider","config":{"model_api":"provider:model","model_name":"example","settings":{"nested":{"array":[true,null,4]},"timeout":2.5}}})).unwrap();
+    assert!(
+        client
+            .resources()
+            .models()
+            .create(&body, Default::default())
+            .await
+            .is_err()
+    );
+    let request = fixture.requests.recv().await.unwrap();
+    assert_eq!(request.target, "/prefix/api/v1/models");
+    let sent: Value = serde_json::from_slice(&request.body).unwrap();
+    assert_eq!(
+        sent["config"]["settings"],
+        serde_json::to_value(&body).unwrap()["config"]["settings"]
+    );
+    let body = AssetCreate::new(
+        "asset".into(),
+        "upl_0123456789abcdef0123456789abcdef".into(),
+    );
+    assert!(
+        client
+            .resources()
+            .assets()
+            .create(&body, Default::default())
+            .await
+            .is_err()
+    );
+    let request = fixture.requests.recv().await.unwrap();
+    assert_eq!(
+        serde_json::from_slice::<Value>(&request.body).unwrap()["upload_id"],
+        body.upload_id
+    );
 }

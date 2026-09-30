@@ -26,6 +26,14 @@ pub struct RunItems {
     #[serde(rename = "position", deserialize_with = "Option::deserialize")]
     pub position: Option<String>,
 
+    #[serde(
+        rename = "resume_after",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub resume_after: Option<Option<String>>,
+
     #[serde(rename = "run")]
     pub run: Box<models::RunView>,
 }
@@ -44,6 +52,7 @@ impl RunItems {
             dropped,
             items,
             position,
+            resume_after: None,
             run: Box::new(run),
         }
     }

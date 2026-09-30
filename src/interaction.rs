@@ -468,7 +468,8 @@ impl<'a> Interaction<'a> {
                     let own = match &frame {
                         ThreadFrame::Delta { data, .. } => data.run_id == run.id,
                         ThreadFrame::Boundary { data, .. } => data.run_id == run.id,
-                        ThreadFrame::Gap(data) | ThreadFrame::Reset(data) => data.run_id == run.id,
+                        ThreadFrame::Gap(data) => data.run_id == run.id,
+                        ThreadFrame::Reset(data) => data.run_id == run.id,
                         ThreadFrame::Changed(_) => false,
                     };
                     if own {

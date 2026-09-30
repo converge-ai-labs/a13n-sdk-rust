@@ -308,11 +308,33 @@ def main() -> None:
         thread_id = first["data"]["thread"]["id"]
         assert call("threads", "get", thread_id)["data"]["message_history"] == history
         if os.name != "nt":
+            checkpoint_deadline = time.monotonic() + 80
+            while True:
+                baseline = call("runs", "result", run_id)["data"]
+                assert baseline["run"]["id"] == run_id
+                if baseline["position"] is not None:
+                    break
+                assert time.monotonic() < checkpoint_deadline, "Run did not publish an Items baseline"
+                time.sleep(0.1)
+            coverage_args = ["--run", baseline["run"]["id"], "--position", baseline["position"]]
+            hint = baseline.get("resume_after")
+            assert hint is None or isinstance(hint, str), "Items seek hint must be absent/null/string"
+            if hint is not None:
+                coverage_args.extend(["--after", hint])
             events_file = directory / "events.jsonl"
             errors_file = directory / "events.stderr"
             with events_file.open("wb") as events_output, errors_file.open("wb") as events_errors:
                 observer = subprocess.Popen(
-                    [str(binary), "--profile", "acceptance", "threads", "events", "--thread", thread_id],
+                    [
+                        str(binary),
+                        "--profile",
+                        "acceptance",
+                        "threads",
+                        "events",
+                        "--thread",
+                        thread_id,
+                        *coverage_args,
+                    ],
                     cwd=directory,
                     env=environment,
                     stdout=events_output,
@@ -323,10 +345,12 @@ def main() -> None:
                     while True:
                         complete_lines = events_file.read_bytes().split(b"\n")[:-1]
                         delivered = [json.loads(line) for line in complete_lines if line]
-                        if any(frame.get("item") is not None for frame in delivered):
+                        if any(frame.get("cursor") is not None for frame in delivered):
                             break
-                        assert observer.poll() is None, "SSE observer exited before delivering an item frame"
-                        assert time.monotonic() < deadline, "SSE did not flush an item frame while observing"
+                        assert observer.poll() is None, "SSE observer exited before delivering a cursor frame"
+                        assert time.monotonic() < deadline, (
+                            "SSE did not flush a covered boundary or tail frame while observing"
+                        )
                         time.sleep(0.05)
                     observer.send_signal(signal.SIGINT)
                     assert observer.wait(timeout=10) == 130, "Local Ctrl-C must use the documented cancellation exit"
@@ -339,13 +363,20 @@ def main() -> None:
             frames = [json.loads(line) for line in observed.splitlines()]
             assert frames and all(isinstance(frame, dict) for frame in frames), "Events must be complete JSONL"
             items = [frame["item"] for frame in frames if frame.get("item") is not None]
-            assert items, "Observation must include a typed item reference"
+            cursor_frames = [frame for frame in frames if frame.get("cursor") is not None]
+            assert cursor_frames[0]["applied_position"] == baseline["position"]
+            for frame in frames:
+                if frame["type"] == "gap":
+                    assert frame["position"] is None or isinstance(frame["position"], str)
             for item in items:
                 assert item["kind"] in {"text_message", "reasoning_message", "tool_call", "observation"}
                 assert item["state"] in {"in_progress", "completed", "interrupted", "failed"}
             still_running = call("runs", "get", run_id)["data"]
             assert still_running["status"] != "cancelled", "Stopping observation cancelled the durable Run"
-            print("Copied CLI verified direct HTTPS: flushed SSE JSONL and local-only Ctrl-C", flush=True)
+            print(
+                "Copied CLI verified direct HTTPS: Items baseline/optional hint, paired SSE coverage, flushed JSONL and local-only Ctrl-C",
+                flush=True,
+            )
         waited = call("runs", "wait", run_id)
         assert waited["data"]["id"] == run_id and waited["data"]["status"] == "completed"
         print(

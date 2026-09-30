@@ -41,4 +41,49 @@ The loop ends naturally at completed, waiting, failed or cancelled, including wh
 
 ## Advanced Thread-wide events
 
-If you must observe more than one Run in a Thread, `ThreadStream::open(client.resources().threads().at(thread_id), StreamOptions { after, max_reconnects, ..Default::default() }).await?` is a separate **advanced protocol reader**, not the ordinary finite Agent interaction. It can yield unrelated Runs. A cursor-bearing frame is applied only when the next `next()` poll starts; persist your application state and the last applied cursor together. A received cursor alone is not a durable checkpoint. It supports bounded reconnection; `Changed`, `Gap` and `Reset` ask your application to read Thread or Run Items instead of manufacturing missed text. The generated `thread.stream().get(...)` also exposes raw SSE for custom decoders.
+`ThreadStream::open` is a separate **advanced protocol reader**, not the ordinary finite Agent interaction. It can yield unrelated Runs. If you hold an applied Run Items snapshot, supply its paired Run ID and display `position`. Its optional `resume_after` is only a Redis seek hint (`after`), not proof of display coverage. With coverage supplied, an absent, expired or incompatible hint falls back to retained replay filtered by position; hint absence alone does not imply a gap. Without a display baseline, omit both `run` and `position` to retain legacy cursor-only behavior; do not invent coverage from a Redis ID.
+
+This standalone example reads an existing Run and prints its committed Items before observing its tail. Set `A13N_THREAD_ID` and `A13N_RUN_ID` as well as the URL/token. Printing is the example's application step, not durable business processing:
+
+```rust
+use a13n::{Client, Secret, streaming::{StreamOptions, ThreadFrame, ThreadStream}};
+use std::{env, error::Error};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    let client = Client::new(&env::var("A13N_SERVICE_URL")?, Secret::new(env::var("A13N_API_TOKEN")?))?;
+    let thread_id = env::var("A13N_THREAD_ID")?;
+    let run = client.run(env::var("A13N_RUN_ID")?);
+    let snapshot = run.items().get(Default::default()).await?.data;
+    println!("Committed Items: {:#?}", snapshot.items);
+    let position = snapshot.position.ok_or("No committed display yet; wait for a checkpoint")?;
+    let mut reader = ThreadStream::open(client.resources().threads().at(thread_id), StreamOptions {
+        run: Some(snapshot.run.id),
+        position: Some(position),
+        after: snapshot.resume_after.flatten(), // Omitted and explicit null both mean no hint.
+        max_reconnects: 3,
+        ..Default::default()
+    }).await?;
+    while let Some(frame) = reader.next().await? {
+        match frame {
+            ThreadFrame::Delta { data, .. } => println!("Provisional: {:?}", data.event),
+            ThreadFrame::Boundary { data, .. } => println!("Readback now covers {}-{}", data.attempt, data.sequence),
+            ThreadFrame::Gap(data) => {
+                println!("Read Items for {} through {:?}; no automatic healing", data.run_id, data.position);
+                break;
+            }
+            ThreadFrame::Reset(data) => {
+                println!("Discard superseded provisional output and read Items for {}", data.run_id);
+                break;
+            }
+            ThreadFrame::Changed(_) => println!("Re-read Thread metadata"),
+        }
+    }
+    reader.close();
+    Ok(())
+}
+```
+
+A cursor-bearing frame is acknowledged only when the next `next()` poll starts **after your application applied it**. `applied_cursor()` is the prior applied Redis cursor; `applied_position()` advances only for contiguous deltas of the claimed Run and attempt. Other Runs do not advance that position. Gap/reset, attempt change or a missing sequence freezes coverage until you explicitly reopen from covering Run Items. Boundaries remain visible even at covered positions, but cannot bridge holes. Drop or `close()` never acknowledges the last received frame.
+
+A gap's optional `position` identifies the output a snapshot must cover, not a new cursor to resume from. Missing/null means the target is unknown; a snapshot read alone does not prove recovery. Stop applying tail output across the hole, read Items, check coverage against the target, and explicitly open a new reader from the new applied snapshot. If the snapshot is still behind, wait for a newer boundary or terminal progress rather than repeatedly reading the same snapshot. Reset means a new attempt superseded provisional output; discard that suffix and read authoritative Items. The SDK supplies no Console reducer or automatic gap healing. Persist your own applied state and coverage together; receiving a frame is not a durable checkpoint. The generated `thread.stream().get(...)` also exposes raw SSE with the same query/header options for custom decoders.

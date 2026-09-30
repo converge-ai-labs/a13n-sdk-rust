@@ -55,13 +55,19 @@ pub struct Changed {
 pub struct RunSignal {
     pub run_id: String,
 }
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub struct GapSignal {
+    pub run_id: String,
+    /// Coverage that readback must reach; absent/null when the target is unknown.
+    pub position: Option<String>,
+}
 /// Only data/checkpoint frames carry resumable cursors; hints require readback.
 #[derive(Clone, Debug, PartialEq)]
 pub enum ThreadFrame {
     Delta { cursor: String, data: Delta },
     Boundary { cursor: String, data: Boundary },
     Changed(Changed),
-    Gap(RunSignal),
+    Gap(GapSignal),
     Reset(RunSignal),
 }
 impl ThreadFrame {
@@ -74,7 +80,12 @@ impl ThreadFrame {
 }
 #[derive(Clone, Debug)]
 pub struct StreamOptions {
+    /// Last applied Redis cursor; a hint when Run/position coverage is supplied.
     pub after: Option<String>,
+    /// Run owning the supplied committed/applied display position. Requires `position`.
+    pub run: Option<String>,
+    /// Applied display coverage (`attempt-sequence`), not a Redis cursor. Requires `run`.
+    pub position: Option<String>,
     /// Zero disables reconnection; acknowledged new cursor progress resets this budget.
     pub max_reconnects: usize,
     pub max_frame_bytes: usize,
@@ -84,6 +95,8 @@ impl Default for StreamOptions {
     fn default() -> Self {
         Self {
             after: None,
+            run: None,
+            position: None,
             max_reconnects: 0,
             max_frame_bytes: 1 << 20,
             reconnect_delay: Duration::from_millis(250),
@@ -101,6 +114,9 @@ pub struct ThreadStream<'a> {
     applied: Option<String>,
     received: Option<String>,
     pending: Option<String>,
+    pending_position: Option<String>,
+    applied_position: Option<String>,
+    coverage_lost: bool,
     retries: usize,
     retry_at: Option<Instant>,
     closed: bool,
@@ -110,6 +126,12 @@ impl<'a> ThreadStream<'a> {
     pub async fn open(thread: ThreadResource<'a>, options: StreamOptions) -> Result<Self, Error> {
         if options.max_frame_bytes == 0
             || options.after.as_deref().is_some_and(|v| !valid_cursor(v))
+            || options.run.is_some() != options.position.is_some()
+            || options.run.as_deref().is_some_and(str::is_empty)
+            || options
+                .position
+                .as_deref()
+                .is_some_and(|v| !valid_position(v))
         {
             return Err(Error::InvalidInput);
         }
@@ -117,10 +139,13 @@ impl<'a> ThreadStream<'a> {
             thread,
             parser: Parser::new(options.max_frame_bytes),
             applied: options.after.clone(),
+            applied_position: options.position.clone(),
             options,
             response: None,
             received: None,
             pending: None,
+            pending_position: None,
+            coverage_lost: false,
             retries: 0,
             retry_at: None,
             closed: false,
@@ -132,6 +157,11 @@ impl<'a> ThreadStream<'a> {
 impl ThreadStream<'_> {
     pub fn applied_cursor(&self) -> Option<&str> {
         self.applied.as_deref()
+    }
+    /// Last contiguous applied coverage for the claimed Run. A gap/reset stops advancement;
+    /// reopen from covering Run Items to establish a new baseline.
+    pub fn applied_position(&self) -> Option<&str> {
+        self.applied_position.as_deref()
     }
     pub fn last_received_cursor(&self) -> Option<&str> {
         self.received.as_deref()
@@ -161,6 +191,9 @@ impl ThreadStream<'_> {
                 self.retries = 0;
             }
             self.applied = Some(cursor);
+            if let Some(position) = self.pending_position.take() {
+                self.applied_position = Some(position);
+            }
         }
         let result = self.read().await;
         if result.is_err() {
@@ -176,6 +209,7 @@ impl ThreadStream<'_> {
             }
             if let Some(frame) = self.parser.next()? {
                 self.check_parent()?;
+                self.track_coverage(&frame);
                 if let Some(cursor) = frame.cursor() {
                     self.pending = Some(cursor.into());
                     self.received = self.pending.clone();
@@ -202,6 +236,49 @@ impl ThreadStream<'_> {
                     self.schedule(error)?;
                 }
             }
+        }
+    }
+    // A coverage claim advances only with contiguous frames the caller applied.
+    // Boundaries are still observable but cannot claim delivery across a hole.
+    fn track_coverage(&mut self, frame: &ThreadFrame) {
+        let Some(run) = self.options.run.as_deref() else {
+            return;
+        };
+        let (run_id, attempt, sequence, delta) = match frame {
+            ThreadFrame::Gap(data) if data.run_id == run => {
+                self.coverage_lost = true;
+                return;
+            }
+            ThreadFrame::Reset(data) if data.run_id == run => {
+                self.coverage_lost = true;
+                return;
+            }
+            ThreadFrame::Delta { data, .. } => (&data.run_id, data.attempt, data.sequence, true),
+            ThreadFrame::Boundary { data, .. } => {
+                (&data.run_id, data.attempt, data.sequence, false)
+            }
+            _ => return,
+        };
+        if run_id != run || self.coverage_lost {
+            return;
+        }
+        let Some((covered_attempt, covered_sequence)) = self
+            .applied_position
+            .as_deref()
+            .and_then(|v| v.split_once('-'))
+            .and_then(|(a, s)| Some((a.parse::<u128>().ok()?, s.parse::<u128>().ok()?)))
+        else {
+            return;
+        };
+        if attempt < 0 || sequence < 0 || attempt as u128 != covered_attempt {
+            self.coverage_lost = true;
+            return;
+        }
+        let sequence = sequence as u128;
+        if delta && sequence == covered_sequence + 1 {
+            self.pending_position = Some(format!("{attempt}-{sequence}"));
+        } else if sequence > covered_sequence {
+            self.coverage_lost = true;
         }
     }
     // The deadline is kept on the stream, not inside the dropped read future.
@@ -256,6 +333,8 @@ impl ThreadStream<'_> {
                 .stream()
                 .get(ThreadStreamGetOptions {
                     last_event_id: self.applied.clone(),
+                    run: self.options.run.clone(),
+                    position: self.applied_position.clone(),
                     ..Default::default()
                 })
                 .await;
@@ -289,6 +368,12 @@ fn valid_cursor(value: &str) -> bool {
             .all(|v| !v.is_empty() && v.len() <= 20 && v.bytes().all(|b| b.is_ascii_digit()))
     })
 }
+fn valid_position(value: &str) -> bool {
+    valid_cursor(value)
+        && value
+            .split_once('-')
+            .is_some_and(|(a, b)| [a, b].iter().all(|v| v.len() == 1 || !v.starts_with('0')))
+}
 fn decode(event: &str, cursor: Option<String>, data: &str) -> Result<ThreadFrame, Error> {
     fn parse<T: serde::de::DeserializeOwned>(data: &str) -> Result<T, Error> {
         serde_json::from_str(data).map_err(|_| ProtocolError::local(ProtocolKind::InvalidFrame))
@@ -315,16 +400,21 @@ fn decode(event: &str, cursor: Option<String>, data: &str) -> Result<ThreadFrame
     }
     match event {
         "changed" => Ok(ThreadFrame::Changed(parse(data)?)),
-        "gap" | "reset" => {
+        "gap" => {
+            let data: GapSignal = parse(data)?;
+            if data.run_id.is_empty()
+                || data.position.as_deref().is_some_and(|v| !valid_position(v))
+            {
+                return Err(ProtocolError::local(ProtocolKind::InvalidFrame));
+            }
+            Ok(ThreadFrame::Gap(data))
+        }
+        "reset" => {
             let data: RunSignal = parse(data)?;
             if data.run_id.is_empty() {
                 return Err(ProtocolError::local(ProtocolKind::InvalidFrame));
             }
-            Ok(if event == "gap" {
-                ThreadFrame::Gap(data)
-            } else {
-                ThreadFrame::Reset(data)
-            })
+            Ok(ThreadFrame::Reset(data))
         }
         _ => Err(ProtocolError::local(ProtocolKind::InvalidFrame)),
     }
