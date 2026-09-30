@@ -2,7 +2,7 @@
 
 ## Authority and ownership
 
-The `a13n` crate and separately versioned `a13n-service-cli` consume the exact local Service snapshot in `contract/source.json`. Service owns authorization, durable state and protocol semantics; neither generation nor local tests require its source checkout. The Rust SDK owns its native interaction workflow and generated operation adapters, not a second Service scheduler.
+The `a13n` crate and separately versioned `a13n-service-cli` consume the exact local Service snapshot in `contract/source.json`. Service owns authorization, durable state and protocol semantics; neither generation nor local tests require its source checkout. Before 0.1.0, obsolete SDK or CLI call shapes are not retained through compatibility aliases, shims or protocol fallbacks. Optional fields and cursor-only observation remain supported as part of the current pinned Service contract. The Rust SDK owns its native interaction workflow and generated operation adapters, not a second Service scheduler.
 
 Every pinned OpenAPI operation is available through `Client::execute` and the generated typed `Client::resources()` graph, sharing one transport, authentication and wire models. Ordinary Agent invocation is a crafted layer over the generated Thread and inbox mutations. Generated resource references bind IDs/keys locally; no discovery, key-to-ID lookup or credential-authority expansion occurs. Model resources select **keys**; Agent, Skill and other resources select **IDs**. Service secret resources are absent. Session grouping does not make a Thread permanently owned by an Agent.
 
