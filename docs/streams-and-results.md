@@ -41,7 +41,7 @@ The loop ends naturally at completed, waiting, failed or cancelled, including wh
 
 ## Advanced Thread-wide events
 
-`ThreadStream::open` is a separate **advanced protocol reader**, not the ordinary finite Agent interaction. It can yield unrelated Runs. If you hold an applied Run Items snapshot, supply its paired Run ID and display `position`. Its optional `resume_after` is only a Redis seek hint (`after`), not proof of display coverage. With coverage supplied, an absent, expired or incompatible hint falls back to retained replay filtered by position; hint absence alone does not imply a gap. Without a display baseline, omit both `run` and `position` to retain legacy cursor-only behavior; do not invent coverage from a Redis ID.
+`ThreadStream::open` is a separate **advanced protocol reader**, not the ordinary finite Agent interaction. It can yield unrelated Runs. If you hold an applied Run Items snapshot, supply its paired Run ID and display `position`. Its optional `resume_after` is only a Redis seek hint (`after`), not proof of display coverage. With coverage supplied, an absent, expired or incompatible hint falls back to retained replay filtered by position; hint absence alone does not imply a gap. Without a display baseline, omit both `run` and `position` for cursor-only observation; do not invent coverage from a Redis ID.
 
 This standalone example reads an existing Run and prints its committed Items before observing its tail. Set `A13N_THREAD_ID` and `A13N_RUN_ID` as well as the URL/token. Printing is the example's application step, not durable business processing:
 
