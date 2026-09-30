@@ -194,6 +194,8 @@ pub mod headers_credential;
 pub use self::headers_credential::HeadersCredential;
 pub mod history_purge;
 pub use self::history_purge::HistoryPurge;
+pub mod image_input_policy;
+pub use self::image_input_policy::ImageInputPolicy;
 pub mod inbox_order;
 pub use self::inbox_order::InboxOrder;
 pub mod instrumentation_scope;
