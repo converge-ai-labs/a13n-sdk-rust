@@ -14,6 +14,14 @@ use serde::{Deserialize, Serialize};
 /// RunOptionsOutput : What a message may choose for the run it starts. A steer joins a run with the defaults or equal options.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RunOptionsOutput {
+    #[serde(
+        rename = "configuration",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub configuration: Option<Option<Box<models::RunConfigurationOutput>>>,
+
     #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
     pub labels: Option<std::collections::HashMap<String, String>>,
 
@@ -38,6 +46,7 @@ impl RunOptionsOutput {
     /// What a message may choose for the run it starts. A steer joins a run with the defaults or equal options.
     pub fn new() -> RunOptionsOutput {
         RunOptionsOutput {
+            configuration: None,
             labels: None,
             max_usage: None,
             overrides: None,
