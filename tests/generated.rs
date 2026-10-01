@@ -231,3 +231,63 @@ async fn generated_resources_forward_native_model_settings_and_upload_id() {
         body.upload_id
     );
 }
+
+#[test]
+fn run_configuration_and_media_characteristics_preserve_omission_null_empty_and_native_values() {
+    for value in [
+        json!({}),
+        json!({"configuration":null}),
+        json!({"configuration":{}}),
+        json!({"configuration":{"allowed_hosts":null}}),
+        json!({"configuration":{"allowed_hosts":[],"extensions":{}}}),
+        json!({"configuration":{"allowed_hosts":["UPPER.Example.","regex:.*\\.example"],"extensions":{"org.example":{"false":false,"zero":0,"empty":[],"nested":{"null":null}}}}}),
+    ] {
+        roundtrip::<RunOptionsInput>(value.clone());
+        roundtrip::<RunOptionsOutput>(value);
+    }
+    for image in [
+        None,
+        Some(Value::Null),
+        Some(json!({})),
+        Some(
+            json!({"split_large_images":false,"support_gif":false,"max_image_bytes":0,"max_image_dimension":0,"max_images":0}),
+        ),
+    ] {
+        let mut value =
+            json!({"url_input":{"video":["youtube"]},"video_input":{"max_video_bytes":4096}});
+        if let Some(image) = image {
+            value["image_input"] = image;
+        }
+        roundtrip::<HarnessModelCharacteristicsInput>(value.clone());
+        roundtrip::<HarnessModelCharacteristicsOutput>(value);
+    }
+    roundtrip::<ProviderAuthorizationRequest>(json!({"new_registration":false}));
+    roundtrip::<AuthorizationDisconnect>(
+        json!({"local_tokens_cleared":true,"revocation_confirmed":null}),
+    );
+    let callback: AuthorizationCallback = serde_json::from_value(
+        json!({"attempt_id":"attempt","callback_url":"https://callback.example/?code=secret&state=secret"}),
+    )
+    .unwrap();
+    assert!(!format!("{callback:?}").contains("secret"));
+}
+
+#[tokio::test]
+async fn native_model_media_policy_forwarding_never_applies_client_side_defaults() {
+    let mut fixture = server(|_| {
+        Reply::json(
+            400,
+            json!({"error":{"code":"invalid_argument","message":"capture"}}),
+        )
+    })
+    .await;
+    let sdk = client(&fixture);
+    let body: ModelCreate = serde_json::from_value(json!({"name":"model","provider_id":"p","config":{"model_api":"provider:model","model_name":"m","characteristics":{"image_input":{"split_large_images":false,"max_image_bytes":0,"max_images":0},"url_input":{"video":["youtube"]},"video_input":{"max_video_bytes":4096}}}})).unwrap();
+    sdk.resources()
+        .models()
+        .create(&body, Default::default())
+        .await
+        .unwrap_err();
+    let request = fixture.requests.recv().await.unwrap();
+    assert_eq!(request.json(), serde_json::to_value(body).unwrap());
+}

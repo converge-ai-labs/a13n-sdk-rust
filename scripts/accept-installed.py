@@ -35,6 +35,10 @@ def main() -> None:
     with tempfile.TemporaryDirectory(prefix="a13n-rust-consumer-") as directory:
         temporary = Path(directory)
         with tarfile.open(ARCHIVE) as archive:
+            for member in archive.getnames():
+                relative = member.split("/", 1)[-1]
+                if relative.startswith(("tmp/", "a13n-service-cli/")):
+                    raise AssertionError("SDK archive contains scratch files or the separate CLI")
             archive.extractall(temporary / "package", filter="data")
         package = temporary / "package/a13n-0.0.0"
         if not (package / "src/lib.rs").is_file():

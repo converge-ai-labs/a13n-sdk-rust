@@ -547,3 +547,119 @@ async fn waits_use_exact_identity_and_cancel_requests_and_sleeps() {
             .is_err()
     );
 }
+
+#[tokio::test]
+async fn model_provider_oauth_and_discovery_share_scoped_transport_and_faithful_status_bodies() {
+    let mut fixture = server(|request| {
+        if request.target.ends_with("/authorize") {
+            let mut body = sample("AuthorizationStart");
+            body["method"] = json!("manual_callback");
+            return Reply::json(200, body);
+        }
+        if request.target.ends_with("/models") {
+            return Reply::json(200, json!([{"slug":"model","display_name":"Model"}]));
+        }
+        if request.method == "DELETE" {
+            return Reply::json(
+                200,
+                json!({"local_tokens_cleared":true,"revocation_confirmed":null}),
+            );
+        }
+        Reply::json(200, sample("AuthorizationStatus"))
+    })
+    .await;
+    let sdk = Client::builder(&fixture.url)
+        .session(Arc::new(reqwest::cookie::Jar::default()), || {
+            Some("csrf".into())
+        })
+        .workspace("session-ws")
+        .build()
+        .unwrap();
+    let provider = sdk.resources().model_providers().at("p /中");
+    let status = provider
+        .authorization()
+        .get(Default::default())
+        .await
+        .unwrap();
+    assert_eq!(status.status.as_u16(), 200);
+    assert_eq!(status.request_id(), Some("req_test"));
+    provider
+        .authorize(
+            &models::ProviderAuthorizationRequest {
+                new_registration: Some(false),
+            },
+            Default::default(),
+        )
+        .await
+        .unwrap();
+    provider
+        .authorization()
+        .callback(
+            &models::AuthorizationCallback::new(
+                "attempt".into(),
+                "https://callback.example/?code=sensitive".into(),
+            ),
+            ModelProviderAuthorizationCallbackOptions {
+                x_workspace_id: Some("explicit-ws".into()),
+            },
+        )
+        .await
+        .unwrap();
+    let disconnect = provider
+        .authorization()
+        .delete(Default::default())
+        .await
+        .unwrap();
+    assert_eq!(disconnect.data.revocation_confirmed, Some(None));
+    provider.models().get(Default::default()).await.unwrap();
+    for (method, suffix, scope) in [
+        ("GET", "/authorization", "session-ws"),
+        ("POST", "/authorize", "session-ws"),
+        ("POST", "/authorization/callback", "explicit-ws"),
+        ("DELETE", "/authorization", "session-ws"),
+        ("GET", "/models", "session-ws"),
+    ] {
+        let request = fixture.requests.recv().await.unwrap();
+        assert_eq!(request.method, method);
+        assert_eq!(
+            request.target,
+            format!("/prefix/api/v1/model-providers/p%20%2F%E4%B8%AD{suffix}")
+        );
+        assert!(
+            request
+                .headers
+                .contains(&format!("x-workspace-id: {scope}"))
+        );
+        assert_eq!(
+            request.headers.contains("x-csrf-token: csrf"),
+            method != "GET"
+        );
+        if suffix == "/authorize" {
+            assert_eq!(request.json(), json!({"new_registration":false}));
+        }
+        if suffix == "/authorization/callback" {
+            assert_eq!(
+                request.json(),
+                json!({"attempt_id":"attempt","callback_url":"https://callback.example/?code=sensitive"})
+            );
+        }
+    }
+    let key = client(&fixture);
+    key.resources()
+        .model_providers()
+        .at("p")
+        .authorization()
+        .get(Default::default())
+        .await
+        .unwrap();
+    assert!(
+        !fixture
+            .requests
+            .recv()
+            .await
+            .unwrap()
+            .headers
+            .contains("x-workspace-id:")
+    );
+    assert!(fixture.requests.try_recv().is_err());
+}

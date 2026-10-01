@@ -33,6 +33,229 @@ def payload(text: str) -> dict[str, Any]:
     return {"content": [{"type": "text", "text": text}]}
 
 
+def offline(source: Path) -> None:
+    """Exercise the copied executable against a bounded local TCP origin only."""
+    import socket
+    import threading
+
+    captured: list[tuple[str, str, Any]] = []
+    native_event = {
+        "type": "TOOL_CALL_RESULT",
+        "subagentRunId": "child",
+        "content": [
+            {"type": "text", "text": "child"},
+            {
+                "type": "binary",
+                "mimeType": "video/mp4",
+                "url": "https://media.example/clip.mp4",
+                "source": {"kind": "file", "path": "clip.mp4"},
+            },
+        ],
+        "future": None,
+    }
+    with (
+        tempfile.TemporaryDirectory(prefix="a13n-cli-offline-") as name,
+        socket.create_server(("127.0.0.1", 0)) as listener,
+    ):
+        listener.settimeout(10)
+        directory = Path(name)
+        binary = directory / source.name
+        shutil.copy2(source, binary)
+        assert binary.read_bytes() == source.read_bytes()
+        base = f"http://127.0.0.1:{listener.getsockname()[1]}"
+        failures: list[Exception] = []
+
+        def serve() -> None:
+            try:
+                for _ in range(25):
+                    connection, _ = listener.accept()
+                    with connection:
+                        connection.settimeout(5)
+                        data = b""
+                        while b"\r\n\r\n" not in data:
+                            part = connection.recv(4096)
+                            assert part, "Incomplete offline request"
+                            data += part
+                        headers, body = data.split(b"\r\n\r\n", 1)
+                        length = next(
+                            (
+                                int(line.split(b":", 1)[1])
+                                for line in headers.split(b"\r\n")
+                                if line.lower().startswith(b"content-length:")
+                            ),
+                            0,
+                        )
+                        while len(body) < length:
+                            part = connection.recv(4096)
+                            assert part, "Incomplete offline body"
+                            body += part
+                        method, path, _ = headers.split(b"\r\n", 1)[0].decode().split()
+                        captured.append((method, path, json.loads(body) if body else None))
+                        status = 409
+                        content_type = "application/json"
+                        response: Any = {
+                            "error": {
+                                "code": "conflict",
+                                "message": "capture",
+                                "details": {"reason": "run_configuration_immutable"},
+                            }
+                        }
+                        if path.startswith("/api/v1/model-providers/"):
+                            status = 200
+                            response = {"provider_id": "p", "state": "disconnected"}
+                            if path.endswith("/authorize"):
+                                response = {
+                                    "attempt_id": "attempt",
+                                    "method": "manual_callback",
+                                    "authorization_url": "https://provider.example/authorize",
+                                    "expires_at": "2026-10-01T12:00:00Z",
+                                }
+                            elif path.endswith("/models"):
+                                response = [{"slug": "native", "display_name": "Native"}]
+                            elif method == "DELETE":
+                                response = {"local_tokens_cleared": True, "revocation_confirmed": None}
+                        if path.endswith("/stream"):
+                            status = 200
+                            content_type = "text/event-stream"
+                            response = (
+                                "event: delta\nid: 100-1\ndata: "
+                                + json.dumps(
+                                    {"run_id": "root", "attempt": 1, "sequence": 1, "event": native_event, "item": None}
+                                )
+                                + "\n\n"
+                            )
+                        encoded = response.encode() if isinstance(response, str) else json.dumps(response).encode()
+                        connection.sendall(
+                            f"HTTP/1.1 {status} Test\r\nContent-Type: {content_type}\r\nContent-Length: {len(encoded)}\r\nConnection: close\r\n\r\n".encode()
+                            + encoded
+                        )
+            except Exception as error:
+                failures.append(error)
+
+        server = threading.Thread(target=serve)
+        server.start()
+        environment = {key: value for key, value in os.environ.items() if not key.startswith("A13N_")}
+        environment.update({"HOME": str(directory), "USERPROFILE": str(directory), "XDG_CONFIG_HOME": str(directory)})
+
+        def execute(*arguments: str, stdin: bytes | None = None, code: int = 0) -> Any:
+            result = subprocess.run(
+                [str(binary), "--base-url", base, "--timeout", "5", *arguments],
+                cwd=directory,
+                env=environment,
+                input=stdin,
+                capture_output=True,
+                timeout=8,
+            )
+            assert result.returncode == code, "Copied CLI offline outcome mismatch"
+            return json.loads(result.stdout) if result.stdout else None
+
+        configurations = [
+            {},
+            {"configuration": None},
+            {"configuration": {}},
+            {"configuration": {"allowed_hosts": None}},
+            {"configuration": {"allowed_hosts": []}},
+            {
+                "configuration": {
+                    "extensions": {
+                        "example.native": {"enabled": False, "zero": 0, "empty": [], "nested": {"value": None}}
+                    }
+                }
+            },
+        ]
+        native_payload = {
+            "content": [
+                {"type": "text", "text": ""},
+                {"type": "url", "url": "https://media.example/image.png"},
+                {"type": "asset", "asset_id": "asset_native"},
+            ]
+        }
+        file = directory / "options.json"
+        for options in configurations:
+            file.write_text(json.dumps(options), encoding="utf-8")
+            execute(
+                "agents",
+                "start",
+                "a",
+                "--payload",
+                json.dumps(native_payload),
+                "--options",
+                f"@{file}",
+                "--idempotency-key",
+                "offline-key",
+                code=4,
+            )
+            execute(
+                "agents",
+                "send",
+                "a",
+                "--thread",
+                "t",
+                "--payload",
+                "@-",
+                "--options",
+                json.dumps(options),
+                "--idempotency-key",
+                "offline-key",
+                stdin=json.dumps(native_payload).encode(),
+                code=4,
+            )
+            execute(
+                "threads",
+                "create",
+                "--body",
+                json.dumps({"agent_id": "a", "payload": native_payload, "options": options}),
+                "--idempotency-key",
+                "offline-key",
+                code=4,
+            )
+            assert all(
+                request[2]["options"] == options and request[2]["payload"] == native_payload
+                for request in captured[-3:]
+            ), "Copied CLI lost native configuration/payload"
+        execute("model-providers", "authorization", "get", "--provider", "p")
+        execute("model-providers", "authorize", "p", "--body", '{"new_registration":false}')
+        execute(
+            "model-providers",
+            "authorization",
+            "callback",
+            "p",
+            "--body",
+            '{"attempt_id":"attempt","callback_url":"https://callback.example/?code=offline"}',
+        )
+        disconnected = execute("model-providers", "authorization", "delete", "--provider", "p")
+        assert disconnected["revocation_confirmed"] is None
+        assert execute("model-providers", "models", "get", "--provider", "p")[0]["slug"] == "native"
+        characteristics = {"image_input": {"split_large_images": False, "max_image_bytes": 0}, "video_input": {}}
+        execute(
+            "models",
+            "create",
+            "--body",
+            json.dumps(
+                {
+                    "name": "native",
+                    "provider_id": "p",
+                    "config": {
+                        "model_api": "provider:model",
+                        "model_name": "native",
+                        "characteristics": characteristics,
+                    },
+                }
+            ),
+            code=4,
+        )
+        assert captured[-1][2]["config"]["characteristics"] == characteristics
+        assert execute("threads", "events", "--thread", "t")["event"] == native_event
+        server.join(timeout=12)
+        assert not server.is_alive() and not failures and len(captured) == 25, (
+            "Copied CLI offline server did not complete"
+        )
+    print(
+        "Copied CLI local TCP: configuration omission/null/empty/native JSON, typed payload file/stdin, media policy, five OAuth/discovery commands and native child event passed",
+        flush=True,
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -42,10 +265,16 @@ def main() -> None:
         / "a13n-service-cli/target/debug"
         / ("a13n-service-cli.exe" if os.name == "nt" else "a13n-service-cli"),
     )
+    parser.add_argument(
+        "--offline", action="store_true", help="Copied-binary local TCP checks; no Service or provider calls"
+    )
     args = parser.parse_args()
     source: Path = args.binary.resolve()
     if not source.is_file():
         raise SystemExit("Build the CLI with make cli-build or supply --binary")
+    if args.offline:
+        offline(source)
+        return
     service = required("A13N_SERVICE_URL")
     if not service.startswith("https://"):
         raise SystemExit("Acceptance requires an HTTPS Service and its trusted CA")
@@ -382,6 +611,128 @@ def main() -> None:
         print(
             "Copied CLI verified HTTPS: native imported history/readback, 201/200 replay and exact Run wait", flush=True
         )
+        native_options = {
+            "configuration": {
+                "allowed_hosts": None,
+                "extensions": {
+                    "example.acceptance": {"enabled": False, "zero": 0, "empty": [], "nested": {"value": None}}
+                },
+            }
+        }
+        options_file = directory / "native-options.json"
+        options_file.write_text(json.dumps(native_options), encoding="utf-8")
+        native_payload_file = directory / "native-payload.json"
+        native_payload_file.write_text(json.dumps(payload("CLI native typed payload acceptance.")), encoding="utf-8")
+        configured = json.loads(
+            execute(
+                "--include-meta",
+                "agents",
+                "start",
+                agent,
+                "--payload",
+                f"@{native_payload_file}",
+                "--options",
+                f"@{options_file}",
+                "--idempotency-key",
+                str(uuid.uuid4()),
+                "--wait",
+            ).stdout
+        )
+        assert configured["outcome"]["data"]["status"] == "completed"
+        assert configured["outcome"]["data"]["options"]["configuration"] == native_options["configuration"]
+        configured_thread = configured["submitted"]["data"]["thread"]["id"]
+        configured_followup = json.loads(
+            execute(
+                "--include-meta",
+                "agents",
+                "send",
+                agent,
+                "--thread",
+                configured_thread,
+                "--payload",
+                "@-",
+                "--options",
+                json.dumps(native_options),
+                "--idempotency-key",
+                str(uuid.uuid4()),
+                "--wait",
+                stdin=json.dumps(payload("Native follow-up via stdin.")).encode(),
+            ).stdout
+        )
+        assert configured_followup["outcome"]["data"]["status"] == "completed"
+        assert configured_followup["outcome"]["data"]["options"]["configuration"] == native_options["configuration"]
+        # Use generated Message delivery for a different next_run snapshot; the helpers do not invent scheduling aliases.
+        active = call(
+            "threads",
+            "create",
+            "--idempotency-key",
+            str(uuid.uuid4()),
+            body={
+                "agent_id": agent,
+                "payload": payload("[interruptible] CLI frozen configuration."),
+                "options": native_options,
+            },
+        )["data"]
+        active_deadline = time.monotonic() + 20
+        while True:
+            active_state = call("runs", "get", active["run"]["id"])["data"]
+            if active_state["status"] == "running":
+                break
+            assert active_state["status"] == "accepted" and time.monotonic() < active_deadline, (
+                "Configuration fixture ended before running conflict test"
+            )
+            time.sleep(0.05)
+        rejected = execute(
+            "--error-format",
+            "json",
+            "threads",
+            "inbox",
+            "create",
+            "--thread",
+            active["thread"]["id"],
+            "--idempotency-key",
+            str(uuid.uuid4()),
+            "--body",
+            json.dumps(
+                {
+                    "agent_id": agent,
+                    "delivery": "steer",
+                    "payload": payload("Conflicting snapshot."),
+                    "options": {"configuration": {"allowed_hosts": []}},
+                }
+            ),
+            success=False,
+        )
+        assert rejected.returncode == 4 and json.loads(rejected.stderr)["error"]["status"] == 409
+        queued_native = call(
+            "threads",
+            "inbox",
+            "create",
+            "--thread",
+            active["thread"]["id"],
+            "--idempotency-key",
+            str(uuid.uuid4()),
+            body={
+                "agent_id": agent,
+                "delivery": "next_run",
+                "payload": payload("Next native snapshot."),
+                "options": {"configuration": {"allowed_hosts": None, "extensions": {"example.next": False}}},
+            },
+        )["data"]
+        first_native = call("runs", "wait", active["run"]["id"])["data"]
+        assert first_native["options"]["configuration"] == native_options["configuration"]
+        incorporated = call(
+            "threads", "inbox", "wait", queued_native["entry"]["id"], "--thread", active["thread"]["id"]
+        )["data"]
+        later_native = call("runs", "wait", incorporated["assigned_run_id"])["data"]
+        assert later_native["id"] != active["run"]["id"] and later_native["options"]["configuration"]["extensions"] == {
+            "example.next": False
+        }
+        print(
+            "Copied CLI verified HTTPS: typed --payload/--options file/stdin, frozen configuration readback, conflict and next_run",
+            flush=True,
+        )
+
         ordinary = json.loads(
             execute(
                 "--include-meta",
@@ -465,7 +816,11 @@ def main() -> None:
             "create",
             "--idempotency-key",
             str(uuid.uuid4()),
-            body={"agent_id": client_tool_agent, "payload": payload("[client] Review CLI scenario.")},
+            body={
+                "agent_id": client_tool_agent,
+                "payload": payload("[client] Review CLI scenario."),
+                "options": native_options,
+            },
         )["data"]["run"]["id"]
         waiting = call("runs", "wait", waiting_id)["data"]
         assert waiting["status"] == "waiting", "Run wait must return a waiting Run without pretending success"
@@ -485,6 +840,8 @@ def main() -> None:
                 "input": payload("Additional context on the reviewed CLI task."),
             },
         )["data"]
+        assert waiting["options"]["configuration"] == native_options["configuration"]
+        assert resumed["options"]["configuration"] == native_options["configuration"]
         assert resumed["id"] != waiting_id, "Resume must expose the successor Run identity"
         assert call("runs", "wait", waiting_id)["data"]["id"] == waiting_id, "Wait silently followed a successor"
         assert call("runs", "wait", resumed["id"])["data"]["status"] == "completed"

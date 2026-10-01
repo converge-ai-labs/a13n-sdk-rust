@@ -375,3 +375,170 @@ async fn slow_successful_headers_keep_one_attach_while_run_polling() {
     assert_eq!(attached.load(Ordering::SeqCst), 1);
     interaction.close();
 }
+
+#[tokio::test]
+async fn start_send_and_message_preserve_complete_configuration_and_ordered_media_payload() {
+    let payload = json!({"content":[{"type":"text","text":""},{"type":"url","url":"https://media.example/image.png"},{"type":"url","url":"https://media.example/video.mp4"},{"type":"asset","asset_id":"ast_media"},{"type":"json","value":{"enabled":false,"empty":[],"nested":{"value":null}}}]});
+    for configuration in [
+        None,
+        Some(Value::Null),
+        Some(json!({})),
+        Some(json!({"allowed_hosts":null})),
+        Some(json!({"allowed_hosts":[]})),
+        Some(
+            json!({"allowed_hosts":["MEDIA.Example.","regex:.*\\.example"],"extensions":{"org.example":{"enabled":false,"zero":0,"empty":{},"array":[null,true,{"deep":[]}],"text":""}}}),
+        ),
+    ] {
+        let mut fixture = server(|_| Reply::json(201, receipt())).await;
+        let sdk = client(&fixture);
+        let mut options = json!({"overrides":null});
+        if let Some(configuration) = configuration {
+            options["configuration"] = configuration;
+        }
+        let options: models::RunOptionsInput = serde_json::from_value(options.clone()).unwrap();
+        let expected = serde_json::to_value(&options).unwrap();
+        let message: models::MessagePayload = serde_json::from_value(payload.clone()).unwrap();
+        let mut interaction = sdk
+            .agent("a")
+            .start_with(
+                message.clone(),
+                "start",
+                StartOptions {
+                    options: Some(Box::new(options.clone())),
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap();
+        interaction.close();
+        let mut interaction = sdk
+            .agent("a")
+            .send_with(
+                "t",
+                message.clone(),
+                "send",
+                a13n::SendOptions {
+                    options: Some(Box::new(options.clone())),
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap();
+        interaction.close();
+        let mut request = models::Message::new("a".into(), message);
+        request.options = Some(Box::new(options));
+        sdk.resources()
+            .threads()
+            .at("t")
+            .inbox()
+            .create(
+                &request,
+                a13n::resources::InboxCreateOptions {
+                    idempotency_key: "message".into(),
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap();
+        for path in [
+            "/prefix/api/v1/threads",
+            "/prefix/api/v1/threads/t/inbox",
+            "/prefix/api/v1/threads/t/inbox",
+        ] {
+            let sent = fixture.requests.recv().await.unwrap();
+            assert_eq!(sent.target, path);
+            assert_eq!(sent.json()["options"], expected);
+            assert_eq!(sent.json()["payload"], payload);
+        }
+        assert!(
+            fixture.requests.try_recv().is_err(),
+            "Closing observation must not interrupt or resend"
+        );
+    }
+}
+
+#[tokio::test]
+async fn configuration_conflict_is_service_owned_and_never_retried_or_redirected_to_next_run() {
+    let mut fixture = server(|_| Reply::json(409, json!({"error":{"code":"conflict","message":"frozen","details":{"reason":"run_configuration_immutable"}}}))).await;
+    let sdk = client(&fixture);
+    let options = serde_json::from_value(json!({"configuration":{"allowed_hosts":[]}})).unwrap();
+    let error = sdk
+        .agent("a")
+        .send_with(
+            "t",
+            "change",
+            "once",
+            a13n::SendOptions {
+                options: Some(Box::new(options)),
+                ..Default::default()
+            },
+        )
+        .await
+        .err()
+        .unwrap();
+    assert!(
+        matches!(error, Error::Api(ref error) if error.status == 409 && error.details["reason"] == "run_configuration_immutable")
+    );
+    fixture.requests.recv().await.unwrap();
+    assert!(fixture.requests.try_recv().is_err());
+}
+
+#[tokio::test]
+async fn inline_child_agui_media_and_terminal_observations_do_not_finish_root_interaction() {
+    let events = vec![
+        json!({"type":"SUBAGENT_STARTED","subagentRunId":"child","parentToolCallId":"delegate","subagentName":"reviewer"}),
+        json!({"type":"TEXT_MESSAGE_CONTENT","messageId":"same","subagentRunId":"child","delta":"child"}),
+        json!({"type":"TEXT_MESSAGE_CONTENT","messageId":"same","delta":"root"}),
+        json!({"type":"TOOL_CALL_RESULT","toolCallId":"call","messageId":"m","role":"tool","subagentRunId":"child","content":[{"type":"text","text":"before"},{"type":"image","source":{"type":"url","value":"https://media.example/i.png","mimeType":"image/png"}},{"type":"image","source":{"type":"url","value":"https://media.example/i.png"}},{"type":"video","source":{"type":"file","value":"file-id","provider":"provider","mimeType":"video/mp4"}}]}),
+        json!({"type":"CUSTOM","name":"a13n.input.media","value":{"thread_id":"ht","run_id":"child","sequence":4,"event":{"source":"context","content":{"kind":"binary","payload_omitted":true,"size_bytes":4,"media_type":"image/png"}}},"metadata":{"display":false},"subagentRunId":"child"}),
+        json!({"type":"CUSTOM","name":"org.example.native","value":null,"future":{"flag":false,"empty":[]}}),
+        json!({"type":"SUBAGENT_FINISHED","subagentRunId":"child"}),
+        json!({"type":"RUN_FINISHED","threadId":"ht","runId":"child","outcome":{"type":"success"},"subagentRunId":"child"}),
+        json!({"type":"TEXT_MESSAGE_CONTENT","messageId":"same","delta":"after child"}),
+    ];
+    let wire = events
+        .iter()
+        .enumerate()
+        .map(|(i, event)| {
+            format!(
+                "event: delta\nid: 100-{}\ndata: {}\n\n",
+                i,
+                json!({"run_id":"r","attempt":1,"sequence":i,"event":event,"item":null})
+            )
+        })
+        .collect::<String>();
+    let served = wire.clone();
+    let mut items = sample("RunItems");
+    items["run"] = run("completed");
+    let mut item = sample("Item");
+    item["content"] = json!({"messageId":"same","subagentRunId":"child","result":events[3]["content"],"metadata":{"display":true}});
+    items["items"] = json!([item]);
+    let expected_items = items.clone();
+    let fixture = server(move |request| {
+        if request.method == "POST" {
+            return Reply::json(201, receipt());
+        }
+        if request.target.ends_with("/inbox/e") {
+            return Reply::json(200, entry("consumed", Some("r")));
+        }
+        if request.target.ends_with("/stream") {
+            return Reply::sse(&served);
+        }
+        if request.target.ends_with("/items") {
+            return Reply::json(200, items.clone());
+        }
+        Reply::json(200, run("running"))
+    })
+    .await;
+    let sdk = client(&fixture);
+    let mut interaction = sdk.agent("a").start("hello", "once").await.unwrap();
+    for expected in events {
+        let Some(ThreadFrame::Delta { data, .. }) = interaction.next().await.unwrap() else {
+            panic!("Child observation terminated root");
+        };
+        assert_eq!(Value::Object(data.event), expected);
+    }
+    let items = sdk.run("r").items().get(Default::default()).await.unwrap();
+    assert_eq!(serde_json::to_value(items.data).unwrap(), expected_items);
+    interaction.close();
+}

@@ -84,6 +84,12 @@ pub fn validate(index: usize, value: &Value) -> Result<(), CliError> {
         &doc["components"],
     )
 }
+/// Apply the same schema-derived unknown-field check to authored typed inputs.
+pub fn validate_model(name: &str, value: &Value) -> Result<(), CliError> {
+    let doc: Value =
+        serde_json::from_str(include_str!("schemas.json")).expect("generated JSON schemas");
+    check(value, &doc["components"][name], &doc["components"])
+}
 fn compatible(value: &Value, schema: &Value, definitions: &Value) -> bool {
     if let Some(reference) = schema.get("$ref").and_then(Value::as_str) {
         return compatible(

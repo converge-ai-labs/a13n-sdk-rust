@@ -233,7 +233,7 @@ pub async fn offline() -> Result<()> {
                 1 => {
                     assert!(text.starts_with("GET /api/v1/threads/t/stream?run=r&position=1-2 "));
                     assert!(text.to_ascii_lowercase().contains("last-event-id: 100-2"));
-                    ("text/event-stream", "event: delta\nid: 100-3\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":3,\"event\":{},\"item\":null}\n\n".into())
+                    ("text/event-stream", "event: delta\nid: 100-3\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":3,\"event\":{\"type\":\"TOOL_CALL_RESULT\",\"subagentRunId\":\"child\",\"content\":[{\"type\":\"text\",\"text\":\"child\"},{\"type\":\"binary\",\"mimeType\":\"video/mp4\",\"url\":\"https://media.example/clip.mp4\",\"source\":{\"kind\":\"file\",\"path\":\"clip.mp4\"}},{\"type\":\"binary\",\"mimeType\":\"image/png\",\"metadata\":{\"payload_omitted\":true},\"data\":null}],\"future\":null},\"item\":null}\n\n".into())
                 }
                 _ => {
                     assert!(text.starts_with("GET /api/v1/threads/t/stream?run=r&position=1-3 "));
@@ -261,7 +261,11 @@ pub async fn offline() -> Result<()> {
         },
     )
     .await?;
-    if !matches!(reader.next().await?, Some(ThreadFrame::Delta { .. }))
+    let frame = reader
+        .next()
+        .await?
+        .ok_or("Missing installed native delta")?;
+    if !matches!(frame, ThreadFrame::Delta { ref data, .. } if data.event["subagentRunId"] == "child" && data.event["content"][1]["source"]["path"] == "clip.mp4" && data.event["content"][2]["metadata"]["payload_omitted"] == true && data.event.get("future") == Some(&serde_json::Value::Null))
         || reader.applied_position() != Some("1-2")
     {
         return Err("Installed stream acknowledged received rather than applied output".into());
@@ -276,7 +280,7 @@ pub async fn offline() -> Result<()> {
     client.close();
     serving.await?;
     println!(
-        "Installed crate local TCP: Items baseline/hint, paired applied reconnect and optional gap target passed"
+        "Installed crate local TCP: native child/media/null event map, Items baseline/hint, paired applied reconnect and optional gap target passed"
     );
     Ok(())
 }

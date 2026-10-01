@@ -314,11 +314,11 @@ fn blocked_stdin_obeys_timeout_without_contacting_service() {
             "--timeout",
             "1",
             "agents",
-            "update",
+            "start",
             "agt_x",
-            "--if-match",
-            "\"v1\"",
-            "--body",
+            "--idempotency-key",
+            "key",
+            "--payload",
             "@-",
         ])
         .stdin(std::process::Stdio::piped())
@@ -353,11 +353,11 @@ fn blocked_stdin_obeys_ctrl_c() {
             "--timeout",
             "30",
             "agents",
-            "update",
+            "start",
             "agt_x",
-            "--if-match",
-            "\"v1\"",
-            "--body",
+            "--idempotency-key",
+            "key",
+            "--payload",
             "@-",
         ])
         .stdin(std::process::Stdio::piped())
@@ -736,5 +736,276 @@ fn schemas_and_dispatch_preserve_native_settings_upload_ids_and_eight_character_
             sent,
             serde_json::from_str::<serde_json::Value>(body).unwrap()
         );
+    }
+}
+
+#[test]
+fn authored_payload_and_options_preserve_native_configuration_on_the_wire() {
+    let payload = serde_json::json!({"content":[{"type":"text","text":""},{"type":"url","url":"https://media.example/image.png"},{"type":"asset","asset_id":"asset_native"}]});
+    let file = std::env::temp_dir().join(format!(
+        "a13n-native-{}-{:?}.json",
+        std::process::id(),
+        thread::current().id()
+    ));
+    std::fs::write(&file, payload.to_string()).unwrap();
+    for config in [
+        None,
+        Some(serde_json::Value::Null),
+        Some(serde_json::json!({})),
+        Some(serde_json::json!({"allowed_hosts":null})),
+        Some(serde_json::json!({"allowed_hosts":[]})),
+        Some(
+            serde_json::json!({"allowed_hosts":["media.example"],"extensions":{"example.policy":{"enabled":false,"zero":0,"empty":[],"nested":{"value":null}}}}),
+        ),
+    ] {
+        let mut options = serde_json::json!({});
+        if let Some(config) = config {
+            options["configuration"] = config;
+        }
+        for action in ["start", "send", "generated"] {
+            let (base, origin) = serve(vec![(409, vec![("Content-Type", "application/json")], br#"{"error":{"code":"conflict","message":"capture","details":{"reason":"run_configuration_immutable"}}}"#.to_vec())]);
+            let output = if action == "generated" {
+                let body = serde_json::json!({"agent_id":"a","payload":payload,"options":options})
+                    .to_string();
+                binary(&[
+                    "--base-url",
+                    &base,
+                    "threads",
+                    "create",
+                    "--idempotency-key",
+                    "native-key",
+                    "--body",
+                    &body,
+                ])
+            } else {
+                let raw_options = options.to_string();
+                let raw_payload = format!("@{}", file.display());
+                let mut args = vec![
+                    "--base-url",
+                    &base,
+                    "agents",
+                    action,
+                    "a",
+                    "--payload",
+                    &raw_payload,
+                    "--options",
+                    &raw_options,
+                    "--idempotency-key",
+                    "native-key",
+                ];
+                if action == "send" {
+                    args.extend(["--thread", "t"]);
+                }
+                binary(&args)
+            };
+            assert_eq!(output.status.code(), Some(4));
+            let requests = origin.join().unwrap();
+            assert_eq!(requests.len(), 1); // Service conflict is never silently retried.
+            let sent: serde_json::Value =
+                serde_json::from_str(requests[0].split_once("\r\n\r\n").unwrap().1).unwrap();
+            assert_eq!(sent["payload"], payload);
+            assert_eq!(sent["options"], options);
+        }
+    }
+    std::fs::remove_file(file).unwrap();
+    let output = binary(&[
+        "agents",
+        "start",
+        "a",
+        "--text",
+        "",
+        "--payload",
+        "{\"content\":[]}",
+        "--idempotency-key",
+        "k",
+    ]);
+    assert_eq!(output.status.code(), Some(2));
+}
+
+#[test]
+fn authored_json_stdin_and_empty_text_keep_existing_input_ownership() {
+    for (flag, value) in [
+        ("--payload", r#"{"content":[]}"#),
+        (
+            "--options",
+            r#"{"configuration":{"extensions":{"example":{"enabled":false}}}}"#,
+        ),
+    ] {
+        let (base, origin) = serve(vec![(
+            400,
+            vec![("Content-Type", "application/json")],
+            br#"{"error":{"code":"invalid_argument","message":"capture"}}"#.to_vec(),
+        )]);
+        let mut args = vec![
+            "--base-url",
+            &base,
+            "agents",
+            "start",
+            "a",
+            flag,
+            "@-",
+            "--idempotency-key",
+            "k",
+        ];
+        if flag == "--options" {
+            args.extend(["--text", ""]);
+        }
+        let mut child = Command::new(env!("CARGO_BIN_EXE_a13n-service-cli"))
+            .args(args)
+            .stdin(std::process::Stdio::piped())
+            .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::piped())
+            .spawn()
+            .unwrap();
+        child
+            .stdin
+            .take()
+            .unwrap()
+            .write_all(value.as_bytes())
+            .unwrap();
+        assert_eq!(child.wait_with_output().unwrap().status.code(), Some(2));
+        let requests = origin.join().unwrap();
+        let sent: serde_json::Value =
+            serde_json::from_str(requests[0].split_once("\r\n\r\n").unwrap().1).unwrap();
+        assert_eq!(
+            sent[if flag == "--payload" {
+                "payload"
+            } else {
+                "options"
+            }],
+            serde_json::from_str::<serde_json::Value>(value).unwrap()
+        );
+        if flag == "--options" {
+            assert_eq!(sent["payload"]["content"][0]["text"], "");
+        }
+    }
+    let output = binary(&[
+        "--base-url",
+        "http://127.0.0.1:1",
+        "agents",
+        "start",
+        "a",
+        "--text",
+        "x",
+        "--options",
+        r#"{"configuration":{"allowed_host":[]}}"#,
+        "--idempotency-key",
+        "k",
+    ]);
+    assert_eq!(output.status.code(), Some(2));
+}
+
+#[test]
+fn native_agui_child_media_and_unknown_custom_values_are_printed_without_reduction() {
+    let events = vec![
+        serde_json::json!({"type":"RUN_FINISHED","threadId":"t","runId":"child","subagentRunId":"child"}),
+        serde_json::json!({"type":"TOOL_CALL_RESULT","messageId":"same","toolCallId":"call","role":"tool","subagentRunId":"child","content":[{"type":"text","text":"tool"},{"type":"binary","mimeType":"video/mp4","url":"https://media.example/clip.mp4","source":{"kind":"file","path":"clip.mp4"}},{"type":"binary","mimeType":"image/png","data":null,"metadata":{"payload_omitted":true}}]}),
+        serde_json::json!({"type":"CUSTOM","name":"future.native","value":null}),
+    ];
+    let mut body = String::new();
+    for (index, event) in events.iter().enumerate() {
+        body.push_str(&format!("event: delta\nid: 100-{}\ndata: {}\n\n",index+1,serde_json::json!({"run_id":"root","attempt":1,"sequence":index+1,"event":event,"item":null})));
+    }
+    let (base, origin) = serve(vec![(
+        200,
+        vec![("Content-Type", "text/event-stream")],
+        body.into_bytes(),
+    )]);
+    let output = binary(&["--base-url", &base, "threads", "events", "--thread", "t"]);
+    let frames: Vec<serde_json::Value> = String::from_utf8(output.stdout)
+        .unwrap()
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(frames.len(), events.len());
+    for (frame, event) in frames.iter().zip(events) {
+        assert_eq!(frame["run_id"], "root");
+        assert_eq!(frame["event"], event);
+    }
+    assert_eq!(origin.join().unwrap().len(), 1);
+}
+
+#[test]
+fn five_oauth_commands_use_generated_dispatch_and_preserve_nullable_disconnection() {
+    for (commands, method, suffix, body, response) in [
+        (
+            vec!["model-providers", "authorization", "get", "--provider", "p"],
+            "GET",
+            "/authorization",
+            None,
+            serde_json::json!({"provider_id":"p","state":"disconnected"}),
+        ),
+        (
+            vec!["model-providers", "authorize", "p"],
+            "POST",
+            "/authorize",
+            Some(r#"{"new_registration":false}"#),
+            serde_json::json!({"attempt_id":"attempt","method":"manual_callback","authorization_url":"https://provider.example/authorize","expires_at":"2026-10-01T12:00:00Z"}),
+        ),
+        (
+            vec!["model-providers", "authorization", "callback", "p"],
+            "POST",
+            "/authorization/callback",
+            Some(
+                r#"{"attempt_id":"attempt","callback_url":"https://callback.example/?code=private"}"#,
+            ),
+            serde_json::json!({"provider_id":"p","state":"connected"}),
+        ),
+        (
+            vec![
+                "model-providers",
+                "authorization",
+                "delete",
+                "--provider",
+                "p",
+            ],
+            "DELETE",
+            "/authorization",
+            None,
+            serde_json::json!({"local_tokens_cleared":true,"revocation_confirmed":null}),
+        ),
+        (
+            vec!["model-providers", "models", "get", "--provider", "p"],
+            "GET",
+            "/models",
+            None,
+            serde_json::json!([{"slug":"native","display_name":"Native"}]),
+        ),
+    ] {
+        let (base, origin) = serve(vec![(
+            200,
+            vec![("Content-Type", "application/json")],
+            response.to_string().into_bytes(),
+        )]);
+        let mut args = vec!["--base-url", &base, "--include-meta"];
+        args.extend(commands);
+        if let Some(body) = body {
+            args.extend(["--body", body]);
+        }
+        let output = binary(&args);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let data: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(data["status"], 200);
+        // Deserialize/serialize may add optional defaults; native response evidence is retained.
+        if suffix == "/models" {
+            assert_eq!(data["data"][0]["slug"], "native");
+        }
+        if method == "DELETE" {
+            assert!(data["data"]["revocation_confirmed"].is_null());
+        }
+        let requests = origin.join().unwrap();
+        assert!(requests[0].starts_with(&format!("{method} /api/v1/model-providers/p{suffix} ")));
+        if let Some(body) = body {
+            let sent: serde_json::Value =
+                serde_json::from_str(requests[0].split_once("\r\n\r\n").unwrap().1).unwrap();
+            assert_eq!(
+                sent,
+                serde_json::from_str::<serde_json::Value>(body).unwrap()
+            );
+        }
     }
 }

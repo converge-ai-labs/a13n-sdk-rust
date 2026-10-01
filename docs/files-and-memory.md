@@ -75,4 +75,10 @@ Run `cargo +1.97.0 check` before using the real Service. The output includes a c
 
 Memory files use **logical paths** such as `notes.md`, not paths on your local disk. The example GETs `notes.md`, takes its exact ETag and uses `MemoryFileReplaceOptions.if_match` when replacing it. Delete similarly takes `MemoryFileDeleteOptions.if_match`; on `412`, read current content rather than overwriting it. A Run snapshots its Memory mounts at creation: changing a Thread's mount later will not retroactively change that Run. Record-provider Memory uses a provider-backed type and separate record/search APIs; it is not a binary Asset or a text file.
 
+## Image and video references
+
+A native `MessagePayload` preserves ordered text, `{ "type": "url", "url": "https://media.example/image.png" }` and `{ "type": "asset", "asset_id": "..." }` parts. URL parts do not take an SDK-specific media-type field. The same payload works with `start_with`, `send_with` and atomic `Resume.input`. Model `HarnessModelCharacteristicsInput.image_input` and `video_input` describe supported preparation and URL policies; `ImageInputPolicy`, `VideoInputPolicy` and `UrlInputSupportInput` are generated typed wire models. For `image_input`, omission, explicit null and an explicit empty policy object remain different wire inputs; false and zero are not absence.
+
+The SDK forwards references and characteristics rather than fetching or transcoding media. Service/Harness owns image preparation, video downloads, trusted TLS, host restrictions from the frozen Run configuration and byte budgets. An Asset round trip does not prove image/video Model support. Stream/Items media may be ordered structured descriptors with omitted payloads; retain metadata and inline-child attribution as described in [streams and results](streams-and-results.md#native-ag-ui-events-and-inline-child-attribution).
+
 **Common mistakes:** Do not pass `upload_id` as a message's `asset_id`; publish an Asset first. Use the Agent ID rather than its name; keep upload and message request keys separate. A Run returning `waiting` still needs explicit action—see [waiting and resume](waiting-and-resume.md).

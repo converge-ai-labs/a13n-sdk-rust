@@ -73,6 +73,7 @@ def test_cli_has_independent_workspace_and_is_excluded_from_sdk_package() -> Non
     assert cli["dependencies"]["a13n"] == {"path": ".."}
     assert cli["package"]["publish"] is False
     assert "a13n-service-cli/**" in sdk["package"]["exclude"]
+    assert "tmp/**" in sdk["package"]["exclude"]
     for manifest in [ROOT / "Cargo.toml", ROOT / "a13n-service-cli/Cargo.toml"]:
         output = subprocess.check_output(
             [
@@ -92,7 +93,7 @@ def test_cli_has_independent_workspace_and_is_excluded_from_sdk_package() -> Non
         assert Path(metadata["workspace_root"]).resolve() == manifest.parent.resolve()
         assert len(metadata["workspace_members"]) == 1
     package = subprocess.check_output(["cargo", "package", "--locked", "--allow-dirty", "--list"], cwd=ROOT, text=True)
-    assert not any(name.startswith("a13n-service-cli/") for name in package.splitlines())
+    assert not any(name.startswith(("a13n-service-cli/", "tmp/")) for name in package.splitlines())
 
 
 def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
