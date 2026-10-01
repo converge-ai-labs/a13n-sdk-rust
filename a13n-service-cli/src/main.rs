@@ -277,8 +277,7 @@ async fn run(args: impl IntoIterator<Item = OsString>) -> Result<(), CliError> {
         ));
     }
     if let Some((index, leaf)) = generated::selected(&matches)
-        && generated::OPERATIONS[index].1 == "GET"
-        && leaf.try_get_one::<String>("output").is_ok()
+        && generated::BINARY_OPERATIONS.contains(&index)
         && leaf.get_one::<String>("output").is_none()
     {
         return Err(CliError::input(
@@ -374,6 +373,23 @@ mod tests {
             assert!(leaf.get_flag("schema"));
             let schema = input::schema(index);
             assert!(schema.get("components").is_some() || schema.get("requestBody").is_some());
+        }
+    }
+    #[test]
+    fn binary_operation_metadata_matches_generated_output_arguments() {
+        for (index, (name, _, _)) in generated::OPERATIONS.iter().enumerate() {
+            let mut definition = command();
+            for segment in name.split_whitespace() {
+                definition = definition.find_subcommand(segment).unwrap().clone();
+            }
+            let has_output = definition
+                .get_arguments()
+                .any(|argument| argument.get_id() == "output");
+            assert_eq!(
+                generated::BINARY_OPERATIONS.contains(&index),
+                has_output,
+                "{name}"
+            );
         }
     }
     #[test]

@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install hooks-install hooks-check generate format lint typecheck test build package accept-installed check check-all cli-check cli-test cli-build cli-check-all
+.PHONY: help install hooks-install hooks-check generate format lint typecheck test build package accept-installed check check-all cli-check cli-test cli-test-release cli-build cli-check-all
 
 help:
 	@echo 'install | hooks-install | hooks-check | generate | format | lint | typecheck | check | test | build | package | accept-installed | cli-check-all | check-all'
@@ -57,10 +57,13 @@ cli-check:
 cli-test:
 	cargo test --manifest-path a13n-service-cli/Cargo.toml --all-features --locked
 
+cli-test-release:
+	cargo test --release --manifest-path a13n-service-cli/Cargo.toml --all-features --locked
+
 cli-build:
 	cargo build --manifest-path a13n-service-cli/Cargo.toml --all-features --locked
 
-cli-check-all: cli-check cli-test cli-build
+cli-check-all: cli-check cli-test cli-test-release cli-build
 
 check: lint typecheck cli-check
 
