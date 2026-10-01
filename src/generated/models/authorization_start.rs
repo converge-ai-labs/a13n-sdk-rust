@@ -45,6 +45,8 @@ impl AuthorizationStart {
 pub enum Method {
     #[serde(rename = "manual_callback")]
     ManualCallback,
+    #[serde(rename = "browser_callback")]
+    BrowserCallback,
 }
 
 impl Default for Method {
