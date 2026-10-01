@@ -24,9 +24,30 @@ fi
 
 `--wait` returns acceptance **and** the exact incorporating Run outcome, not just the receipt. A command may exit zero with a `waiting`, `failed` or `cancelled` Run; check `.outcome.data.status`. A failed/withdrawn queued Entry instead produces an error. For a completed Run, `a13n-service-cli runs result RUN_ID` reads its committed Items. To save receipt IDs immediately, omit `--wait` and observe the Entry below.
 
+## Typed payloads and frozen Run configuration
+
+`--text` and `--payload` are mutually exclusive; `--text ''` is still an explicit text part. Both `--payload` (MessagePayload) and `--options` (RunOptions) accept inline JSON, `@file` or `@-`. Only one flag can consume a single stdin document, so use a file for the other. This example uses an existing Agent and changes Service state:
+
+```bash
+cat > payload.json <<'JSON'
+{"content":[{"type":"text","text":"Review these references"},{"type":"url","url":"https://media.example/image.png"},{"type":"url","url":"https://media.example/clip.mp4"}]}
+JSON
+cat > options.json <<'JSON'
+{"configuration":{"allowed_hosts":["media.example"],"extensions":{"example.workflow":{"enabled":false,"limit":0,"tags":[],"nested":{"value":null}}}}}
+JSON
+a13n-service-cli --include-meta agents start "$AGENT_ID" \
+  --payload @payload.json --options @options.json \
+  --idempotency-key 'unique-native-payload-key' --wait > configured.json
+jq '.outcome.data | {id, status, configuration: .options.configuration}' configured.json
+```
+
+Replace the media references with authorized reachable inputs and choose a Model with matching capabilities before running. The CLI neither downloads/transcodes them nor applies host/TLS or byte-budget policy; Service/Harness owns that. `models create --schema` exposes native image/video/URL input characteristics; omit, null and empty policy objects remain distinct and false/zero are retained.
+
+Use the same flags with `agents send --thread`. Omitted configuration or `{"configuration":null}` selects defaults for a new Run and retains the frozen snapshot when steering an active (accepted or running) Run. An explicit object is the **whole** snapshot, not a merge; `{}` does not add hidden defaults, `allowed_hosts:null` is unrestricted, and `[]` denies all destinations. Different explicit steering configuration against an active (accepted or running) Run returns Service `409` (`run_configuration_immutable`), without a CLI retry or delivery rewrite. A waiting Run is sealed, not active: ordinary messages queue until explicit resume and do not trigger this active-Run configuration comparison. For explicit `next_run` delivery use generated `threads inbox create --body` with `delivery:"next_run"` and `options.configuration`; resume, recovery and children inherit their existing snapshot.
+
 ## Import completed model context on creation
 
-The ordinary `agents start` helper sends text only. Use generated `threads create` with `--body` to import completed Pydantic AI model messages **and** submit a new first payload in the same request. Replace the example Agent ID and request key; this changes Service state:
+The ordinary `agents start` helper accepts text or a typed payload, but does not import `message_history`. Use generated `threads create` with `--body` to import completed Pydantic AI model messages **and** submit a new first payload in the same request. Replace the example Agent ID and request key; this changes Service state:
 
 ```bash
 cat > imported-thread.json <<'JSON'

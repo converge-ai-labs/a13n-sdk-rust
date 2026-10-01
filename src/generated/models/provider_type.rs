@@ -66,6 +66,14 @@ pub struct ProviderType {
     pub model_apis: Option<Option<Vec<String>>>,
 
     #[serde(
+        rename = "oauth_scheme",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub oauth_scheme: Option<Option<String>>,
+
+    #[serde(
         rename = "operations",
         default,
         with = "::serde_with::rust::double_option",
@@ -135,6 +143,7 @@ impl ProviderType {
             environment_schema: None,
             model_api_labels: None,
             model_apis: None,
+            oauth_scheme: None,
             operations: None,
             settings_schemas: None,
             setup_label,

@@ -8,7 +8,7 @@ Follow the [source installation](../README.md#get-started-from-source). Supply `
 
 ## Create, start and send
 
-Replace `src/main.rs` in the sibling application with this complete example:
+Add `serde_json = "1"` to the sibling application and replace `src/main.rs` with this complete example:
 
 ```rust
 use a13n::{Client, Secret, StartOptions, generated::models};
@@ -31,6 +31,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let options = StartOptions {
         options: Some(Box::new(models::RunOptionsInput {
             overrides: Some(Some(Box::new(overrides))),
+            configuration: Some(Some(Box::new(models::RunConfigurationInput {
+                allowed_hosts: Some(None), // Explicitly unrestricted for this new Run.
+                extensions: Some(std::collections::HashMap::from([
+                    ("example.workflow".into(), serde_json::json!({"enabled": false, "limit": 0, "tags": []})),
+                ])),
+            }))),
             ..Default::default()
         })),
         ..Default::default()
@@ -92,6 +98,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 ## Structured messages and per-Run options
 
 The printed Items are the retained committed display, not guaranteed to cover every earlier item if the display limit dropped some; inspect `complete` and `dropped` as in [streams and results](streams-and-results.md). `start()` and `send()` accept either a string (one text part) or a generated `models::MessagePayload`. See [files and Memory](files-and-memory.md) for an Asset part. `start_with(input, key, StartOptions)` and `send_with(thread_id, input, key, SendOptions)` expose typed revision choice, delivery and `RunOptionsInput` overrides; `StartOptions` also accepts a Service Session ID, environment and Memory mounts, and MCP headers. These options do not assign an Agent owner to the Thread.
+
+`RunOptionsInput.configuration` is independent of Agent overrides: `None` omits it, `Some(None)` sends null and `Some(Some(Box::new(...)))` sends its complete snapshot. On a new Run omission/null selects defaults; steering an active (accepted or running) Run with omission/null retains its frozen value. An explicit `{}` does not merge defaults, `allowed_hosts: null` clears restrictions and `[]` denies every destination. Arbitrary namespaced `extensions` retain nested JSON, false, zero and empty values. A different explicit steering snapshot against an active (accepted or running) Run produces Service `409` with reason `run_configuration_immutable`; the SDK neither retries nor silently switches delivery. A waiting Run is sealed, not active: ordinary messages queue until explicit resume and do not trigger this active-Run configuration comparison. Choose `SendOptions.delivery = Some(models::Delivery::NextRun)` explicitly for a later Run with new configuration. Recovery, resume and children retain their accepted snapshot. Inspect `outcome.snapshot.data.options.configuration` for authoritative readback; normalization and media host/TLS enforcement belong to Service/Harness.
 
 The example puts `models::AgentOverrideInput.instructions` inside `RunOptionsInput.overrides` and `StartOptions.options` for the first Run only. Use the same shape in `SendOptions.options` if a follow-up also needs an override. The Service owns the merge: Run settings replace Agent settings before Model defaults are overlaid. Each `extra_body` or `extra_headers` object replaces the inherited object, and `{}` clears it. Do not approximate Service routing or provider policy in your client.
 

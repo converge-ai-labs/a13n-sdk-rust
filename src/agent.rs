@@ -6,7 +6,8 @@ use crate::{
 };
 
 /// Message input. A string becomes a single text part; full structured payloads
-/// (including file references) pass through unchanged.
+/// (including ordered media URL/file references and JSON values) pass through unchanged.
+/// Acquisition, media preparation and Run hostname policy remain Service/Harness-owned.
 pub struct Input(pub models::MessagePayload);
 impl From<models::MessagePayload> for Input {
     fn from(value: models::MessagePayload) -> Self {
@@ -35,6 +36,9 @@ pub struct StartOptions {
     /// Completed native Pydantic AI ModelMessage JSON objects for an initial import.
     /// The Service validates this history; it is not repeated by `send` or `resume`.
     pub message_history: Option<Vec<std::collections::HashMap<String, serde_json::Value>>>,
+    /// Complete Run options, including `configuration` independently of Agent overrides.
+    /// Configuration omission/null selects Service defaults or retains steering's frozen value;
+    /// an explicit object selects that entire snapshot without SDK merging or normalization.
     pub options: Option<Box<models::RunOptionsInput>>,
     pub session_id: Option<Option<String>>,
 }
@@ -43,6 +47,9 @@ pub struct StartOptions {
 pub struct SendOptions {
     pub agent_revision_id: Option<Option<String>>,
     pub delivery: Option<models::Delivery>,
+    /// Complete Run options, including `configuration` independently of Agent overrides.
+    /// Configuration omission/null selects Service defaults or retains steering's frozen value;
+    /// an explicit object selects that entire snapshot without SDK merging or normalization.
     pub options: Option<Box<models::RunOptionsInput>>,
 }
 

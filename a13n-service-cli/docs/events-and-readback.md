@@ -16,6 +16,10 @@ a13n-service-cli threads events --thread "$THREAD" --max-reconnects 3 > events.j
 
 The command writes one JSON object per line and flushes before advancing. A cursor-bearing line has a `cursor`; some lines are `changed`, `gap` or `reset` readback hints rather than text. For example, `jq -c 'select(.type == "delta")' events.jsonl` shows received deltas after you stop the observer. Ctrl-C exits 130 and closes only local observation; the remote Run keeps executing. A `--timeout 30` would similarly end this local command (exit 5), not interrupt remote work.
 
+## Native media and child attribution
+
+Each delta's `event` is the unchanged native AG-UI 1.0 JSON map, including unknown CUSTOM values, nulls, media metadata and ordered structured `TOOL_CALL_RESULT.content`. Text-only filtering must inspect `event.subagentRunId`: inline-child message/tool IDs can collide with root IDs. Do not flatten child text into a root reply, stringify structured parts, deduplicate repeated media or interpret omitted-payload descriptors as original bytes. The outer `run_id` is the Service owner; inner child `RUN_FINISHED` is not authoritative root completion. Use exact `runs wait` and committed Items, whose content retains child attribution. Authored user/steering input CUSTOM events are display evidence, not permission to execute tools. The command prints frames without a UI reducer.
+
 ## Recover with a cursor you actually applied
 
 If your consumer has **durably applied** an event and saved its cursor together with its own state, reconnect with that cursor:

@@ -1,6 +1,7 @@
-use crate::{CliError, config::Effective, output, required};
+use crate::{CliError, config::Effective, input, output, required};
 use a13n::{
-    Client,
+    Client, SendOptions, StartOptions,
+    generated::models,
     streaming::{ItemKind, ItemState, StreamOptions, ThreadFrame, ThreadStream},
 };
 pub(crate) fn item_kind(kind: &ItemKind) -> &'static str {
@@ -28,16 +29,20 @@ pub fn commands(mut api: Command) -> Command {
     api = api.mut_subcommand("agents", |agents| {
         agents
         .subcommand(Command::new("start")
-            .about("Submit the first text message to an Agent in a new Thread")
+            .about("Submit the first message to an Agent in a new Thread")
             .arg(Arg::new("id").required(true).help("Agent ID"))
-            .arg(Arg::new("text").long("text").required(true))
+            .arg(Arg::new("text").long("text").required_unless_present("payload").conflicts_with("payload"))
+            .arg(Arg::new("payload").long("payload").help("Typed MessagePayload JSON, @file or @- (instead of --text)"))
+            .arg(Arg::new("options").long("options").help("Complete RunOptions JSON, @file or @-; configuration is a snapshot, not a merge"))
             .arg(Arg::new("idempotency_key").long("idempotency-key").required(true))
             .arg(Arg::new("wait").long("wait").action(ArgAction::SetTrue)))
         .subcommand(Command::new("send")
             .about("Continue a Thread using the specified Agent; Threads have no permanent Agent")
             .arg(Arg::new("id").required(true).help("Agent ID"))
             .arg(Arg::new("thread_id").long("thread").required(true))
-            .arg(Arg::new("text").long("text").required(true))
+            .arg(Arg::new("text").long("text").required_unless_present("payload").conflicts_with("payload"))
+            .arg(Arg::new("payload").long("payload").help("Typed MessagePayload JSON, @file or @- (instead of --text)"))
+            .arg(Arg::new("options").long("options").help("Complete RunOptions JSON, @file or @-; configuration is a snapshot, not a merge"))
             .arg(Arg::new("idempotency_key").long("idempotency-key").required(true))
             .arg(Arg::new("wait").long("wait").action(ArgAction::SetTrue)))
     });
@@ -75,10 +80,50 @@ pub async fn run(
                 .ok_or_else(|| CliError::input("missing Agent command"))?;
             let agent = client.agent(required(leaf, "id")?);
             let key = required(leaf, "idempotency_key")?;
-            let text = required(leaf, "text")?;
+            let payload = if let Some(raw) = leaf.get_one::<String>("payload") {
+                let value = input::body(raw).await?;
+                input::validate_model("MessagePayload", &value)?;
+                serde_json::from_value::<models::MessagePayload>(value)
+                    .map_err(|_| CliError::input("payload does not match MessagePayload schema"))?
+            } else {
+                a13n::text_payload(required(leaf, "text")?)
+            };
+            let options = if let Some(raw) = leaf.get_one::<String>("options") {
+                let value = input::body(raw).await?;
+                input::validate_model("RunOptions-Input", &value)?;
+                Some(Box::new(
+                    serde_json::from_value::<models::RunOptionsInput>(value)
+                        .map_err(|_| CliError::input("options do not match RunOptions schema"))?,
+                ))
+            } else {
+                None
+            };
             let mut interaction = match action {
-                "start" => agent.start(text, key).await?,
-                "send" => agent.send(required(leaf, "thread_id")?, text, key).await?,
+                "start" => {
+                    agent
+                        .start_with(
+                            payload,
+                            key,
+                            StartOptions {
+                                options,
+                                ..Default::default()
+                            },
+                        )
+                        .await?
+                }
+                "send" => {
+                    agent
+                        .send_with(
+                            required(leaf, "thread_id")?,
+                            payload,
+                            key,
+                            SendOptions {
+                                options,
+                                ..Default::default()
+                            },
+                        )
+                        .await?
+                }
                 _ => return Err(CliError::input("unknown Agent command")),
             };
             if leaf.get_flag("wait") {

@@ -8,7 +8,7 @@ license = "Apache-2.0"
 repository = "https://github.com/converge-ai-labs/a13n-sdk-rust"
 description = "Rust SDK for a13n Service"
 readme = "README.md"
-exclude = ["a13n-service-cli/**"]
+exclude = ["a13n-service-cli/**", "tmp/**"]
 keywords = ["agents", "ai", "api", "sdk"]
 categories = ["api-bindings"]
 

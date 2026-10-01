@@ -27,6 +27,15 @@ pub struct HarnessModelCharacteristicsInput {
         skip_serializing_if = "Option::is_none"
     )]
     pub context_window_tokens: Option<Option<i32>>,
+    /// Image preparation policy; omitted uses native defaults, null disables automatic preparation.
+
+    #[serde(
+        rename = "image_input",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub image_input: Option<Option<Box<models::ImageInputPolicy>>>,
 
     #[serde(
         rename = "proactive_context_management_threshold",
@@ -35,6 +44,12 @@ pub struct HarnessModelCharacteristicsInput {
         skip_serializing_if = "Option::is_none"
     )]
     pub proactive_context_management_threshold: Option<Option<f64>>,
+
+    #[serde(rename = "url_input", skip_serializing_if = "Option::is_none")]
+    pub url_input: Option<Box<models::UrlInputSupportInput>>,
+
+    #[serde(rename = "video_input", skip_serializing_if = "Option::is_none")]
+    pub video_input: Option<Box<models::VideoInputPolicy>>,
 }
 
 impl HarnessModelCharacteristicsInput {
@@ -44,7 +59,10 @@ impl HarnessModelCharacteristicsInput {
             capabilities: None,
             compact_threshold: None,
             context_window_tokens: None,
+            image_input: None,
             proactive_context_management_threshold: None,
+            url_input: None,
+            video_input: None,
         }
     }
 }

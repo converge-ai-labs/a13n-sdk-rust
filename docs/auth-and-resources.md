@@ -75,3 +75,27 @@ async fn main() -> Result<(), Box<dyn Error>> {
 `client.resources()` is the complete typed generated resource graph. `.at(id)` is only a local handle; an async leaf method performs a request. `Response<T>` keeps `data`, actual HTTP status and headers, ETag and request ID. A field typed `Option<Option<T>>` can be omitted (`None`), sent as JSON null (`Some(None)`) or sent with a value (`Some(Some(value))`), but the **Service** defines what null means for each field. The generated operations include the contract's status/headers, cursor pagination, binary ownership and administrative endpoints. `Client::execute` exposes the generated API functions on the same transport when you need an advanced direct call.
 
 **Common mistakes:** Do not use an Agent name where an Agent ID is required; Models alone use keys. A session workspace header must not be copied into every request. Keep raw credentials and request bodies out of logs; see [errors and recovery](errors-and-recovery.md) for safe diagnostics.
+
+## Model Provider OAuth and discovery
+
+Use the canonical generated provider resource; it shares the same authentication, workspace scope and response metadata as other resources. This complete **read-only** example requires an existing OAuth provider ID in `A13N_MODEL_PROVIDER_ID` and an authorized workspace API key. Model discovery is a provider operation and can contact that provider, so compile offline first and run only when authorized:
+
+```rust
+use a13n::{Client, Secret};
+use std::{env, error::Error};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    let client = Client::new(&env::var("A13N_SERVICE_URL")?, Secret::new(env::var("A13N_API_TOKEN")?))?;
+    let provider = client.resources().model_providers().at(env::var("A13N_MODEL_PROVIDER_ID")?);
+    let status = provider.authorization().get(Default::default()).await?;
+    println!("Authorization state: {:?}, HTTP {}", status.data.state, status.status);
+    let discovered = provider.models().get(Default::default()).await?;
+    println!("Available models: {}", discovered.data.len());
+    Ok(())
+}
+```
+
+For an explicitly requested authorization, call `provider.authorize(&models::ProviderAuthorizationRequest { new_registration: Some(false) }, Default::default())`. Follow the returned `AuthorizationStart.method`, not a hardcoded client ID or callback origin. `browser_callback` requires an **unconfined user login session** using the caller-owned session setup above; hosted callback setup is an operator responsibility. Manual callback remains available to workspace-write actors, including API keys. Present the returned URL through your application's approved browser flow without logging its state.
+
+Only after the user completes a manual flow, submit `models::AuthorizationCallback::new(attempt_id, callback_url)` to `provider.authorization().callback(...)` using that actual attempt and callback URL. Treat callback codes as secrets: never print the model or request body. Disconnect is an explicit mutation through `provider.authorization().delete(Default::default())`; its `revocation_confirmed: Option<Option<bool>>` can be null and must not be read as proof of remote revocation. The SDK stores no provider tokens and does not implement a second OAuth client. Local mock tests establish wire/status/scope behavior, not real user authorization or external token exchange.

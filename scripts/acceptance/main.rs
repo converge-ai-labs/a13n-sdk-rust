@@ -65,7 +65,7 @@ async fn offline() -> Result<()> {
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
     let base_url = format!("http://{}", listener.local_addr()?);
     let server = tokio::spawn(async move {
-        for _ in 0..4 {
+        for _ in 0..9 {
             let (mut socket, _) = listener.accept().await.unwrap();
             let mut data = [0; 8192];
             let size = socket.read(&mut data).await.unwrap();
@@ -85,6 +85,32 @@ async fn offline() -> Result<()> {
                 ("200 OK", r#"{"items":[],"next_cursor":null}"#, "")
             } else if input.starts_with("GET /api/v1/workspaces/invalid") {
                 ("200 OK", "private-response-body", "")
+            } else if input.starts_with("GET /api/v1/model-providers/p/models") {
+                (
+                    "200 OK",
+                    r#"[{"slug":"native","display_name":"Native"}]"#,
+                    "",
+                )
+            } else if input.starts_with("POST /api/v1/model-providers/p/authorize ") {
+                (
+                    "200 OK",
+                    r#"{"attempt_id":"attempt","authorization_url":"https://provider.example/authorize","method":"manual_callback","expires_at":"2026-10-01T12:00:00Z"}"#,
+                    "",
+                )
+            } else if input.starts_with("DELETE /api/v1/model-providers/p/authorization ") {
+                (
+                    "200 OK",
+                    r#"{"local_tokens_cleared":true,"revocation_confirmed":null}"#,
+                    "",
+                )
+            } else if input.starts_with("GET /api/v1/model-providers/p/authorization ")
+                || input.starts_with("POST /api/v1/model-providers/p/authorization/callback ")
+            {
+                (
+                    "200 OK",
+                    r#"{"provider_id":"p","state":"disconnected"}"#,
+                    "",
+                )
             } else {
                 assert!(input.starts_with("GET /api/v1/workspaces/fail"));
                 (
@@ -172,6 +198,25 @@ async fn offline() -> Result<()> {
         !format!("{error:?}").contains("private"),
         "Transport redaction",
     )?;
+    for configuration in [
+        serde_json::json!({}),
+        serde_json::json!({"configuration":null}),
+        serde_json::json!({"configuration":{}}),
+        serde_json::json!({"configuration":{"allowed_hosts":[]}}),
+        serde_json::to_value(configuration_options("offline"))?,
+    ] {
+        let typed: m::RunOptionsInput = serde_json::from_value(configuration.clone())?;
+        ensure(
+            serde_json::to_value(typed)? == configuration,
+            "Installed native configuration presence",
+        )?;
+    }
+    let policies = serde_json::json!({"image_input":{"split_large_images":false,"max_image_bytes":0},"video_input":{}});
+    let typed: m::HarnessModelCharacteristicsInput = serde_json::from_value(policies.clone())?;
+    ensure(
+        serde_json::to_value(typed)? == policies,
+        "Installed image/video characteristics",
+    )?;
     let null = m::AgentUpdate {
         description: Some(None),
         ..Default::default()
@@ -189,6 +234,40 @@ async fn offline() -> Result<()> {
         format!("{:?}", Secret::new("offline-token")).contains("[REDACTED]"),
         "Secret redaction",
     )?;
+    let provider = resources.model_providers().at("p");
+    provider.authorization().get(Default::default()).await?;
+    let started = provider
+        .authorize(
+            &m::ProviderAuthorizationRequest {
+                new_registration: Some(false),
+            },
+            Default::default(),
+        )
+        .await?;
+    ensure(
+        started.status.as_u16() == 200
+            && started.data.method == Some(m::authorization_start::Method::ManualCallback),
+        "Installed authorization contract",
+    )?;
+    provider
+        .authorization()
+        .callback(
+            &m::AuthorizationCallback::new(
+                started.data.attempt_id,
+                "https://callback.example/?code=offline".into(),
+            ),
+            Default::default(),
+        )
+        .await?;
+    let disconnected = provider.authorization().delete(Default::default()).await?;
+    ensure(
+        disconnected.data.revocation_confirmed == Some(None),
+        "Installed nullable disconnection",
+    )?;
+    ensure(
+        provider.models().get(Default::default()).await?.data.len() == 1,
+        "Installed native discovery array",
+    )?;
     client.close();
     ensure(
         matches!(
@@ -200,7 +279,158 @@ async fn offline() -> Result<()> {
     server.await?;
     sse::offline().await?;
     println!(
-        "Installed crate local TCP: typed resource/enums/diagnostics, redaction, metadata, pagination, 428, nullable and close passed"
+        "Installed crate local TCP: typed resource/enums/diagnostics, configuration/media presence, five OAuth/discovery operations, redaction, metadata, pagination, 428, nullable and close passed"
+    );
+    Ok(())
+}
+
+fn configuration_options(marker: &str) -> m::RunOptionsInput {
+    m::RunOptionsInput {
+        configuration: Some(Some(Box::new(m::RunConfigurationInput {
+            allowed_hosts: Some(None),
+            extensions: Some(std::collections::HashMap::from([(
+                "example.acceptance".into(),
+                serde_json::json!({"marker":marker,"enabled":false,"zero":0,"empty":[],"nested":{"value":null}}),
+            )])),
+        }))),
+        ..Default::default()
+    }
+}
+fn check_configuration(run: &m::RunView, marker: &str) -> Result<()> {
+    let options = serde_json::to_value(&run.options)?;
+    let config = &options["configuration"];
+    ensure(
+        config["allowed_hosts"].is_null()
+            && config["extensions"]["example.acceptance"]
+                == serde_json::json!({"marker":marker,"enabled":false,"zero":0,"empty":[],"nested":{"value":null}}),
+        "Frozen configuration readback lost native values",
+    )
+}
+async fn native_configuration(client: &Client, agent_id: &str) -> Result<()> {
+    let agent = client.agent(agent_id);
+    let mut first = agent
+        .start_with(
+            text_payload("[interruptible] Rust frozen configuration acceptance."),
+            key(),
+            a13n::StartOptions {
+                options: Some(Box::new(configuration_options("first"))),
+                ..Default::default()
+            },
+        )
+        .await?;
+    let thread = first.thread.id.clone();
+    let run_id = first
+        .receipt
+        .data
+        .run
+        .as_ref()
+        .ok_or("Configured start has no Run")?
+        .id
+        .clone();
+    check_configuration(
+        &client
+            .run(&run_id)
+            .resource()
+            .get(Default::default())
+            .await?
+            .data,
+        "first",
+    )?;
+    tokio::time::timeout(Duration::from_secs(20), async {
+        loop {
+            let state = client
+                .run(&run_id)
+                .resource()
+                .get(Default::default())
+                .await?
+                .data;
+            if state.status == m::RunStatus::Running {
+                return Ok::<_, Box<dyn StdError>>(());
+            }
+            ensure(
+                state.status == m::RunStatus::Accepted,
+                "Configuration fixture ended before active steering",
+            )?;
+            tokio::time::sleep(Duration::from_millis(50)).await;
+        }
+    })
+    .await??;
+    for options in [
+        m::RunOptionsInput::default(),
+        m::RunOptionsInput {
+            configuration: Some(None),
+            ..Default::default()
+        },
+        configuration_options("first"),
+    ] {
+        let mut steer = agent
+            .send_with(
+                &thread,
+                text_payload("Steering keeps the accepted snapshot."),
+                key(),
+                a13n::SendOptions {
+                    delivery: Some(m::Delivery::Steer),
+                    options: Some(Box::new(options)),
+                    ..Default::default()
+                },
+            )
+            .await?;
+        // A queued receipt may have no Run; only consumed Entry readback can bind it.
+        steer.close();
+    }
+    ensure(
+        client
+            .run(&run_id)
+            .resource()
+            .get(Default::default())
+            .await?
+            .data
+            .status
+            == m::RunStatus::Running,
+        "Configuration fixture sealed before conflict test",
+    )?;
+    let conflict = agent
+        .send_with(
+            &thread,
+            text_payload("Must not replace active configuration."),
+            key(),
+            a13n::SendOptions {
+                delivery: Some(m::Delivery::Steer),
+                options: Some(Box::new(configuration_options("different"))),
+                ..Default::default()
+            },
+        )
+        .await;
+    ensure(
+        matches!(conflict, Err(Error::Api(ref error)) if error.status == 409 && error.details["reason"] == "run_configuration_immutable"),
+        "Different steering snapshot did not expose Service conflict",
+    )?;
+    let mut next = agent
+        .send_with(
+            &thread,
+            text_payload("Explicit next Run configuration."),
+            key(),
+            a13n::SendOptions {
+                delivery: Some(m::Delivery::NextRun),
+                options: Some(Box::new(configuration_options("next"))),
+                ..Default::default()
+            },
+        )
+        .await?;
+    let first_outcome = first.result().await?;
+    ensure(
+        *first_outcome.status() == m::RunStatus::Completed,
+        "Configured first Run status",
+    )?;
+    check_configuration(&first_outcome.snapshot.data, "first")?;
+    let next_outcome = next.result().await?;
+    ensure(
+        next_outcome.run.id != run_id && *next_outcome.status() == m::RunStatus::Completed,
+        "Next Run identity/status",
+    )?;
+    check_configuration(&next_outcome.snapshot.data, "next")?;
+    println!(
+        "Verified HTTPS: native StartOptions/SendOptions configuration, omitted/null/matching steering, immutable conflict and explicit next_run readback"
     );
     Ok(())
 }
@@ -221,6 +451,7 @@ async fn live() -> Result<()> {
     let workspace_id = required("A13N_WORKSPACE")?;
     let ws = client.resources();
     let agent = required("A13N_AGENT")?;
+    native_configuration(&client, &agent).await?;
     ensure(
         resources.healthz().get().await?.status.as_u16() == 200,
         "HTTPS health",
@@ -473,7 +704,14 @@ async fn live() -> Result<()> {
     wait(accepted(&forked)?, m::RunStatus::Completed).await?;
     let mut waiting = client
         .agent(required("A13N_CLIENT_TOOL_AGENT")?)
-        .start("[client] Review local SDK scenario.", key())
+        .start_with(
+            "[client] Review local SDK scenario.",
+            key(),
+            a13n::StartOptions {
+                options: Some(Box::new(configuration_options("resume"))),
+                ..Default::default()
+            },
+        )
         .await?;
     let waiting_outcome = waiting.result().await?;
     ensure(
@@ -498,7 +736,9 @@ async fn live() -> Result<()> {
     request.input = Some(Some(Box::new(text_payload(
         "Additional context on the reviewed task.",
     ))));
+    check_configuration(&waiting_outcome.snapshot.data, "resume")?;
     let resumed = waiting_outcome.run.resume(&request, key()).await?;
+    check_configuration(&resumed.receipt.data, "resume")?;
     ensure(
         resumed.receipt.data.id != waiting_outcome.run.id,
         "Resume should create successor Run",

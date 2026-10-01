@@ -372,9 +372,34 @@ pub const OPERATIONS: &[(&str, &str, &str)] = &[
         "/api/v1/model-providers/{provider_id}",
     ),
     (
+        "model-providers authorize",
+        "POST",
+        "/api/v1/model-providers/{provider_id}/authorize",
+    ),
+    (
         "model-providers test",
         "POST",
         "/api/v1/model-providers/{provider_id}/test",
+    ),
+    (
+        "model-providers authorization delete",
+        "DELETE",
+        "/api/v1/model-providers/{provider_id}/authorization",
+    ),
+    (
+        "model-providers authorization get",
+        "GET",
+        "/api/v1/model-providers/{provider_id}/authorization",
+    ),
+    (
+        "model-providers authorization callback",
+        "POST",
+        "/api/v1/model-providers/{provider_id}/authorization/callback",
+    ),
+    (
+        "model-providers models get",
+        "GET",
+        "/api/v1/model-providers/{provider_id}/models",
     ),
     ("models list", "GET", "/api/v1/models"),
     ("models create", "POST", "/api/v1/models"),
@@ -921,7 +946,12 @@ pub const EXAMPLES: &[&str] = &[
     "a13n-service-cli model-providers create --body @request.json",
     "a13n-service-cli model-providers get PROVIDER_ID",
     "a13n-service-cli model-providers update PROVIDER_ID --if-match IF_MATCH --body @request.json",
+    "a13n-service-cli model-providers authorize PROVIDER_ID --body @request.json",
     "a13n-service-cli model-providers test PROVIDER_ID",
+    "a13n-service-cli model-providers authorization delete --provider PROVIDER_ID",
+    "a13n-service-cli model-providers authorization get --provider PROVIDER_ID",
+    "a13n-service-cli model-providers authorization callback PROVIDER_ID --body @request.json",
+    "a13n-service-cli model-providers models get --provider PROVIDER_ID",
     "a13n-service-cli models list",
     "a13n-service-cli models create --body @request.json",
     "a13n-service-cli models get KEY",
@@ -1074,30 +1104,30 @@ fn group_0() -> Command {
     node = node.subcommand(group_114());
     node = node.subcommand(group_120());
     node = node.subcommand(group_122());
-    node = node.subcommand(group_128());
-    node = node.subcommand(group_133());
-    node = node.subcommand(group_158());
-    node = node.subcommand(group_160());
-    node = node.subcommand(group_174());
-    node = node.subcommand(group_179());
-    node = node.subcommand(group_196());
-    node = node.subcommand(group_205());
-    node = node.subcommand(group_232());
-    node = node.subcommand(group_234());
-    node = node.subcommand(group_236());
+    node = node.subcommand(group_135());
+    node = node.subcommand(group_140());
+    node = node.subcommand(group_165());
+    node = node.subcommand(group_167());
+    node = node.subcommand(group_181());
+    node = node.subcommand(group_186());
+    node = node.subcommand(group_203());
+    node = node.subcommand(group_212());
+    node = node.subcommand(group_239());
     node = node.subcommand(group_241());
     node = node.subcommand(group_243());
-    node = node.subcommand(group_251());
-    node = node.subcommand(group_271());
-    node = node.subcommand(group_277());
-    node = node.subcommand(operation_204());
-    node = node.subcommand(group_287());
-    node = node.subcommand(group_289());
+    node = node.subcommand(group_248());
+    node = node.subcommand(group_250());
+    node = node.subcommand(group_258());
+    node = node.subcommand(group_278());
+    node = node.subcommand(group_284());
+    node = node.subcommand(operation_209());
     node = node.subcommand(group_294());
-    node = node.subcommand(group_298());
+    node = node.subcommand(group_296());
     node = node.subcommand(group_301());
-    node = node.subcommand(group_310());
-    node = node.subcommand(group_312());
+    node = node.subcommand(group_305());
+    node = node.subcommand(group_308());
+    node = node.subcommand(group_317());
+    node = node.subcommand(group_319());
     node
 }
 fn operation_0() -> Command {
@@ -1665,6 +1695,9 @@ fn group_122() -> Command {
     node = node.subcommand(operation_94());
     node = node.subcommand(operation_95());
     node = node.subcommand(operation_96());
+    node = node.subcommand(operation_97());
+    node = node.subcommand(group_129());
+    node = node.subcommand(group_133());
     node
 }
 fn operation_92() -> Command {
@@ -1680,676 +1713,675 @@ fn operation_95() -> Command {
     Command::new("update").about("Update model provider").long_about("A `config` change must also replace or remove a stored credential: it never follows a new endpoint. (PATCH /api/v1/model-providers/{provider_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli model-providers update PROVIDER_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("provider_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_96() -> Command {
+    Command::new("authorize").about("Authorize Model").long_about("Authorize Model (POST /api/v1/model-providers/{provider_id}/authorize). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli model-providers authorize PROVIDER_ID --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("provider_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_97() -> Command {
     Command::new("test").about("Test model provider").long_about("Test model provider (POST /api/v1/model-providers/{provider_id}/test). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli model-providers test PROVIDER_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("provider_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_128() -> Command {
-    let mut node = Command::new("models")
+fn group_129() -> Command {
+    let mut node = Command::new("authorization")
         .subcommand_required(true)
         .arg_required_else_help(true);
-    node = node.subcommand(operation_97());
     node = node.subcommand(operation_98());
     node = node.subcommand(operation_99());
     node = node.subcommand(operation_100());
     node
 }
-fn operation_97() -> Command {
-    Command::new("list").about("List Models").long_about("List Models (GET /api/v1/models). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli models list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
 fn operation_98() -> Command {
-    Command::new("create").about("Create Model").long_about("Needs `write` on the workspace and on the model's provider, whose credential the model spends. (POST /api/v1/models). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli models create --body @request.json").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("delete").about("Disconnect Model Authorization").long_about("Disconnect Model Authorization (DELETE /api/v1/model-providers/{provider_id}/authorization). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli model-providers authorization delete --provider PROVIDER_ID").arg(Arg::new("provider_id").long("provider").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_99() -> Command {
-    Command::new("get").about("Get Model").long_about("Get Model (GET /api/v1/models/{key}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli models get KEY").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("key")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Model Authorization").long_about("Model Authorization (GET /api/v1/model-providers/{provider_id}/authorization). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli model-providers authorization get --provider PROVIDER_ID").arg(Arg::new("provider_id").long("provider").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_100() -> Command {
-    Command::new("update").about("Update Model").long_about("A configuration change also needs `write` on the model's provider. (PATCH /api/v1/models/{key}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli models update KEY --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("key")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("callback").about("Complete Model Authorization").long_about("Complete Model Authorization (POST /api/v1/model-providers/{provider_id}/authorization/callback). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli model-providers authorization callback PROVIDER_ID --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("provider_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_133() -> Command {
-    let mut node = Command::new("organizations")
+    let mut node = Command::new("models")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_101());
-    node = node.subcommand(operation_102());
-    node = node.subcommand(operation_103());
-    node = node.subcommand(group_137());
-    node = node.subcommand(group_139());
-    node = node.subcommand(group_144());
-    node = node.subcommand(group_148());
-    node = node.subcommand(group_153());
-    node = node.subcommand(group_155());
     node
 }
 fn operation_101() -> Command {
-    Command::new("list").about("List Organizations").long_about("List Organizations (GET /api/v1/organizations). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli organizations list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Discover Model Provider Models").long_about("Discover Model Provider Models (GET /api/v1/model-providers/{provider_id}/models). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli model-providers models get --provider PROVIDER_ID").arg(Arg::new("provider_id").long("provider").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn operation_102() -> Command {
-    Command::new("get").about("Get Organization").long_about("Get Organization (GET /api/v1/organizations/{organization_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli organizations get ORGANIZATION_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("organization_id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_103() -> Command {
-    Command::new("update").about("Update Organization").long_about("Update Organization (PATCH /api/v1/organizations/{organization_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli organizations update ORGANIZATION_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("organization_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_137() -> Command {
-    let mut node = Command::new("audit-events")
+fn group_135() -> Command {
+    let mut node = Command::new("models")
         .subcommand_required(true)
         .arg_required_else_help(true);
+    node = node.subcommand(operation_102());
+    node = node.subcommand(operation_103());
     node = node.subcommand(operation_104());
+    node = node.subcommand(operation_105());
     node
 }
-fn operation_104() -> Command {
-    Command::new("list").about("List Organization Audit Events").long_about("List Organization Audit Events (GET /api/v1/organizations/{organization_id}/audit-events). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations audit-events list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+fn operation_102() -> Command {
+    Command::new("list").about("List Models").long_about("List Models (GET /api/v1/models). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli models list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_139() -> Command {
-    let mut node = Command::new("grants")
+fn operation_103() -> Command {
+    Command::new("create").about("Create Model").long_about("Needs `write` on the workspace and on the model's provider, whose credential the model spends. (POST /api/v1/models). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli models create --body @request.json").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_104() -> Command {
+    Command::new("get").about("Get Model").long_about("Get Model (GET /api/v1/models/{key}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli models get KEY").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("key")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_105() -> Command {
+    Command::new("update").about("Update Model").long_about("A configuration change also needs `write` on the model's provider. (PATCH /api/v1/models/{key}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli models update KEY --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("key")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_140() -> Command {
+    let mut node = Command::new("organizations")
         .subcommand_required(true)
         .arg_required_else_help(true);
-    node = node.subcommand(operation_105());
     node = node.subcommand(operation_106());
     node = node.subcommand(operation_107());
     node = node.subcommand(operation_108());
+    node = node.subcommand(group_144());
+    node = node.subcommand(group_146());
+    node = node.subcommand(group_151());
+    node = node.subcommand(group_155());
+    node = node.subcommand(group_160());
+    node = node.subcommand(group_162());
     node
 }
-fn operation_105() -> Command {
-    Command::new("list").about("List Organization Grants").long_about("List Organization Grants (GET /api/v1/organizations/{organization_id}/grants). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations grants list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
 fn operation_106() -> Command {
-    Command::new("create").about("Create Organization Grant").long_about("Create Organization Grant (POST /api/v1/organizations/{organization_id}/grants). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations grants create --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Organizations").long_about("List Organizations (GET /api/v1/organizations). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli organizations list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_107() -> Command {
-    Command::new("delete").about("Delete Organization Grant").long_about("Delete Organization Grant (DELETE /api/v1/organizations/{organization_id}/grants/{grant_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations grants delete GRANT_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("grant_id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Get Organization").long_about("Get Organization (GET /api/v1/organizations/{organization_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli organizations get ORGANIZATION_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("organization_id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_108() -> Command {
-    Command::new("update").about("Change Organization Grant").long_about("The grant is replaced: the result carries its new ID. (PATCH /api/v1/organizations/{organization_id}/grants/{grant_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations grants update GRANT_ID --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("grant_id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("update").about("Update Organization").long_about("Update Organization (PATCH /api/v1/organizations/{organization_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli organizations update ORGANIZATION_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("organization_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_144() -> Command {
-    let mut node = Command::new("icon")
+    let mut node = Command::new("audit-events")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_109());
-    node = node.subcommand(operation_110());
-    node = node.subcommand(operation_111());
     node
 }
 fn operation_109() -> Command {
-    Command::new("delete").about("Delete Organization Icon").long_about("Delete Organization Icon (DELETE /api/v1/organizations/{organization_id}/icon). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations icon delete --if-match IF_MATCH").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Organization Audit Events").long_about("List Organization Audit Events (GET /api/v1/organizations/{organization_id}/audit-events). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations audit-events list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn operation_110() -> Command {
-    Command::new("get").about("Get Organization Icon").long_about("Get Organization Icon (GET /api/v1/organizations/{organization_id}/icon). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations icon get --output FILE").arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_111() -> Command {
-    Command::new("replace").about("Put Organization Icon").long_about("Put Organization Icon (PUT /api/v1/organizations/{organization_id}/icon). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations icon replace --if-match IF_MATCH --content-type CONTENT_TYPE --file FILE").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("content_type").long("content-type").required_unless_present_any(["schema", "example"])).arg(Arg::new("file").long("file").required_unless_present_any(["schema", "example"]).help("File path or - for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_148() -> Command {
-    let mut node = Command::new("invitations")
+fn group_146() -> Command {
+    let mut node = Command::new("grants")
         .subcommand_required(true)
         .arg_required_else_help(true);
+    node = node.subcommand(operation_110());
+    node = node.subcommand(operation_111());
     node = node.subcommand(operation_112());
     node = node.subcommand(operation_113());
-    node = node.subcommand(operation_114());
-    node = node.subcommand(operation_115());
     node
 }
+fn operation_110() -> Command {
+    Command::new("list").about("List Organization Grants").long_about("List Organization Grants (GET /api/v1/organizations/{organization_id}/grants). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations grants list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_111() -> Command {
+    Command::new("create").about("Create Organization Grant").long_about("Create Organization Grant (POST /api/v1/organizations/{organization_id}/grants). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations grants create --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
 fn operation_112() -> Command {
-    Command::new("list").about("List Organization Invitations").long_about("List Organization Invitations (GET /api/v1/organizations/{organization_id}/invitations). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations invitations list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("delete").about("Delete Organization Grant").long_about("Delete Organization Grant (DELETE /api/v1/organizations/{organization_id}/grants/{grant_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations grants delete GRANT_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("grant_id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_113() -> Command {
-    Command::new("create").about("Create Organization Invitation").long_about("Create Organization Invitation (POST /api/v1/organizations/{organization_id}/invitations). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations invitations create --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("update").about("Change Organization Grant").long_about("The grant is replaced: the result carries its new ID. (PATCH /api/v1/organizations/{organization_id}/grants/{grant_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations grants update GRANT_ID --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("grant_id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn operation_114() -> Command {
-    Command::new("resend").about("Resend Organization Invitation").long_about("Resend Organization Invitation (POST /api/v1/organizations/{organization_id}/invitations/{invitation_id}/resend). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations invitations resend INVITATION_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("invitation_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_115() -> Command {
-    Command::new("revoke").about("Revoke Organization Invitation").long_about("Revoke Organization Invitation (POST /api/v1/organizations/{organization_id}/invitations/{invitation_id}/revoke). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations invitations revoke INVITATION_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("invitation_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_153() -> Command {
-    let mut node = Command::new("members")
+fn group_151() -> Command {
+    let mut node = Command::new("icon")
         .subcommand_required(true)
         .arg_required_else_help(true);
+    node = node.subcommand(operation_114());
+    node = node.subcommand(operation_115());
     node = node.subcommand(operation_116());
     node
 }
+fn operation_114() -> Command {
+    Command::new("delete").about("Delete Organization Icon").long_about("Delete Organization Icon (DELETE /api/v1/organizations/{organization_id}/icon). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations icon delete --if-match IF_MATCH").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_115() -> Command {
+    Command::new("get").about("Get Organization Icon").long_about("Get Organization Icon (GET /api/v1/organizations/{organization_id}/icon). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations icon get --output FILE").arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
 fn operation_116() -> Command {
-    Command::new("list").about("List Members").long_about("List Members (GET /api/v1/organizations/{organization_id}/members). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations members list").arg(Arg::new("kind").long("kind").value_parser(["user", "service_account"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("replace").about("Put Organization Icon").long_about("Put Organization Icon (PUT /api/v1/organizations/{organization_id}/icon). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations icon replace --if-match IF_MATCH --content-type CONTENT_TYPE --file FILE").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("content_type").long("content-type").required_unless_present_any(["schema", "example"])).arg(Arg::new("file").long("file").required_unless_present_any(["schema", "example"]).help("File path or - for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_155() -> Command {
-    let mut node = Command::new("workspaces")
+    let mut node = Command::new("invitations")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_117());
     node = node.subcommand(operation_118());
+    node = node.subcommand(operation_119());
+    node = node.subcommand(operation_120());
     node
 }
 fn operation_117() -> Command {
-    Command::new("list").about("List Organization Workspaces").long_about("List Organization Workspaces (GET /api/v1/organizations/{organization_id}/workspaces). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations workspaces list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Organization Invitations").long_about("List Organization Invitations (GET /api/v1/organizations/{organization_id}/invitations). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations invitations list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_118() -> Command {
+    Command::new("create").about("Create Organization Invitation").long_about("Create Organization Invitation (POST /api/v1/organizations/{organization_id}/invitations). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations invitations create --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_119() -> Command {
+    Command::new("resend").about("Resend Organization Invitation").long_about("Resend Organization Invitation (POST /api/v1/organizations/{organization_id}/invitations/{invitation_id}/resend). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations invitations resend INVITATION_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("invitation_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_120() -> Command {
+    Command::new("revoke").about("Revoke Organization Invitation").long_about("Revoke Organization Invitation (POST /api/v1/organizations/{organization_id}/invitations/{invitation_id}/revoke). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations invitations revoke INVITATION_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("invitation_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_160() -> Command {
+    let mut node = Command::new("members")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_121());
+    node
+}
+fn operation_121() -> Command {
+    Command::new("list").about("List Members").long_about("List Members (GET /api/v1/organizations/{organization_id}/members). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations members list").arg(Arg::new("kind").long("kind").value_parser(["user", "service_account"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_162() -> Command {
+    let mut node = Command::new("workspaces")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_122());
+    node = node.subcommand(operation_123());
+    node
+}
+fn operation_122() -> Command {
+    Command::new("list").about("List Organization Workspaces").long_about("List Organization Workspaces (GET /api/v1/organizations/{organization_id}/workspaces). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations workspaces list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_123() -> Command {
     Command::new("create").about("Create Workspace").long_about("Create Workspace (POST /api/v1/organizations/{organization_id}/workspaces). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --organization ORGANIZATION_ID organizations workspaces create --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_158() -> Command {
+fn group_165() -> Command {
     let mut node = Command::new("provider-types")
         .subcommand_required(true)
         .arg_required_else_help(true);
-    node = node.subcommand(operation_119());
+    node = node.subcommand(operation_124());
     node
 }
-fn operation_119() -> Command {
+fn operation_124() -> Command {
     Command::new("list").about("List Provider Types").long_about("List Provider Types (GET /api/v1/provider-types/{kind}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli provider-types list KIND").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("kind")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_160() -> Command {
+fn group_167() -> Command {
     let mut node = Command::new("runs")
         .subcommand_required(true)
         .arg_required_else_help(true);
-    node = node.subcommand(operation_120());
-    node = node.subcommand(operation_121());
-    node = node.subcommand(operation_122());
-    node = node.subcommand(operation_123());
-    node = node.subcommand(operation_124());
-    node = node.subcommand(group_166());
-    node = node.subcommand(group_170());
-    node = node.subcommand(group_172());
-    node
-}
-fn operation_120() -> Command {
-    Command::new("get").about("Get Run").long_about("Get Run (GET /api/v1/runs/{run_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs get RUN_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("run_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_121() -> Command {
-    Command::new("update").about("Update Run").long_about("Labels only. (PATCH /api/v1/runs/{run_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs update RUN_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("run_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_122() -> Command {
-    Command::new("fork").about("Fork Run").long_about("A new thread in the run's session that continues from this run's committed history. (POST /api/v1/runs/{run_id}/fork). Use --schema for the offline request schema. Supply a caller-owned idempotency key; an uncertain outcome needs readback.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs fork RUN_ID --idempotency-key IDEMPOTENCY_KEY --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("run_id")).arg(Arg::new("idempotency_key").long("idempotency-key").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_123() -> Command {
-    Command::new("interrupt").about("Interrupt Run").long_about("Interrupt Run (POST /api/v1/runs/{run_id}/interrupt). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs interrupt RUN_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("run_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_124() -> Command {
-    Command::new("resume").about("Resume Run").long_about("Answer the exact waiting run's approvals, client tools and user questions; the successor continues from them. (POST /api/v1/runs/{run_id}/resume). Use --schema for the offline request schema. Supply a caller-owned idempotency key; an uncertain outcome needs readback.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs resume RUN_ID --idempotency-key IDEMPOTENCY_KEY --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("run_id")).arg(Arg::new("idempotency_key").long("idempotency-key").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_166() -> Command {
-    let mut node = Command::new("attempts")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
     node = node.subcommand(operation_125());
-    node = node.subcommand(group_168());
+    node = node.subcommand(operation_126());
+    node = node.subcommand(operation_127());
+    node = node.subcommand(operation_128());
+    node = node.subcommand(operation_129());
+    node = node.subcommand(group_173());
+    node = node.subcommand(group_177());
+    node = node.subcommand(group_179());
     node
 }
 fn operation_125() -> Command {
+    Command::new("get").about("Get Run").long_about("Get Run (GET /api/v1/runs/{run_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs get RUN_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("run_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_126() -> Command {
+    Command::new("update").about("Update Run").long_about("Labels only. (PATCH /api/v1/runs/{run_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs update RUN_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("run_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_127() -> Command {
+    Command::new("fork").about("Fork Run").long_about("A new thread in the run's session that continues from this run's committed history. (POST /api/v1/runs/{run_id}/fork). Use --schema for the offline request schema. Supply a caller-owned idempotency key; an uncertain outcome needs readback.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs fork RUN_ID --idempotency-key IDEMPOTENCY_KEY --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("run_id")).arg(Arg::new("idempotency_key").long("idempotency-key").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_128() -> Command {
+    Command::new("interrupt").about("Interrupt Run").long_about("Interrupt Run (POST /api/v1/runs/{run_id}/interrupt). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs interrupt RUN_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("run_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_129() -> Command {
+    Command::new("resume").about("Resume Run").long_about("Answer the exact waiting run's approvals, client tools and user questions; the successor continues from them. (POST /api/v1/runs/{run_id}/resume). Use --schema for the offline request schema. Supply a caller-owned idempotency key; an uncertain outcome needs readback.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs resume RUN_ID --idempotency-key IDEMPOTENCY_KEY --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("run_id")).arg(Arg::new("idempotency_key").long("idempotency-key").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_173() -> Command {
+    let mut node = Command::new("attempts")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_130());
+    node = node.subcommand(group_175());
+    node
+}
+fn operation_130() -> Command {
     Command::new("list").about("Run Attempts").long_about("Run Attempts (GET /api/v1/runs/{run_id}/attempts). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs attempts list --run RUN_ID").arg(Arg::new("run_id").long("run").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_168() -> Command {
+fn group_175() -> Command {
     let mut node = Command::new("trace")
         .subcommand_required(true)
         .arg_required_else_help(true);
-    node = node.subcommand(operation_126());
+    node = node.subcommand(operation_131());
     node
 }
-fn operation_126() -> Command {
+fn operation_131() -> Command {
     Command::new("list").about("List Attempt Spans").long_about("The attempt's spans, including its inline child runs. (GET /api/v1/runs/{run_id}/attempts/{attempt_id}/trace). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs attempts trace list --run RUN_ID --attempt ATTEMPT_ID").arg(Arg::new("run_id").long("run").required_unless_present_any(["schema", "example"])).arg(Arg::new("attempt_id").long("attempt").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_170() -> Command {
+fn group_177() -> Command {
     let mut node = Command::new("items")
         .subcommand_required(true)
         .arg_required_else_help(true);
-    node = node.subcommand(operation_127());
-    node
-}
-fn operation_127() -> Command {
-    Command::new("get").about("Run Items").long_about("Run Items (GET /api/v1/runs/{run_id}/items). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs items get --run RUN_ID").arg(Arg::new("run_id").long("run").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_172() -> Command {
-    let mut node = Command::new("lineage")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
-    node = node.subcommand(operation_128());
-    node
-}
-fn operation_128() -> Command {
-    Command::new("list").about("Run Lineage").long_about("The run and its ancestors, nearest first, across fork origins. (GET /api/v1/runs/{run_id}/lineage). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs lineage list --run RUN_ID").arg(Arg::new("run_id").long("run").required_unless_present_any(["schema", "example"])).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_174() -> Command {
-    let mut node = Command::new("sessions")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
-    node = node.subcommand(operation_129());
-    node = node.subcommand(operation_130());
-    node = node.subcommand(operation_131());
     node = node.subcommand(operation_132());
     node
 }
-fn operation_129() -> Command {
-    Command::new("list").about("List Sessions").long_about("List Sessions (GET /api/v1/sessions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli sessions list").arg(Arg::new("q").long("q")).arg(Arg::new("agent_id").long("agent-id")).arg(Arg::new("status").long("status").action(ArgAction::Append)).arg(Arg::new("trigger").long("trigger").action(ArgAction::Append)).arg(Arg::new("updated_after").long("updated-after")).arg(Arg::new("updated_before").long("updated-before")).arg(Arg::new("label").long("label").action(ArgAction::Append)).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_130() -> Command {
-    Command::new("create").about("Create Session").long_about("Create Session (POST /api/v1/sessions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli sessions create --body @request.json").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_131() -> Command {
-    Command::new("get").about("Get Session").long_about("Get Session (GET /api/v1/sessions/{session_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli sessions get SESSION_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("session_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
 fn operation_132() -> Command {
-    Command::new("update").about("Update Session").long_about("Update Session (PATCH /api/v1/sessions/{session_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli sessions update SESSION_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("session_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Run Items").long_about("Run Items (GET /api/v1/runs/{run_id}/items). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs items get --run RUN_ID").arg(Arg::new("run_id").long("run").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_179() -> Command {
-    let mut node = Command::new("skills")
+    let mut node = Command::new("lineage")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_133());
+    node
+}
+fn operation_133() -> Command {
+    Command::new("list").about("Run Lineage").long_about("The run and its ancestors, nearest first, across fork origins. (GET /api/v1/runs/{run_id}/lineage). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli runs lineage list --run RUN_ID").arg(Arg::new("run_id").long("run").required_unless_present_any(["schema", "example"])).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_181() -> Command {
+    let mut node = Command::new("sessions")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
     node = node.subcommand(operation_134());
     node = node.subcommand(operation_135());
     node = node.subcommand(operation_136());
     node = node.subcommand(operation_137());
-    node = node.subcommand(operation_138());
-    node = node.subcommand(operation_139());
-    node = node.subcommand(group_187());
     node
 }
-fn operation_133() -> Command {
-    Command::new("list").about("List Skills").long_about("Skills of the workspace. `q` matches the name or description, ignoring case; `source` the kind of\nsource the default revision was read from; `archived` keeps only archived skills, or only open ones. (GET /api/v1/skills). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills list").arg(Arg::new("label").long("label").action(ArgAction::Append)).arg(Arg::new("q").long("q")).arg(Arg::new("source").long("source").value_parser(["upload", "github"])).arg(Arg::new("archived").long("archived")).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
 fn operation_134() -> Command {
-    Command::new("create").about("Create Skill").long_about("Create Skill (POST /api/v1/skills). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills create --body @request.json").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Sessions").long_about("List Sessions (GET /api/v1/sessions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli sessions list").arg(Arg::new("q").long("q")).arg(Arg::new("agent_id").long("agent-id")).arg(Arg::new("status").long("status").action(ArgAction::Append)).arg(Arg::new("trigger").long("trigger").action(ArgAction::Append)).arg(Arg::new("updated_after").long("updated-after")).arg(Arg::new("updated_before").long("updated-before")).arg(Arg::new("label").long("label").action(ArgAction::Append)).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_135() -> Command {
-    Command::new("validate").about("Validate Package").long_about("The manifest the package would give a new skill or revision, checked as creation checks it; nothing is\nstored. (POST /api/v1/skills/validate). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills validate --body @request.json").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("create").about("Create Session").long_about("Create Session (POST /api/v1/sessions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli sessions create --body @request.json").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_136() -> Command {
-    Command::new("get").about("Get Skill").long_about("Get Skill (GET /api/v1/skills/{skill_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills get SKILL_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("skill_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Get Session").long_about("Get Session (GET /api/v1/sessions/{session_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli sessions get SESSION_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("session_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_137() -> Command {
-    Command::new("update").about("Update Skill").long_about("Name, description and labels; an archived skill changes only by unarchiving. (PATCH /api/v1/skills/{skill_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills update SKILL_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("skill_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("update").about("Update Session").long_about("Update Session (PATCH /api/v1/sessions/{session_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli sessions update SESSION_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("session_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn operation_138() -> Command {
-    Command::new("archive").about("Archive Skill").long_about("Archived skills keep their revisions readable and pinned; they refuse new revisions and new pins. (POST /api/v1/skills/{skill_id}/archive). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills archive SKILL_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("skill_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_139() -> Command {
-    Command::new("unarchive").about("Unarchive Skill").long_about("Unarchive Skill (POST /api/v1/skills/{skill_id}/unarchive). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills unarchive SKILL_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("skill_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_187() -> Command {
-    let mut node = Command::new("revisions")
+fn group_186() -> Command {
+    let mut node = Command::new("skills")
         .subcommand_required(true)
         .arg_required_else_help(true);
+    node = node.subcommand(operation_138());
+    node = node.subcommand(operation_139());
     node = node.subcommand(operation_140());
     node = node.subcommand(operation_141());
     node = node.subcommand(operation_142());
     node = node.subcommand(operation_143());
-    node = node.subcommand(group_192());
+    node = node.subcommand(operation_144());
     node = node.subcommand(group_194());
     node
 }
+fn operation_138() -> Command {
+    Command::new("list").about("List Skills").long_about("Skills of the workspace. `q` matches the name or description, ignoring case; `source` the kind of\nsource the default revision was read from; `archived` keeps only archived skills, or only open ones. (GET /api/v1/skills). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills list").arg(Arg::new("label").long("label").action(ArgAction::Append)).arg(Arg::new("q").long("q")).arg(Arg::new("source").long("source").value_parser(["upload", "github"])).arg(Arg::new("archived").long("archived")).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_139() -> Command {
+    Command::new("create").about("Create Skill").long_about("Create Skill (POST /api/v1/skills). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills create --body @request.json").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
 fn operation_140() -> Command {
-    Command::new("list").about("List Revisions").long_about("List Revisions (GET /api/v1/skills/{skill_id}/revisions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills revisions list --skill SKILL_ID").arg(Arg::new("skill_id").long("skill").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("validate").about("Validate Package").long_about("The manifest the package would give a new skill or revision, checked as creation checks it; nothing is\nstored. (POST /api/v1/skills/validate). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills validate --body @request.json").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_141() -> Command {
-    Command::new("create").about("Create Revision").long_about("A package whose manifest equals the default revision's creates nothing and returns that revision. (POST /api/v1/skills/{skill_id}/revisions). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills revisions create --skill SKILL_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("skill_id").long("skill").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Get Skill").long_about("Get Skill (GET /api/v1/skills/{skill_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills get SKILL_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("skill_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_142() -> Command {
-    Command::new("get").about("Get Revision").long_about("Get Revision (GET /api/v1/skills/{skill_id}/revisions/{revision_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills revisions get REVISION_ID --skill SKILL_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("revision_id")).arg(Arg::new("skill_id").long("skill").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("update").about("Update Skill").long_about("Name, description and labels; an archived skill changes only by unarchiving. (PATCH /api/v1/skills/{skill_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills update SKILL_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("skill_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_143() -> Command {
-    Command::new("set_default").about("Set Default Revision").long_about("Set Default Revision (POST /api/v1/skills/{skill_id}/revisions/{revision_id}/set-default). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills revisions set_default REVISION_ID --skill SKILL_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("revision_id")).arg(Arg::new("skill_id").long("skill").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_192() -> Command {
-    let mut node = Command::new("content")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
-    node = node.subcommand(operation_144());
-    node
+    Command::new("archive").about("Archive Skill").long_about("Archived skills keep their revisions readable and pinned; they refuse new revisions and new pins. (POST /api/v1/skills/{skill_id}/archive). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills archive SKILL_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("skill_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_144() -> Command {
-    Command::new("get").about("Read Archive").long_about("The revision's package as a zip archive. (GET /api/v1/skills/{skill_id}/revisions/{revision_id}/content). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills revisions content get --skill SKILL_ID --revision REVISION_ID --output FILE").arg(Arg::new("skill_id").long("skill").required_unless_present_any(["schema", "example"])).arg(Arg::new("revision_id").long("revision").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("unarchive").about("Unarchive Skill").long_about("Unarchive Skill (POST /api/v1/skills/{skill_id}/unarchive). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills unarchive SKILL_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("skill_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_194() -> Command {
-    let mut node = Command::new("files")
+    let mut node = Command::new("revisions")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_145());
-    node
-}
-fn operation_145() -> Command {
-    Command::new("get").about("Read File").long_about("One package file, by the path the revision's manifest lists. (GET /api/v1/skills/{skill_id}/revisions/{revision_id}/files/{path}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills revisions files get --skill SKILL_ID --revision REVISION_ID --path PATH --output FILE").arg(Arg::new("skill_id").long("skill").required_unless_present_any(["schema", "example"])).arg(Arg::new("revision_id").long("revision").required_unless_present_any(["schema", "example"])).arg(Arg::new("path").long("path").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_196() -> Command {
-    let mut node = Command::new("subscriptions")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
     node = node.subcommand(operation_146());
     node = node.subcommand(operation_147());
     node = node.subcommand(operation_148());
-    node = node.subcommand(operation_149());
-    node = node.subcommand(operation_150());
-    node = node.subcommand(group_202());
+    node = node.subcommand(group_199());
+    node = node.subcommand(group_201());
     node
 }
+fn operation_145() -> Command {
+    Command::new("list").about("List Revisions").long_about("List Revisions (GET /api/v1/skills/{skill_id}/revisions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills revisions list --skill SKILL_ID").arg(Arg::new("skill_id").long("skill").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
 fn operation_146() -> Command {
-    Command::new("list").about("List Subscriptions").long_about("List Subscriptions (GET /api/v1/subscriptions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("create").about("Create Revision").long_about("A package whose manifest equals the default revision's creates nothing and returns that revision. (POST /api/v1/skills/{skill_id}/revisions). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills revisions create --skill SKILL_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("skill_id").long("skill").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_147() -> Command {
-    Command::new("create").about("Create Subscription").long_about("The response is the only time the signing secret is returned. (POST /api/v1/subscriptions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions create --body @request.json").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Get Revision").long_about("Get Revision (GET /api/v1/skills/{skill_id}/revisions/{revision_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills revisions get REVISION_ID --skill SKILL_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("revision_id")).arg(Arg::new("skill_id").long("skill").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_148() -> Command {
-    Command::new("delete").about("Delete Subscription").long_about("Delete Subscription (DELETE /api/v1/subscriptions/{subscription_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions delete SUBSCRIPTION_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("subscription_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("set_default").about("Set Default Revision").long_about("Set Default Revision (POST /api/v1/skills/{skill_id}/revisions/{revision_id}/set-default). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills revisions set_default REVISION_ID --skill SKILL_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("revision_id")).arg(Arg::new("skill_id").long("skill").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_199() -> Command {
+    let mut node = Command::new("content")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_149());
+    node
 }
 fn operation_149() -> Command {
-    Command::new("get").about("Get Subscription").long_about("Get Subscription (GET /api/v1/subscriptions/{subscription_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions get SUBSCRIPTION_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("subscription_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Read Archive").long_about("The revision's package as a zip archive. (GET /api/v1/skills/{skill_id}/revisions/{revision_id}/content). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills revisions content get --skill SKILL_ID --revision REVISION_ID --output FILE").arg(Arg::new("skill_id").long("skill").required_unless_present_any(["schema", "example"])).arg(Arg::new("revision_id").long("revision").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_201() -> Command {
+    let mut node = Command::new("files")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_150());
+    node
 }
 fn operation_150() -> Command {
-    Command::new("update").about("Update Subscription").long_about("Update Subscription (PATCH /api/v1/subscriptions/{subscription_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions update SUBSCRIPTION_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("subscription_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Read File").long_about("One package file, by the path the revision's manifest lists. (GET /api/v1/skills/{skill_id}/revisions/{revision_id}/files/{path}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli skills revisions files get --skill SKILL_ID --revision REVISION_ID --path PATH --output FILE").arg(Arg::new("skill_id").long("skill").required_unless_present_any(["schema", "example"])).arg(Arg::new("revision_id").long("revision").required_unless_present_any(["schema", "example"])).arg(Arg::new("path").long("path").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_202() -> Command {
-    let mut node = Command::new("deliveries")
+fn group_203() -> Command {
+    let mut node = Command::new("subscriptions")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_151());
     node = node.subcommand(operation_152());
-    node
-}
-fn operation_151() -> Command {
-    Command::new("list").about("List Deliveries").long_about("List Deliveries (GET /api/v1/subscriptions/{subscription_id}/deliveries). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions deliveries list --subscription SUBSCRIPTION_ID").arg(Arg::new("subscription_id").long("subscription").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_152() -> Command {
-    Command::new("redeliver").about("Redeliver").long_about("Redeliver (POST /api/v1/subscriptions/{subscription_id}/deliveries/{delivery_id}/redeliver). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions deliveries redeliver DELIVERY_ID --subscription SUBSCRIPTION_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("delivery_id")).arg(Arg::new("subscription_id").long("subscription").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_205() -> Command {
-    let mut node = Command::new("threads")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
     node = node.subcommand(operation_153());
     node = node.subcommand(operation_154());
     node = node.subcommand(operation_155());
-    node = node.subcommand(operation_156());
-    node = node.subcommand(operation_157());
-    node = node.subcommand(group_211());
-    node = node.subcommand(group_215());
-    node = node.subcommand(group_223());
-    node = node.subcommand(group_228());
-    node = node.subcommand(group_230());
+    node = node.subcommand(group_209());
     node
 }
+fn operation_151() -> Command {
+    Command::new("list").about("List Subscriptions").long_about("List Subscriptions (GET /api/v1/subscriptions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_152() -> Command {
+    Command::new("create").about("Create Subscription").long_about("The response is the only time the signing secret is returned. (POST /api/v1/subscriptions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions create --body @request.json").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
 fn operation_153() -> Command {
-    Command::new("list").about("List Threads").long_about("List Threads (GET /api/v1/threads). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads list").arg(Arg::new("session_id").long("session-id")).arg(Arg::new("label").long("label").action(ArgAction::Append)).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("delete").about("Delete Subscription").long_about("Delete Subscription (DELETE /api/v1/subscriptions/{subscription_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions delete SUBSCRIPTION_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("subscription_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_154() -> Command {
-    Command::new("create").about("Create Thread").long_about("Create a thread (and its session unless one is named) with its first message. (POST /api/v1/threads). Use --schema for the offline request schema. Supply a caller-owned idempotency key; an uncertain outcome needs readback.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads create --idempotency-key IDEMPOTENCY_KEY --body @request.json").arg(Arg::new("idempotency_key").long("idempotency-key").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Get Subscription").long_about("Get Subscription (GET /api/v1/subscriptions/{subscription_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions get SUBSCRIPTION_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("subscription_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_155() -> Command {
-    Command::new("get").about("Get Thread").long_about("Get Thread (GET /api/v1/threads/{thread_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads get THREAD_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("thread_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("update").about("Update Subscription").long_about("Update Subscription (PATCH /api/v1/subscriptions/{subscription_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions update SUBSCRIPTION_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("subscription_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_209() -> Command {
+    let mut node = Command::new("deliveries")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_156());
+    node = node.subcommand(operation_157());
+    node
 }
 fn operation_156() -> Command {
-    Command::new("update").about("Update Thread").long_about("Update Thread (PATCH /api/v1/threads/{thread_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads update THREAD_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("thread_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Deliveries").long_about("List Deliveries (GET /api/v1/subscriptions/{subscription_id}/deliveries). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions deliveries list --subscription SUBSCRIPTION_ID").arg(Arg::new("subscription_id").long("subscription").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_157() -> Command {
-    Command::new("archive").about("Archive Thread").long_about("Archive Thread (POST /api/v1/threads/{thread_id}/archive). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads archive THREAD_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("thread_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("redeliver").about("Redeliver").long_about("Redeliver (POST /api/v1/subscriptions/{subscription_id}/deliveries/{delivery_id}/redeliver). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli subscriptions deliveries redeliver DELIVERY_ID --subscription SUBSCRIPTION_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("delivery_id")).arg(Arg::new("subscription_id").long("subscription").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_211() -> Command {
-    let mut node = Command::new("environments")
+fn group_212() -> Command {
+    let mut node = Command::new("threads")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_158());
     node = node.subcommand(operation_159());
     node = node.subcommand(operation_160());
-    node
-}
-fn operation_158() -> Command {
-    Command::new("list").about("List Mounts").long_about("List Mounts (GET /api/v1/threads/{thread_id}/environments). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads environments list --thread THREAD_ID").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_159() -> Command {
-    Command::new("create").about("Add Mount").long_about("Add Mount (POST /api/v1/threads/{thread_id}/environments). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads environments create --thread THREAD_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_160() -> Command {
-    Command::new("delete").about("Remove Mount").long_about("Remove Mount (DELETE /api/v1/threads/{thread_id}/environments/{name}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads environments delete NAME --thread THREAD_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("name")).arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_215() -> Command {
-    let mut node = Command::new("inbox")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
     node = node.subcommand(operation_161());
     node = node.subcommand(operation_162());
     node = node.subcommand(group_218());
-    node = node.subcommand(operation_164());
-    node = node.subcommand(operation_165());
-    node = node.subcommand(operation_166());
+    node = node.subcommand(group_222());
+    node = node.subcommand(group_230());
+    node = node.subcommand(group_235());
+    node = node.subcommand(group_237());
     node
 }
+fn operation_158() -> Command {
+    Command::new("list").about("List Threads").long_about("List Threads (GET /api/v1/threads). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads list").arg(Arg::new("session_id").long("session-id")).arg(Arg::new("label").long("label").action(ArgAction::Append)).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_159() -> Command {
+    Command::new("create").about("Create Thread").long_about("Create a thread (and its session unless one is named) with its first message. (POST /api/v1/threads). Use --schema for the offline request schema. Supply a caller-owned idempotency key; an uncertain outcome needs readback.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads create --idempotency-key IDEMPOTENCY_KEY --body @request.json").arg(Arg::new("idempotency_key").long("idempotency-key").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_160() -> Command {
+    Command::new("get").about("Get Thread").long_about("Get Thread (GET /api/v1/threads/{thread_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads get THREAD_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("thread_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
 fn operation_161() -> Command {
-    Command::new("list").about("List Inbox").long_about("In inbox order. (GET /api/v1/threads/{thread_id}/inbox). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads inbox list --thread THREAD_ID").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("status").long("status").action(ArgAction::Append)).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("update").about("Update Thread").long_about("Update Thread (PATCH /api/v1/threads/{thread_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads update THREAD_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("thread_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_162() -> Command {
-    Command::new("create").about("Submit Message").long_about("Append a message; it starts a run at once when the thread can accept it, or steers the active run. (POST /api/v1/threads/{thread_id}/inbox). Use --schema for the offline request schema. Supply a caller-owned idempotency key; an uncertain outcome needs readback.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads inbox create --thread THREAD_ID --idempotency-key IDEMPOTENCY_KEY --body @request.json").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("idempotency_key").long("idempotency-key").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("archive").about("Archive Thread").long_about("Archive Thread (POST /api/v1/threads/{thread_id}/archive). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads archive THREAD_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("thread_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_218() -> Command {
-    let mut node = Command::new("order")
+    let mut node = Command::new("environments")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_163());
+    node = node.subcommand(operation_164());
+    node = node.subcommand(operation_165());
     node
 }
 fn operation_163() -> Command {
-    Command::new("replace").about("Reorder Inbox").long_about("Reorder Inbox (PUT /api/v1/threads/{thread_id}/inbox/order). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads inbox order replace --thread THREAD_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Mounts").long_about("List Mounts (GET /api/v1/threads/{thread_id}/environments). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads environments list --thread THREAD_ID").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_164() -> Command {
-    Command::new("delete").about("Withdraw Entry").long_about("Withdraw a pending entry; its tombstone keeps the request key. (DELETE /api/v1/threads/{thread_id}/inbox/{entry_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads inbox delete ENTRY_ID --thread THREAD_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("entry_id")).arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("create").about("Add Mount").long_about("Add Mount (POST /api/v1/threads/{thread_id}/environments). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads environments create --thread THREAD_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_165() -> Command {
-    Command::new("get").about("Get Entry").long_about("One entry and its disposition; edits name the thread's ETag. (GET /api/v1/threads/{thread_id}/inbox/{entry_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads inbox get ENTRY_ID --thread THREAD_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("entry_id")).arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("delete").about("Remove Mount").long_about("Remove Mount (DELETE /api/v1/threads/{thread_id}/environments/{name}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads environments delete NAME --thread THREAD_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("name")).arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn operation_166() -> Command {
-    Command::new("update").about("Edit Entry").long_about("Edit Entry (PATCH /api/v1/threads/{thread_id}/inbox/{entry_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads inbox update ENTRY_ID --thread THREAD_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("entry_id")).arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_223() -> Command {
-    let mut node = Command::new("memories")
+fn group_222() -> Command {
+    let mut node = Command::new("inbox")
         .subcommand_required(true)
         .arg_required_else_help(true);
+    node = node.subcommand(operation_166());
     node = node.subcommand(operation_167());
-    node = node.subcommand(operation_168());
+    node = node.subcommand(group_225());
     node = node.subcommand(operation_169());
     node = node.subcommand(operation_170());
-    node
-}
-fn operation_167() -> Command {
-    Command::new("list").about("List Mounts").long_about("List Mounts (GET /api/v1/threads/{thread_id}/memories). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads memories list --thread THREAD_ID").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_168() -> Command {
-    Command::new("create").about("Add Mount").long_about("Add Mount (POST /api/v1/threads/{thread_id}/memories). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads memories create --thread THREAD_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_169() -> Command {
-    Command::new("delete").about("Remove Mount").long_about("Remove Mount (DELETE /api/v1/threads/{thread_id}/memories/{name}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads memories delete NAME --thread THREAD_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("name")).arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_170() -> Command {
-    Command::new("update").about("Update Mount").long_about("Update Mount (PATCH /api/v1/threads/{thread_id}/memories/{name}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads memories update NAME --thread THREAD_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("name")).arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_228() -> Command {
-    let mut node = Command::new("runs")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
     node = node.subcommand(operation_171());
     node
 }
+fn operation_166() -> Command {
+    Command::new("list").about("List Inbox").long_about("In inbox order. (GET /api/v1/threads/{thread_id}/inbox). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads inbox list --thread THREAD_ID").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("status").long("status").action(ArgAction::Append)).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_167() -> Command {
+    Command::new("create").about("Submit Message").long_about("Append a message; it starts a run at once when the thread can accept it, or steers the active run. (POST /api/v1/threads/{thread_id}/inbox). Use --schema for the offline request schema. Supply a caller-owned idempotency key; an uncertain outcome needs readback.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads inbox create --thread THREAD_ID --idempotency-key IDEMPOTENCY_KEY --body @request.json").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("idempotency_key").long("idempotency-key").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_225() -> Command {
+    let mut node = Command::new("order")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_168());
+    node
+}
+fn operation_168() -> Command {
+    Command::new("replace").about("Reorder Inbox").long_about("Reorder Inbox (PUT /api/v1/threads/{thread_id}/inbox/order). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads inbox order replace --thread THREAD_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_169() -> Command {
+    Command::new("delete").about("Withdraw Entry").long_about("Withdraw a pending entry; its tombstone keeps the request key. (DELETE /api/v1/threads/{thread_id}/inbox/{entry_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads inbox delete ENTRY_ID --thread THREAD_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("entry_id")).arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_170() -> Command {
+    Command::new("get").about("Get Entry").long_about("One entry and its disposition; edits name the thread's ETag. (GET /api/v1/threads/{thread_id}/inbox/{entry_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads inbox get ENTRY_ID --thread THREAD_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("entry_id")).arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
 fn operation_171() -> Command {
-    Command::new("list").about("List Thread Runs").long_about("Newest first. (GET /api/v1/threads/{thread_id}/runs). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads runs list --thread THREAD_ID").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("update").about("Edit Entry").long_about("Edit Entry (PATCH /api/v1/threads/{thread_id}/inbox/{entry_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads inbox update ENTRY_ID --thread THREAD_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("entry_id")).arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_230() -> Command {
-    let mut node = Command::new("stream")
+    let mut node = Command::new("memories")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_172());
+    node = node.subcommand(operation_173());
+    node = node.subcommand(operation_174());
+    node = node.subcommand(operation_175());
     node
 }
 fn operation_172() -> Command {
-    Command::new("get").about("Thread Stream").long_about("Live output of the thread's runs over SSE: `delta` and `boundary` frames with `changed`, `reset`, `gap`. (GET /api/v1/threads/{thread_id}/stream). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads stream get --thread THREAD_ID --output FILE").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("run").long("run")).arg(Arg::new("position").long("position")).arg(Arg::new("last_event_id").long("last-event-id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_232() -> Command {
-    let mut node = Command::new("toolsets")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
-    node = node.subcommand(operation_173());
-    node
+    Command::new("list").about("List Mounts").long_about("List Mounts (GET /api/v1/threads/{thread_id}/memories). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads memories list --thread THREAD_ID").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_173() -> Command {
-    Command::new("list").about("List Toolsets").long_about("List Toolsets (GET /api/v1/toolsets). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli toolsets list").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_234() -> Command {
-    let mut node = Command::new("trace-backend")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
-    node = node.subcommand(operation_174());
-    node
+    Command::new("create").about("Add Mount").long_about("Add Mount (POST /api/v1/threads/{thread_id}/memories). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads memories create --thread THREAD_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_174() -> Command {
-    Command::new("get").about("Get Trace Backend").long_about("The backend trace queries read, and how far back they find a trace. (GET /api/v1/trace-backend). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli trace-backend get").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_236() -> Command {
-    let mut node = Command::new("traces")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
-    node = node.subcommand(operation_175());
-    node = node.subcommand(operation_176());
-    node = node.subcommand(group_239());
-    node
+    Command::new("delete").about("Remove Mount").long_about("Remove Mount (DELETE /api/v1/threads/{thread_id}/memories/{name}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads memories delete NAME --thread THREAD_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("name")).arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_175() -> Command {
-    Command::new("list").about("List Traces").long_about("Trace root spans, one per attempt. A cursor keeps the window of the first page. (GET /api/v1/traces). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli traces list").arg(Arg::new("session_id").long("session-id")).arg(Arg::new("thread_id").long("thread-id")).arg(Arg::new("run_id").long("run-id")).arg(Arg::new("attribute").long("attribute").action(ArgAction::Append)).arg(Arg::new("started_after").long("started-after")).arg(Arg::new("started_before").long("started-before")).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("update").about("Update Mount").long_about("Update Mount (PATCH /api/v1/threads/{thread_id}/memories/{name}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads memories update NAME --thread THREAD_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("name")).arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_235() -> Command {
+    let mut node = Command::new("runs")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_176());
+    node
 }
 fn operation_176() -> Command {
-    Command::new("get").about("Get Trace").long_about("The trace's root span. (GET /api/v1/traces/{trace_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli traces get TRACE_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("trace_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Thread Runs").long_about("Newest first. (GET /api/v1/threads/{thread_id}/runs). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads runs list --thread THREAD_ID").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_239() -> Command {
-    let mut node = Command::new("spans")
+fn group_237() -> Command {
+    let mut node = Command::new("stream")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_177());
     node
 }
 fn operation_177() -> Command {
-    Command::new("list").about("List Trace Spans").long_about("The trace's spans. (GET /api/v1/traces/{trace_id}/spans). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli traces spans list --trace TRACE_ID").arg(Arg::new("trace_id").long("trace").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Thread Stream").long_about("Live output of the thread's runs over SSE: `delta` and `boundary` frames with `changed`, `reset`, `gap`. (GET /api/v1/threads/{thread_id}/stream). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads stream get --thread THREAD_ID --output FILE").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("run").long("run")).arg(Arg::new("position").long("position")).arg(Arg::new("last_event_id").long("last-event-id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_241() -> Command {
-    let mut node = Command::new("uploads")
+fn group_239() -> Command {
+    let mut node = Command::new("toolsets")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_178());
     node
 }
 fn operation_178() -> Command {
-    Command::new("create").about("Create Upload").long_about("Repeating a request with the same `Idempotency-Key` and bytes returns the same upload. (POST /api/v1/uploads). Use --schema for the offline request schema. Supply a caller-owned idempotency key; an uncertain outcome needs readback.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli uploads create --idempotency-key IDEMPOTENCY_KEY --file FILE --content-type MIME").arg(Arg::new("idempotency_key").long("idempotency-key").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("file").long("file").required_unless_present_any(["schema", "example"]).help("File path or - for stdin")).arg(Arg::new("file_name").long("file-name")).arg(Arg::new("content_type").long("content-type").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Toolsets").long_about("List Toolsets (GET /api/v1/toolsets). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli toolsets list").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_243() -> Command {
-    let mut node = Command::new("usage")
+fn group_241() -> Command {
+    let mut node = Command::new("trace-backend")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_179());
-    node = node.subcommand(group_245());
-    node = node.subcommand(group_247());
-    node = node.subcommand(group_249());
     node
 }
 fn operation_179() -> Command {
-    Command::new("get").about("Summarize Usage").long_about("Summarize Usage (GET /api/v1/usage). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli usage get").arg(Arg::new("run_id").long("run-id")).arg(Arg::new("thread_id").long("thread-id")).arg(Arg::new("session_id").long("session-id")).arg(Arg::new("ingested_after").long("ingested-after")).arg(Arg::new("ingested_before").long("ingested-before")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Get Trace Backend").long_about("The backend trace queries read, and how far back they find a trace. (GET /api/v1/trace-backend). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli trace-backend get").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_245() -> Command {
-    let mut node = Command::new("agents")
+fn group_243() -> Command {
+    let mut node = Command::new("traces")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_180());
+    node = node.subcommand(operation_181());
+    node = node.subcommand(group_246());
     node
 }
 fn operation_180() -> Command {
-    Command::new("list").about("Usage Agents").long_about("Usage Agents (GET /api/v1/usage/agents). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli usage agents list --start START --end END").arg(Arg::new("start").long("start").required_unless_present_any(["schema", "example"])).arg(Arg::new("end").long("end").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_247() -> Command {
-    let mut node = Command::new("models")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
-    node = node.subcommand(operation_181());
-    node
+    Command::new("list").about("List Traces").long_about("Trace root spans, one per attempt. A cursor keeps the window of the first page. (GET /api/v1/traces). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli traces list").arg(Arg::new("session_id").long("session-id")).arg(Arg::new("thread_id").long("thread-id")).arg(Arg::new("run_id").long("run-id")).arg(Arg::new("attribute").long("attribute").action(ArgAction::Append)).arg(Arg::new("started_after").long("started-after")).arg(Arg::new("started_before").long("started-before")).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_181() -> Command {
-    Command::new("list").about("Usage Models").long_about("Usage Models (GET /api/v1/usage/models). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli usage models list --start START --end END").arg(Arg::new("start").long("start").required_unless_present_any(["schema", "example"])).arg(Arg::new("end").long("end").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Get Trace").long_about("The trace's root span. (GET /api/v1/traces/{trace_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli traces get TRACE_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("trace_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_249() -> Command {
-    let mut node = Command::new("overview")
+fn group_246() -> Command {
+    let mut node = Command::new("spans")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_182());
     node
 }
 fn operation_182() -> Command {
-    Command::new("get").about("Usage Overview").long_about("Usage Overview (GET /api/v1/usage/overview). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli usage overview get --start START --end END").arg(Arg::new("start").long("start").required_unless_present_any(["schema", "example"])).arg(Arg::new("end").long("end").required_unless_present_any(["schema", "example"])).arg(Arg::new("timezone").long("timezone")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Trace Spans").long_about("The trace's spans. (GET /api/v1/traces/{trace_id}/spans). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli traces spans list --trace TRACE_ID").arg(Arg::new("trace_id").long("trace").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_251() -> Command {
-    let mut node = Command::new("users")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
-    node = node.subcommand(group_252());
-    node = node.subcommand(group_269());
-    node
-}
-fn group_252() -> Command {
-    let mut node = Command::new("me")
+fn group_248() -> Command {
+    let mut node = Command::new("uploads")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_183());
-    node = node.subcommand(operation_184());
-    node = node.subcommand(operation_185());
-    node = node.subcommand(operation_186());
-    node = node.subcommand(group_257());
-    node = node.subcommand(group_259());
-    node = node.subcommand(group_262());
-    node = node.subcommand(group_266());
     node
 }
 fn operation_183() -> Command {
-    Command::new("get").about("Get Profile").long_about("Get Profile (GET /api/v1/users/me). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me get").arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("create").about("Create Upload").long_about("Repeating a request with the same `Idempotency-Key` and bytes returns the same upload. (POST /api/v1/uploads). Use --schema for the offline request schema. Supply a caller-owned idempotency key; an uncertain outcome needs readback.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli uploads create --idempotency-key IDEMPOTENCY_KEY --file FILE --content-type MIME").arg(Arg::new("idempotency_key").long("idempotency-key").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("file").long("file").required_unless_present_any(["schema", "example"]).help("File path or - for stdin")).arg(Arg::new("file_name").long("file-name")).arg(Arg::new("content_type").long("content-type").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_250() -> Command {
+    let mut node = Command::new("usage")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_184());
+    node = node.subcommand(group_252());
+    node = node.subcommand(group_254());
+    node = node.subcommand(group_256());
+    node
 }
 fn operation_184() -> Command {
-    Command::new("update").about("Update Profile").long_about("Update Profile (PATCH /api/v1/users/me). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me update --if-match IF_MATCH --body @request.json").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Summarize Usage").long_about("Summarize Usage (GET /api/v1/usage). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli usage get").arg(Arg::new("run_id").long("run-id")).arg(Arg::new("thread_id").long("thread-id")).arg(Arg::new("session_id").long("session-id")).arg(Arg::new("ingested_after").long("ingested-after")).arg(Arg::new("ingested_before").long("ingested-before")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_252() -> Command {
+    let mut node = Command::new("agents")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_185());
+    node
 }
 fn operation_185() -> Command {
-    Command::new("disable").about("Disable Account").long_about("Disable the caller's own account, proven by the current password; no route enables it again. (POST /api/v1/users/me/disable). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me disable --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("Usage Agents").long_about("Usage Agents (GET /api/v1/usage/agents). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli usage agents list --start START --end END").arg(Arg::new("start").long("start").required_unless_present_any(["schema", "example"])).arg(Arg::new("end").long("end").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_254() -> Command {
+    let mut node = Command::new("models")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_186());
+    node
 }
 fn operation_186() -> Command {
-    Command::new("password").about("Change Password").long_about("Change Password (POST /api/v1/users/me/password). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me password --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("Usage Models").long_about("Usage Models (GET /api/v1/usage/models). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli usage models list --start START --end END").arg(Arg::new("start").long("start").required_unless_present_any(["schema", "example"])).arg(Arg::new("end").long("end").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_257() -> Command {
-    let mut node = Command::new("audit-events")
+fn group_256() -> Command {
+    let mut node = Command::new("overview")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_187());
     node
 }
 fn operation_187() -> Command {
-    Command::new("list").about("List Account Audit Events").long_about("The caller's own trail, account-wide events included; requires a login session. (GET /api/v1/users/me/audit-events). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me audit-events list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Usage Overview").long_about("Usage Overview (GET /api/v1/usage/overview). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli usage overview get --start START --end END").arg(Arg::new("start").long("start").required_unless_present_any(["schema", "example"])).arg(Arg::new("end").long("end").required_unless_present_any(["schema", "example"])).arg(Arg::new("timezone").long("timezone")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_258() -> Command {
+    let mut node = Command::new("users")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(group_259());
+    node = node.subcommand(group_276());
+    node
 }
 fn group_259() -> Command {
-    let mut node = Command::new("avatar")
+    let mut node = Command::new("me")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_188());
     node = node.subcommand(operation_189());
+    node = node.subcommand(operation_190());
+    node = node.subcommand(operation_191());
+    node = node.subcommand(group_264());
+    node = node.subcommand(group_266());
+    node = node.subcommand(group_269());
+    node = node.subcommand(group_273());
     node
 }
 fn operation_188() -> Command {
-    Command::new("delete").about("Delete Avatar").long_about("Delete Avatar (DELETE /api/v1/users/me/avatar). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me avatar delete --if-match IF_MATCH").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Get Profile").long_about("Get Profile (GET /api/v1/users/me). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me get").arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_189() -> Command {
-    Command::new("replace").about("Put Avatar").long_about("Put Avatar (PUT /api/v1/users/me/avatar). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me avatar replace --if-match IF_MATCH --content-type CONTENT_TYPE --file FILE").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("content_type").long("content-type").required_unless_present_any(["schema", "example"])).arg(Arg::new("file").long("file").required_unless_present_any(["schema", "example"]).help("File path or - for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("update").about("Update Profile").long_about("Update Profile (PATCH /api/v1/users/me). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me update --if-match IF_MATCH --body @request.json").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_262() -> Command {
-    let mut node = Command::new("keys")
+fn operation_190() -> Command {
+    Command::new("disable").about("Disable Account").long_about("Disable the caller's own account, proven by the current password; no route enables it again. (POST /api/v1/users/me/disable). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me disable --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_191() -> Command {
+    Command::new("password").about("Change Password").long_about("Change Password (POST /api/v1/users/me/password). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me password --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_264() -> Command {
+    let mut node = Command::new("audit-events")
         .subcommand_required(true)
         .arg_required_else_help(true);
-    node = node.subcommand(operation_190());
-    node = node.subcommand(operation_191());
     node = node.subcommand(operation_192());
     node
 }
-fn operation_190() -> Command {
-    Command::new("list").about("List User Keys").long_about("List User Keys (GET /api/v1/users/me/keys). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me keys list").arg(Arg::new("workspace_id").long("filter-workspace")).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_191() -> Command {
-    Command::new("create").about("Create User Key").long_about("Needs a login session: an API key never issues keys, so a leaked key cannot outlive its revocation. (POST /api/v1/users/me/keys). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me keys create --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
 fn operation_192() -> Command {
-    Command::new("delete").about("Revoke User Key").long_about("Revoke User Key (DELETE /api/v1/users/me/keys/{key_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me keys delete KEY_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("key_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Account Audit Events").long_about("The caller's own trail, account-wide events included; requires a login session. (GET /api/v1/users/me/audit-events). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me audit-events list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_266() -> Command {
-    let mut node = Command::new("login-sessions")
+    let mut node = Command::new("avatar")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_193());
@@ -2357,214 +2389,246 @@ fn group_266() -> Command {
     node
 }
 fn operation_193() -> Command {
-    Command::new("list").about("List Login Sessions").long_about("List Login Sessions (GET /api/v1/users/me/login-sessions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me login-sessions list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("delete").about("Delete Avatar").long_about("Delete Avatar (DELETE /api/v1/users/me/avatar). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me avatar delete --if-match IF_MATCH").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_194() -> Command {
-    Command::new("delete").about("Revoke Login Session").long_about("Revoke Login Session (DELETE /api/v1/users/me/login-sessions/{session_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me login-sessions delete SESSION_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("session_id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("replace").about("Put Avatar").long_about("Put Avatar (PUT /api/v1/users/me/avatar). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me avatar replace --if-match IF_MATCH --content-type CONTENT_TYPE --file FILE").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("content_type").long("content-type").required_unless_present_any(["schema", "example"])).arg(Arg::new("file").long("file").required_unless_present_any(["schema", "example"]).help("File path or - for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_269() -> Command {
-    let mut node = Command::new("avatar")
+    let mut node = Command::new("keys")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_195());
+    node = node.subcommand(operation_196());
+    node = node.subcommand(operation_197());
     node
 }
 fn operation_195() -> Command {
-    Command::new("get").about("Get Avatar").long_about("Get Avatar (GET /api/v1/users/{user_id}/avatar). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users avatar get --user USER_ID --output FILE").arg(Arg::new("user_id").long("user").required_unless_present_any(["schema", "example"])).arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List User Keys").long_about("List User Keys (GET /api/v1/users/me/keys). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me keys list").arg(Arg::new("workspace_id").long("filter-workspace")).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_271() -> Command {
-    let mut node = Command::new("web-providers")
+fn operation_196() -> Command {
+    Command::new("create").about("Create User Key").long_about("Needs a login session: an API key never issues keys, so a leaked key cannot outlive its revocation. (POST /api/v1/users/me/keys). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me keys create --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_197() -> Command {
+    Command::new("delete").about("Revoke User Key").long_about("Revoke User Key (DELETE /api/v1/users/me/keys/{key_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me keys delete KEY_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("key_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_273() -> Command {
+    let mut node = Command::new("login-sessions")
         .subcommand_required(true)
         .arg_required_else_help(true);
-    node = node.subcommand(operation_196());
-    node = node.subcommand(operation_197());
     node = node.subcommand(operation_198());
     node = node.subcommand(operation_199());
+    node
+}
+fn operation_198() -> Command {
+    Command::new("list").about("List Login Sessions").long_about("List Login Sessions (GET /api/v1/users/me/login-sessions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me login-sessions list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_199() -> Command {
+    Command::new("delete").about("Revoke Login Session").long_about("Revoke Login Session (DELETE /api/v1/users/me/login-sessions/{session_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users me login-sessions delete SESSION_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("session_id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_276() -> Command {
+    let mut node = Command::new("avatar")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
     node = node.subcommand(operation_200());
     node
 }
-fn operation_196() -> Command {
-    Command::new("list").about("List web providers").long_about("List web providers (GET /api/v1/web-providers). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli web-providers list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_197() -> Command {
-    Command::new("create").about("Create web provider").long_about("Create web provider (POST /api/v1/web-providers). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli web-providers create --body @request.json").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_198() -> Command {
-    Command::new("get").about("Get web provider").long_about("Get web provider (GET /api/v1/web-providers/{provider_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli web-providers get PROVIDER_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("provider_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_199() -> Command {
-    Command::new("update").about("Update web provider").long_about("A `config` change must also replace or remove a stored credential: it never follows a new endpoint. (PATCH /api/v1/web-providers/{provider_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli web-providers update PROVIDER_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("provider_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
 fn operation_200() -> Command {
-    Command::new("test").about("Test web provider").long_about("Test web provider (POST /api/v1/web-providers/{provider_id}/test). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli web-providers test PROVIDER_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("provider_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Get Avatar").long_about("Get Avatar (GET /api/v1/users/{user_id}/avatar). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli users avatar get --user USER_ID --output FILE").arg(Arg::new("user_id").long("user").required_unless_present_any(["schema", "example"])).arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_277() -> Command {
-    let mut node = Command::new("workspaces")
+fn group_278() -> Command {
+    let mut node = Command::new("web-providers")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_201());
     node = node.subcommand(operation_202());
     node = node.subcommand(operation_203());
-    node = node.subcommand(group_281());
-    node
-}
-fn operation_201() -> Command {
-    Command::new("list").about("List Workspaces").long_about("List Workspaces (GET /api/v1/workspaces). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli workspaces list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_202() -> Command {
-    Command::new("get").about("Get Workspace").long_about("Get Workspace (GET /api/v1/workspaces/{workspace_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli workspaces get WORKSPACE_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("workspace_id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_203() -> Command {
-    Command::new("update").about("Update Workspace").long_about("Update Workspace (PATCH /api/v1/workspaces/{workspace_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli workspaces update WORKSPACE_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("workspace_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_281() -> Command {
-    let mut node = Command::new("invitations")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
-    node = node.subcommand(operation_213());
-    node = node.subcommand(operation_214());
-    node = node.subcommand(operation_215());
-    node = node.subcommand(operation_216());
-    node
-}
-fn operation_213() -> Command {
-    Command::new("list").about("List Workspace Invitations").long_about("List Workspace Invitations (GET /api/v1/workspaces/{workspace_id}/invitations). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID workspaces invitations list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_214() -> Command {
-    Command::new("create").about("Create Workspace Invitation").long_about("Create Workspace Invitation (POST /api/v1/workspaces/{workspace_id}/invitations). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID workspaces invitations create --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_215() -> Command {
-    Command::new("resend").about("Resend Workspace Invitation").long_about("Resend Workspace Invitation (POST /api/v1/workspaces/{workspace_id}/invitations/{invitation_id}/resend). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID workspaces invitations resend INVITATION_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("invitation_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_216() -> Command {
-    Command::new("revoke").about("Revoke Workspace Invitation").long_about("Revoke Workspace Invitation (POST /api/v1/workspaces/{workspace_id}/invitations/{invitation_id}/revoke). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID workspaces invitations revoke INVITATION_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("invitation_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_204() -> Command {
-    Command::new("archive").about("Archive Workspace").long_about("Archive Workspace (POST /api/v1/workspaces/{workspace_id}/archive). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID archive --if-match IF_MATCH").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_287() -> Command {
-    let mut node = Command::new("audit-events")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
+    node = node.subcommand(operation_204());
     node = node.subcommand(operation_205());
     node
 }
-fn operation_205() -> Command {
-    Command::new("list").about("List Workspace Audit Events").long_about("List Workspace Audit Events (GET /api/v1/workspaces/{workspace_id}/audit-events). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID audit-events list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+fn operation_201() -> Command {
+    Command::new("list").about("List web providers").long_about("List web providers (GET /api/v1/web-providers). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli web-providers list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_289() -> Command {
-    let mut node = Command::new("grants")
+fn operation_202() -> Command {
+    Command::new("create").about("Create web provider").long_about("Create web provider (POST /api/v1/web-providers). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli web-providers create --body @request.json").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_203() -> Command {
+    Command::new("get").about("Get web provider").long_about("Get web provider (GET /api/v1/web-providers/{provider_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli web-providers get PROVIDER_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("provider_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_204() -> Command {
+    Command::new("update").about("Update web provider").long_about("A `config` change must also replace or remove a stored credential: it never follows a new endpoint. (PATCH /api/v1/web-providers/{provider_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli web-providers update PROVIDER_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("provider_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_205() -> Command {
+    Command::new("test").about("Test web provider").long_about("Test web provider (POST /api/v1/web-providers/{provider_id}/test). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli web-providers test PROVIDER_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("provider_id")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_284() -> Command {
+    let mut node = Command::new("workspaces")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_206());
     node = node.subcommand(operation_207());
     node = node.subcommand(operation_208());
-    node = node.subcommand(operation_209());
+    node = node.subcommand(group_288());
     node
 }
 fn operation_206() -> Command {
-    Command::new("list").about("List Workspace Grants").long_about("List Workspace Grants (GET /api/v1/workspaces/{workspace_id}/grants). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID grants list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Workspaces").long_about("List Workspaces (GET /api/v1/workspaces). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli workspaces list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_207() -> Command {
-    Command::new("create").about("Create Workspace Grant").long_about("Create Workspace Grant (POST /api/v1/workspaces/{workspace_id}/grants). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID grants create --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Get Workspace").long_about("Get Workspace (GET /api/v1/workspaces/{workspace_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli workspaces get WORKSPACE_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("workspace_id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_208() -> Command {
-    Command::new("delete").about("Delete Workspace Grant").long_about("Delete Workspace Grant (DELETE /api/v1/workspaces/{workspace_id}/grants/{grant_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID grants delete GRANT_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("grant_id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("update").about("Update Workspace").long_about("Update Workspace (PATCH /api/v1/workspaces/{workspace_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli workspaces update WORKSPACE_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("workspace_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn operation_209() -> Command {
-    Command::new("update").about("Change Workspace Grant").long_about("The grant is replaced: the result carries its new ID. (PATCH /api/v1/workspaces/{workspace_id}/grants/{grant_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID grants update GRANT_ID --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("grant_id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_294() -> Command {
-    let mut node = Command::new("icon")
+fn group_288() -> Command {
+    let mut node = Command::new("invitations")
         .subcommand_required(true)
         .arg_required_else_help(true);
-    node = node.subcommand(operation_210());
-    node = node.subcommand(operation_211());
-    node = node.subcommand(operation_212());
-    node
-}
-fn operation_210() -> Command {
-    Command::new("delete").about("Delete Workspace Icon").long_about("Delete Workspace Icon (DELETE /api/v1/workspaces/{workspace_id}/icon). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID icon delete --if-match IF_MATCH").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_211() -> Command {
-    Command::new("get").about("Get Workspace Icon").long_about("Get Workspace Icon (GET /api/v1/workspaces/{workspace_id}/icon). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID icon get --output FILE").arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_212() -> Command {
-    Command::new("replace").about("Put Workspace Icon").long_about("Put Workspace Icon (PUT /api/v1/workspaces/{workspace_id}/icon). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID icon replace --if-match IF_MATCH --content-type CONTENT_TYPE --file FILE").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("content_type").long("content-type").required_unless_present_any(["schema", "example"])).arg(Arg::new("file").long("file").required_unless_present_any(["schema", "example"]).help("File path or - for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_298() -> Command {
-    let mut node = Command::new("keys")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
-    node = node.subcommand(operation_217());
     node = node.subcommand(operation_218());
-    node
-}
-fn operation_217() -> Command {
-    Command::new("list").about("List Workspace Keys").long_about("List Workspace Keys (GET /api/v1/workspaces/{workspace_id}/keys). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID keys list").arg(Arg::new("principal_id").long("principal-id")).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn operation_218() -> Command {
-    Command::new("delete").about("Revoke Workspace Key").long_about("Revoke Workspace Key (DELETE /api/v1/workspaces/{workspace_id}/keys/{key_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID keys delete KEY_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("key_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
-}
-fn group_301() -> Command {
-    let mut node = Command::new("service-accounts")
-        .subcommand_required(true)
-        .arg_required_else_help(true);
     node = node.subcommand(operation_219());
     node = node.subcommand(operation_220());
     node = node.subcommand(operation_221());
-    node = node.subcommand(operation_222());
-    node = node.subcommand(operation_223());
-    node = node.subcommand(group_307());
     node
 }
+fn operation_218() -> Command {
+    Command::new("list").about("List Workspace Invitations").long_about("List Workspace Invitations (GET /api/v1/workspaces/{workspace_id}/invitations). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID workspaces invitations list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
 fn operation_219() -> Command {
-    Command::new("list").about("List Service Accounts").long_about("List Service Accounts (GET /api/v1/workspaces/{workspace_id}/service-accounts). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID service-accounts list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("create").about("Create Workspace Invitation").long_about("Create Workspace Invitation (POST /api/v1/workspaces/{workspace_id}/invitations). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID workspaces invitations create --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_220() -> Command {
-    Command::new("create").about("Create Service Account").long_about("Create Service Account (POST /api/v1/workspaces/{workspace_id}/service-accounts). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID service-accounts create --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("resend").about("Resend Workspace Invitation").long_about("Resend Workspace Invitation (POST /api/v1/workspaces/{workspace_id}/invitations/{invitation_id}/resend). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID workspaces invitations resend INVITATION_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("invitation_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_221() -> Command {
-    Command::new("delete").about("Delete Service Account").long_about("Delete Service Account (DELETE /api/v1/workspaces/{workspace_id}/service-accounts/{account_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID service-accounts delete ACCOUNT_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("account_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("revoke").about("Revoke Workspace Invitation").long_about("Revoke Workspace Invitation (POST /api/v1/workspaces/{workspace_id}/invitations/{invitation_id}/revoke). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID workspaces invitations revoke INVITATION_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("invitation_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_209() -> Command {
+    Command::new("archive").about("Archive Workspace").long_about("Archive Workspace (POST /api/v1/workspaces/{workspace_id}/archive). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID archive --if-match IF_MATCH").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_294() -> Command {
+    let mut node = Command::new("audit-events")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_210());
+    node
+}
+fn operation_210() -> Command {
+    Command::new("list").about("List Workspace Audit Events").long_about("List Workspace Audit Events (GET /api/v1/workspaces/{workspace_id}/audit-events). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID audit-events list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_296() -> Command {
+    let mut node = Command::new("grants")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_211());
+    node = node.subcommand(operation_212());
+    node = node.subcommand(operation_213());
+    node = node.subcommand(operation_214());
+    node
+}
+fn operation_211() -> Command {
+    Command::new("list").about("List Workspace Grants").long_about("List Workspace Grants (GET /api/v1/workspaces/{workspace_id}/grants). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID grants list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_212() -> Command {
+    Command::new("create").about("Create Workspace Grant").long_about("Create Workspace Grant (POST /api/v1/workspaces/{workspace_id}/grants). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID grants create --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_213() -> Command {
+    Command::new("delete").about("Delete Workspace Grant").long_about("Delete Workspace Grant (DELETE /api/v1/workspaces/{workspace_id}/grants/{grant_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID grants delete GRANT_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("grant_id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_214() -> Command {
+    Command::new("update").about("Change Workspace Grant").long_about("The grant is replaced: the result carries its new ID. (PATCH /api/v1/workspaces/{workspace_id}/grants/{grant_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID grants update GRANT_ID --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("grant_id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_301() -> Command {
+    let mut node = Command::new("icon")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_215());
+    node = node.subcommand(operation_216());
+    node = node.subcommand(operation_217());
+    node
+}
+fn operation_215() -> Command {
+    Command::new("delete").about("Delete Workspace Icon").long_about("Delete Workspace Icon (DELETE /api/v1/workspaces/{workspace_id}/icon). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID icon delete --if-match IF_MATCH").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_216() -> Command {
+    Command::new("get").about("Get Workspace Icon").long_about("Get Workspace Icon (GET /api/v1/workspaces/{workspace_id}/icon). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID icon get --output FILE").arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_217() -> Command {
+    Command::new("replace").about("Put Workspace Icon").long_about("Put Workspace Icon (PUT /api/v1/workspaces/{workspace_id}/icon). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID icon replace --if-match IF_MATCH --content-type CONTENT_TYPE --file FILE").arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("content_type").long("content-type").required_unless_present_any(["schema", "example"])).arg(Arg::new("file").long("file").required_unless_present_any(["schema", "example"]).help("File path or - for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_305() -> Command {
+    let mut node = Command::new("keys")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_222());
+    node = node.subcommand(operation_223());
+    node
 }
 fn operation_222() -> Command {
-    Command::new("get").about("Get Service Account").long_about("Get Service Account (GET /api/v1/workspaces/{workspace_id}/service-accounts/{account_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID service-accounts get ACCOUNT_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("account_id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Workspace Keys").long_about("List Workspace Keys (GET /api/v1/workspaces/{workspace_id}/keys). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID keys list").arg(Arg::new("principal_id").long("principal-id")).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_223() -> Command {
-    Command::new("update").about("Update Service Account").long_about("Update Service Account (PATCH /api/v1/workspaces/{workspace_id}/service-accounts/{account_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID service-accounts update ACCOUNT_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("account_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("delete").about("Revoke Workspace Key").long_about("Revoke Workspace Key (DELETE /api/v1/workspaces/{workspace_id}/keys/{key_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID keys delete KEY_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("key_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_307() -> Command {
-    let mut node = Command::new("keys")
+fn group_308() -> Command {
+    let mut node = Command::new("service-accounts")
         .subcommand_required(true)
         .arg_required_else_help(true);
     node = node.subcommand(operation_224());
     node = node.subcommand(operation_225());
+    node = node.subcommand(operation_226());
+    node = node.subcommand(operation_227());
+    node = node.subcommand(operation_228());
+    node = node.subcommand(group_314());
     node
 }
 fn operation_224() -> Command {
-    Command::new("list").about("List Service Account Keys").long_about("List Service Account Keys (GET /api/v1/workspaces/{workspace_id}/service-accounts/{account_id}/keys). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID service-accounts keys list --account ACCOUNT_ID").arg(Arg::new("account_id").long("account").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Service Accounts").long_about("List Service Accounts (GET /api/v1/workspaces/{workspace_id}/service-accounts). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID service-accounts list").arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_225() -> Command {
+    Command::new("create").about("Create Service Account").long_about("Create Service Account (POST /api/v1/workspaces/{workspace_id}/service-accounts). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID service-accounts create --body @request.json").arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_226() -> Command {
+    Command::new("delete").about("Delete Service Account").long_about("Delete Service Account (DELETE /api/v1/workspaces/{workspace_id}/service-accounts/{account_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID service-accounts delete ACCOUNT_ID --if-match IF_MATCH").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("account_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_227() -> Command {
+    Command::new("get").about("Get Service Account").long_about("Get Service Account (GET /api/v1/workspaces/{workspace_id}/service-accounts/{account_id}). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID service-accounts get ACCOUNT_ID").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("account_id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_228() -> Command {
+    Command::new("update").about("Update Service Account").long_about("Update Service Account (PATCH /api/v1/workspaces/{workspace_id}/service-accounts/{account_id}). Use --schema for the offline request schema. Pass the target ETag explicitly; stale writes fail without automatic replay.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID service-accounts update ACCOUNT_ID --if-match IF_MATCH --body @request.json").arg(Arg::new("id").required_unless_present_any(["schema", "example"]).help("account_id")).arg(Arg::new("if_match").long("if-match").required_unless_present_any(["schema", "example"])).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn group_314() -> Command {
+    let mut node = Command::new("keys")
+        .subcommand_required(true)
+        .arg_required_else_help(true);
+    node = node.subcommand(operation_229());
+    node = node.subcommand(operation_230());
+    node
+}
+fn operation_229() -> Command {
+    Command::new("list").about("List Service Account Keys").long_about("List Service Account Keys (GET /api/v1/workspaces/{workspace_id}/service-accounts/{account_id}/keys). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID service-accounts keys list --account ACCOUNT_ID").arg(Arg::new("account_id").long("account").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+}
+fn operation_230() -> Command {
     Command::new("create").about("Create Service Account Key").long_about("Needs a login session: an API key never issues keys, so a leaked key cannot outlive its revocation. (POST /api/v1/workspaces/{workspace_id}/service-accounts/{account_id}/keys). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli --workspace WORKSPACE_ID service-accounts keys create --account ACCOUNT_ID --body @request.json").arg(Arg::new("account_id").long("account").required_unless_present_any(["schema", "example"])).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_310() -> Command {
+fn group_317() -> Command {
     let mut node = Command::new("healthz")
         .subcommand_required(true)
         .arg_required_else_help(true);
-    node = node.subcommand(operation_226());
+    node = node.subcommand(operation_231());
     node
 }
-fn operation_226() -> Command {
+fn operation_231() -> Command {
     Command::new("get").about("Health").long_about("Health (GET /healthz). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli healthz get").arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
-fn group_312() -> Command {
+fn group_319() -> Command {
     let mut node = Command::new("readyz")
         .subcommand_required(true)
         .arg_required_else_help(true);
-    node = node.subcommand(operation_227());
+    node = node.subcommand(operation_232());
     node
 }
-fn operation_227() -> Command {
+fn operation_232() -> Command {
     Command::new("get").about("Ready").long_about("Ready while started and the database holds a usable schema. Redis only speeds work up, so losing it\nis reported as degraded rather than taking the replica out of service. (GET /readyz). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli readyz get").arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 pub fn commands() -> Command {
@@ -3992,6 +4056,22 @@ pub async fn dispatch(
             output::response(response, config).await
         }
         96 => {
+            let value = input::body(required(matches, "body")?).await?;
+            input::validate(96, &value)?;
+            let body: models::ProviderAuthorizationRequest = serde_json::from_value(value)
+                .map_err(|_| CliError::input("request body does not match --schema"))?;
+            let options = ModelProviderAuthorizeOptions {
+                x_workspace_id: input::optional(matches, "x_workspace_id")?,
+            };
+            let response = client
+                .resources()
+                .model_providers()
+                .at(required(matches, "id")?)
+                .authorize(&body, options)
+                .await?;
+            output::response(response, config).await
+        }
+        97 => {
             let options = ModelProviderTestOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4003,7 +4083,63 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        97 => {
+        98 => {
+            let options = ModelProviderAuthorizationDeleteOptions {
+                x_workspace_id: input::optional(matches, "x_workspace_id")?,
+            };
+            let response = client
+                .resources()
+                .model_providers()
+                .at(required(matches, "provider_id")?)
+                .authorization()
+                .delete(options)
+                .await?;
+            output::response(response, config).await
+        }
+        99 => {
+            let options = ModelProviderAuthorizationGetOptions {
+                x_workspace_id: input::optional(matches, "x_workspace_id")?,
+            };
+            let response = client
+                .resources()
+                .model_providers()
+                .at(required(matches, "provider_id")?)
+                .authorization()
+                .get(options)
+                .await?;
+            output::response(response, config).await
+        }
+        100 => {
+            let value = input::body(required(matches, "body")?).await?;
+            input::validate(100, &value)?;
+            let body: models::AuthorizationCallback = serde_json::from_value(value)
+                .map_err(|_| CliError::input("request body does not match --schema"))?;
+            let options = ModelProviderAuthorizationCallbackOptions {
+                x_workspace_id: input::optional(matches, "x_workspace_id")?,
+            };
+            let response = client
+                .resources()
+                .model_providers()
+                .at(required(matches, "id")?)
+                .authorization()
+                .callback(&body, options)
+                .await?;
+            output::response(response, config).await
+        }
+        101 => {
+            let options = ModelProviderModelsGetOptions {
+                x_workspace_id: input::optional(matches, "x_workspace_id")?,
+            };
+            let response = client
+                .resources()
+                .model_providers()
+                .at(required(matches, "provider_id")?)
+                .models()
+                .get(options)
+                .await?;
+            output::response(response, config).await
+        }
+        102 => {
             let options = ModelsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -4016,9 +4152,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        98 => {
+        103 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(98, &value)?;
+            input::validate(103, &value)?;
             let body: models::ModelCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = ModelsCreateOptions {
@@ -4027,7 +4163,7 @@ pub async fn dispatch(
             let response = client.resources().models().create(&body, options).await?;
             output::response(response, config).await
         }
-        99 => {
+        104 => {
             let options = ModelGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4039,9 +4175,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        100 => {
+        105 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(100, &value)?;
+            input::validate(105, &value)?;
             let body: models::ModelUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = ModelUpdateOptions {
@@ -4056,7 +4192,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        101 => {
+        106 => {
             let options = OrganizationsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -4068,7 +4204,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        102 => {
+        107 => {
             let response = client
                 .resources()
                 .organizations()
@@ -4077,9 +4213,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        103 => {
+        108 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(103, &value)?;
+            input::validate(108, &value)?;
             let body: models::OrganizationUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = OrganizationUpdateOptions {
@@ -4093,7 +4229,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        104 => {
+        109 => {
             let options = OrganizationAuditEventsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -4120,7 +4256,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        105 => {
+        110 => {
             let options = OrganizationGrantsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -4147,9 +4283,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        106 => {
+        111 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(106, &value)?;
+            input::validate(111, &value)?;
             let body: models::GrantCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
@@ -4161,7 +4297,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        107 => {
+        112 => {
             let response = client
                 .resources()
                 .organizations()
@@ -4172,9 +4308,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        108 => {
+        113 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(108, &value)?;
+            input::validate(113, &value)?;
             let body: models::GrantUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
@@ -4187,7 +4323,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        109 => {
+        114 => {
             let options = OrganizationIconDeleteOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
@@ -4200,7 +4336,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        110 => {
+        115 => {
             let response = client
                 .resources()
                 .organizations()
@@ -4210,7 +4346,7 @@ pub async fn dispatch(
                 .await?;
             output::binary(response, matches).await
         }
-        111 => {
+        116 => {
             let body = input::raw_upload(matches).await?;
             let options = OrganizationIconReplaceOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
@@ -4225,7 +4361,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        112 => {
+        117 => {
             let options = OrganizationInvitationsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -4252,9 +4388,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        113 => {
+        118 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(113, &value)?;
+            input::validate(118, &value)?;
             let body: models::InvitationCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
@@ -4266,7 +4402,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        114 => {
+        119 => {
             let options = OrganizationInvitationResendOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
@@ -4280,7 +4416,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        115 => {
+        120 => {
             let options = OrganizationInvitationRevokeOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
@@ -4294,7 +4430,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        116 => {
+        121 => {
             let options = OrganizationMembersListOptions {
                 kind: input::optional(matches, "kind")?,
                 limit: input::optional(matches, "limit")?,
@@ -4322,7 +4458,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        117 => {
+        122 => {
             let options = OrganizationWorkspacesListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -4349,9 +4485,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        118 => {
+        123 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(118, &value)?;
+            input::validate(123, &value)?;
             let body: models::WorkspaceCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
@@ -4363,7 +4499,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        119 => {
+        124 => {
             let response = client
                 .resources()
                 .provider_types()
@@ -4372,7 +4508,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        120 => {
+        125 => {
             let options = RunGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4384,9 +4520,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        121 => {
+        126 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(121, &value)?;
+            input::validate(126, &value)?;
             let body: models::RunLabels = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = RunUpdateOptions {
@@ -4401,9 +4537,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        122 => {
+        127 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(122, &value)?;
+            input::validate(127, &value)?;
             let body: models::Fork = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = RunForkOptions {
@@ -4418,7 +4554,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        123 => {
+        128 => {
             let options = RunInterruptOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4430,9 +4566,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        124 => {
+        129 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(124, &value)?;
+            input::validate(129, &value)?;
             let body: models::Resume = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = RunResumeOptions {
@@ -4447,7 +4583,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        125 => {
+        130 => {
             let options = RunAttemptsListOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4460,7 +4596,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        126 => {
+        131 => {
             let options = RunAttemptTraceListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -4492,7 +4628,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        127 => {
+        132 => {
             let options = RunItemsGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4505,7 +4641,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        128 => {
+        133 => {
             let options = RunLineageListOptions {
                 cursor: input::optional(matches, "cursor")?,
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
@@ -4532,7 +4668,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        129 => {
+        134 => {
             let options = SessionsListOptions {
                 q: input::optional(matches, "q")?,
                 agent_id: input::optional(matches, "agent_id")?,
@@ -4552,9 +4688,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        130 => {
+        135 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(130, &value)?;
+            input::validate(135, &value)?;
             let body: models::SessionCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = SessionsCreateOptions {
@@ -4563,7 +4699,7 @@ pub async fn dispatch(
             let response = client.resources().sessions().create(&body, options).await?;
             output::response(response, config).await
         }
-        131 => {
+        136 => {
             let options = SessionGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4575,9 +4711,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        132 => {
+        137 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(132, &value)?;
+            input::validate(137, &value)?;
             let body: models::SessionUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = SessionUpdateOptions {
@@ -4592,7 +4728,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        133 => {
+        138 => {
             let options = SkillsListOptions {
                 label: input::many(matches, "label")?,
                 q: input::optional(matches, "q")?,
@@ -4609,9 +4745,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        134 => {
+        139 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(134, &value)?;
+            input::validate(139, &value)?;
             let body: models::SkillCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = SkillsCreateOptions {
@@ -4620,9 +4756,9 @@ pub async fn dispatch(
             let response = client.resources().skills().create(&body, options).await?;
             output::response(response, config).await
         }
-        135 => {
+        140 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(135, &value)?;
+            input::validate(140, &value)?;
             let body: models::SkillValidate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = SkillsValidateOptions {
@@ -4631,7 +4767,7 @@ pub async fn dispatch(
             let response = client.resources().skills().validate(&body, options).await?;
             output::response(response, config).await
         }
-        136 => {
+        141 => {
             let options = SkillGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4643,9 +4779,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        137 => {
+        142 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(137, &value)?;
+            input::validate(142, &value)?;
             let body: models::SkillUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = SkillUpdateOptions {
@@ -4660,7 +4796,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        138 => {
+        143 => {
             let options = SkillArchiveOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
@@ -4673,7 +4809,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        139 => {
+        144 => {
             let options = SkillUnarchiveOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
@@ -4686,7 +4822,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        140 => {
+        145 => {
             let options = SkillRevisionsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -4714,9 +4850,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        141 => {
+        146 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(141, &value)?;
+            input::validate(146, &value)?;
             let body: models::SkillRevisionCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = SkillRevisionsCreateOptions {
@@ -4732,7 +4868,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        142 => {
+        147 => {
             let options = SkillRevisionGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4746,7 +4882,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        143 => {
+        148 => {
             let options = SkillRevisionSetDefaultOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
@@ -4761,7 +4897,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        144 => {
+        149 => {
             let options = SkillRevisionContentGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4776,7 +4912,7 @@ pub async fn dispatch(
                 .await?;
             output::binary(response, matches).await
         }
-        145 => {
+        150 => {
             let options = SkillRevisionFileGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4792,7 +4928,7 @@ pub async fn dispatch(
                 .await?;
             output::binary(response, matches).await
         }
-        146 => {
+        151 => {
             let options = SubscriptionsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -4805,9 +4941,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        147 => {
+        152 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(147, &value)?;
+            input::validate(152, &value)?;
             let body: models::SubscriptionCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = SubscriptionsCreateOptions {
@@ -4820,7 +4956,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        148 => {
+        153 => {
             let options = SubscriptionDeleteOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
@@ -4833,7 +4969,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        149 => {
+        154 => {
             let options = SubscriptionGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4845,9 +4981,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        150 => {
+        155 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(150, &value)?;
+            input::validate(155, &value)?;
             let body: models::SubscriptionUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = SubscriptionUpdateOptions {
@@ -4862,7 +4998,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        151 => {
+        156 => {
             let options = SubscriptionDeliveriesListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -4890,7 +5026,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        152 => {
+        157 => {
             let options = SubscriptionDeliveryRedeliverOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4904,7 +5040,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        153 => {
+        158 => {
             let options = ThreadsListOptions {
                 session_id: input::optional(matches, "session_id")?,
                 label: input::many(matches, "label")?,
@@ -4919,9 +5055,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        154 => {
+        159 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(154, &value)?;
+            input::validate(159, &value)?;
             let body: models::NewThread = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = ThreadsCreateOptions {
@@ -4931,7 +5067,7 @@ pub async fn dispatch(
             let response = client.resources().threads().create(&body, options).await?;
             output::response(response, config).await
         }
-        155 => {
+        160 => {
             let options = ThreadGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4943,9 +5079,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        156 => {
+        161 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(156, &value)?;
+            input::validate(161, &value)?;
             let body: models::ThreadUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = ThreadUpdateOptions {
@@ -4960,7 +5096,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        157 => {
+        162 => {
             let options = ThreadArchiveOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
@@ -4973,7 +5109,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        158 => {
+        163 => {
             let options = ThreadEnvironmentsListOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -4986,9 +5122,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        159 => {
+        164 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(159, &value)?;
+            input::validate(164, &value)?;
             let body: models::MountCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = ThreadEnvironmentsCreateOptions {
@@ -5004,7 +5140,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        160 => {
+        165 => {
             let options = ThreadEnvironmentDeleteOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
@@ -5019,7 +5155,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        161 => {
+        166 => {
             let options = InboxListOptions {
                 status: input::many(matches, "status")?,
                 limit: input::optional(matches, "limit")?,
@@ -5048,9 +5184,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        162 => {
+        167 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(162, &value)?;
+            input::validate(167, &value)?;
             let body: models::Message = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = InboxCreateOptions {
@@ -5066,9 +5202,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        163 => {
+        168 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(163, &value)?;
+            input::validate(168, &value)?;
             let body: models::InboxOrder = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = ThreadInboxOrderReplaceOptions {
@@ -5085,7 +5221,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        164 => {
+        169 => {
             let options = EntryDeleteOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
@@ -5100,7 +5236,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        165 => {
+        170 => {
             let options = EntryGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -5114,9 +5250,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        166 => {
+        171 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(166, &value)?;
+            input::validate(171, &value)?;
             let body: models::EntryUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = EntryUpdateOptions {
@@ -5133,7 +5269,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        167 => {
+        172 => {
             let options = ThreadMemoriesListOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -5146,9 +5282,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        168 => {
+        173 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(168, &value)?;
+            input::validate(173, &value)?;
             let body: models::MemoryMount = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = ThreadMemoriesCreateOptions {
@@ -5164,7 +5300,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        169 => {
+        174 => {
             let options = ThreadMemoryDeleteOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
@@ -5179,9 +5315,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        170 => {
+        175 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(170, &value)?;
+            input::validate(175, &value)?;
             let body: models::MemoryMountUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = ThreadMemoryUpdateOptions {
@@ -5198,7 +5334,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        171 => {
+        176 => {
             let options = ThreadRunsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -5226,7 +5362,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        172 => {
+        177 => {
             let options = ThreadStreamGetOptions {
                 run: input::optional(matches, "run")?,
                 position: input::optional(matches, "position")?,
@@ -5242,21 +5378,21 @@ pub async fn dispatch(
                 .await?;
             output::binary(response, matches).await
         }
-        173 => {
+        178 => {
             let options = ToolsetsListOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client.resources().toolsets().list(options).await?;
             output::response(response, config).await
         }
-        174 => {
+        179 => {
             let options = TraceBackendGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client.resources().trace_backend().get(options).await?;
             output::response(response, config).await
         }
-        175 => {
+        180 => {
             let options = TracesListOptions {
                 session_id: input::optional(matches, "session_id")?,
                 thread_id: input::optional(matches, "thread_id")?,
@@ -5275,7 +5411,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        176 => {
+        181 => {
             let options = TraceGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -5287,7 +5423,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        177 => {
+        182 => {
             let options = TraceSpansListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -5315,7 +5451,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        178 => {
+        183 => {
             let file = input::upload(matches).await?;
             let options = UploadsCreateOptions {
                 idempotency_key: required(matches, "idempotency_key")?.to_owned(),
@@ -5324,7 +5460,7 @@ pub async fn dispatch(
             let response = client.resources().uploads().create(file, options).await?;
             output::response(response, config).await
         }
-        179 => {
+        184 => {
             let options = UsageGetOptions {
                 run_id: input::optional(matches, "run_id")?,
                 thread_id: input::optional(matches, "thread_id")?,
@@ -5336,7 +5472,7 @@ pub async fn dispatch(
             let response = client.resources().usage().get(options).await?;
             output::response(response, config).await
         }
-        180 => {
+        185 => {
             let options = UsageAgentsListOptions {
                 start: input::option(required(matches, "start")?)?,
                 end: input::option(required(matches, "end")?)?,
@@ -5351,7 +5487,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        181 => {
+        186 => {
             let options = UsageModelsListOptions {
                 start: input::option(required(matches, "start")?)?,
                 end: input::option(required(matches, "end")?)?,
@@ -5366,7 +5502,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        182 => {
+        187 => {
             let options = UsageOverviewGetOptions {
                 start: input::option(required(matches, "start")?)?,
                 end: input::option(required(matches, "end")?)?,
@@ -5376,13 +5512,13 @@ pub async fn dispatch(
             let response = client.resources().usage().overview().get(options).await?;
             output::response(response, config).await
         }
-        183 => {
+        188 => {
             let response = client.resources().users().me().get().await?;
             output::response(response, config).await
         }
-        184 => {
+        189 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(184, &value)?;
+            input::validate(189, &value)?;
             let body: models::ProfileUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = UsersMeUpdateOptions {
@@ -5396,23 +5532,23 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        185 => {
+        190 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(185, &value)?;
+            input::validate(190, &value)?;
             let body: models::AccountDisable = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client.resources().users().me().disable(&body).await?;
             output::response(response, config).await
         }
-        186 => {
+        191 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(186, &value)?;
+            input::validate(191, &value)?;
             let body: models::PasswordChange = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client.resources().users().me().password(&body).await?;
             output::response(response, config).await
         }
-        187 => {
+        192 => {
             let options = UsersMeAuditEventsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -5439,7 +5575,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        188 => {
+        193 => {
             let options = UsersMeAvatarDeleteOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
@@ -5452,7 +5588,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        189 => {
+        194 => {
             let body = input::raw_upload(matches).await?;
             let options = UsersMeAvatarReplaceOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
@@ -5467,7 +5603,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        190 => {
+        195 => {
             let options = UsersMeKeysListOptions {
                 workspace_id: input::optional(matches, "workspace_id")?,
                 limit: input::optional(matches, "limit")?,
@@ -5484,15 +5620,15 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        191 => {
+        196 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(191, &value)?;
+            input::validate(196, &value)?;
             let body: models::UserKeyCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client.resources().users().me().keys().create(&body).await?;
             output::response(response, config).await
         }
-        192 => {
+        197 => {
             let options = UsersMeKeyDeleteOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
@@ -5506,7 +5642,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        193 => {
+        198 => {
             let options = UsersMeLoginSessionsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -5533,7 +5669,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        194 => {
+        199 => {
             let response = client
                 .resources()
                 .users()
@@ -5544,7 +5680,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        195 => {
+        200 => {
             let response = client
                 .resources()
                 .users()
@@ -5554,7 +5690,7 @@ pub async fn dispatch(
                 .await?;
             output::binary(response, matches).await
         }
-        196 => {
+        201 => {
             let options = WebProvidersListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -5567,9 +5703,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        197 => {
+        202 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(197, &value)?;
+            input::validate(202, &value)?;
             let body: models::ProviderCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = WebProvidersCreateOptions {
@@ -5582,7 +5718,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        198 => {
+        203 => {
             let options = WebProviderGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -5594,9 +5730,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        199 => {
+        204 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(199, &value)?;
+            input::validate(204, &value)?;
             let body: models::ProviderUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = WebProviderUpdateOptions {
@@ -5611,7 +5747,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        200 => {
+        205 => {
             let options = WebProviderTestOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
@@ -5623,7 +5759,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        201 => {
+        206 => {
             let options = WorkspacesListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -5635,7 +5771,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        202 => {
+        207 => {
             let response = client
                 .resources()
                 .workspaces()
@@ -5644,9 +5780,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        203 => {
+        208 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(203, &value)?;
+            input::validate(208, &value)?;
             let body: models::WorkspaceUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = WorkspaceUpdateOptions {
@@ -5660,7 +5796,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        204 => {
+        209 => {
             let options = WorkspaceArchiveOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
@@ -5672,7 +5808,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        205 => {
+        210 => {
             let options = AuditEventsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -5699,7 +5835,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        206 => {
+        211 => {
             let options = GrantsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -5726,9 +5862,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        207 => {
+        212 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(207, &value)?;
+            input::validate(212, &value)?;
             let body: models::GrantCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
@@ -5740,7 +5876,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        208 => {
+        213 => {
             let response = client
                 .resources()
                 .workspaces()
@@ -5751,9 +5887,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        209 => {
+        214 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(209, &value)?;
+            input::validate(214, &value)?;
             let body: models::GrantUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
@@ -5766,7 +5902,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        210 => {
+        215 => {
             let options = IconDeleteOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
@@ -5779,7 +5915,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        211 => {
+        216 => {
             let response = client
                 .resources()
                 .workspaces()
@@ -5789,7 +5925,7 @@ pub async fn dispatch(
                 .await?;
             output::binary(response, matches).await
         }
-        212 => {
+        217 => {
             let body = input::raw_upload(matches).await?;
             let options = IconReplaceOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
@@ -5804,7 +5940,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        213 => {
+        218 => {
             let options = WorkspaceInvitationsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -5831,9 +5967,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        214 => {
+        219 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(214, &value)?;
+            input::validate(219, &value)?;
             let body: models::InvitationCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
@@ -5845,7 +5981,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        215 => {
+        220 => {
             let options = WorkspaceInvitationResendOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
@@ -5859,7 +5995,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        216 => {
+        221 => {
             let options = WorkspaceInvitationRevokeOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
@@ -5873,7 +6009,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        217 => {
+        222 => {
             let options = KeysListOptions {
                 principal_id: input::optional(matches, "principal_id")?,
                 limit: input::optional(matches, "limit")?,
@@ -5901,7 +6037,7 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        218 => {
+        223 => {
             let options = KeyDeleteOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
@@ -5915,7 +6051,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        219 => {
+        224 => {
             let options = ServiceAccountsListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -5942,9 +6078,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        220 => {
+        225 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(220, &value)?;
+            input::validate(225, &value)?;
             let body: models::ServiceAccountCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
@@ -5956,7 +6092,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        221 => {
+        226 => {
             let options = ServiceAccountDeleteOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
@@ -5970,7 +6106,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        222 => {
+        227 => {
             let response = client
                 .resources()
                 .workspaces()
@@ -5981,9 +6117,9 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        223 => {
+        228 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(223, &value)?;
+            input::validate(228, &value)?;
             let body: models::ServiceAccountUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let options = ServiceAccountUpdateOptions {
@@ -5999,7 +6135,7 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        224 => {
+        229 => {
             let options = ServiceAccountKeysListOptions {
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
@@ -6030,9 +6166,9 @@ pub async fn dispatch(
                 output::response(response, config).await
             }
         }
-        225 => {
+        230 => {
             let value = input::body(required(matches, "body")?).await?;
-            input::validate(225, &value)?;
+            input::validate(230, &value)?;
             let body: models::KeyCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
@@ -6046,11 +6182,11 @@ pub async fn dispatch(
                 .await?;
             output::response(response, config).await
         }
-        226 => {
+        231 => {
             let response = client.resources().healthz().get().await?;
             output::response(response, config).await
         }
-        227 => {
+        232 => {
             let response = client.resources().readyz().get().await?;
             output::response(response, config).await
         }
