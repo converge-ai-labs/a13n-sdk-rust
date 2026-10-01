@@ -4229,6 +4229,12 @@ pub struct ModelProviderUpdateOptions {
     /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
     pub x_workspace_id: Option<String>,
 }
+/// Query and header options for [`ModelProviderResource::authorize`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ModelProviderAuthorizeOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
 /// Query and header options for [`ModelProviderResource::test`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
 pub struct ModelProviderTestOptions {
@@ -4236,6 +4242,14 @@ pub struct ModelProviderTestOptions {
     pub x_workspace_id: Option<String>,
 }
 impl<'a> ModelProviderResource<'a> {
+    /// Access `authorization` locally, sharing the client and explicit scope.
+    pub fn authorization(&self) -> ModelProviderAuthorizationResource<'a> {
+        ModelProviderAuthorizationResource(self.0.clone())
+    }
+    /// Access `models` locally, sharing the client and explicit scope.
+    pub fn models(&self) -> ModelProviderModelsResource<'a> {
+        ModelProviderModelsResource(self.0.clone())
+    }
     /// Get model provider.
     ///
     /// `GET /api/v1/model-providers/{provider_id}`.
@@ -4292,6 +4306,33 @@ impl<'a> ModelProviderResource<'a> {
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
+    /// Authorize Model.
+    ///
+    /// `POST /api/v1/model-providers/{provider_id}/authorize`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn authorize(
+        &self,
+        body: &models::ProviderAuthorizationRequest,
+        options: ModelProviderAuthorizeOptions,
+    ) -> Result<Response<models::AuthorizationStart>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/model-providers/{provider_id}/authorize",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
     /// Test model provider.
     ///
     /// `POST /api/v1/model-providers/{provider_id}/test`.
@@ -4306,6 +4347,138 @@ impl<'a> ModelProviderResource<'a> {
         let mut request = self.0.client.request(
             reqwest::Method::POST,
             "/api/v1/model-providers/{provider_id}/test",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct ModelProviderAuthorizationResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`ModelProviderAuthorizationResource::delete`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ModelProviderAuthorizationDeleteOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`ModelProviderAuthorizationResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ModelProviderAuthorizationGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`ModelProviderAuthorizationResource::callback`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ModelProviderAuthorizationCallbackOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> ModelProviderAuthorizationResource<'a> {
+    /// Disconnect Model Authorization.
+    ///
+    /// `DELETE /api/v1/model-providers/{provider_id}/authorization`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn delete(
+        &self,
+        options: ModelProviderAuthorizationDeleteOptions,
+    ) -> Result<Response<models::AuthorizationDisconnect>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::DELETE,
+            "/api/v1/model-providers/{provider_id}/authorization",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Model Authorization.
+    ///
+    /// `GET /api/v1/model-providers/{provider_id}/authorization`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: ModelProviderAuthorizationGetOptions,
+    ) -> Result<Response<models::AuthorizationStatus>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/model-providers/{provider_id}/authorization",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Complete Model Authorization.
+    ///
+    /// `POST /api/v1/model-providers/{provider_id}/authorization/callback`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn callback(
+        &self,
+        body: &models::AuthorizationCallback,
+        options: ModelProviderAuthorizationCallbackOptions,
+    ) -> Result<Response<models::AuthorizationStatus>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/model-providers/{provider_id}/authorization/callback",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct ModelProviderModelsResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`ModelProviderModelsResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ModelProviderModelsGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> ModelProviderModelsResource<'a> {
+    /// Discover Model Provider Models.
+    ///
+    /// `GET /api/v1/model-providers/{provider_id}/models`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: ModelProviderModelsGetOptions,
+    ) -> Result<Response<Vec<models::ChatGptModel>>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/model-providers/{provider_id}/models",
             &self.0.ids,
         )?;
         request = self
@@ -10727,9 +10900,39 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
     ),
     (
         "POST",
+        "/api/v1/model-providers/{provider_id}/authorize",
+        "ModelProviderResource",
+        "authorize",
+    ),
+    (
+        "POST",
         "/api/v1/model-providers/{provider_id}/test",
         "ModelProviderResource",
         "test",
+    ),
+    (
+        "DELETE",
+        "/api/v1/model-providers/{provider_id}/authorization",
+        "ModelProviderAuthorizationResource",
+        "delete",
+    ),
+    (
+        "GET",
+        "/api/v1/model-providers/{provider_id}/authorization",
+        "ModelProviderAuthorizationResource",
+        "get",
+    ),
+    (
+        "POST",
+        "/api/v1/model-providers/{provider_id}/authorization/callback",
+        "ModelProviderAuthorizationResource",
+        "callback",
+    ),
+    (
+        "GET",
+        "/api/v1/model-providers/{provider_id}/models",
+        "ModelProviderModelsResource",
+        "get",
     ),
     ("GET", "/api/v1/models", "ModelsResource", "list"),
     ("POST", "/api/v1/models", "ModelsResource", "create"),

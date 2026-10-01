@@ -13,6 +13,24 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
+/// struct for typed errors of method [`authorize_model_api_v1_model_providers_provider_id_authorize_post`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum AuthorizeModelApiV1ModelProvidersProviderIdAuthorizePostError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`complete_model_authorization_api_v1_model_providers_provider_id_authorization_callback_post`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum CompleteModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationCallbackPostError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`create_provider_api_v1_connector_providers_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -53,6 +71,24 @@ pub enum CreateProviderApiV1ModelProvidersPostError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum CreateProviderApiV1WebProvidersPostError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`disconnect_model_authorization_api_v1_model_providers_provider_id_authorization_delete`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum DisconnectModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationDeleteError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`discover_model_provider_models_api_v1_model_providers_provider_id_models_get`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum DiscoverModelProviderModelsApiV1ModelProvidersProviderIdModelsGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
@@ -157,6 +193,15 @@ pub enum ListProvidersApiV1WebProvidersGetError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`model_authorization_api_v1_model_providers_provider_id_authorization_get`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationGetError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`test_provider_api_v1_connector_providers_provider_id_test_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -245,6 +290,183 @@ pub enum UpdateProviderApiV1WebProvidersProviderIdPatchError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
+}
+
+pub async fn authorize_model_api_v1_model_providers_provider_id_authorize_post(
+    configuration: &configuration::Configuration,
+    provider_id: &str,
+    provider_authorization_request: models::ProviderAuthorizationRequest,
+    x_workspace_id: Option<&str>,
+) -> Result<
+    Response<models::AuthorizationStart>,
+    Error<AuthorizeModelApiV1ModelProvidersProviderIdAuthorizePostError>,
+> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_provider_id = provider_id;
+    let p_body_provider_authorization_request = provider_authorization_request;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/model-providers/{provider_id}/authorize",
+        configuration.base_path,
+        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+    req_builder = req_builder.json(&p_body_provider_authorization_request);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::AuthorizationStart`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::AuthorizationStart`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<AuthorizeModelApiV1ModelProvidersProviderIdAuthorizePostError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn complete_model_authorization_api_v1_model_providers_provider_id_authorization_callback_post(
+    configuration: &configuration::Configuration,
+    provider_id: &str,
+    authorization_callback: models::AuthorizationCallback,
+    x_workspace_id: Option<&str>,
+) -> Result<
+    Response<models::AuthorizationStatus>,
+    Error<CompleteModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationCallbackPostError>,
+> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_provider_id = provider_id;
+    let p_body_authorization_callback = authorization_callback;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/model-providers/{provider_id}/authorization/callback",
+        configuration.base_path,
+        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+    req_builder = req_builder.json(&p_body_authorization_callback);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::AuthorizationStatus`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::AuthorizationStatus`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<
+            CompleteModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationCallbackPostError,
+        > = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
 }
 
 pub async fn create_provider_api_v1_connector_providers_post(
@@ -632,6 +854,167 @@ pub async fn create_provider_api_v1_web_providers_post(
     } else {
         let content = resp.text().await?;
         let entity: Option<CreateProviderApiV1WebProvidersPostError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn disconnect_model_authorization_api_v1_model_providers_provider_id_authorization_delete(
+    configuration: &configuration::Configuration,
+    provider_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<
+    Response<models::AuthorizationDisconnect>,
+    Error<DisconnectModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationDeleteError>,
+> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/model-providers/{provider_id}/authorization",
+        configuration.base_path,
+        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::DELETE, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::AuthorizationDisconnect`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::AuthorizationDisconnect`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<
+            DisconnectModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationDeleteError,
+        > = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn discover_model_provider_models_api_v1_model_providers_provider_id_models_get(
+    configuration: &configuration::Configuration,
+    provider_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<
+    Response<Vec<models::ChatGptModel>>,
+    Error<DiscoverModelProviderModelsApiV1ModelProvidersProviderIdModelsGetError>,
+> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/model-providers/{provider_id}/models",
+        configuration.base_path,
+        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `Vec&lt;models::ChatGptModel&gt;`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `Vec&lt;models::ChatGptModel&gt;`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<DiscoverModelProviderModelsApiV1ModelProvidersProviderIdModelsGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1444,6 +1827,81 @@ pub async fn list_providers_api_v1_web_providers_get(
     } else {
         let content = resp.text().await?;
         let entity: Option<ListProvidersApiV1WebProvidersGetError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn model_authorization_api_v1_model_providers_provider_id_authorization_get(
+    configuration: &configuration::Configuration,
+    provider_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<
+    Response<models::AuthorizationStatus>,
+    Error<ModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationGetError>,
+> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/model-providers/{provider_id}/authorization",
+        configuration.base_path,
+        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::AuthorizationStatus`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::AuthorizationStatus`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
