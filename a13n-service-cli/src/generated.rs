@@ -849,6 +849,7 @@ pub const OPERATIONS: &[(&str, &str, &str)] = &[
     ("healthz get", "GET", "/healthz"),
     ("readyz get", "GET", "/readyz"),
 ];
+pub const BINARY_OPERATIONS: &[usize] = &[10, 20, 115, 149, 150, 177, 200, 216];
 pub const EXAMPLES: &[&str] = &[
     "a13n-service-cli agent_composer",
     "a13n-service-cli agents list",

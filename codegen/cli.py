@@ -285,6 +285,9 @@ def generate_cli(document: dict, nodes: dict, tests: list[dict], target: Path) -
         "use clap::{Arg, ArgAction, ArgMatches, Command};",
         "use crate::{CliError, config::Effective, input, output, required};",
         f"pub const OPERATIONS: &[(&str,&str,&str)] = &[{entries}];",
+        "pub const BINARY_OPERATIONS: &[usize] = &["
+        + ",".join(str(index) for index, test in enumerate(tests) if test["op"]["result"] is None)
+        + "];",
         "pub const EXAMPLES: &[&str] = &[" + ",".join(q(example_template(test)) for test in tests) + "];",
         *command_functions,
         f"pub fn commands() -> Command {{ {root}() }}",

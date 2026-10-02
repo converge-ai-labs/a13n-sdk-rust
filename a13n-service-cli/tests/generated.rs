@@ -157,6 +157,44 @@ fn bodyless_status_and_redirect_location_remain_visible() {
 }
 
 #[test]
+fn ordinary_get_does_not_require_a_binary_destination() {
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let base = format!("http://{}", listener.local_addr().unwrap());
+    drop(listener);
+    for arguments in [
+        vec!["healthz", "get"],
+        vec!["model-providers", "authorization", "get", "--provider", "p"],
+    ] {
+        let mut args = vec!["--base-url", &base, "--timeout", "1"];
+        args.extend(arguments);
+        let output = binary(&args);
+        assert_eq!(
+            output.status.code(),
+            Some(5),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(String::from_utf8_lossy(&output.stderr).contains("transport failed"));
+    }
+    let output = binary(&[
+        "--dry-run",
+        "assets",
+        "content",
+        "get",
+        "--asset",
+        "asset_x",
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let plan: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert_eq!(plan["path"], "/api/v1/assets/asset_x/content");
+    assert_eq!(plan["local_only"], true);
+}
+
+#[test]
 fn binary_download_streams_exact_bytes_and_requires_destination() {
     let body = vec![0x81; 300_000];
     let (base, server) = serve(vec![(200, vec![], body.clone())]);
