@@ -11,14 +11,11 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// RunItems : A run's committed display with the run it describes. Live output continues after `position`.
+/// RunItems : Items of a run's committed display, in ordinal order, with the run they describe. Ordinals are dense from 1, so the first item's ordinal tells whether earlier ones exist. Live output continues after `position`.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RunItems {
     #[serde(rename = "complete")]
     pub complete: bool,
-
-    #[serde(rename = "dropped")]
-    pub dropped: i32,
 
     #[serde(rename = "items")]
     pub items: Vec<models::Item>,
@@ -39,17 +36,15 @@ pub struct RunItems {
 }
 
 impl RunItems {
-    /// A run's committed display with the run it describes. Live output continues after `position`.
+    /// Items of a run's committed display, in ordinal order, with the run they describe. Ordinals are dense from 1, so the first item's ordinal tells whether earlier ones exist. Live output continues after `position`.
     pub fn new(
         complete: bool,
-        dropped: i32,
         items: Vec<models::Item>,
         position: Option<String>,
         run: models::RunView,
     ) -> RunItems {
         RunItems {
             complete,
-            dropped,
             items,
             position,
             resume_after: None,

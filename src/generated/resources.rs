@@ -5808,6 +5808,12 @@ pub struct RunItemsResource<'a>(pub(crate) Binding<'a>);
 /// Query and header options for [`RunItemsResource::get`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
 pub struct RunItemsGetOptions {
+    /// Query parameter `before`. Return the items just before this ordinal `None` omits this parameter.
+    pub before: Option<i32>,
+    /// Query parameter `after`. Return the items just after this ordinal `None` omits this parameter.
+    pub after: Option<i32>,
+    /// Query parameter `limit`. `None` omits this parameter.
+    pub limit: Option<i32>,
     /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
     pub x_workspace_id: Option<String>,
 }
@@ -5832,6 +5838,15 @@ impl<'a> RunItemsResource<'a> {
             .0
             .client
             .scoped_request(request, options.x_workspace_id.as_deref());
+        if let Some(value) = &options.before {
+            request = query(request, "before", value)?;
+        }
+        if let Some(value) = &options.after {
+            request = query(request, "after", value)?;
+        }
+        if let Some(value) = &options.limit {
+            request = query(request, "limit", value)?;
+        }
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
