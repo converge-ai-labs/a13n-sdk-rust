@@ -423,15 +423,15 @@ mod tests {
     #[test]
     fn event_item_labels_use_wire_snake_case() {
         assert_eq!(
-            helpers::item_kind(&a13n::streaming::ItemKind::TextMessage),
+            serde_json::to_value(a13n::streaming::ItemKind::TextMessage).unwrap(),
             "text_message"
         );
         assert_eq!(
-            helpers::item_kind(&a13n::streaming::ItemKind::ToolCall),
+            serde_json::to_value(a13n::streaming::ItemKind::ToolCall).unwrap(),
             "tool_call"
         );
         assert_eq!(
-            helpers::item_state(&a13n::streaming::ItemState::InProgress),
+            serde_json::to_value(a13n::streaming::ItemState::InProgress).unwrap(),
             "in_progress"
         );
     }

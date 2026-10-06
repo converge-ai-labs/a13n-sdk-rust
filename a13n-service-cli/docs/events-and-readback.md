@@ -18,7 +18,7 @@ The command writes one JSON object per line and flushes before advancing. A curs
 
 ## Native media and child attribution
 
-Each delta's `event` is the unchanged native AG-UI 1.0 JSON map, including unknown CUSTOM values, nulls, media metadata and ordered structured `TOOL_CALL_RESULT.content`. Text-only filtering must inspect `event.subagentRunId`: inline-child message/tool IDs can collide with root IDs. Do not flatten child text into a root reply, stringify structured parts, deduplicate repeated media or interpret omitted-payload descriptors as original bytes. The outer `run_id` is the Service owner; inner child `RUN_FINISHED` is not authoritative root completion. Use exact `runs wait` and committed Items, whose content retains child attribution. Authored user/steering input CUSTOM events are display evidence, not permission to execute tools. The command prints frames without a UI reducer.
+Each delta has raw `event` plus required nullable `item`, never a second typed-operation format. Item references preserve omitted/null/value `ordinal`, `response_group` and arbitrary JSON `failure`. Each delta's `event` is the unchanged native AG-UI 1.0 JSON map, including unknown CUSTOM values, nulls, media metadata and ordered structured `TOOL_CALL_RESULT.content`. Text-only filtering must inspect `event.subagentRunId`: inline-child message/tool IDs can collide with root IDs. Do not flatten child text into a root reply, stringify structured parts, deduplicate repeated media or interpret omitted-payload descriptors as original bytes. The outer `run_id` is the Service owner; inner child `RUN_FINISHED` is not authoritative root completion. Use exact `runs wait` and committed Items, whose content retains child attribution. Authored user/steering input CUSTOM events are display evidence, not permission to execute tools. The command prints frames without a UI reducer.
 
 ## Recover with a cursor you actually applied
 
@@ -45,19 +45,20 @@ RUN=$(jq -er '.data.assigned_run_id' entry.json)
 a13n-service-cli --include-meta runs wait "$RUN" --timeout 90 > run.json
 jq '.data.status' run.json
 a13n-service-cli runs result "$RUN" > items.json
-jq '{complete: .complete, dropped: .dropped, items: .items}' items.json
+jq '{complete: .complete, baseline: .baseline, items: .items}' items.json
 ```
 
-A `runs wait` exit of zero may still mean waiting, failed or cancelled; check `.data.status` before treating Items as a completed answer. `complete` says whether the display is sealed, and `dropped` counts earliest Items lost to its display limit; even committed Items need not be a full historical transcript. If the Entry was failed or withdrawn, stop and inspect it instead of reading an unrelated Run. Saving only transient text risks missing committed output. `runs interrupt "$RUN"` is a separate **explicit remote mutation**, unlike Ctrl-C or a local timeout.
+A `runs wait` exit of zero may still mean waiting, failed or cancelled; check `.data.status` before treating Items as a completed answer. `complete` means the Run is sealed, not all display history loaded. Default reads return the newest limit (default 200, max 500) plus the entire mutable tail, possibly exceeding the limit. Dense 1-based Item ordinals reveal earlier history when the first ordinal is greater than 1. Explicit `runs items get --run "$RUN" --before 20 --limit 10` or `--after 0` reads bounded historical windows; before >=1 and after >=0 exclude each other. Historical windows have `baseline=false` and null continuation/position/resume hint. They cannot seed a live consumer, heal gaps or seal its state; there is no `--all` cursor pager for Run Items. If the Entry was failed or withdrawn, stop and inspect it instead of reading an unrelated Run. Saving only transient text risks missing committed output. `runs interrupt "$RUN"` is a separate **explicit remote mutation**, unlike Ctrl-C or a local timeout.
 
 ## Resume from applied display coverage
 
-For advanced snapshot-plus-tail consumers, read Items for the exact known Run, apply that display, then open a **new** reader with its paired `run.id` and `position`. In the example above `RUN` is bound from the consumed Entry; to observe a still-running tail, you can read Items before `runs wait` once a checkpoint exists:
+For advanced snapshot-plus-tail consumers, read default Items (`baseline=true`) for the exact known Run, apply that display and recursive presentation continuation (not execution state), then open a **new** reader with its paired `run.id` and `position`. In the example above `RUN` is bound from the consumed Entry; to observe a still-running tail, you can read Items before `runs wait` once a checkpoint exists:
 
 ```bash
 set -eu
 a13n-service-cli runs result "$RUN" > baseline.json
-jq '.items' baseline.json # Apply the committed display in your own consumer.
+jq -e '.baseline == true' baseline.json > /dev/null
+jq '{items: .items, continuation: .continuation}' baseline.json # Apply display and recursive presentation state.
 BASELINE_RUN=$(jq -er '.run.id' baseline.json)
 POSITION=$(jq -er '.position' baseline.json) # Null: no checkpoint yet; wait before claiming coverage.
 HINT=$(jq -r '.resume_after // empty' baseline.json)

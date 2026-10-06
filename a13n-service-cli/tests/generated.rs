@@ -1047,3 +1047,145 @@ fn five_oauth_commands_use_generated_dispatch_and_preserve_nullable_disconnectio
         }
     }
 }
+
+#[test]
+fn ordinal_items_flags_dispatch_json_not_binary_and_preserve_window_metadata() {
+    use a13n::generated::models::{DisplayContinuation, Item, RunItems, StreamPosition};
+    let mut snapshot = RunItems::default();
+    snapshot.run.id = "r".into();
+    snapshot.run.display_position = Some(Some("1-9".into()));
+    snapshot.complete = true;
+    snapshot.baseline = true;
+    snapshot.position = Some("1-9".into());
+    snapshot.continuation = Some(Some(Box::new(DisplayContinuation::new(
+        10,
+        StreamPosition::new(1, 9),
+        "r".into(),
+    ))));
+    snapshot.resume_after = Some(Some("100-9".into()));
+    snapshot.items = (6..=9)
+        .map(|ordinal| Item {
+            ordinal,
+            id: format!("i{ordinal}"),
+            ..Default::default()
+        })
+        .collect();
+    let expected = serde_json::to_value(&snapshot).unwrap();
+    let (base, origin) = serve(vec![(
+        200,
+        vec![
+            ("Content-Type", "application/json"),
+            ("X-Request-ID", "items-request"),
+        ],
+        serde_json::to_vec(&snapshot).unwrap(),
+    )]);
+    let output = binary(&[
+        "--base-url",
+        &base,
+        "runs",
+        "items",
+        "get",
+        "--run",
+        "r",
+        "--limit",
+        "2",
+        "--include-meta",
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let result: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert_eq!(result["data"], expected);
+    assert_eq!(result["request_id"], "items-request");
+    assert!(origin.join().unwrap()[0].starts_with("GET /api/v1/runs/r/items?limit=2 "));
+    snapshot.baseline = false;
+    snapshot.position = None;
+    snapshot.continuation = Some(None);
+    snapshot.resume_after = Some(None);
+    snapshot.items.truncate(2);
+    for (flag, value) in [("--before", "8"), ("--after", "0")] {
+        let (base, origin) = serve(vec![(
+            200,
+            vec![("Content-Type", "application/json")],
+            serde_json::to_vec(&snapshot).unwrap(),
+        )]);
+        let output = binary(&[
+            "--base-url",
+            &base,
+            "runs",
+            "items",
+            "get",
+            "--run",
+            "r",
+            flag,
+            value,
+            "--limit",
+            "2",
+        ]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let result: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(result, serde_json::to_value(&snapshot).unwrap());
+        assert!(origin.join().unwrap()[0].starts_with(&format!(
+            "GET /api/v1/runs/r/items?{}={value}&limit=2 ",
+            &flag[2..]
+        )));
+    }
+    let (base, origin) = serve(vec![(
+        400,
+        vec![("Content-Type", "application/json")],
+        br#"{"error":{"code":"invalid_argument","message":"mutually exclusive"}}"#.to_vec(),
+    )]);
+    let output = binary(&[
+        "--base-url",
+        &base,
+        "runs",
+        "items",
+        "get",
+        "--run",
+        "r",
+        "--before",
+        "1",
+        "--after",
+        "0",
+    ]);
+    assert_eq!(output.status.code(), Some(2));
+    assert!(origin.join().unwrap()[0].starts_with("GET /api/v1/runs/r/items?before=1&after=0 "));
+}
+
+#[test]
+fn events_jsonl_preserves_optional_null_and_populated_item_metadata() {
+    use serde_json::json;
+    for item in [
+        json!({"id":"i","kind":"observation","state":"failed"}),
+        json!({"id":"i","kind":"observation","state":"failed","ordinal":null,"response_group":null,"failure":null}),
+        json!({"id":"i","kind":"observation","state":"failed","ordinal":42,"response_group":"child","failure":{"custom":[false,null,[]]}}),
+    ] {
+        let event = json!({"type":"CUSTOM","subagentRunId":"child","value":{"unknown":null}});
+        let body = format!(
+            "event: delta\nid: 100-1\ndata: {}\n\n",
+            json!({"run_id":"r","attempt":1,"sequence":1,"event":event,"item":item})
+        );
+        let (base, origin) = serve(vec![(
+            200,
+            vec![("Content-Type", "text/event-stream")],
+            body.into_bytes(),
+        )]);
+        let output = binary(&["--base-url", &base, "threads", "events", "--thread", "t"]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let frame: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(frame["item"], item);
+        assert_eq!(frame["event"], event);
+        assert!(frame["applied_cursor"].is_null());
+        assert_eq!(origin.join().unwrap().len(), 1);
+    }
+}

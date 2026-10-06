@@ -64,7 +64,7 @@ export A13N_REQUEST_KEY='a-unique-key-for-this-submission'
 cargo +1.97.0 run
 ```
 
-The example prints saved messages and tool activity. `outcome.output()` is the Run's optional output value, not necessarily its conversation text.
+The example prints the recent committed message/tool window, not an automatically loaded lifetime transcript. `complete` means the Run is sealed; dense Item ordinals and explicit `before`/`after` reads expose earlier history. Default Items reads have `baseline=true` and include the whole mutable tail even beyond `limit`; historical windows cannot seed live coverage. `outcome.output()` is the Run's optional output value, not necessarily its conversation text.
 
 `start()` returns an **Interaction**; `result()` waits for that message to finish or pause. Check the status: `waiting` needs action, while `failed` and `cancelled` are not successful replies. Save the printed Thread ID to continue the conversation. Keep the request key if you may need to reconcile a network failure, and never put token bytes in committed files.
 

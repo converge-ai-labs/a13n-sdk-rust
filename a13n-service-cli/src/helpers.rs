@@ -2,24 +2,8 @@ use crate::{CliError, config::Effective, input, output, required};
 use a13n::{
     Client, SendOptions, StartOptions,
     generated::models,
-    streaming::{ItemKind, ItemState, StreamOptions, ThreadFrame, ThreadStream},
+    streaming::{StreamOptions, ThreadFrame, ThreadStream},
 };
-pub(crate) fn item_kind(kind: &ItemKind) -> &'static str {
-    match kind {
-        ItemKind::TextMessage => "text_message",
-        ItemKind::ReasoningMessage => "reasoning_message",
-        ItemKind::ToolCall => "tool_call",
-        ItemKind::Observation => "observation",
-    }
-}
-pub(crate) fn item_state(state: &ItemState) -> &'static str {
-    match state {
-        ItemState::InProgress => "in_progress",
-        ItemState::Completed => "completed",
-        ItemState::Interrupted => "interrupted",
-        ItemState::Failed => "failed",
-    }
-}
 use clap::{Arg, ArgAction, ArgMatches, Command, value_parser};
 use serde_json::json;
 use std::time::Duration;
@@ -188,7 +172,7 @@ pub async fn run(
                     let applied_position = stream.applied_position();
                     let event = match frame {
                         ThreadFrame::Delta { cursor, data } => {
-                            json!({"type":"delta","cursor":cursor,"applied_cursor":applied,"applied_position":applied_position,"run_id":data.run_id,"attempt":data.attempt,"sequence":data.sequence,"event":data.event,"item":data.item.as_ref().map(|item|json!({"id":item.id,"kind":item_kind(&item.kind),"state":item_state(&item.state)}))})
+                            json!({"type":"delta","cursor":cursor,"applied_cursor":applied,"applied_position":applied_position,"run_id":data.run_id,"attempt":data.attempt,"sequence":data.sequence,"event":data.event,"item":data.item})
                         }
                         ThreadFrame::Boundary { cursor, data } => {
                             json!({"type":"boundary","cursor":cursor,"applied_cursor":applied,"applied_position":applied_position,"run_id":data.run_id,"attempt":data.attempt,"sequence":data.sequence})

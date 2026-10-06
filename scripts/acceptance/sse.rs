@@ -132,6 +132,9 @@ pub async fn verify(
         }
     })
     .await??;
+    if !snapshot.baseline {
+        return Err("Historical Items cannot seed SSE coverage".into());
+    }
     let position = snapshot.position.ok_or("Missing snapshot position")?;
     let hint = snapshot.resume_after.flatten();
     direct.close();
@@ -223,6 +226,7 @@ pub async fn offline() -> Result<()> {
                     assert!(text.starts_with("GET /api/v1/runs/r/items "));
                     let mut snapshot = a13n::generated::models::RunItems::default();
                     snapshot.run.id = "r".into();
+                    snapshot.baseline = true;
                     snapshot.position = Some("1-2".into());
                     snapshot.resume_after = Some(Some("100-2".into()));
                     (

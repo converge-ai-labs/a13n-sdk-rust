@@ -28,18 +28,26 @@ async fn main() -> Result<(), Box<dyn Error>> {
     println!("Final status: {:?}", outcome.status());
     if *outcome.status() == models::RunStatus::Completed {
         let committed = outcome.run.items().get(Default::default()).await?;
-        println!("Sealed: {}, earliest items dropped: {}", committed.data.complete, committed.data.dropped);
+        println!("Sealed: {}, live baseline: {}", committed.data.complete, committed.data.baseline);
         println!("Retained committed items: {:#?}", committed.data.items);
     }
     Ok(())
 }
 ```
 
-The loop ends naturally at completed, waiting, failed or cancelled, including when the SSE socket is idle or execution completes before the connection opens. A queued submission waits for its Entry to be **consumed** before yielding attributed deltas. `outcome.snapshot` retains the exact Run response, including HTTP status and headers; `outcome.output()` is optional Run output and need not be conversation text. Run Items are authoritative for the committed display, but not necessarily a complete lifetime transcript: check `complete` for a sealed Run and `dropped` for items removed by the display limit. Retained frame replay is not lossless history, and gaps or resets call for readback even if transient output looked complete. If `dropped` is nonzero, do not promise the reader that earlier Items can be reconstructed from SSE.
+The loop ends naturally at completed, waiting, failed or cancelled, including when the SSE socket is idle or execution completes before the connection opens. A queued submission waits for its Entry to be **consumed** before yielding attributed deltas. `outcome.snapshot` retains the exact Run response, including HTTP status and headers; `outcome.output()` is optional Run output and need not be conversation text. Run Items are authoritative for the returned committed display window, not necessarily a complete lifetime transcript. `complete` means the Run is sealed, not that every earlier Item was loaded. Ordinals are dense and 1-based; a first ordinal greater than 1 identifies earlier history. Retained frame replay is not lossless history, and gaps or resets call for readback even if transient output looked complete.
+
+## Read recent or historical ordinal windows
+
+`run.items().get(RunItemsGetOptions { limit: Some(2), ..Default::default() })` returns the newest limit plus the **entire mutable tail**, which can exceed the limit. With no `before` or `after`, `baseline=true`; its nullable `position`, optional nullable `continuation` and `resume_after` describe committed display coverage. The default limit is 200 and maximum is 500. The SDK preserves the Service response without truncating the tail or fetching earlier history automatically.
+
+For explicit history, use `a13n::resources::RunItemsGetOptions { before: Some(first_ordinal), limit: Some(200), ..Default::default() }` or `after: Some(last_ordinal)`. `before >= 1` and `after >= 0` are mutually exclusive. These bounded windows have `baseline=false` and null continuation/position/resume hint even when `complete=true`. Do not install them as live baselines, advance stream coverage, heal a gap or seal a live consumer with them. Paging is by Item ordinal, not a collection cursor; there is no `pages()` or `--all` full-history loader for Run Items.
+
+Generated `DisplayContinuation`, `FragmentState`, `ObserverContinuation` and `StreamPosition` preserve recursive presentation state, including child cursors and native JSON. They are not execution checkpoints or SDK-owned reducer state. Preserve them when your application applies a baseline; the SDK neither normalizes events nor implements a Console reducer.
 
 ## Native AG-UI events and inline-child attribution
 
-`Delta.event` is the native AG-UI 1.0 JSON map, not a text-only enum. Inspect `subagentRunId` before displaying `TEXT_MESSAGE_CONTENT` as root output: child and root message/tool IDs can collide. The outer Service `data.run_id` identifies this Interaction's Run, while an inner `runId` may describe an inline child. A child's `RUN_FINISHED` is only an observation; finite completion still comes from the exact authoritative Service Run.
+`Delta.event` is the native AG-UI 1.0 JSON map, not a text-only enum. The sole delta wire form is raw `event` plus required nullable `item`: `item: null` is valid, omission is not. `ItemRef.ordinal`, `response_group` and arbitrary JSON `failure` preserve omission, explicit null and values. Inspect `subagentRunId` before displaying `TEXT_MESSAGE_CONTENT` as root output: child and root message/tool IDs can collide. The outer Service `data.run_id` identifies this Interaction's Run, while an inner `runId` may describe an inline child. A child's `RUN_FINISHED` is only an observation; finite completion still comes from the exact authoritative Service Run.
 
 Preserve `TOOL_CALL_RESULT.content` as either a string or an ordered list of structured text/media parts. Do not stringify a list, deduplicate repeated images, discard video/file sources or remove unknown CUSTOM values and nulls. `CUSTOM` authored user/steering input differs from generated system/tool content. Media descriptors can carry `payload_omitted` metadata instead of bytes; they are not downloadable media or a lossless transcript by themselves. Run Items keep structured content and `subagentRunId`; preserve those fields on readback instead of concatenating every Item into root text. The example prints full event maps and retained Items rather than implementing a UI reducer.
 
@@ -47,7 +55,7 @@ Preserve `TOOL_CALL_RESULT.content` as either a string or an ordered list of str
 
 ## Advanced Thread-wide events
 
-`ThreadStream::open` is a separate **advanced protocol reader**, not the ordinary finite Agent interaction. It can yield unrelated Runs. If you hold an applied Run Items snapshot, supply its paired Run ID and display `position`. Its optional `resume_after` is only a Redis seek hint (`after`), not proof of display coverage. With coverage supplied, an absent, expired or incompatible hint falls back to retained replay filtered by position; hint absence alone does not imply a gap. Without a display baseline, omit both `run` and `position` for cursor-only observation; do not invent coverage from a Redis ID.
+`ThreadStream::open` is a separate **advanced protocol reader**, not the ordinary finite Agent interaction. It can yield unrelated Runs. If you hold an applied Run Items snapshot with `baseline=true` and a committed position, supply its paired Run ID and display `position`. Historical windows cannot establish this coverage. Its optional `resume_after` is only a Redis seek hint (`after`), not proof of display coverage. With coverage supplied, an absent, expired or incompatible hint falls back to retained replay filtered by position; hint absence alone does not imply a gap. Without a display baseline, omit both `run` and `position` for cursor-only observation; do not invent coverage from a Redis ID.
 
 This standalone example reads an existing Run and prints its committed Items before observing its tail. Set `A13N_THREAD_ID` and `A13N_RUN_ID` as well as the URL/token. Printing is the example's application step, not durable business processing:
 
@@ -61,6 +69,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let thread_id = env::var("A13N_THREAD_ID")?;
     let run = client.run(env::var("A13N_RUN_ID")?);
     let snapshot = run.items().get(Default::default()).await?.data;
+    if !snapshot.baseline { return Err("Historical window cannot seed a live reader".into()); }
     println!("Committed Items: {:#?}", snapshot.items);
     let position = snapshot.position.ok_or("No committed display yet; wait for a checkpoint")?;
     let mut reader = ThreadStream::open(client.resources().threads().at(thread_id), StreamOptions {
@@ -92,4 +101,4 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 A cursor-bearing frame is acknowledged only when the next `next()` poll starts **after your application applied it**. `applied_cursor()` is the prior applied Redis cursor; `applied_position()` advances only for contiguous deltas of the claimed Run and attempt. Other Runs do not advance that position. Gap/reset, attempt change or a missing sequence freezes coverage until you explicitly reopen from covering Run Items. Boundaries remain visible even at covered positions, but cannot bridge holes. Drop or `close()` never acknowledges the last received frame.
 
-A gap's optional `position` identifies the output a snapshot must cover, not a new cursor to resume from. Missing/null means the target is unknown; a snapshot read alone does not prove recovery. Stop applying tail output across the hole, read Items, check coverage against the target, and explicitly open a new reader from the new applied snapshot. If the snapshot is still behind, wait for a newer boundary or terminal progress rather than repeatedly reading the same snapshot. Reset means a new attempt superseded provisional output; discard that suffix and read authoritative Items. The SDK supplies no Console reducer or automatic gap healing. Persist your own applied state and coverage together; receiving a frame is not a durable checkpoint. The generated `thread.stream().get(...)` also exposes raw SSE with the same query/header options for custom decoders.
+A gap's optional `position` identifies the output a snapshot must cover, not a new cursor to resume from. Missing/null means the target is unknown; a snapshot read alone does not prove recovery. Stop applying tail output across the hole, read default Items with `baseline=true`, apply its continuation, check coverage against the target, and explicitly open a new reader from the new applied snapshot. If the snapshot is still behind, wait for a newer boundary or terminal progress rather than repeatedly reading the same snapshot. Reset means a new attempt superseded provisional output; discard that suffix and read authoritative Items. The SDK supplies no Console reducer or automatic gap healing. Persist your own applied state and coverage together; receiving a frame is not a durable checkpoint. The generated `thread.stream().get(...)` also exposes raw SSE with the same query/header options for custom decoders.

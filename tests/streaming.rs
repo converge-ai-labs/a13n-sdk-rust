@@ -489,3 +489,40 @@ async fn coverage_with_missing_or_stale_hint_accepts_filtered_replay_without_loc
         assert_eq!(reader.applied_position(), Some("1-3"));
     }
 }
+
+#[tokio::test]
+async fn delta_required_nullable_item_and_optional_metadata_preserve_exact_wire() {
+    use serde_json::{Value, json};
+    let base = json!({"id":"child-item","kind":"observation","state":"failed"});
+    let mut nulls = base.clone();
+    nulls["ordinal"] = Value::Null;
+    nulls["response_group"] = Value::Null;
+    nulls["failure"] = Value::Null;
+    let mut populated = base.clone();
+    populated["ordinal"] = json!(42);
+    populated["response_group"] = json!("child-group");
+    populated["failure"] = json!({"type":"custom","details":{"values":[false,null,0,[]]}});
+    let event = json!({"type":"CUSTOM","name":"org.example.future","subagentRunId":"child","value":{"null":null,"empty":[],"enabled":false}});
+    for item in [Value::Null, base, nulls, populated] {
+        let payload = json!({"run_id":"r","attempt":1,"sequence":1,"event":event,"item":item});
+        let wire = format!("event: delta\nid: 100-1\ndata: {payload}\n\n");
+        let fixture = server(move |_| Reply::sse(&wire)).await;
+        let sdk = common::client(&fixture);
+        let mut reader = ThreadStream::open(sdk.resources().threads().at("t"), options())
+            .await
+            .unwrap();
+        let Some(ThreadFrame::Delta { data, .. }) = reader.next().await.unwrap() else {
+            panic!("missing delta")
+        };
+        assert_eq!(Value::Object(data.event), event);
+        assert_eq!(serde_json::to_value(data.item).unwrap(), item);
+        assert_eq!(reader.applied_cursor(), None);
+    }
+    let fixture = server(|_| Reply::sse("event: delta\nid: 100-1\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":1,\"event\":{}}\n\n")).await;
+    let sdk = common::client(&fixture);
+    let mut reader = ThreadStream::open(sdk.resources().threads().at("t"), options())
+        .await
+        .unwrap();
+    assert!(matches!(reader.next().await, Err(Error::Protocol(_))));
+    assert_eq!(reader.applied_cursor(), None);
+}
