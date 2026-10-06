@@ -14,8 +14,19 @@ use serde::{Deserialize, Serialize};
 /// RunItems : Items of a run's committed display, in ordinal order, with the run they describe. Ordinals are dense from 1, so the first item's ordinal tells whether earlier ones exist. Live output continues after `position`.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RunItems {
+    #[serde(rename = "baseline")]
+    pub baseline: bool,
+
     #[serde(rename = "complete")]
     pub complete: bool,
+
+    #[serde(
+        rename = "continuation",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub continuation: Option<Option<Box<models::DisplayContinuation>>>,
 
     #[serde(rename = "items")]
     pub items: Vec<models::Item>,
@@ -38,13 +49,16 @@ pub struct RunItems {
 impl RunItems {
     /// Items of a run's committed display, in ordinal order, with the run they describe. Ordinals are dense from 1, so the first item's ordinal tells whether earlier ones exist. Live output continues after `position`.
     pub fn new(
+        baseline: bool,
         complete: bool,
         items: Vec<models::Item>,
         position: Option<String>,
         run: models::RunView,
     ) -> RunItems {
         RunItems {
+            baseline,
             complete,
+            continuation: None,
             items,
             position,
             resume_after: None,
