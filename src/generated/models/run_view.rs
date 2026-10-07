@@ -37,6 +37,14 @@ pub struct RunView {
     )]
     pub current_attempt_id: Option<String>,
 
+    #[serde(
+        rename = "display_position",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub display_position: Option<Option<String>>,
+
     #[serde(rename = "environment_mounts")]
     pub environment_mounts: Vec<models::EnvironmentMount>,
 
@@ -170,6 +178,7 @@ impl RunView {
             cancel_requested_at,
             created_at,
             current_attempt_id,
+            display_position: None,
             environment_mounts,
             failure: if let Some(x) = failure {
                 Some(Box::new(x))

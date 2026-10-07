@@ -2218,13 +2218,20 @@ pub async fn run_attempts_api_v1_runs_run_id_attempts_get(
     }
 }
 
+/// A run's committed display items by ordinal. By default the newest, always including the unpaged tail whose items live output can still change; `before` and `after` page from an ordinal and exclude each other.
 pub async fn run_items_api_v1_runs_run_id_items_get(
     configuration: &configuration::Configuration,
     run_id: &str,
+    before: Option<i32>,
+    after: Option<i32>,
+    limit: Option<i32>,
     x_workspace_id: Option<&str>,
 ) -> Result<Response<models::RunItems>, Error<RunItemsApiV1RunsRunIdItemsGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_run_id = run_id;
+    let p_query_before = before;
+    let p_query_after = after;
+    let p_query_limit = limit;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
@@ -2234,6 +2241,15 @@ pub async fn run_items_api_v1_runs_run_id_items_get(
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
+    if let Some(ref param_value) = p_query_before {
+        req_builder = req_builder.query(&[("before", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_after {
+        req_builder = req_builder.query(&[("after", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }

@@ -1,4 +1,5 @@
 //! Independent executable consuming only the extracted a13n .crate archive.
+mod display;
 mod sse;
 use a13n::{
     Client, Error, ProtocolKind, Secret, TransportKind, TransportStage, UploadFile,
@@ -54,7 +55,7 @@ async fn wait(run: &a13n::Run<'_>, expected: m::RunStatus) -> Result<()> {
     )?;
     let items = run.items().get(Default::default()).await?;
     ensure(
-        items.data.run.id == result.snapshot.data.id && items.data.complete,
+        items.data.run.id == result.snapshot.data.id && items.data.complete && items.data.baseline,
         "Run Items mismatch",
     )
 }
@@ -278,6 +279,7 @@ async fn offline() -> Result<()> {
     )?;
     server.await?;
     sse::offline().await?;
+    display::offline().await?;
     println!(
         "Installed crate local TCP: typed resource/enums/diagnostics, configuration/media presence, five OAuth/discovery operations, redaction, metadata, pagination, 428, nullable and close passed"
     );
@@ -623,9 +625,30 @@ async fn live() -> Result<()> {
     )?;
     let items = outcome.run.items().get(Default::default()).await?;
     ensure(
-        items.data.run.id == outcome.run.id && items.data.complete,
+        items.data.run.id == outcome.run.id && items.data.complete && items.data.baseline,
         "Finite Interaction committed Run Items",
     )?;
+    display::live_window(&outcome.run).await?;
+    println!("Verified HTTPS: recent ordinal baseline and bounded historical null metadata");
+
+    if let Ok(prompt) = env::var("A13N_FAILURE_PROMPT") {
+        ensure(!prompt.is_empty(), "A13N_FAILURE_PROMPT must not be empty")?;
+        let mut failed = client.agent(&agent).start(prompt, key()).await?;
+        let failed_result = failed.result().await?;
+        ensure(
+            *failed_result.status() == m::RunStatus::Failed,
+            "Failure fixture outcome",
+        )?;
+        display::history_followup(&client, &agent, &failed.thread.id, &failed_result.run.id)
+            .await?;
+        println!(
+            "Verified HTTPS: failed last sealed history continues through normal explicit message"
+        );
+    } else {
+        println!(
+            "NOT RUN: failed-history live case requires A13N_FAILURE_PROMPT from the disposable fixture"
+        );
+    }
 
     let source = bound(
         &client,
@@ -683,6 +706,16 @@ async fn live() -> Result<()> {
         .interrupt(Default::default())
         .await?;
     wait(accepted(&interrupted)?, m::RunStatus::Cancelled).await?;
+    display::history_followup(
+        &client,
+        &agent,
+        &interrupted.thread.id,
+        &accepted(&interrupted)?.id,
+    )
+    .await?;
+    println!(
+        "Verified HTTPS: cancelled last sealed history continues through normal explicit message"
+    );
     let fork = m::Fork::new(agent.clone(), text_payload("Fork response."));
     let forked = bound(
         &client,

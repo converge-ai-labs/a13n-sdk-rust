@@ -22,9 +22,6 @@ pub struct ThreadView {
     #[serde(rename = "current_run_id", deserialize_with = "Option::deserialize")]
     pub current_run_id: Option<String>,
 
-    #[serde(rename = "head_run_id", deserialize_with = "Option::deserialize")]
-    pub head_run_id: Option<String>,
-
     #[serde(rename = "id")]
     pub id: String,
 
@@ -77,7 +74,6 @@ impl ThreadView {
         archived_at: Option<chrono::DateTime<chrono::FixedOffset>>,
         created_at: chrono::DateTime<chrono::FixedOffset>,
         current_run_id: Option<String>,
-        head_run_id: Option<String>,
         id: String,
         labels: std::collections::HashMap<String, String>,
         last_run_id: Option<String>,
@@ -97,7 +93,6 @@ impl ThreadView {
             archived_at,
             created_at,
             current_run_id,
-            head_run_id,
             id,
             labels,
             last_run_id,

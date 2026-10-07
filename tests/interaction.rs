@@ -503,7 +503,7 @@ async fn inline_child_agui_media_and_terminal_observations_do_not_finish_root_in
             format!(
                 "event: delta\nid: 100-{}\ndata: {}\n\n",
                 i,
-                json!({"run_id":"r","attempt":1,"sequence":i,"event":event,"item":null})
+                json!({"run_id":"r","attempt":1,"sequence":i,"event":event,"item":{"id":"i","kind":"observation","state":"failed","ordinal":42,"response_group":null,"failure":{"custom":[false,null,[]]}}})
             )
         })
         .collect::<String>();
@@ -537,8 +537,79 @@ async fn inline_child_agui_media_and_terminal_observations_do_not_finish_root_in
             panic!("Child observation terminated root");
         };
         assert_eq!(Value::Object(data.event), expected);
+        assert_eq!(
+            serde_json::to_value(data.item).unwrap(),
+            json!({"id":"i","kind":"observation","state":"failed","ordinal":42,"response_group":null,"failure":{"custom":[false,null,[]]}})
+        );
     }
     let items = sdk.run("r").items().get(Default::default()).await.unwrap();
     assert_eq!(serde_json::to_value(items.data).unwrap(), expected_items);
     interaction.close();
+}
+
+#[tokio::test]
+async fn explicit_normal_message_continues_last_sealed_failed_or_cancelled_run() {
+    for status in ["failed", "cancelled"] {
+        let mut prior = run(status);
+        prior["id"] = json!("prior");
+        let mut thread = sample("ThreadView");
+        thread["id"] = json!("t");
+        thread["current_run_id"] = Value::Null;
+        thread["last_run_id"] = json!("prior");
+        let mut submitted = receipt();
+        submitted["thread"] = thread.clone();
+        let mut next = run("completed");
+        next["parent_run_id"] = json!("prior");
+        let mut fixture =
+            server(
+                move |request| match (request.method.as_str(), request.target.as_str()) {
+                    ("GET", "/prefix/api/v1/runs/prior") => Reply::json(200, prior.clone()),
+                    ("GET", "/prefix/api/v1/threads/t") => Reply::json(200, thread.clone()),
+                    ("POST", "/prefix/api/v1/threads/t/inbox") => {
+                        Reply::json(201, submitted.clone())
+                    }
+                    ("GET", "/prefix/api/v1/threads/t/inbox/e") => {
+                        Reply::json(200, entry("consumed", Some("r")))
+                    }
+                    ("GET", "/prefix/api/v1/runs/r") => Reply::json(200, next.clone()),
+                    _ => panic!(
+                        "implicit recovery request {} {}",
+                        request.method, request.target
+                    ),
+                },
+            )
+            .await;
+        let sdk = client(&fixture);
+        let prior = sdk.run("prior").wait().await.unwrap();
+        assert_eq!(serde_json::to_value(prior.status()).unwrap(), status);
+        let thread = sdk
+            .resources()
+            .threads()
+            .at("t")
+            .get(Default::default())
+            .await
+            .unwrap();
+        assert_eq!(thread.data.last_run_id.as_deref(), Some("prior"));
+        let mut interaction = sdk
+            .agent("a")
+            .send("t", "Continue with new evidence", "new-message")
+            .await
+            .unwrap();
+        let result = interaction.result().await.unwrap();
+        assert_eq!(*result.status(), models::RunStatus::Completed);
+        assert_eq!(result.snapshot.data.parent_run_id.as_deref(), Some("prior"));
+        let mut posts = Vec::new();
+        while let Ok(request) = fixture.requests.try_recv() {
+            if request.method == "POST" {
+                posts.push(request);
+            }
+        }
+        assert_eq!(posts.len(), 1);
+        assert_eq!(posts[0].target, "/prefix/api/v1/threads/t/inbox");
+        assert_eq!(
+            posts[0].json()["payload"]["content"][0]["text"],
+            "Continue with new evidence"
+        );
+        assert!(posts[0].json().get("message_history").is_none());
+    }
 }

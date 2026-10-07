@@ -36,6 +36,9 @@ pub struct Item {
     #[serde(rename = "last_stream_id")]
     pub last_stream_id: String,
 
+    #[serde(rename = "ordinal")]
+    pub ordinal: i32,
+
     #[serde(rename = "started_at")]
     pub started_at: chrono::DateTime<chrono::FixedOffset>,
 
@@ -50,6 +53,7 @@ impl Item {
         id: String,
         kind: models::ItemKind,
         last_stream_id: String,
+        ordinal: i32,
         started_at: chrono::DateTime<chrono::FixedOffset>,
         state: models::ItemState,
     ) -> Item {
@@ -60,6 +64,7 @@ impl Item {
             id,
             kind,
             last_stream_id,
+            ordinal,
             started_at,
             state,
         }

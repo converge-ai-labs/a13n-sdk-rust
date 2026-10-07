@@ -39,6 +39,14 @@ def offline(source: Path) -> None:
     import threading
 
     captured: list[tuple[str, str, Any]] = []
+    native_item = {
+        "id": "i",
+        "kind": "observation",
+        "state": "failed",
+        "ordinal": 42,
+        "response_group": None,
+        "failure": {"custom": [False, None, []]},
+    }
     native_event = {
         "type": "TOOL_CALL_RESULT",
         "subagentRunId": "child",
@@ -64,10 +72,68 @@ def offline(source: Path) -> None:
         assert binary.read_bytes() == source.read_bytes()
         base = f"http://127.0.0.1:{listener.getsockname()[1]}"
         failures: list[Exception] = []
+        schema_result = subprocess.run(
+            [str(binary), "models", "create", "--schema"],
+            capture_output=True,
+            check=True,
+            timeout=8,
+        )
+        schemas = json.loads(schema_result.stdout)["components"]["schemas"]
+
+        def sample(schema: dict[str, Any]) -> Any:
+            if "$ref" in schema:
+                return sample(schemas[schema["$ref"].rsplit("/", 1)[1]])
+            if "const" in schema:
+                return schema["const"]
+            if "enum" in schema:
+                return schema["enum"][0]
+            for union in ("anyOf", "oneOf"):
+                if union in schema:
+                    return sample(next(part for part in schema[union] if part.get("type") != "null"))
+            kind = schema.get("type")
+            if kind == "object":
+                return {key: sample(schema["properties"][key]) for key in schema.get("required", [])}
+            if kind == "array":
+                return []
+            if kind in ("integer", "number"):
+                return 1
+            if kind == "boolean":
+                return True
+            if kind == "null":
+                return None
+            return "2026-10-06T00:00:00Z" if schema.get("format") == "date-time" else "native"
+
+        window = sample(schemas["RunItems"])
+        window.update(
+            {
+                "baseline": True,
+                "complete": True,
+                "position": "1-9",
+                "resume_after": "100-9",
+                "continuation": {
+                    "run_id": "r",
+                    "position": {"attempt": 1, "sequence": 9},
+                    "next_ordinal": 10,
+                    "full_content": False,
+                    "arguments": None,
+                    "observer": {
+                        "run_id": None,
+                        "state": {"children": {"child": {"children": {"nested": {"parts": {}, "threads": {}}}}}},
+                    },
+                },
+            }
+        )
+        window["run"]["id"] = "r"
+        window["run"]["display_position"] = "1-9"
+        window["items"] = []
+        for ordinal in range(6, 10):
+            item = sample(schemas["Item"])
+            item.update({"id": f"i{ordinal}", "ordinal": ordinal})
+            window["items"].append(item)
 
         def serve() -> None:
             try:
-                for _ in range(25):
+                for _ in range(29):
                     connection, _ = listener.accept()
                     with connection:
                         connection.settimeout(5)
@@ -114,13 +180,33 @@ def offline(source: Path) -> None:
                                 response = [{"slug": "native", "display_name": "Native"}]
                             elif method == "DELETE":
                                 response = {"local_tokens_cleared": True, "revocation_confirmed": None}
+                        if path.startswith("/api/v1/runs/r/items?"):
+                            from urllib.parse import parse_qs, urlsplit
+
+                            query = parse_qs(urlsplit(path).query)
+                            status = 200
+                            response = json.loads(json.dumps(window))
+                            if "before" in query or "after" in query:
+                                response.update(
+                                    {"baseline": False, "position": None, "resume_after": None, "continuation": None}
+                                )
+                                response["items"] = response["items"][:2]
+                            if "before" in query and "after" in query:
+                                status = 400
+                                response = {"error": {"code": "invalid_argument", "message": "exclude before/after"}}
                         if path.endswith("/stream"):
                             status = 200
                             content_type = "text/event-stream"
                             response = (
                                 "event: delta\nid: 100-1\ndata: "
                                 + json.dumps(
-                                    {"run_id": "root", "attempt": 1, "sequence": 1, "event": native_event, "item": None}
+                                    {
+                                        "run_id": "root",
+                                        "attempt": 1,
+                                        "sequence": 1,
+                                        "event": native_event,
+                                        "item": native_item,
+                                    }
                                 )
                                 + "\n\n"
                             )
@@ -245,13 +331,22 @@ def offline(source: Path) -> None:
             code=4,
         )
         assert captured[-1][2]["config"]["characteristics"] == characteristics
-        assert execute("threads", "events", "--thread", "t")["event"] == native_event
+        frame = execute("threads", "events", "--thread", "t")
+        assert frame["event"] == native_event and frame["item"] == native_item
+        recent = execute("runs", "items", "get", "--run", "r", "--limit", "2")
+        assert recent == window and len(recent["items"]) == 4 and recent["items"][0]["ordinal"] == 6
+        for flag, value in (("--before", "8"), ("--after", "0")):
+            history = execute("runs", "items", "get", "--run", "r", flag, value, "--limit", "2")
+            assert history["complete"] and not history["baseline"] and len(history["items"]) == 2
+            assert history["position"] is None and history["continuation"] is None and history["resume_after"] is None
+            assert captured[-1][1] == f"/api/v1/runs/r/items?{flag[2:]}={value}&limit=2"
+        execute("runs", "items", "get", "--run", "r", "--before", "1", "--after", "0", code=2)
         server.join(timeout=12)
-        assert not server.is_alive() and not failures and len(captured) == 25, (
+        assert not server.is_alive() and not failures and len(captured) == 29, (
             "Copied CLI offline server did not complete"
         )
     print(
-        "Copied CLI local TCP: configuration omission/null/empty/native JSON, typed payload file/stdin, media policy, five OAuth/discovery commands and native child event passed",
+        "Copied CLI local TCP: configuration omission/null/empty/native JSON, typed payload file/stdin, media policy, five OAuth/discovery commands, native child ItemRef metadata, ordinal windows, whole tail > limit, recursive continuation and historical null metadata passed",
         flush=True,
     )
 
@@ -540,7 +635,7 @@ def main() -> None:
             checkpoint_deadline = time.monotonic() + 80
             while True:
                 baseline = call("runs", "result", run_id)["data"]
-                assert baseline["run"]["id"] == run_id
+                assert baseline["run"]["id"] == run_id and baseline["baseline"]
                 if baseline["position"] is not None:
                     break
                 assert time.monotonic() < checkpoint_deadline, "Run did not publish an Items baseline"
@@ -608,6 +703,22 @@ def main() -> None:
             )
         waited = call("runs", "wait", run_id)
         assert waited["data"]["id"] == run_id and waited["data"]["status"] == "completed"
+        recent = call("runs", "items", "get", "--run", run_id, "--limit", "1")["data"]
+        assert recent["baseline"] and recent["complete"]
+        assert all(
+            right["ordinal"] == left["ordinal"] + 1
+            for left, right in zip(recent["items"], recent["items"][1:], strict=False)
+        )
+        historical = call("runs", "items", "get", "--run", run_id, "--after", "0", "--limit", "1")["data"]
+        assert historical["complete"] and not historical["baseline"] and len(historical["items"]) <= 1
+        assert (
+            historical["position"] is None and historical["continuation"] is None and historical["resume_after"] is None
+        )
+        if historical["items"]:
+            assert historical["items"][0]["ordinal"] == 1
+        before = call("runs", "items", "get", "--run", run_id, "--before", "1", "--limit", "1")["data"]
+        assert not before["baseline"] and not before["items"]
+        print("Copied CLI verified HTTPS: native ordinal windows and historical null coverage metadata", flush=True)
         print(
             "Copied CLI verified HTTPS: native imported history/readback, 201/200 replay and exact Run wait", flush=True
         )
@@ -792,15 +903,55 @@ def main() -> None:
         assert consumed["status"] == "consumed", "Entry wait ended at assignment, not consumption"
         successor = call("runs", "wait", consumed["assigned_run_id"])["data"]
         assert successor["status"] == "completed"
+
+        def history_followup(thread: str, previous: str) -> None:
+            read = call("threads", "get", thread)["data"]
+            assert read["current_run_id"] is None and read["last_run_id"] == previous
+            next_result = json.loads(
+                execute(
+                    "--include-meta",
+                    "agents",
+                    "send",
+                    agent,
+                    "--thread",
+                    thread,
+                    "--text",
+                    "Continue after the sealed outcome with new evidence.",
+                    "--idempotency-key",
+                    str(uuid.uuid4()),
+                    "--wait",
+                ).stdout
+            )
+            assert next_result["outcome"]["data"]["status"] == "completed"
+            assert next_result["outcome"]["data"]["parent_run_id"] == previous
+
         interrupted = call(
             "threads",
             "create",
             "--idempotency-key",
             str(uuid.uuid4()),
             body={"agent_id": agent, "payload": payload("[interruptible] Interrupt CLI run.")},
-        )["data"]["run"]["id"]
-        call("runs", "interrupt", interrupted)
-        assert call("runs", "wait", interrupted)["data"]["status"] == "cancelled"
+        )["data"]
+        call("runs", "interrupt", interrupted["run"]["id"])
+        assert call("runs", "wait", interrupted["run"]["id"])["data"]["status"] == "cancelled"
+        history_followup(interrupted["thread"]["id"], interrupted["run"]["id"])
+        print("Copied CLI verified HTTPS: cancelled last sealed history with normal message successor", flush=True)
+        failure_prompt = os.environ.get("A13N_FAILURE_PROMPT")
+        if failure_prompt:
+            failed = call(
+                "threads",
+                "create",
+                "--idempotency-key",
+                str(uuid.uuid4()),
+                body={"agent_id": agent, "payload": payload(failure_prompt)},
+            )["data"]
+            assert call("runs", "wait", failed["run"]["id"])["data"]["status"] == "failed"
+            history_followup(failed["thread"]["id"], failed["run"]["id"])
+            print("Copied CLI verified HTTPS: failed last sealed history with normal message successor", flush=True)
+        else:
+            print(
+                "NOT RUN: failed-history live case requires A13N_FAILURE_PROMPT from the disposable fixture", flush=True
+            )
         forked = call(
             "runs",
             "fork",

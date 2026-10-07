@@ -5,12 +5,12 @@ use crate::{
     resources::{ThreadResource, ThreadStreamGetOptions},
 };
 use bytes::{Buf, Bytes};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::time::Duration;
 use tokio::time::Instant;
 
-#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ItemKind {
     TextMessage,
@@ -18,7 +18,7 @@ pub enum ItemKind {
     ToolCall,
     Observation,
 }
-#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ItemState {
     InProgress,
@@ -26,11 +26,30 @@ pub enum ItemState {
     Interrupted,
     Failed,
 }
-#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ItemRef {
     pub id: String,
     pub kind: ItemKind,
     pub state: ItemState,
+    /// Optional display identity metadata; omission and explicit null remain distinct.
+    #[serde(
+        default,
+        with = "serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub ordinal: Option<Option<i64>>,
+    #[serde(
+        default,
+        with = "serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub response_group: Option<Option<String>>,
+    #[serde(
+        default,
+        with = "serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub failure: Option<Option<Map<String, Value>>>,
 }
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct Boundary {
@@ -159,7 +178,8 @@ impl ThreadStream<'_> {
         self.applied.as_deref()
     }
     /// Last contiguous applied coverage for the claimed Run. A gap/reset stops advancement;
-    /// reopen from covering Run Items to establish a new baseline.
+    /// reopen from applied Run Items with `baseline=true` and covering position.
+    /// Historical ordinal windows (`baseline=false`) cannot establish live coverage.
     pub fn applied_position(&self) -> Option<&str> {
         self.applied_position.as_deref()
     }

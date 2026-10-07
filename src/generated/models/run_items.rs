@@ -11,14 +11,22 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// RunItems : A run's committed display with the run it describes. Live output continues after `position`.
+/// RunItems : Items of a run's committed display, in ordinal order, with the run they describe. Ordinals are dense from 1, so the first item's ordinal tells whether earlier ones exist. Live output continues after `position`.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RunItems {
+    #[serde(rename = "baseline")]
+    pub baseline: bool,
+
     #[serde(rename = "complete")]
     pub complete: bool,
 
-    #[serde(rename = "dropped")]
-    pub dropped: i32,
+    #[serde(
+        rename = "continuation",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub continuation: Option<Option<Box<models::DisplayContinuation>>>,
 
     #[serde(rename = "items")]
     pub items: Vec<models::Item>,
@@ -39,17 +47,18 @@ pub struct RunItems {
 }
 
 impl RunItems {
-    /// A run's committed display with the run it describes. Live output continues after `position`.
+    /// Items of a run's committed display, in ordinal order, with the run they describe. Ordinals are dense from 1, so the first item's ordinal tells whether earlier ones exist. Live output continues after `position`.
     pub fn new(
+        baseline: bool,
         complete: bool,
-        dropped: i32,
         items: Vec<models::Item>,
         position: Option<String>,
         run: models::RunView,
     ) -> RunItems {
         RunItems {
+            baseline,
             complete,
-            dropped,
+            continuation: None,
             items,
             position,
             resume_after: None,
