@@ -13,15 +13,6 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`answer_pending_api_v1_runs_run_id_answers_post`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum AnswerPendingApiV1RunsRunIdAnswersPostError {
-    Status400(models::ErrorEnvelope),
-    DefaultResponse(models::ErrorEnvelope),
-    UnknownValue(serde_json::Value),
-}
-
 /// struct for typed errors of method [`archive_thread_api_v1_threads_thread_id_archive_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -193,15 +184,6 @@ pub enum ListTracesApiV1TracesGetError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`pending_answers_api_v1_runs_run_id_answers_get`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum PendingAnswersApiV1RunsRunIdAnswersGetError {
-    Status400(models::ErrorEnvelope),
-    DefaultResponse(models::ErrorEnvelope),
-    UnknownValue(serde_json::Value),
-}
-
 /// struct for typed errors of method [`reorder_inbox_api_v1_threads_thread_id_inbox_order_put`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -299,95 +281,6 @@ pub enum WithdrawEntryApiV1ThreadsThreadIdInboxEntryIdDeleteError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
-}
-
-/// Save one answer. The last answer atomically starts the existing resume flow.
-pub async fn answer_pending_api_v1_runs_run_id_answers_post(
-    configuration: &configuration::Configuration,
-    run_id: &str,
-    idempotency_key: &str,
-    pending_answer: models::PendingAnswer,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::PendingAnswers>, Error<AnswerPendingApiV1RunsRunIdAnswersPostError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_run_id = run_id;
-    let p_header_idempotency_key = idempotency_key;
-    let p_body_pending_answer = pending_answer;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/runs/{run_id}/answers",
-        configuration.base_path,
-        run_id = crate::generated::apis::urlencode(p_path_run_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    req_builder = req_builder.header("Idempotency-Key", p_header_idempotency_key.to_string());
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
-        let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
-        };
-        req_builder = req_builder.header("X-CSRF-Token", value);
-    };
-    req_builder = req_builder.json(&p_body_pending_answer);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::PendingAnswers`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::PendingAnswers`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<AnswerPendingApiV1RunsRunIdAnswersPostError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
 }
 
 pub async fn archive_thread_api_v1_threads_thread_id_archive_post(
@@ -2066,79 +1959,6 @@ pub async fn list_traces_api_v1_traces_get(
     } else {
         let content = resp.text().await?;
         let entity: Option<ListTracesApiV1TracesGetError> = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-/// Read saved answers and whether this exact wait is still open or has resumed.
-pub async fn pending_answers_api_v1_runs_run_id_answers_get(
-    configuration: &configuration::Configuration,
-    run_id: &str,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::PendingAnswers>, Error<PendingAnswersApiV1RunsRunIdAnswersGetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_run_id = run_id;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/runs/{run_id}/answers",
-        configuration.base_path,
-        run_id = crate::generated::apis::urlencode(p_path_run_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::PendingAnswers`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::PendingAnswers`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<PendingAnswersApiV1RunsRunIdAnswersGetError> =
-            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
