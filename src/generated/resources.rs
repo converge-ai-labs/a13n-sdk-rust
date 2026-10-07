@@ -5529,6 +5529,10 @@ pub struct RunResumeOptions {
     pub x_workspace_id: Option<String>,
 }
 impl<'a> RunResource<'a> {
+    /// Access `answers` locally, sharing the client and explicit scope.
+    pub fn answers(&self) -> RunAnswersResource<'a> {
+        RunAnswersResource(self.0.clone())
+    }
     /// Access `attempts` locally, sharing the client and explicit scope.
     pub fn attempts(&self) -> RunAttemptsResource<'a> {
         RunAttemptsResource(self.0.clone())
@@ -5668,6 +5672,80 @@ impl<'a> RunResource<'a> {
         let mut request = self.0.client.request(
             reqwest::Method::POST,
             "/api/v1/runs/{run_id}/resume",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("Idempotency-Key", &options.idempotency_key);
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200, 201]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct RunAnswersResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`RunAnswersResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct RunAnswersGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`RunAnswersResource::create`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct RunAnswersCreateOptions {
+    /// Header parameter `Idempotency-Key`. Caller-owned request key; uncertain mutations are not automatically replayed. Required; an empty string is rejected locally.
+    pub idempotency_key: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> RunAnswersResource<'a> {
+    /// Pending Answers.
+    ///
+    /// `GET /api/v1/runs/{run_id}/answers`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: RunAnswersGetOptions,
+    ) -> Result<Response<models::PendingAnswers>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/runs/{run_id}/answers",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Answer Pending.
+    ///
+    /// `POST /api/v1/runs/{run_id}/answers`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn create(
+        &self,
+        body: &models::PendingAnswer,
+        options: RunAnswersCreateOptions,
+    ) -> Result<Response<models::PendingAnswers>, Error> {
+        if options.idempotency_key.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/runs/{run_id}/answers",
             &self.0.ids,
         )?;
         request = self
@@ -11081,6 +11159,18 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/runs/{run_id}/resume",
         "RunResource",
         "resume",
+    ),
+    (
+        "GET",
+        "/api/v1/runs/{run_id}/answers",
+        "RunAnswersResource",
+        "get",
+    ),
+    (
+        "POST",
+        "/api/v1/runs/{run_id}/answers",
+        "RunAnswersResource",
+        "create",
     ),
     (
         "GET",
