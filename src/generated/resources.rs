@@ -5533,6 +5533,10 @@ impl<'a> RunResource<'a> {
     pub fn attempts(&self) -> RunAttemptsResource<'a> {
         RunAttemptsResource(self.0.clone())
     }
+    /// Access `contents` locally, sharing the client and explicit scope.
+    pub fn contents(&self) -> RunContentsResource<'a> {
+        RunContentsResource(self.0.clone())
+    }
     /// Access `items` locally, sharing the client and explicit scope.
     pub fn items(&self) -> RunItemsResource<'a> {
         RunItemsResource(self.0.clone())
@@ -5799,6 +5803,51 @@ impl<'a> RunAttemptTraceResource<'a> {
             },
             cursor,
         )
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct RunContentsResource<'a>(pub(crate) Binding<'a>);
+impl<'a> RunContentsResource<'a> {
+    /// Bind `content_id` locally without an HTTP request. The returned reference borrows the client, not this collection.
+    pub fn at(&self, id: impl Into<String>) -> RunContentResource<'a> {
+        RunContentResource(self.0.select(id.into()))
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct RunContentResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`RunContentResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct RunContentGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> RunContentResource<'a> {
+    /// Run Content.
+    ///
+    /// `GET /api/v1/runs/{run_id}/contents/{content_id}`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: RunContentGetOptions,
+    ) -> Result<Response<models::RunContent>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/runs/{run_id}/contents/{content_id}",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
     }
 }
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
@@ -11093,6 +11142,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/runs/{run_id}/attempts/{attempt_id}/trace",
         "RunAttemptTraceResource",
         "list",
+    ),
+    (
+        "GET",
+        "/api/v1/runs/{run_id}/contents/{content_id}",
+        "RunContentResource",
+        "get",
     ),
     (
         "GET",
