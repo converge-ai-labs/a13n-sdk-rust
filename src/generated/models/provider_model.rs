@@ -11,8 +11,9 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
+/// ProviderModel : An upstream choice; wire names retain the original account-discovery contract.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ChatGptModel {
+pub struct ProviderModel {
     #[serde(rename = "display_name")]
     pub display_name: String,
 
@@ -20,8 +21,9 @@ pub struct ChatGptModel {
     pub slug: String,
 }
 
-impl ChatGptModel {
-    pub fn new(display_name: String, slug: String) -> ChatGptModel {
-        ChatGptModel { display_name, slug }
+impl ProviderModel {
+    /// An upstream choice; wire names retain the original account-discovery contract.
+    pub fn new(display_name: String, slug: String) -> ProviderModel {
+        ProviderModel { display_name, slug }
     }
 }

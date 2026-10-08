@@ -4475,7 +4475,7 @@ impl<'a> ModelProviderModelsResource<'a> {
     pub async fn get(
         &self,
         options: ModelProviderModelsGetOptions,
-    ) -> Result<Response<Vec<models::ChatGptModel>>, Error> {
+    ) -> Result<Response<Vec<models::ProviderModel>>, Error> {
         let mut request = self.0.client.request(
             reqwest::Method::GET,
             "/api/v1/model-providers/{provider_id}/models",

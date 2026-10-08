@@ -108,6 +108,12 @@ pub struct ProviderType {
     pub supports_destroy: Option<Option<bool>>,
 
     #[serde(
+        rename = "supports_model_discovery",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub supports_model_discovery: Option<bool>,
+
+    #[serde(
         rename = "supports_stop",
         default,
         with = "::serde_with::rust::double_option",
@@ -149,6 +155,7 @@ impl ProviderType {
             setup_label,
             setup_url,
             supports_destroy: None,
+            supports_model_discovery: None,
             supports_stop: None,
             supports_test,
             r#type,
