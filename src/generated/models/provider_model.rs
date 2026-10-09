@@ -14,6 +14,14 @@ use serde::{Deserialize, Serialize};
 /// ProviderModel : An upstream choice; wire names retain the original account-discovery contract.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ProviderModel {
+    #[serde(
+        rename = "characteristics",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub characteristics: Option<Option<Box<models::HarnessModelCharacteristicsOutput>>>,
+
     #[serde(rename = "display_name")]
     pub display_name: String,
 
@@ -24,6 +32,10 @@ pub struct ProviderModel {
 impl ProviderModel {
     /// An upstream choice; wire names retain the original account-discovery contract.
     pub fn new(display_name: String, slug: String) -> ProviderModel {
-        ProviderModel { display_name, slug }
+        ProviderModel {
+            characteristics: None,
+            display_name,
+            slug,
+        }
     }
 }
