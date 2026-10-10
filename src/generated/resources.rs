@@ -6128,6 +6128,10 @@ pub struct SessionUpdateOptions {
     pub x_workspace_id: Option<String>,
 }
 impl<'a> SessionResource<'a> {
+    /// Access `message-authors` locally, sharing the client and explicit scope.
+    pub fn message_authors(&self) -> SessionMessageAuthorsResource<'a> {
+        SessionMessageAuthorsResource(self.0.clone())
+    }
     /// Get Session.
     ///
     /// `GET /api/v1/sessions/{session_id}`.
@@ -6181,6 +6185,44 @@ impl<'a> SessionResource<'a> {
             .scoped_request(request, options.x_workspace_id.as_deref());
         request = request.header("If-Match", &options.if_match);
         request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct SessionMessageAuthorsResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`SessionMessageAuthorsResource::list`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct SessionMessageAuthorsListOptions {
+    /// Query parameter `entry_id`. Required.
+    pub entry_id: Vec<String>,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> SessionMessageAuthorsResource<'a> {
+    /// Get Message Authors.
+    ///
+    /// `GET /api/v1/sessions/{session_id}/message-authors`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn list(
+        &self,
+        options: SessionMessageAuthorsListOptions,
+    ) -> Result<Response<models::MessageAuthors>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/sessions/{session_id}/message-authors",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = query(request, "entry_id", &options.entry_id)?;
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
@@ -11174,6 +11216,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/sessions/{session_id}",
         "SessionResource",
         "update",
+    ),
+    (
+        "GET",
+        "/api/v1/sessions/{session_id}/message-authors",
+        "SessionMessageAuthorsResource",
+        "list",
     ),
     ("GET", "/api/v1/skills", "SkillsResource", "list"),
     ("POST", "/api/v1/skills", "SkillsResource", "create"),
