@@ -46,6 +46,14 @@ pub struct Agent {
     #[serde(rename = "organization_id")]
     pub organization_id: String,
 
+    #[serde(
+        rename = "preset_kind",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub preset_kind: Option<Option<PresetKind>>,
+
     #[serde(rename = "source")]
     pub source: models::AgentSource,
 
@@ -91,11 +99,26 @@ impl Agent {
             labels,
             name,
             organization_id,
+            preset_kind: None,
             source,
             updated_at,
             updated_by_id,
             version,
             workspace_id,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum PresetKind {
+    #[serde(rename = "composer")]
+    Composer,
+    #[serde(rename = "finding")]
+    Finding,
+}
+
+impl Default for PresetKind {
+    fn default() -> PresetKind {
+        Self::Composer
     }
 }

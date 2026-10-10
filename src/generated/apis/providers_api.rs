@@ -955,7 +955,7 @@ pub async fn discover_model_provider_models_api_v1_model_providers_provider_id_m
     provider_id: &str,
     x_workspace_id: Option<&str>,
 ) -> Result<
-    Response<Vec<models::ChatGptModel>>,
+    Response<Vec<models::ProviderModel>>,
     Error<DiscoverModelProviderModelsApiV1ModelProvidersProviderIdModelsGetError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
@@ -1003,12 +1003,12 @@ pub async fn discover_model_provider_models_api_v1_model_providers_provider_id_m
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `Vec&lt;models::ChatGptModel&gt;`",
+                    "Received `text/plain` content type response that cannot be converted to `Vec&lt;models::ProviderModel&gt;`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `Vec&lt;models::ChatGptModel&gt;`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `Vec&lt;models::ProviderModel&gt;`"
                 ))));
             }
         }

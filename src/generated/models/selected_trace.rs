@@ -12,16 +12,16 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ChatGptModel {
-    #[serde(rename = "display_name")]
-    pub display_name: String,
+pub struct SelectedTrace {
+    #[serde(rename = "run_id")]
+    pub run_id: String,
 
-    #[serde(rename = "slug")]
-    pub slug: String,
+    #[serde(rename = "trace_id")]
+    pub trace_id: String,
 }
 
-impl ChatGptModel {
-    pub fn new(display_name: String, slug: String) -> ChatGptModel {
-        ChatGptModel { display_name, slug }
+impl SelectedTrace {
+    pub fn new(run_id: String, trace_id: String) -> SelectedTrace {
+        SelectedTrace { run_id, trace_id }
     }
 }
