@@ -130,6 +130,7 @@ pub mod auth_api;
 pub mod connections_api;
 pub mod default_api;
 pub mod environments_api;
+pub mod findings_api;
 pub mod memories_api;
 pub mod models_api;
 pub mod providers_api;
