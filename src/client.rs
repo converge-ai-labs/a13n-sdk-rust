@@ -8,7 +8,10 @@ use serde_json::Value;
 use std::{
     fmt,
     future::Future,
-    sync::{Arc, Mutex},
+    sync::{
+        Arc, Mutex,
+        atomic::{AtomicBool, AtomicU16, Ordering},
+    },
 };
 use tokio_util::sync::CancellationToken;
 
@@ -59,16 +62,21 @@ pub struct SubmissionError {
 #[derive(Debug)]
 pub enum Error {
     Api(Box<ApiError>),
+    UnknownOutcome(Box<UnknownOutcomeError>),
+    PreviewInterrupted(crate::PreviewInterruptedError),
     Transport(TransportError),
     Protocol(ProtocolError),
     Submission(Box<SubmissionError>),
     Timeout,
+    MutationTimeout,
     InvalidInput,
     Closed,
 }
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::UnknownOutcome(e) => e.fmt(f),
+            Self::PreviewInterrupted(e) => e.fmt(f),
             Self::Api(e) => write!(f, "{}: {} ({})", e.code, e.message, e.status),
             Self::Transport(error) => error.fmt(f),
             Self::Protocol(error) => error.fmt(f),
@@ -77,6 +85,9 @@ impl fmt::Display for Error {
                 "Entry {} settled as {} without incorporation",
                 error.entry_id, error.entry.data.status
             ),
+            Self::MutationTimeout => {
+                f.write_str("Mutation request deadline elapsed; inspect dispatch evidence")
+            }
             Self::Timeout => {
                 f.write_str("Local observation deadline elapsed; remote work may continue")
             }
@@ -90,6 +101,8 @@ impl fmt::Display for Error {
 impl std::error::Error for Error {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
+            Self::UnknownOutcome(error) => Some(error),
+            Self::PreviewInterrupted(error) => Some(error),
             Self::Transport(error) => Some(error),
             Self::Protocol(error) => Some(error),
             _ => None,
@@ -113,15 +126,51 @@ impl<E: std::error::Error + 'static> std::error::Error for CallError<E> {}
 
 type CsrfSource = Arc<dyn Fn() -> Option<String> + Send + Sync>;
 
-/// One pool and local cancellation lifetime. References borrow this owner.
-/// Dropping an operation future cancels local work, never durable server Runs.
+/// Cheap clone over one transport, authentication and local cancellation lifetime.
+/// Explicit close on any clone closes all handles; dropping one clone does not.
+#[derive(Clone)]
 pub struct Client {
+    inner: Arc<ClientInner>,
+    // Private per-mutation provenance, never a global counter or retry policy.
+    dispatch: Option<Arc<MutationDispatch>>,
+}
+#[derive(Default)]
+struct MutationDispatch {
+    attempted: AtomicBool,
+    status: AtomicU16,
+}
+struct ClientInner {
     base_url: Url,
     http: Mutex<Option<reqwest::Client>>,
-    pub(crate) shutdown: CancellationToken,
+    shutdown: CancellationToken,
     csrf: Option<CsrfSource>,
     workspace: Option<header::HeaderValue>,
     response_limit: usize,
+}
+
+/// A dispatched mutation without a trustworthy acknowledgement. No automatic replay.
+#[derive(Debug)]
+pub struct UnknownOutcomeError {
+    pub operation: &'static str,
+    pub idempotency_key: String,
+    pub thread_id: Option<String>,
+    pub run_id: Option<String>,
+    pub http_status: Option<u16>,
+    pub cause: Error,
+}
+impl fmt::Display for UnknownOutcomeError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{} outcome unknown (key {}): {}",
+            self.operation, self.idempotency_key, self.cause
+        )
+    }
+}
+impl std::error::Error for UnknownOutcomeError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.cause)
+    }
 }
 
 pub struct ClientBuilder {
@@ -201,12 +250,15 @@ impl ClientBuilder {
             .build()
             .map_err(|error| TransportError::classify(error, TransportStage::Build))?;
         Ok(Client {
-            base_url,
-            http: Mutex::new(Some(http)),
-            shutdown: CancellationToken::new(),
-            csrf: self.csrf,
-            workspace,
-            response_limit: self.response_limit,
+            inner: Arc::new(ClientInner {
+                base_url,
+                http: Mutex::new(Some(http)),
+                shutdown: CancellationToken::new(),
+                csrf: self.csrf,
+                workspace,
+                response_limit: self.response_limit,
+            }),
+            dispatch: None,
         })
     }
 }
@@ -232,21 +284,26 @@ impl Client {
         })
     }
     pub(crate) fn http(&self) -> Result<reqwest::Client, Error> {
-        self.http
+        self.inner
+            .http
             .lock()
             .unwrap_or_else(|e| e.into_inner())
             .clone()
             .ok_or(Error::Closed)
     }
     pub fn close(&self) {
-        self.shutdown.cancel();
-        self.http.lock().unwrap_or_else(|e| e.into_inner()).take();
+        self.inner.shutdown.cancel();
+        self.inner
+            .http
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .take();
     }
     pub(crate) async fn observe<T>(
         &self,
         work: impl Future<Output = Result<T, Error>>,
     ) -> Result<T, Error> {
-        tokio::select! { biased; _=self.shutdown.cancelled()=>Err(Error::Closed),result=work=>result }
+        tokio::select! { biased; _=self.inner.shutdown.cancelled()=>Err(Error::Closed),result=work=>result }
     }
     /// Advanced generated protocol access. Consume raw bodies inside this closure
     /// when parent shutdown must cover their delivery. The generated parser is unbounded.
@@ -256,9 +313,9 @@ impl Client {
     ) -> Result<T, CallError<E>> {
         let http = self.http().map_err(|_| CallError::Closed)?;
         // Configuration carries the current CSRF key for generated session mutations.
-        let csrf = self.csrf.as_ref().and_then(|source| source());
+        let csrf = self.inner.csrf.as_ref().and_then(|source| source());
         let configuration = Configuration {
-            base_path: self.base_url.as_str().trim_end_matches('/').into(),
+            base_path: self.inner.base_url.as_str().trim_end_matches('/').into(),
             client: http,
             user_agent: None,
             basic_auth: None,
@@ -267,7 +324,7 @@ impl Client {
             api_key: csrf
                 .map(|key| crate::generated::apis::configuration::ApiKey { key, prefix: None }),
         };
-        tokio::select! { biased; _=self.shutdown.cancelled()=>Err(CallError::Closed),result=operation(&configuration)=>result.map_err(CallError::Operation) }
+        tokio::select! { biased; _=self.inner.shutdown.cancelled()=>Err(CallError::Closed),result=operation(&configuration)=>result.map_err(CallError::Operation) }
     }
     pub(crate) fn request(
         &self,
@@ -275,7 +332,7 @@ impl Client {
         path: &str,
         ids: &[String],
     ) -> Result<reqwest::RequestBuilder, Error> {
-        let mut url = self.base_url.clone();
+        let mut url = self.inner.base_url.clone();
         let mut segments = url.path_segments_mut().map_err(|_| Error::InvalidInput)?;
         segments.pop_if_empty();
         let mut values = ids.iter();
@@ -293,7 +350,7 @@ impl Client {
         drop(segments);
         let mut request = self.http()?.request(method.clone(), url);
         if !matches!(method, Method::GET | Method::HEAD | Method::OPTIONS)
-            && let Some(csrf) = self.csrf.as_ref().and_then(|source| source())
+            && let Some(csrf) = self.inner.csrf.as_ref().and_then(|source| source())
         {
             request = request.header("X-CSRF-Token", csrf);
         }
@@ -308,7 +365,7 @@ impl Client {
     ) -> reqwest::RequestBuilder {
         if let Some(value) = explicit {
             request.header("X-Workspace-ID", value)
-        } else if let Some(value) = &self.workspace {
+        } else if let Some(value) = &self.inner.workspace {
             request.header("X-Workspace-ID", value)
         } else {
             request
@@ -320,16 +377,39 @@ impl Client {
         statuses: &[u16],
     ) -> Result<BinaryResponse, Error> {
         self.observe(async {
-            let mut response = request
-                .send()
+            let request = request
+                .build()
+                .map_err(|error| TransportError::classify(error, TransportStage::Build))?;
+            let http = self.http()?;
+            if let Some(dispatch) = &self.dispatch {
+                dispatch.attempted.store(true, Ordering::SeqCst);
+            }
+            let mut response = http
+                .execute(request)
                 .await
                 .map_err(|error| TransportError::classify(error, TransportStage::Request))?;
+            if let Some(dispatch) = &self.dispatch {
+                dispatch
+                    .status
+                    .store(response.status().as_u16(), Ordering::SeqCst);
+            }
             if !statuses.contains(&response.status().as_u16()) {
                 let status = response.status().as_u16();
                 let headers = response.headers().clone();
-                let raw = read_bounded(&mut response, self.response_limit).await?;
+                let raw = read_bounded(&mut response, self.inner.response_limit).await?;
                 let value: Value = serde_json::from_slice(&raw).unwrap_or(Value::Null);
                 let e = &value["error"];
+                // Only a canonical Service rejection acknowledges a mutation's failure.
+                // A gateway status/HTML page cannot prove that the intent was rejected.
+                if let Some(dispatch) = &self.dispatch
+                    && e["code"].as_str().is_some_and(|code| !code.is_empty())
+                    && e["message"].is_string()
+                    && e["details"].is_object()
+                    && e.get("request_id")
+                        .is_some_and(|value| value.is_null() || value.is_string())
+                {
+                    dispatch.attempted.store(false, Ordering::SeqCst);
+                }
                 return Err(Error::Api(Box::new(ApiError {
                     status,
                     code: e["code"].as_str().unwrap_or("http_error").into(),
@@ -350,7 +430,7 @@ impl Client {
                 status: response.status(),
                 headers: response.headers().clone(),
                 response: Some(response),
-                shutdown: self.shutdown.clone(),
+                shutdown: self.inner.shutdown.clone(),
             })
         })
         .await
@@ -367,7 +447,7 @@ impl Client {
             } else {
                 let raw = read_bounded(
                     response.response.as_mut().ok_or(Error::Closed)?,
-                    self.response_limit,
+                    self.inner.response_limit,
                 )
                 .await?;
                 serde_json::from_slice(&raw).map_err(|_| {
@@ -386,10 +466,58 @@ impl Client {
         })
         .await
     }
+    pub(crate) fn shutdown(&self) -> &CancellationToken {
+        &self.inner.shutdown
+    }
+    pub(crate) async fn mutation<T>(
+        &self,
+        operation: &'static str,
+        key: String,
+        thread_id: Option<String>,
+        run_id: Option<String>,
+        deadline: Option<tokio::time::Instant>,
+        work: impl AsyncFnOnce(&Client) -> Result<T, Error>,
+    ) -> Result<T, Error> {
+        let dispatch = Arc::new(MutationDispatch::default());
+        let tracked = Client {
+            inner: self.inner.clone(),
+            dispatch: Some(dispatch.clone()),
+        };
+        // An already expired absolute caller deadline cannot dispatch a mutation.
+        if deadline.is_some_and(|d| d <= tokio::time::Instant::now()) {
+            return Err(Error::MutationTimeout);
+        }
+        let result = match deadline {
+            Some(deadline) => tokio::time::timeout_at(deadline, work(&tracked))
+                .await
+                .unwrap_or(Err(Error::MutationTimeout)),
+            None => work(&tracked).await,
+        };
+        match result {
+            Err(cause) if dispatch.attempted.load(Ordering::SeqCst) => {
+                Err(Error::UnknownOutcome(Box::new(UnknownOutcomeError {
+                    operation,
+                    idempotency_key: key,
+                    thread_id,
+                    run_id,
+                    http_status: match dispatch.status.load(Ordering::SeqCst) {
+                        0 => None,
+                        status => Some(status),
+                    },
+                    cause,
+                })))
+            }
+            result => result,
+        }
+    }
 }
-impl Drop for Client {
+impl Drop for ClientInner {
     fn drop(&mut self) {
-        self.close();
+        self.shutdown.cancel();
+        self.http
+            .get_mut()
+            .unwrap_or_else(|e| e.into_inner())
+            .take();
     }
 }
 

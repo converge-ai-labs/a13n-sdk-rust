@@ -1,41 +1,46 @@
 # Stream progress and read the final result
 
-Use `Interaction.next()` when you want live progress. It observes only the Run that incorporated this submission. If you only need the result, skip the stream and call `interaction.result().await?` as in the [quick start](../README.md#get-started-from-source).
+Use `Interaction.next_text()` for optional live root-assistant text preview. Result-only callers skip iteration and call `result()` directly. Both share one finite observer and one fixed deadline; no second subscription or background transcript is created.
 
-Provide the Service URL, workspace key, an existing Agent ID, and a fresh `A13N_REQUEST_KEY`. The sibling application's dependencies from the quick start (`a13n` and `tokio`) are sufficient.
+Supply Service URL/token/Agent ID and use the quick-start dependencies. This complete example deliberately continues to authoritative result if conservative preview stops:
 
 ```rust
-use a13n::{Client, Secret, generated::models, streaming::ThreadFrame};
-use std::{env, error::Error};
+use a13n::{Client, Error, Secret};
+use std::{env, error::Error as StdError};
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    let url = env::var("A13N_SERVICE_URL")?;
-    let client = Client::new(&url, Secret::new(env::var("A13N_API_TOKEN")?))?;
-    let agent = client.agent(env::var("A13N_AGENT_ID")?);
-    let mut interaction = agent.start("Explain the migration", env::var("A13N_REQUEST_KEY")?).await?;
-    println!("Thread: {}", interaction.thread.id);
-
-    while let Some(frame) = interaction.next().await? {
-        match frame {
-            ThreadFrame::Delta { data, .. } => println!("Transient delta: {:?}", data.event),
-            ThreadFrame::Boundary { data, .. } => println!("Checkpoint for Run {}", data.run_id),
-            ThreadFrame::Gap(_) | ThreadFrame::Reset(_) => println!("Read committed Run items after completion"),
-            ThreadFrame::Changed(_) => {} // No Thread-wide changes are emitted by this interaction.
+async fn main() -> Result<(), Box<dyn StdError>> {
+    let client = Client::new(&env::var("A13N_SERVICE_URL")?, Secret::new(env::var("A13N_API_TOKEN")?))?;
+    let mut interaction = client.agent(env::var("A13N_AGENT_ID")?).start("Explain the migration").await?;
+    println!("Identity: {:?}", interaction.identity);
+    loop {
+        match interaction.next_text().await {
+            Ok(Some(text)) => print!("{text}"),
+            Ok(None) => break,
+            Err(Error::PreviewInterrupted(error)) => { eprintln!("{error}"); break; }
+            Err(other) => return Err(other.into()),
         }
     }
     let outcome = interaction.result().await?;
-    println!("Final status: {:?}", outcome.status());
-    if *outcome.status() == models::RunStatus::Completed {
-        let committed = outcome.run.items().get(Default::default()).await?;
-        println!("Sealed: {}, live baseline: {}", committed.data.complete, committed.data.baseline);
-        println!("Retained committed items: {:#?}", committed.data.items);
-    }
+    println!("\nAuthoritative {:?}: {}", outcome.status, outcome.output);
+    interaction.close(); // Local cleanup only; the result is already cached.
     Ok(())
 }
 ```
 
-The loop ends naturally at completed, waiting, failed or cancelled, including when the SSE socket is idle or execution completes before the connection opens. A queued submission waits for its Entry to be **consumed** before yielding attributed deltas. `outcome.snapshot` retains the exact Run response, including HTTP status and headers; `outcome.output()` is optional Run output and need not be conversation text. Run Items are authoritative for the returned committed display window, not necessarily a complete lifetime transcript. `complete` means the Run is sealed, not that every earlier Item was loaded. Ordinals are dense and 1-based; a first ordinal greater than 1 identifies earlier history. Retained frame replay is not lossless history, and gaps or resets call for readback even if transient output looked complete.
+Preview emits only string CONTENT matched to a trustworthy root assistant START. It excludes `subagentRunId` children and explicit `metadata.display:false`, retaining at most **eight active root message identities** and no completed history or text. Interleaving within that bound is supported; exhaustion interrupts rather than silently evicting. Empty string chunks stay empty. Native message IDs can collide across children; a child RUN_FINISHED never seals the root.
+
+Gap/reset, missing/ambiguous START, relevant malformed protocol and trustworthy **outer Service per-attempt** sequence discontinuity interrupt preview. Inner native/custom sequence fields and foreign Run coordinates do not define holes. Unknown unframed CUSTOM events are ignored by preview but preserved by raw iteration. An unexcluded root `CUSTOM` named `a13n.stream.fragment` conservatively interrupts: its opaque `value:{id,index,count,data}` frames ORIGINAL CUSTOM JSON, not a text-message suffix. A fragment has no reliable inner relevance/name field. This helper does not assemble it, inspect opaque IDs or infer semantics from partial data. Unsupported framing does **not** mean every fragment contains assistant text. Child/hidden fragments are excluded first.
+
+Preview interruption is typed and sticky: another `next_text()` reports the same error without reopening the stream. The Interaction remains open for `result()` and deliberate sequential raw `next()` calls. `&mut` borrowing prevents simultaneous readers; raw/text use consumes the same reader, not independent replay. No baseline repair, full display reducer or fragment assembly happens here. Preview is transient, not a lossless transcript. Full final Run output remains authoritative even if no preview was emitted or preview stopped.
+
+Raw `interaction.next().await?` yields exact-Run `ThreadFrame` values with complete event maps, boundaries and gap/reset hints. The finite loop seals from exact Run status even with idle/busy SSE or blocked headers. A queued Entry binds only after consumed, not assigned. `outcome.http_response` explicitly retains exact Run HTTP metadata. The optional text field is populated only from string output; structured output is not extracted from Items or concatenated events.
+
+Breaking iteration leaves the Interaction open. Call `result()` to finish local observation or `close()`/drop to stop it. Explicit close permits only an already-cached result; it never interrupts remote execution. To stop remote work, explicitly call `Run::interrupt()`. Save IDs/key for [recovery](errors-and-recovery.md); never resend a POST just because a stream stopped.
+
+## Advanced committed display readback
+
+Run Items are authoritative for the returned **committed display window**, not the final-reply accessor or necessarily a full lifetime transcript. `complete` means sealed, not full history loaded; dense 1-based ordinals identify earlier history. Gap/reset readback and UI reducers remain application responsibilities.
 
 ## Read recent or historical ordinal windows
 
@@ -49,9 +54,9 @@ Generated `DisplayContinuation`, `FragmentState`, `ObserverContinuation` and `St
 
 `Delta.event` is the native AG-UI 1.0 JSON map, not a text-only enum. The sole delta wire form is raw `event` plus required nullable `item`: `item: null` is valid, omission is not. `ItemRef.ordinal`, `response_group` and arbitrary JSON `failure` preserve omission, explicit null and values. Inspect `subagentRunId` before displaying `TEXT_MESSAGE_CONTENT` as root output: child and root message/tool IDs can collide. The outer Service `data.run_id` identifies this Interaction's Run, while an inner `runId` may describe an inline child. A child's `RUN_FINISHED` is only an observation; finite completion still comes from the exact authoritative Service Run.
 
-Preserve `TOOL_CALL_RESULT.content` as either a string or an ordered list of structured text/media parts. Do not stringify a list, deduplicate repeated images, discard video/file sources or remove unknown CUSTOM values and nulls. `CUSTOM` authored user/steering input differs from generated system/tool content. Media descriptors can carry `payload_omitted` metadata instead of bytes; they are not downloadable media or a lossless transcript by themselves. Run Items keep structured content and `subagentRunId`; preserve those fields on readback instead of concatenating every Item into root text. The example prints full event maps and retained Items rather than implementing a UI reducer.
+Preserve `TOOL_CALL_RESULT.content` as either a string or an ordered list of structured text/media parts. Do not stringify a list, deduplicate repeated images, discard video/file sources or remove unknown CUSTOM values and nulls. `CUSTOM` authored user/steering input differs from generated system/tool content. Media descriptors can carry `payload_omitted` metadata instead of bytes; they are not downloadable media or a lossless transcript by themselves. Run Items keep structured content and `subagentRunId`; preserve those fields on readback instead of concatenating every Item into root text. Raw access preserves full maps rather than implementing a UI reducer.
 
-**When a stream stops early:** dropping the interaction or calling `close()` releases local observation; it does **not** interrupt the remote Run. After explicit close, `result()` works only if it was already cached. To deliberately stop remote work, use `outcome.run.interrupt().await?` (or bind its Run ID through `client.run(id)` and interrupt explicitly). If a read errors, keep the Thread/Entry IDs from the receipt and follow [recovery](errors-and-recovery.md); do not resend the POST blindly.
+**When a stream stops early:** dropping the interaction or calling `close()` releases local observation; it does **not** interrupt the remote Run. After explicit close, `result()` works only if it was already cached. To deliberately stop remote work, use `outcome.run.interrupt().await?` (or bind its Run ID through `client.run(id)` and interrupt explicitly). If a read errors, keep the Thread/Entry IDs from the Interaction identity and follow [recovery](errors-and-recovery.md); do not resend the POST blindly.
 
 ## Advanced Thread-wide events
 

@@ -1,67 +1,73 @@
-# Handle uncertain outcomes without duplicate work
+# Recover exact work without duplicate submission
 
-A network timeout or dropped future tells you what the **client** observed, not whether the Service accepted or completed a mutation. Keep one idempotency key per logical POST and save its returned Thread/Entry/Run IDs. Do not automatically retry a write after an uncertain outcome.
+An observation timeout is not a failed remote Run. A mutation transport failure is not proof of rejection. Save the Thread/Entry IDs from acceptance; for cross-process and cancellation-safe reconciliation, persist your own idempotency key and identical logical body **before** dispatch. Ordinary calls generate one random key, but a dropped future cannot return that key to you. Different messages need different keys; no write is automatically retried.
 
-Use the [source-installed application](../README.md#get-started-from-source) with `A13N_SERVICE_URL`, `A13N_API_TOKEN`, an existing `A13N_AGENT_ID` and a fresh `A13N_REQUEST_KEY`. This complete example deliberately reads back the exact Entry if local result observation times out:
+Use the [source-installed app](../README.md#get-started-from-source), add `serde_json = "1"`, and supply URL/token/Agent ID plus a pre-persisted `A13N_REQUEST_KEY`. This complete program saves accepted identity and recovers from that exact Entry with a new bounded observer:
 
 ```rust
-use a13n::{Client, Error, Secret, generated::models};
+use a13n::{Client, Error, ObservationOptions, Secret, StartOptions};
 use std::{env, error::Error as StdError, time::Duration};
-
-// Follow this Entry's incorporation, never a Thread's latest Run.
-async fn recover(client: &Client, thread_id: &str, entry_id: &str) -> Result<(), Box<dyn StdError>> {
-    let entry = client.entry(thread_id, entry_id);
-    let settled = entry.wait(Duration::from_millis(500)).await?;
-    match settled.data.status {
-        models::EntryStatus::Consumed => {
-            let id = settled.data.assigned_run_id.as_deref()
-                .ok_or("Consumed Entry has no assigned Run")?;
-            let exact = client.run(id).wait().await?;
-            println!("Recovered exact Run {id}: {:?}", exact.status());
-        }
-        status => println!("Entry ended as {status:?}; no incorporating Run to observe"),
-    }
-    Ok(())
-}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn StdError>> {
-    let url = env::var("A13N_SERVICE_URL")?;
-    let client = Client::new(&url, Secret::new(env::var("A13N_API_TOKEN")?))?;
-    let key = env::var("A13N_REQUEST_KEY")?;
-    let mut interaction = client.agent(env::var("A13N_AGENT_ID")?)
-        .start("Summarize the plan", &key).await?;
-    let thread_id = interaction.thread.id.clone();
-    let entry_id = interaction.receipt.data.entry.id.clone();
-    println!("Receipt: Thread {thread_id}, Entry {entry_id}");
-
+    let client = Client::new(&env::var("A13N_SERVICE_URL")?, Secret::new(env::var("A13N_API_TOKEN")?))?;
+    let key = env::var("A13N_REQUEST_KEY")?; // Application persisted this key/body before dispatch.
+    let mut interaction = match client.agent(env::var("A13N_AGENT_ID")?).start_with(
+        "Summarize the plan", StartOptions {
+            idempotency_key: Some(key),
+            observation: ObservationOptions { timeout: Duration::from_secs(5), ..Default::default() },
+            ..Default::default()
+        },
+    ).await {
+        Ok(interaction) => interaction,
+        Err(Error::UnknownOutcome(unknown)) => {
+            println!("Reconcile {} using key {} and known IDs {:?}/{:?}; no automatic replay",
+                unknown.operation, unknown.idempotency_key, unknown.thread_id, unknown.run_id);
+            return Err(unknown.into());
+        }
+        Err(other) => return Err(other.into()),
+    };
+    let thread_id = interaction.identity.thread_id.clone().ok_or("Missing Thread ID")?;
+    let entry_id = interaction.identity.entry_id.clone().ok_or("Missing Entry ID")?;
+    std::fs::write("accepted-identity.json", serde_json::to_vec(&serde_json::json!({
+        "thread_id":thread_id,"entry_id":entry_id,"key":interaction.identity.idempotency_key,
+    }))?)?;
     match interaction.result().await {
-        Ok(outcome) => println!("Exact Run {}: {:?}", outcome.run.id, outcome.status()),
+        Ok(outcome) => println!("Exact Run {}: {:?}, output {}", outcome.run_id, outcome.status, outcome.output),
         Err(Error::Timeout) => {
-            // Observation stopped locally; resume from this submission's Entry.
-            recover(&client, &thread_id, &entry_id).await?;
+            // Local construction only: no POST, fake receipt or manual polling loop.
+            let mut recovered = client.entry(&thread_id, &entry_id).observe(ObservationOptions {
+                timeout: Duration::from_secs(60), ..Default::default()
+            })?;
+            let outcome = recovered.result().await?;
+            println!("Recovered exact Run {}: {:?}", outcome.run_id, outcome.status);
         }
-        Err(Error::Submission(disposition)) => {
-            println!("Entry {}: {:?}", disposition.entry_id, disposition.entry.data.status);
-        }
+        Err(Error::Submission(disposition)) => println!("Entry {} ended as {:?}", disposition.entry_id, disposition.entry.data.status),
         Err(other) => return Err(other.into()),
     }
     Ok(())
 }
 ```
 
-`cargo +1.97.0 check` compiles this without a Service call. At runtime it prints the acceptance IDs, then either the original exact Run status or a recovered consumed Entry's exact Run status. `Entry::wait` has no built-in deadline and may remain queued; wrap `recover` in your application's own timeout or retain its IDs to resume after restart. `Run::wait` has its own 300-second observation budget, so another timeout does not imply a failed Run. If `start()` itself fails *before you receive a receipt*, you may not have any IDs to read back; keep the original key and reconcile with Service state before deliberately retrying that **same** logical request. A different message needs a different key. Local cancellation or Client shutdown never means remote rollback.
+Compile before running. Recovery from a saved Entry waits for **consumed**, not assigned: provisional assignment can revert. Failed/withdrawn dispositions are `Error::Submission`, never an unrelated latest Run. `RecoveredIdentity` evidence has no fabricated response. If you already know an exact Run ID, use `client.run(id).observe(options)?` or `.result(options).await?`; neither follows a successor. Unknown submission outcome may leave you without any IDs—retain the original key/body and reconcile Service state before deliberately replaying the same intent.
 
-## Interpret the typed errors
+## Typed errors and explicit outcomes
 
-| Error                                  | What you can conclude                                                                     | Next step                                                          |
-| -------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `Error::Api`                           | Service returned an HTTP error with safe status/code/details and request metadata.        | Fix permissions/input; on `412`, read current ETag and reconcile.  |
-| `Error::Submission`                    | This exact Entry became failed or withdrawn; its snapshot and IDs are available.          | Inspect that Entry; do not treat a different Run as success.       |
-| `Error::Timeout`                       | The local 300-second observation deadline expired across queueing, Run polling and reads. | Read the original Entry/Run IDs, if known.                         |
-| `Error::Transport` / `Error::Protocol` | A request, response body or protocol failed locally.                                      | Do not assume a mutation was rejected; reconcile by key and IDs.   |
-| `Error::Closed`                        | Local Client or Interaction observation was closed.                                       | Rebind the known IDs in an open Client if more readback is needed. |
+| Value                                  | Meaning                                                                                                                                                                                                                                                                                   | Next step                                                                            |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `Error::Api`                           | Canonical structured Service rejection, with status/code/details and response metadata.                                                                                                                                                                                                   | Fix permissions/input; reconcile ETags on 412.                                       |
+| `Error::UnknownOutcome`                | Mutation dispatch was attempted but acknowledgement is unreliable, including malformed accepted receipts. Chosen key, operation, known IDs, actual HTTP status (when received) and original typed cause are retained. A status-only/HTML gateway response is not a trustworthy rejection. | Reconcile the identical intent; never assume rollback or generate a replacement key. |
+| `Error::Submission`                    | Exact Entry failed or was withdrawn before incorporation.                                                                                                                                                                                                                                 | Inspect its retained snapshot; do not substitute another Run.                        |
+| `Error::Timeout`                       | Frozen local observation deadline expired across queue, Run, SSE or readback.                                                                                                                                                                                                             | Recover saved IDs with a new bounded observer.                                       |
+| `Error::MutationTimeout`               | An absolute caller request deadline expired before dispatch. After attempted dispatch it is the cause inside UnknownOutcome.                                                                                                                                                              | Use dispatch evidence, not timeout alone, to decide reconciliation.                  |
+| `Error::PreviewInterrupted`            | Conservative text projection stopped.                                                                                                                                                                                                                                                     | Still-open result/raw observation remains usable; final output is authoritative.     |
+| `Error::Transport` / `Error::Protocol` | Local transport/protocol failure; high-level uncertain mutations wrap these as UnknownOutcome.                                                                                                                                                                                            | Inspect safe typed cause and operation evidence.                                     |
+| `Error::Closed`                        | Local Client or Interaction closed before observation/dispatch.                                                                                                                                                                                                                           | Rebind IDs in an open Client if more readback is needed.                             |
 
-`Run::wait()` returns `RunOutcome` for completed, waiting, failed and cancelled; these are statuses, **not** errors indicating that all work succeeded. `Interaction::close()` and drop release the local SSE connection only. `Run::interrupt()` is the explicit remote stop request. Resume applies only to the exact idle last waiting Run, with complete pending answer data and an explicit key; it creates a **new** Run, so waiting on the original Run cannot report the successor's result. Completed, failed and cancelled Runs continue through a new explicit normal `agent.send(thread_id, input, new_key)` message, not resume, automatic resubmission or an implicit fork. `ThreadView.last_run_id` is the most recently sealed Run of any outcome. A failed/cancelled Run pauses automatic advancement but retains continuation history through its nearest checkpoint; it does not restore an earlier successful head.
+`RunOutcome.status` represents completed, waiting, failed or cancelled; returning an outcome does not make failed/cancelled successful. `http_response` retains original exact Run HTTP evidence; `Interaction.evidence` separately identifies submission, resume or recovered origin. Error formatting retains safe categories rather than raw URLs/credentials/untrusted bodies. Keep tokens and request payloads out of your own logs.
 
-**Avoid two common mistakes:** an Entry in `assigned` is not yet `consumed` (assignment can roll back to pending), and the latest Thread Run may belong to another message. Reconcile from the saved Entry, then observe only its `assigned_run_id` after consumption. Safe error messages redact raw transport/body details; keep token bytes and untrusted request bodies out of your own logs too. For live frames and committed readback, see [streams and results](streams-and-results.md).
+ObservationOptions freezes one deadline for queue, Run and stream; repeated result/iteration cannot extend it. An explicit absolute `deadline` also caps mutation time and includes elapsed submission time. Request-builder timeouts remain transport diagnostics, distinct from observation Timeout. Cancelling or dropping an operation ends local work only. `Interaction::close()` preserves only an already-cached result; `Run::interrupt()` is the explicit remote mutation.
+
+Client clones and authored handles share one pool and authentication/cancellation state. Drop of one clone preserves retained handles. Explicit close on **any** clone cancels all shared local requests, including task-owned handles; the last owner releases transport. No background observer is left running when an Interaction drops.
+
+Resume applies only to the exact idle last waiting Run and returns an Interaction for a **distinct** successor. Completed/failed/cancelled Runs continue through an explicit new normal message, not automatic retry/resume/fork. `ThreadView.last_run_id` is the last sealed Run of any outcome, not necessarily your submission. For preview and advanced committed display readback, see [streams and results](streams-and-results.md).

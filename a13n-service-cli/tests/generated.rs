@@ -778,6 +778,42 @@ fn schemas_and_dispatch_preserve_native_settings_upload_ids_and_eight_character_
 }
 
 #[test]
+fn authored_gateway_unknown_outcome_preserves_explicit_key_status_and_safe_cause() {
+    let (base, origin) = serve(vec![(
+        504,
+        vec![("Content-Type", "text/html")],
+        b"<html>private-gateway-body</html>".to_vec(),
+    )]);
+    let output = binary(&[
+        "--base-url",
+        &base,
+        "agents",
+        "start",
+        "agent",
+        "--payload",
+        r#"{"content":[{"type":"text","text":"hello"}]}"#,
+        "--idempotency-key",
+        "persisted-cli-key",
+        "--error-format",
+        "json",
+    ]);
+    assert_eq!(output.status.code(), Some(5));
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    let error: serde_json::Value = serde_json::from_str(stderr.trim()).unwrap();
+    assert_eq!(error["error"]["kind"], "unknown_outcome");
+    assert_eq!(error["error"]["status"], 504);
+    assert!(stderr.contains("persisted-cli-key"));
+    assert!(!stderr.contains("private-gateway-body"));
+    let requests = origin.join().unwrap();
+    assert_eq!(requests.len(), 1);
+    assert!(
+        requests[0]
+            .to_ascii_lowercase()
+            .contains("idempotency-key: persisted-cli-key")
+    );
+}
+
+#[test]
 fn authored_payload_and_options_preserve_native_configuration_on_the_wire() {
     let payload = serde_json::json!({"content":[{"type":"text","text":""},{"type":"url","url":"https://media.example/image.png"},{"type":"asset","asset_id":"asset_native"}]});
     let file = std::env::temp_dir().join(format!(
@@ -801,7 +837,7 @@ fn authored_payload_and_options_preserve_native_configuration_on_the_wire() {
             options["configuration"] = config;
         }
         for action in ["start", "send", "generated"] {
-            let (base, origin) = serve(vec![(409, vec![("Content-Type", "application/json")], br#"{"error":{"code":"conflict","message":"capture","details":{"reason":"run_configuration_immutable"}}}"#.to_vec())]);
+            let (base, origin) = serve(vec![(409, vec![("Content-Type", "application/json")], br#"{"error":{"code":"conflict","message":"capture","details":{"reason":"run_configuration_immutable"},"request_id":null}}"#.to_vec())]);
             let output = if action == "generated" {
                 let body = serde_json::json!({"agent_id":"a","payload":payload,"options":options})
                     .to_string();
@@ -872,7 +908,7 @@ fn authored_json_stdin_and_empty_text_keep_existing_input_ownership() {
         let (base, origin) = serve(vec![(
             400,
             vec![("Content-Type", "application/json")],
-            br#"{"error":{"code":"invalid_argument","message":"capture"}}"#.to_vec(),
+            br#"{"error":{"code":"invalid_argument","message":"capture","details":{},"request_id":null}}"#.to_vec(),
         )]);
         let mut args = vec![
             "--base-url",

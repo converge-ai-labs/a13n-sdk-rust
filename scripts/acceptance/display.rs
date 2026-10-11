@@ -182,21 +182,24 @@ pub async fn history_followup(
     )?;
     let mut next = client
         .agent(agent)
-        .send(
+        .send_with(
             thread,
             "Continue after the sealed outcome with new evidence.",
-            key(),
+            a13n::SendOptions {
+                idempotency_key: Some(key()),
+                ..Default::default()
+            },
         )
         .await?;
     let result = next.result().await?;
     ensure(
-        *result.status() == m::RunStatus::Completed
-            && result.snapshot.data.parent_run_id.as_deref() == Some(previous),
+        result.status == m::RunStatus::Completed
+            && result.http_response.data.parent_run_id.as_deref() == Some(previous),
         "Normal message must continue failed/cancelled history",
     )?;
     Ok(())
 }
-pub async fn live_window(run: &a13n::Run<'_>) -> Result<()> {
+pub async fn live_window(run: &a13n::Run) -> Result<()> {
     let recent = run
         .items()
         .get(RunItemsGetOptions {

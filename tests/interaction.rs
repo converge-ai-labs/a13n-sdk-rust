@@ -59,14 +59,30 @@ async fn result_only_waits_for_consumed_entry_not_provisional_assignment() {
     })
     .await;
     let sdk = client(&fixture);
-    let mut interaction = sdk.agent("agent_id").start("hello", "once").await.unwrap();
-    assert_eq!(interaction.receipt.data.thread.id, "t");
-    assert_eq!(interaction.receipt.data.entry.id, "e");
+    let mut interaction = sdk
+        .agent("agent_id")
+        .start_with(
+            "hello",
+            StartOptions {
+                idempotency_key: Some("once".into()),
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        interaction.evidence.submission().unwrap().data.thread.id,
+        "t"
+    );
+    assert_eq!(
+        interaction.evidence.submission().unwrap().data.entry.id,
+        "e"
+    );
     let result = tokio::time::timeout(Duration::from_secs(3), interaction.result())
         .await
         .unwrap()
         .unwrap();
-    assert_eq!(*result.status(), models::RunStatus::Waiting);
+    assert_eq!(result.status, models::RunStatus::Waiting);
     assert!(interaction.next().await.unwrap().is_none());
     assert_eq!(polls.load(Ordering::SeqCst), 3);
     let mut posts = 0;
@@ -107,8 +123,8 @@ async fn start_imports_native_history_once_and_thread_readback_preserves_json() 
         .agent("agent_id")
         .start_with(
             "New question",
-            "import-once",
             StartOptions {
+                idempotency_key: Some("import-once".into()),
                 message_history: Some(imported),
                 ..Default::default()
             },
@@ -116,11 +132,22 @@ async fn start_imports_native_history_once_and_thread_readback_preserves_json() 
         .await
         .unwrap();
     assert_eq!(
-        serde_json::to_value(&interaction.receipt.data.thread.message_history).unwrap(),
+        serde_json::to_value(
+            &interaction
+                .evidence
+                .submission()
+                .unwrap()
+                .data
+                .thread
+                .message_history
+        )
+        .unwrap(),
         history
     );
     let readback = interaction
         .thread
+        .as_ref()
+        .unwrap()
         .resource()
         .get(Default::default())
         .await
@@ -130,7 +157,14 @@ async fn start_imports_native_history_once_and_thread_readback_preserves_json() 
         history
     );
     sdk.agent("agent_id")
-        .send("t", "Follow up", "new-message")
+        .send_with(
+            "t",
+            "Follow up",
+            a13n::SendOptions {
+                idempotency_key: Some("new-message".into()),
+                ..Default::default()
+            },
+        )
         .await
         .unwrap();
     let first = fixture.requests.recv().await.unwrap();
@@ -162,8 +196,8 @@ async fn send_rejects_receipt_for_a_different_thread() {
     let fixture = server(|_| Reply::json(200, receipt())).await;
     let sdk = client(&fixture);
     assert!(
-        matches!(sdk.agent("agent_id").send("another", "hello", "once").await,
-        Err(Error::Protocol(error)) if error.kind == a13n::ProtocolKind::InvalidReceipt)
+        matches!(sdk.agent("agent_id").send_with("another", "hello", a13n::SendOptions { idempotency_key: Some("once".into()), ..Default::default() }).await,
+        Err(Error::UnknownOutcome(error)) if matches!(error.cause, Error::Protocol(ref cause) if cause.kind == a13n::ProtocolKind::InvalidReceipt))
     );
 }
 
@@ -180,33 +214,32 @@ async fn authored_run_resume_binds_distinct_successor_and_interrupts_only_explic
     .await;
     let sdk = client(&fixture);
     let run = sdk.run("r");
-    let mut request = models::Resume::new(Default::default(), Default::default());
-    request.approvals.insert(
-        "approval_1".into(),
-        models::ApprovalDecision::Approve(Box::new(models::Approve::new(
-            models::approve::Action::Approve,
-        ))),
-    );
-    request.calls.insert(
-        "call_1".into(),
-        models::CallResult::Returned(Box::new(models::Returned::new(
-            models::returned::Status::Returned,
-            Some(json!({"answers": {"Which?": "A"}})),
-        ))),
-    );
-    let mut payload = a13n::text_payload("Additional evidence");
-    payload
-        .content
-        .push(models::Part::Asset(Box::new(models::AssetPart::new(
-            "asset_1".into(),
-            models::asset_part::Type::Asset,
-        ))));
-    request.input = Some(Some(Box::new(payload)));
-    let resumed = run.resume(&request, "resume-once").await.unwrap();
-    assert_eq!(resumed.run.id, "successor");
-    assert_eq!(resumed.receipt.status.as_u16(), 201);
+    let answers = std::collections::HashMap::from([
+        ("approval_1".into(), a13n::Answer::approve()),
+        (
+            "call_1".into(),
+            a13n::Answer::returned(json!({"answers": {"Which?": "A"}})),
+        ),
+    ]);
+    let input = a13n::Input::parts([
+        a13n::InputPart::text("Additional evidence"),
+        a13n::InputPart::asset("asset_1"),
+    ]);
+    let resumed = run
+        .resume_with(
+            answers,
+            a13n::ResumeOptions {
+                idempotency_key: Some("resume-once".into()),
+                input: Some(Some(input)),
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
+    assert_eq!(resumed.run.as_ref().unwrap().id, "successor");
+    assert_eq!(resumed.evidence.resume().unwrap().status.as_u16(), 201);
     assert!(matches!(
-        resumed.run.interrupt().await,
+        resumed.run.as_ref().unwrap().interrupt().await,
         Err(Error::Protocol(_))
     ));
     let request = fixture.requests.recv().await.unwrap();
@@ -245,7 +278,14 @@ async fn finite_frames_filter_other_runs_and_idle_stream_seals() {
     let sdk = client(&fixture);
     let mut interaction = sdk
         .agent("agent_id")
-        .send("t", "hello", "once")
+        .send_with(
+            "t",
+            "hello",
+            a13n::SendOptions {
+                idempotency_key: Some("once".into()),
+                ..Default::default()
+            },
+        )
         .await
         .unwrap();
     assert!(
@@ -259,7 +299,7 @@ async fn finite_frames_filter_other_runs_and_idle_stream_seals() {
             .is_none()
     );
     assert_eq!(
-        *interaction.result().await.unwrap().status(),
+        interaction.result().await.unwrap().status,
         models::RunStatus::Completed
     );
     let mut posts = 0;
@@ -284,7 +324,17 @@ async fn early_close_does_not_request_result_or_interrupt_and_failed_entry_is_ty
     })
     .await;
     let sdk = client(&fixture);
-    let mut interaction = sdk.agent("agent_id").start("hello", "once").await.unwrap();
+    let mut interaction = sdk
+        .agent("agent_id")
+        .start_with(
+            "hello",
+            StartOptions {
+                idempotency_key: Some("once".into()),
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
     assert!(
         matches!(interaction.result().await, Err(Error::Submission(error)) if error.entry.data.status == models::EntryStatus::Failed)
     );
@@ -311,7 +361,17 @@ async fn completed_before_stream_headers_does_not_block_finite_next() {
     })
     .await;
     let sdk = client(&fixture);
-    let mut interaction = sdk.agent("agent_id").start("hello", "once").await.unwrap();
+    let mut interaction = sdk
+        .agent("agent_id")
+        .start_with(
+            "hello",
+            StartOptions {
+                idempotency_key: Some("once".into()),
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
     assert!(
         tokio::time::timeout(Duration::from_secs(2), interaction.next())
             .await
@@ -320,7 +380,7 @@ async fn completed_before_stream_headers_does_not_block_finite_next() {
             .is_none()
     );
     assert_eq!(
-        *interaction.result().await.unwrap().status(),
+        interaction.result().await.unwrap().status,
         models::RunStatus::Completed
     );
 }
@@ -338,7 +398,17 @@ async fn sustained_foreign_frames_cannot_starve_exact_run_seal() {
         Reply::json(200, run("completed"))
     }).await;
     let sdk = client(&fixture);
-    let mut interaction = sdk.agent("agent_id").start("hello", "once").await.unwrap();
+    let mut interaction = sdk
+        .agent("agent_id")
+        .start_with(
+            "hello",
+            StartOptions {
+                idempotency_key: Some("once".into()),
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
     assert!(
         tokio::time::timeout(Duration::from_secs(2), interaction.next())
             .await
@@ -347,7 +417,7 @@ async fn sustained_foreign_frames_cannot_starve_exact_run_seal() {
             .is_none()
     );
     assert_eq!(
-        *interaction.result().await.unwrap().status(),
+        interaction.result().await.unwrap().status,
         models::RunStatus::Completed
     );
 }
@@ -368,7 +438,17 @@ async fn slow_successful_headers_keep_one_attach_while_run_polling() {
         Reply::json(200, run("running"))
     }).await;
     let sdk = client(&fixture);
-    let mut interaction = sdk.agent("agent_id").start("hello", "once").await.unwrap();
+    let mut interaction = sdk
+        .agent("agent_id")
+        .start_with(
+            "hello",
+            StartOptions {
+                idempotency_key: Some("once".into()),
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
     assert!(
         matches!(tokio::time::timeout(Duration::from_secs(3), interaction.next()).await.unwrap().unwrap(), Some(ThreadFrame::Delta { data, .. }) if data.run_id == "r")
     );
@@ -402,9 +482,9 @@ async fn start_send_and_message_preserve_complete_configuration_and_ordered_medi
             .agent("a")
             .start_with(
                 message.clone(),
-                "start",
                 StartOptions {
-                    options: Some(Box::new(options.clone())),
+                    idempotency_key: Some("start".into()),
+                    run_options: Some(a13n::RunOptions::from_wire(options.clone())),
                     ..Default::default()
                 },
             )
@@ -416,9 +496,9 @@ async fn start_send_and_message_preserve_complete_configuration_and_ordered_medi
             .send_with(
                 "t",
                 message.clone(),
-                "send",
                 a13n::SendOptions {
-                    options: Some(Box::new(options.clone())),
+                    idempotency_key: Some("send".into()),
+                    run_options: Some(a13n::RunOptions::from_wire(options.clone())),
                     ..Default::default()
                 },
             )
@@ -459,7 +539,7 @@ async fn start_send_and_message_preserve_complete_configuration_and_ordered_medi
 
 #[tokio::test]
 async fn configuration_conflict_is_service_owned_and_never_retried_or_redirected_to_next_run() {
-    let mut fixture = server(|_| Reply::json(409, json!({"error":{"code":"conflict","message":"frozen","details":{"reason":"run_configuration_immutable"}}}))).await;
+    let mut fixture = server(|_| Reply::json(409, json!({"error":{"code":"conflict","message":"frozen","details":{"reason":"run_configuration_immutable"},"request_id":null}}))).await;
     let sdk = client(&fixture);
     let options = serde_json::from_value(json!({"configuration":{"allowed_hosts":[]}})).unwrap();
     let error = sdk
@@ -467,9 +547,9 @@ async fn configuration_conflict_is_service_owned_and_never_retried_or_redirected
         .send_with(
             "t",
             "change",
-            "once",
             a13n::SendOptions {
-                options: Some(Box::new(options)),
+                idempotency_key: Some("once".into()),
+                run_options: Some(a13n::RunOptions::from_wire(options)),
                 ..Default::default()
             },
         )
@@ -531,7 +611,17 @@ async fn inline_child_agui_media_and_terminal_observations_do_not_finish_root_in
     })
     .await;
     let sdk = client(&fixture);
-    let mut interaction = sdk.agent("a").start("hello", "once").await.unwrap();
+    let mut interaction = sdk
+        .agent("a")
+        .start_with(
+            "hello",
+            StartOptions {
+                idempotency_key: Some("once".into()),
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
     for expected in events {
         let Some(ThreadFrame::Delta { data, .. }) = interaction.next().await.unwrap() else {
             panic!("Child observation terminated root");
@@ -580,8 +670,8 @@ async fn explicit_normal_message_continues_last_sealed_failed_or_cancelled_run()
             )
             .await;
         let sdk = client(&fixture);
-        let prior = sdk.run("prior").wait().await.unwrap();
-        assert_eq!(serde_json::to_value(prior.status()).unwrap(), status);
+        let prior = sdk.run("prior").result(Default::default()).await.unwrap();
+        assert_eq!(serde_json::to_value(&prior.status).unwrap(), status);
         let thread = sdk
             .resources()
             .threads()
@@ -592,12 +682,22 @@ async fn explicit_normal_message_continues_last_sealed_failed_or_cancelled_run()
         assert_eq!(thread.data.last_run_id.as_deref(), Some("prior"));
         let mut interaction = sdk
             .agent("a")
-            .send("t", "Continue with new evidence", "new-message")
+            .send_with(
+                "t",
+                "Continue with new evidence",
+                a13n::SendOptions {
+                    idempotency_key: Some("new-message".into()),
+                    ..Default::default()
+                },
+            )
             .await
             .unwrap();
         let result = interaction.result().await.unwrap();
-        assert_eq!(*result.status(), models::RunStatus::Completed);
-        assert_eq!(result.snapshot.data.parent_run_id.as_deref(), Some("prior"));
+        assert_eq!(result.status, models::RunStatus::Completed);
+        assert_eq!(
+            result.http_response.data.parent_run_id.as_deref(),
+            Some("prior")
+        );
         let mut posts = Vec::new();
         while let Ok(request) = fixture.requests.try_recv() {
             if request.method == "POST" {

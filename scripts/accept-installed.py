@@ -7,6 +7,7 @@ This never publishes the crate or resolves an SDK path into the source checkout.
 
 import argparse
 import os
+import re
 import shutil
 import subprocess
 import tarfile
@@ -45,7 +46,7 @@ def main() -> None:
             raise AssertionError("The .crate archive lacks its library source")
         consumer = temporary / "consumer"
         (consumer / "src").mkdir(parents=True)
-        for name in ("main.rs", "sse.rs", "display.rs"):
+        for name in ("main.rs", "sse.rs", "display.rs", "workflow.rs"):
             shutil.copyfile(ROOT / "scripts/acceptance" / name, consumer / "src" / name)
         (consumer / "Cargo.toml").write_text(
             '[package]\nname = "a13n-consumer-acceptance"\nversion = "0.0.0"\n'
@@ -69,7 +70,21 @@ def main() -> None:
             if name_version not in source or source[name_version] != checksum:
                 raise AssertionError(f"Consumer changed SDK dependency resolution: {name_version}")
         env = {**os.environ, "CARGO_TARGET_DIR": str(temporary / "target")}
-        command = ["cargo", "run", "--locked", "--offline", "--quiet", "--"]
+        # Every SDK guide Rust block is a complete offline-compilable application.
+        # Compile against the same extracted artifact, never the source checkout.
+        examples = consumer / "src/bin"
+        examples.mkdir()
+        count = 0
+        for guide in [ROOT / "README.md", *sorted((ROOT / "docs").glob("*.md"))]:
+            blocks = re.findall(r"```rust(?:,[^\n]*)?\n(.*?)\n```", guide.read_text(), re.DOTALL)
+            for index, block in enumerate(blocks):
+                (examples / f"docs_{guide.stem.replace('-', '_')}_{index}.rs").write_text(block + "\n")
+                count += 1
+        subprocess.run(
+            ["cargo", "check", "--bins", "--locked", "--offline"], cwd=consumer, env=env, check=True, timeout=480
+        )
+        print(f"Installed crate compiled {count} complete documentation examples", flush=True)
+        command = ["cargo", "run", "--bin", "a13n-consumer-acceptance", "--locked", "--offline", "--quiet", "--"]
         if args.offline:
             command.append("--offline")
         subprocess.run(command, cwd=consumer, env=env, check=True, timeout=480)

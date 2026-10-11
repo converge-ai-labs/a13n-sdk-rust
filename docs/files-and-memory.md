@@ -5,7 +5,7 @@ Assets are binary uploads; Memory files are editable text held in a Memory. An u
 You need the [source-installed SDK](../README.md#get-started-from-source), Service URL, workspace API key, existing Agent ID, two distinct keys (`A13N_UPLOAD_KEY` and `A13N_REQUEST_KEY`), and a local UTF-8 file to attach. From the sibling application's directory, create one with `printf 'Project notes\n' > report.txt`. The example creates an upload, Asset and Memory on the Service; use disposable state and a Model capable of working with your chosen attachment.
 
 ```rust
-use a13n::{Client, Secret, StartOptions, UploadFile, generated::models, resources::MemoryFileReplaceOptions, text_payload};
+use a13n::{Client, Secret, StartOptions, Input, InputPart, UploadFile, generated::models, resources::MemoryFileReplaceOptions};
 use std::{env, error::Error};
 
 #[tokio::main]
@@ -45,20 +45,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
     ).await?;
     println!("Memory file updated: HTTP {}", updated.status);
 
-    let mut input = text_payload("Summarize the attached report using project notes.");
-    input.content.push(models::Part::Asset(Box::new(models::AssetPart::new(
-        asset.data.id.clone(), models::asset_part::Type::Asset,
-    ))));
+    let input = Input::parts([
+        InputPart::text("Summarize the attached report using project notes."),
+        InputPart::asset(&asset.data.id),
+    ]);
     let options = StartOptions {
+        idempotency_key: Some(env::var("A13N_REQUEST_KEY")?),
         memories: Some(vec![models::MemoryMount::new(
             models::MemoryAccess::Read, memory.data.id, "notes".into(),
         )]),
         ..Default::default()
     };
     let mut interaction = client.agent(env::var("A13N_AGENT_ID")?)
-        .start_with(input, env::var("A13N_REQUEST_KEY")?, options).await?;
+        .start_with(input, options).await?;
     let outcome = interaction.result().await?;
-    println!("Run: {} ({:?})", outcome.run.id, outcome.status());
+    println!("Run: {} ({:?})", outcome.run.id, outcome.status);
 
     let mut content = client.resources().assets().at(&asset.data.id).content()
         .get(Default::default()).await?;
@@ -77,7 +78,7 @@ Memory files use **logical paths** such as `notes.md`, not paths on your local d
 
 ## Image and video references
 
-A native `MessagePayload` preserves ordered text, `{ "type": "url", "url": "https://media.example/image.png" }` and `{ "type": "asset", "asset_id": "..." }` parts. URL parts do not take an SDK-specific media-type field. The same payload works with `start_with`, `send_with` and atomic `Resume.input`. Model `HarnessModelCharacteristicsInput.image_input` and `video_input` describe supported preparation and URL policies; `ImageInputPolicy`, `VideoInputPolicy` and `UrlInputSupportInput` are generated typed wire models. For `image_input`, omission, explicit null and an explicit empty policy object remain different wire inputs; false and zero are not absence.
+A native `MessagePayload` preserves ordered text, `{ "type": "url", "url": "https://media.example/image.png" }` and `{ "type": "asset", "asset_id": "..." }` parts. URL parts do not take an SDK-specific media-type field. The same public Input works with `start_with`, `send_with` and atomic `ResumeOptions.input`. Model `HarnessModelCharacteristicsInput.image_input` and `video_input` describe supported preparation and URL policies; `ImageInputPolicy`, `VideoInputPolicy` and `UrlInputSupportInput` are generated typed wire models. For `image_input`, omission, explicit null and an explicit empty policy object remain different wire inputs; false and zero are not absence.
 
 The SDK forwards references and characteristics rather than fetching or transcoding media. Service/Harness owns image preparation, video downloads, trusted TLS, host restrictions from the frozen Run configuration and byte budgets. An Asset round trip does not prove image/video Model support. Stream/Items media may be ordered structured descriptors with omitted payloads; retain metadata and inline-child attribution as described in [streams and results](streams-and-results.md#native-ag-ui-events-and-inline-child-attribution).
 

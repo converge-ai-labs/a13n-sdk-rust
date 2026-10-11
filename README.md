@@ -4,7 +4,7 @@ Use the async Rust SDK to submit work to an existing a13n Service Agent and read
 
 ## Get started from source
 
-You need a running Service URL, a workspace API key authorized for an existing Agent, and that Agent's **ID** (not its name). An API key already selects its workspace. Do not supply a workspace ID for an ordinary Agent call. Use a new caller-owned idempotency key for each *different* submission; reuse one only when reconciling the *same* uncertain submission.
+You need a running Service URL, a workspace API key authorized for an existing Agent, and that Agent's **ID** (not its name). An API key already selects its workspace. Do not supply a workspace ID for an ordinary Agent call. Ordinary calls choose a random idempotency key once. For durable recovery, persist your own key and identical request body before sending; a different logical message needs a different key.
 
 If you have access to this pre-public repository, clone it (or use an existing checkout) and create a sibling application. Rust 1.97.0 matches this checkout's tested toolchain:
 
@@ -25,7 +25,7 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 Put this complete, **result-only** example in `src/main.rs`:
 
 ```rust,no_run
-use a13n::{Client, Secret, generated::models};
+use a13n::{Client, RunStatus, Secret};
 use std::{env, error::Error};
 
 #[tokio::main]
@@ -36,17 +36,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
         Secret::new(env::var("A13N_API_TOKEN")?),
     )?;
     let agent = client.agent(env::var("A13N_AGENT_ID")?);
-    let mut interaction = agent.start("Summarize this project", env::var("A13N_REQUEST_KEY")?).await?;
-    println!("Thread: {}", interaction.thread.id);
+    let mut interaction = agent.start("Summarize this project").await?;
+    println!("Identity: {:?}", interaction.identity);
 
     let outcome = interaction.result().await?; // No SSE connection is needed.
-    match outcome.status() {
-        models::RunStatus::Completed => {
-            let messages = outcome.run.items().get(Default::default()).await?;
-            println!("Messages: {:#?}", messages.data.items);
+    match outcome.status {
+        RunStatus::Completed => {
+            if let Some(text) = &outcome.text { println!("{text}"); }
+            else { println!("Structured output: {}", outcome.output); }
         }
-        models::RunStatus::Waiting => println!("Pending action: {:?}", outcome.pending()),
-        models::RunStatus::Failed | models::RunStatus::Cancelled => println!("Failure: {:?}", outcome.failure()),
+        RunStatus::Waiting => println!("Pending approvals: {:?}, calls: {:?}", outcome.pending_approvals, outcome.pending_calls),
+        RunStatus::Failed | RunStatus::Cancelled => println!("Failure: {:?}", outcome.failure),
         status => println!("Run status: {status:?}"),
     }
     Ok(())
@@ -60,18 +60,17 @@ cargo +1.97.0 check
 export A13N_SERVICE_URL='https://your-service.example'
 export A13N_API_TOKEN='your-workspace-api-key'
 export A13N_AGENT_ID='your-existing-agent-id'
-export A13N_REQUEST_KEY='a-unique-key-for-this-submission'
 cargo +1.97.0 run
 ```
 
-The example prints the recent committed message/tool window, not an automatically loaded lifetime transcript. `complete` means the Run is sealed; dense Item ordinals and explicit `before`/`after` reads expose earlier history. Default Items reads have `baseline=true` and include the whole mutable tail even beyond `limit`; historical windows cannot seed live coverage. `outcome.output()` is the Run's optional output value, not necessarily its conversation text.
+The first reply comes directly from full Run output, with no Items request. `text` exists only for JSON string output (including the empty string); objects, arrays, booleans, numbers and null remain in `output`. Check the status: `waiting` needs action, and `failed`/`cancelled` are not successful replies. Save the Interaction identity's Thread/Entry IDs and key for recovery; use the Thread ID for follow-up. `outcome.http_response` explicitly retains HTTP evidence.
 
-`start()` returns an **Interaction**; `result()` waits for that message to finish or pause. Check the status: `waiting` needs action, while `failed` and `cancelled` are not successful replies. Save the printed Thread ID to continue the conversation. Keep the request key if you may need to reconcile a network failure, and never put token bytes in committed files.
+`Client` clones and authored Agent/Thread/Entry/Run handles are owned and task-safe, sharing one pool and authentication state. Dropping a clone does not invalidate retained handles; explicit `client.close()` on any clone closes all of them. Close/drop of an Interaction is local only.
 
 ## Next steps
 
 - [Create an Agent and continue](docs/agent-conversations.md) with an existing Model key, structured input and per-Run options. A Thread has no permanent Agent; choose one explicitly for each message.
-- [Stream an interaction](docs/streams-and-results.md) with `next().await?`, then call `result()` and read committed Run Items. Transient frames are not a durable transcript.
+- [Stream an interaction](docs/streams-and-results.md) with `next_text().await?` (or raw `next()`), then call `result()` for authoritative output. Advanced Items windows are separate display readback.
 - [Answer a waiting client tool](docs/waiting-and-resume.md) with a real result and observe the distinct successor Run. Queued input is not incorporated merely because it was assigned.
 - [Attach files and mount Memory](docs/files-and-memory.md), [authenticate and use resources](docs/auth-and-resources.md), or [reconcile failures and timeouts](docs/errors-and-recovery.md).
 
