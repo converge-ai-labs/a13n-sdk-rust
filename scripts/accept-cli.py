@@ -164,6 +164,7 @@ def offline(source: Path) -> None:
                                 "code": "conflict",
                                 "message": "capture",
                                 "details": {"reason": "run_configuration_immutable"},
+                                "request_id": None,
                             }
                         }
                         if path.startswith("/api/v1/model-providers/"):

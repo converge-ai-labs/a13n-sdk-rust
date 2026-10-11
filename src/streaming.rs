@@ -1,6 +1,6 @@
 //! Cancellation-safe Thread SSE observation; no background tasks or Run mutations.
 use crate::{
-    BinaryResponse, Error, ProtocolError, ProtocolKind, TransportError, TransportKind,
+    BinaryResponse, Client, Error, ProtocolError, ProtocolKind, TransportError, TransportKind,
     TransportStage,
     resources::{ThreadResource, ThreadStreamGetOptions},
 };
@@ -125,8 +125,9 @@ impl Default for StreamOptions {
 /// One mutable reader. A new `next` poll acknowledges the previous cursor frame.
 /// Drop or `close` never acknowledges pending data. Dropped read futures retain
 /// parser and recovery state, so a timeout cannot silently discard half a frame.
-pub struct ThreadStream<'a> {
-    thread: ThreadResource<'a>,
+pub struct ThreadStream {
+    client: Client,
+    thread_id: String,
     options: StreamOptions,
     response: Option<BinaryResponse>,
     parser: Parser,
@@ -140,9 +141,9 @@ pub struct ThreadStream<'a> {
     retry_at: Option<Instant>,
     closed: bool,
 }
-impl<'a> ThreadStream<'a> {
+impl ThreadStream {
     /// Advanced Thread-wide protocol reader; not a finite Agent interaction.
-    pub async fn open(thread: ThreadResource<'a>, options: StreamOptions) -> Result<Self, Error> {
+    pub async fn open(thread: ThreadResource<'_>, options: StreamOptions) -> Result<Self, Error> {
         if options.max_frame_bytes == 0
             || options.after.as_deref().is_some_and(|v| !valid_cursor(v))
             || options.run.is_some() != options.position.is_some()
@@ -155,7 +156,8 @@ impl<'a> ThreadStream<'a> {
             return Err(Error::InvalidInput);
         }
         let mut stream = Self {
-            thread,
+            client: thread.0.client.clone(),
+            thread_id: thread.0.ids.last().cloned().ok_or(Error::InvalidInput)?,
             parser: Parser::new(options.max_frame_bytes),
             applied: options.after.clone(),
             applied_position: options.position.clone(),
@@ -173,7 +175,7 @@ impl<'a> ThreadStream<'a> {
         Ok(stream)
     }
 }
-impl ThreadStream<'_> {
+impl ThreadStream {
     pub fn applied_cursor(&self) -> Option<&str> {
         self.applied.as_deref()
     }
@@ -195,7 +197,7 @@ impl ThreadStream<'_> {
         self.parser = Parser::new(self.options.max_frame_bytes);
     }
     fn check_parent(&mut self) -> Result<(), Error> {
-        if self.thread.0.client.shutdown.is_cancelled() {
+        if self.client.shutdown().is_cancelled() {
             self.close();
             return Err(Error::Closed);
         }
@@ -338,9 +340,7 @@ impl ThreadStream<'_> {
         loop {
             self.check_parent()?;
             if let Some(deadline) = self.retry_at {
-                self.thread
-                    .0
-                    .client
+                self.client
                     .observe(async {
                         tokio::time::sleep_until(deadline).await;
                         Ok(())
@@ -349,7 +349,10 @@ impl ThreadStream<'_> {
                 self.retry_at = None;
             }
             let response = self
-                .thread
+                .client
+                .resources()
+                .threads()
+                .at(&self.thread_id)
                 .stream()
                 .get(ThreadStreamGetOptions {
                     last_event_id: self.applied.clone(),

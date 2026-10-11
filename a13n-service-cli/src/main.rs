@@ -50,6 +50,9 @@ impl From<Error> for CliError {
                 Self {kind,message:format!("Service returned HTTP {} ({kind}); inspect the request and --schema", api.status),exit,
                     status:Some(api.status),code:Some(api.code),request_id:api.request_id}
             }
+            Error::UnknownOutcome(error) => Self { kind: "unknown_outcome", message: error.to_string(), exit: 5, status: error.http_status, code: None, request_id: None },
+            Error::PreviewInterrupted(error) => Self::protocol(error.to_string()),
+            Error::MutationTimeout => Self::protocol("Mutation request deadline elapsed; inspect dispatch evidence"),
             Error::Transport(_) => Self {kind:"transport",message:"Service transport failed. A mutation may have succeeded; inspect server state before replaying it.".into(),exit:5,status:None,code:None,request_id:None},
             Error::Protocol(_) => Self::protocol("Service response violates the pinned contract"),
             Error::Submission(error) => Self::protocol(format!("Entry {} settled as {} without incorporation", error.entry_id, error.entry.data.status)),

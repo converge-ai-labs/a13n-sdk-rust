@@ -488,10 +488,14 @@ async fn waits_use_exact_identity_and_cancel_requests_and_sleeps() {
     let client = client(&server);
     let result = client
         .run("exact")
-        .wait_with(Duration::from_secs(1), Duration::from_millis(1))
+        .result(a13n::ObservationOptions {
+            timeout: Duration::from_secs(1),
+            poll_interval: Duration::from_millis(1),
+            ..Default::default()
+        })
         .await
         .unwrap();
-    assert_eq!(result.snapshot.data.status, models::RunStatus::Waiting);
+    assert_eq!(result.http_response.data.status, models::RunStatus::Waiting);
     let result = client
         .entry("t", "e")
         .wait(Duration::from_millis(1))
@@ -528,7 +532,8 @@ async fn waits_use_exact_identity_and_cancel_requests_and_sleeps() {
     .await;
     let client = Arc::new(common::client(&hung));
     let caller = client.clone();
-    let pending = tokio::spawn(async move { caller.run("r").wait().await.map(|_| ()) });
+    let pending =
+        tokio::spawn(async move { caller.run("r").result(Default::default()).await.map(|_| ()) });
     hung.requests.recv().await.unwrap();
     client.close();
     assert!(matches!(pending.await.unwrap(), Err(Error::Closed)));
@@ -542,7 +547,7 @@ async fn waits_use_exact_identity_and_cancel_requests_and_sleeps() {
     let client = common::client(&sleeping);
     let run = client.run("r");
     assert!(
-        tokio::time::timeout(Duration::from_millis(30), run.wait())
+        tokio::time::timeout(Duration::from_millis(30), run.result(Default::default()))
             .await
             .is_err()
     );

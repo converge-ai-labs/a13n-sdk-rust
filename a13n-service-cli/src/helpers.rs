@@ -87,9 +87,9 @@ pub async fn run(
                     agent
                         .start_with(
                             payload,
-                            key,
                             StartOptions {
-                                options,
+                                idempotency_key: Some(key.to_owned()),
+                                run_options: options.map(|v| a13n::RunOptions::from_wire(*v)),
                                 ..Default::default()
                             },
                         )
@@ -100,9 +100,9 @@ pub async fn run(
                         .send_with(
                             required(leaf, "thread_id")?,
                             payload,
-                            key,
                             SendOptions {
-                                options,
+                                idempotency_key: Some(key.to_owned()),
+                                run_options: options.map(|v| a13n::RunOptions::from_wire(*v)),
                                 ..Default::default()
                             },
                         )
@@ -112,11 +112,26 @@ pub async fn run(
             };
             if leaf.get_flag("wait") {
                 let outcome = interaction.result().await?;
-                let receipt = output::envelope(interaction.receipt, config)?;
-                let run = output::envelope(outcome.snapshot, config)?;
+                let receipt = output::envelope(
+                    interaction
+                        .evidence
+                        .submission()
+                        .expect("Agent submission")
+                        .clone(),
+                    config,
+                )?;
+                let run = output::envelope(outcome.http_response, config)?;
                 output::print(&json!({"submitted":receipt,"outcome":run}), config).await
             } else {
-                output::response(interaction.receipt, config).await
+                output::response(
+                    interaction
+                        .evidence
+                        .submission()
+                        .expect("Agent submission")
+                        .clone(),
+                    config,
+                )
+                .await
             }
         }
         Some(("runs", runs)) => match runs.subcommand() {
@@ -125,9 +140,13 @@ pub async fn run(
                     Duration::from_millis(*leaf.get_one::<u64>("interval_ms").unwrap_or(&500));
                 let outcome = client
                     .run(required(leaf, "id")?)
-                    .wait_with(Duration::from_secs(config.timeout), interval)
+                    .result(a13n::ObservationOptions {
+                        timeout: Duration::from_secs(config.timeout),
+                        poll_interval: interval,
+                        ..Default::default()
+                    })
                     .await?;
-                output::response(outcome.snapshot, config).await
+                output::response(outcome.http_response, config).await
             }
             Some(("result", leaf)) => {
                 let result = resources

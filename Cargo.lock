@@ -8,6 +8,7 @@ version = "0.0.0"
 dependencies = [
  "bytes",
  "chrono",
+ "getrandom 0.4.3",
  "reqwest",
  "serde",
  "serde_json",

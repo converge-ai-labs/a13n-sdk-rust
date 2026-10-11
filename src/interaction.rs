@@ -3,52 +3,96 @@ use crate::{
     generated::models,
     resources::{
         EntryGetOptions, EntryResource, RunGetOptions, RunInterruptOptions, RunResource,
-        RunResumeOptions, ThreadResource,
+        ThreadResource,
     },
     streaming::{StreamOptions, ThreadFrame, ThreadStream},
 };
 use std::time::Duration;
 use tokio::time::Instant;
 
-const DEFAULT_WAIT: Duration = Duration::from_secs(300);
 const POLL: Duration = Duration::from_millis(500);
 
-/// Small authored handles delegate all I/O to generated schema operations.
-#[derive(Clone)]
-pub struct Thread<'a> {
-    pub id: String,
-    resource: ThreadResource<'a>,
+/// Fixed settings for one local observer. An absolute deadline includes prior mutation time.
+#[derive(Clone, Debug)]
+pub struct ObservationOptions {
+    pub timeout: Duration,
+    pub poll_interval: Duration,
+    pub deadline: Option<Instant>,
 }
-impl<'a> Thread<'a> {
-    pub fn resource(&self) -> &ThreadResource<'a> {
-        &self.resource
+impl Default for ObservationOptions {
+    fn default() -> Self {
+        Self {
+            timeout: Duration::from_secs(300),
+            poll_interval: POLL,
+            deadline: None,
+        }
+    }
+}
+impl ObservationOptions {
+    pub(crate) fn freeze(mut self) -> Result<Self, Error> {
+        if self.timeout.is_zero() || self.poll_interval.is_zero() {
+            return Err(Error::InvalidInput);
+        }
+        self.deadline = Some(match self.deadline {
+            Some(deadline) => deadline,
+            None => Instant::now()
+                .checked_add(self.timeout)
+                .ok_or(Error::InvalidInput)?,
+        });
+        Ok(self)
+    }
+}
+
+/// Owned local handles share the Client's transport; generated resources still borrow it.
+#[derive(Clone)]
+pub struct Thread {
+    pub id: String,
+    client: Client,
+}
+impl Thread {
+    pub fn resource(&self) -> ThreadResource<'_> {
+        self.client.resources().threads().at(&self.id)
     }
 }
 #[derive(Clone)]
-pub struct Entry<'a> {
+pub struct Entry {
     pub id: String,
     pub thread_id: String,
-    resource: EntryResource<'a>,
+    client: Client,
 }
-impl<'a> Entry<'a> {
-    pub fn resource(&self) -> &EntryResource<'a> {
-        &self.resource
+impl Entry {
+    pub fn resource(&self) -> EntryResource<'_> {
+        self.client
+            .resources()
+            .threads()
+            .at(&self.thread_id)
+            .inbox()
+            .at(&self.id)
     }
-    /// Observe incorporation or a failed/withdrawn disposition, not provisional assignment.
+    /// Recover an exact Entry locally, without a request or a fabricated HTTP receipt.
+    pub fn observe(&self, options: ObservationOptions) -> Result<Interaction, Error> {
+        Interaction::new(
+            self.client.clone(),
+            InteractionIdentity {
+                thread_id: Some(self.thread_id.clone()),
+                entry_id: Some(self.id.clone()),
+                run_id: None,
+                idempotency_key: None,
+            },
+            ReceiptEvidence::RecoveredIdentity,
+            None,
+            options,
+        )
+    }
+    /// Advanced disposition-only readback (also used by the CLI inbox wait command).
     pub async fn wait(&self, interval: Duration) -> Result<Response<models::EntryView>, Error> {
         let interval = if interval.is_zero() { POLL } else { interval };
-        self.resource
-            .0
-            .client
+        self.client
             .observe(async {
                 loop {
-                    let result = self.resource.get(EntryGetOptions::default()).await?;
+                    let result = self.resource().get(EntryGetOptions::default()).await?;
                     if result.data.id != self.id || result.data.thread_id != self.thread_id {
-                        return Err(ProtocolError::response(
-                            ProtocolKind::InvalidReceipt,
-                            result.status.as_u16(),
-                            &result.headers,
-                        ));
+                        return Err(invalid(&result));
                     }
                     if matches!(
                         result.data.status,
@@ -65,171 +109,173 @@ impl<'a> Entry<'a> {
     }
 }
 #[derive(Clone)]
-pub struct Run<'a> {
+pub struct Run {
     pub id: String,
-    resource: RunResource<'a>,
+    pub thread_id: Option<String>,
+    pub(crate) client: Client,
 }
-impl<'a> Run<'a> {
-    pub fn resource(&self) -> &RunResource<'a> {
-        &self.resource
+impl Run {
+    pub fn resource(&self) -> RunResource<'_> {
+        self.client.resources().runs().at(&self.id)
     }
-    pub fn items(&self) -> crate::resources::RunItemsResource<'a> {
-        self.resource.items()
+    /// Advanced committed display/window readback; not a final-reply helper.
+    pub fn items(&self) -> crate::resources::RunItemsResource<'_> {
+        self.resource().items()
     }
-    /// Explicitly interrupt remote execution. Closing an Interaction never calls this.
     pub async fn interrupt(&self) -> Result<Response<models::RunView>, Error> {
         let snapshot = self
-            .resource
+            .resource()
             .interrupt(RunInterruptOptions::default())
             .await?;
-        if snapshot.data.id != self.id {
-            return Err(ProtocolError::response(
-                ProtocolKind::InvalidReceipt,
-                snapshot.status.as_u16(),
-                &snapshot.headers,
-            ));
-        }
+        self.check(&snapshot)?;
         Ok(snapshot)
     }
-    /// Submit the complete typed result batch and optional ordinary message input together.
-    /// The explicit key identifies this one immutable intent; the receipt binds a distinct successor.
-    pub async fn resume(
-        &self,
-        request: &models::Resume,
-        idempotency_key: impl Into<String>,
-    ) -> Result<Resumed<'a>, Error> {
-        let receipt = self
-            .resource
-            .resume(
-                request,
-                RunResumeOptions {
-                    idempotency_key: idempotency_key.into(),
-                    ..Default::default()
-                },
-            )
-            .await?;
-        if receipt.data.id.is_empty()
-            || receipt.data.id == self.id
-            || receipt.data.thread_id.is_empty()
+    pub fn observe(&self, options: ObservationOptions) -> Result<Interaction, Error> {
+        Interaction::new(
+            self.client.clone(),
+            InteractionIdentity {
+                thread_id: self.thread_id.clone(),
+                entry_id: None,
+                run_id: Some(self.id.clone()),
+                idempotency_key: None,
+            },
+            ReceiptEvidence::RecoveredIdentity,
+            Some(self.clone()),
+            options,
+        )
+    }
+    /// Result-only convenience over the same finite observer, never a successor follower.
+    pub async fn result(&self, options: ObservationOptions) -> Result<RunOutcome, Error> {
+        self.observe(options)?.result().await
+    }
+    pub(crate) fn check(&self, snapshot: &Response<models::RunView>) -> Result<(), Error> {
+        if snapshot.data.id != self.id
+            || snapshot.data.thread_id.is_empty()
+            || self
+                .thread_id
+                .as_ref()
+                .is_some_and(|id| id != &snapshot.data.thread_id)
         {
-            return Err(ProtocolError::response(
-                ProtocolKind::InvalidReceipt,
-                receipt.status.as_u16(),
-                &receipt.headers,
-            ));
+            return Err(invalid(snapshot));
         }
-        let run = self.resource.0.client.run(receipt.data.id.clone());
-        Ok(Resumed { run, receipt })
-    }
-    pub async fn wait(&self) -> Result<RunOutcome<'a>, Error> {
-        self.wait_with(DEFAULT_WAIT, POLL).await
-    }
-    pub async fn wait_with(
-        &self,
-        timeout: Duration,
-        interval: Duration,
-    ) -> Result<RunOutcome<'a>, Error> {
-        if timeout.is_zero() || interval.is_zero() {
-            return Err(Error::InvalidInput);
-        }
-        self.resource
-            .0
-            .client
-            .observe(async {
-                tokio::time::timeout(timeout, self.wait_inner(interval))
-                    .await
-                    .map_err(|_| Error::Timeout)?
-            })
-            .await
-    }
-    async fn wait_inner(&self, interval: Duration) -> Result<RunOutcome<'a>, Error> {
-        loop {
-            let snapshot = self.resource.get(RunGetOptions::default()).await?;
-            if snapshot.data.id != self.id {
-                return Err(ProtocolError::response(
-                    ProtocolKind::InvalidReceipt,
-                    snapshot.status.as_u16(),
-                    &snapshot.headers,
-                ));
-            }
-            if sealed(&snapshot.data.status) {
-                return Ok(RunOutcome {
-                    run: self.clone(),
-                    snapshot,
-                });
-            }
-            tokio::time::sleep(interval).await;
-        }
+        Ok(())
     }
 }
 impl Client {
-    pub fn run(&self, id: impl Into<String>) -> Run<'_> {
-        let id = id.into();
+    pub fn run(&self, id: impl Into<String>) -> Run {
         Run {
-            resource: self.resources().runs().at(id.clone()),
-            id,
+            id: id.into(),
+            thread_id: None,
+            client: self.clone(),
         }
     }
-    pub fn entry(&self, thread_id: impl Into<String>, id: impl Into<String>) -> Entry<'_> {
-        let thread_id = thread_id.into();
-        let id = id.into();
+    pub fn entry(&self, thread_id: impl Into<String>, id: impl Into<String>) -> Entry {
         Entry {
-            resource: self
-                .resources()
-                .threads()
-                .at(thread_id.clone())
-                .inbox()
-                .at(id.clone()),
-            id,
-            thread_id,
+            id: id.into(),
+            thread_id: thread_id.into(),
+            client: self.clone(),
         }
     }
-    pub fn thread(&self, id: impl Into<String>) -> Thread<'_> {
-        let id = id.into();
+    pub fn thread(&self, id: impl Into<String>) -> Thread {
         Thread {
-            resource: self.resources().threads().at(id.clone()),
-            id,
+            id: id.into(),
+            client: self.clone(),
         }
     }
 }
 
-/// Successor of an explicit resume, retaining the original HTTP response and status.
-pub struct Resumed<'a> {
-    pub run: Run<'a>,
-    pub receipt: Response<models::RunView>,
+/// Stable intent/observation identity. `run_id` becomes authoritative only after consumption.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct InteractionIdentity {
+    pub thread_id: Option<String>,
+    pub entry_id: Option<String>,
+    pub run_id: Option<String>,
+    pub idempotency_key: Option<String>,
 }
-
-/// A sealed or waiting exact Run, with original HTTP metadata and its bound resource.
+/// Provenance is explicit. Recovered selectors have no original HTTP acknowledgement.
 #[derive(Clone)]
-pub struct RunOutcome<'a> {
-    pub run: Run<'a>,
-    pub snapshot: Response<models::RunView>,
+pub enum ReceiptEvidence {
+    EntrySubmission(Response<models::Submitted>),
+    ResumeRunReceipt(Box<Response<models::RunView>>),
+    RecoveredIdentity,
 }
-impl RunOutcome<'_> {
-    pub fn status(&self) -> &models::RunStatus {
-        &self.snapshot.data.status
+impl ReceiptEvidence {
+    pub fn submission(&self) -> Option<&Response<models::Submitted>> {
+        if let Self::EntrySubmission(receipt) = self {
+            Some(receipt)
+        } else {
+            None
+        }
     }
-    pub fn output(&self) -> Option<&serde_json::Value> {
-        self.snapshot.data.output.as_deref()
-    }
-    pub fn pending(&self) -> Option<&models::Pending> {
-        self.snapshot.data.pending.as_deref()
-    }
-    pub fn failure(&self) -> Option<&models::Failure> {
-        self.snapshot.data.failure.as_deref()
+    pub fn resume(&self) -> Option<&Response<models::RunView>> {
+        if let Self::ResumeRunReceipt(receipt) = self {
+            Some(receipt)
+        } else {
+            None
+        }
     }
 }
 
-/// Acceptance receipt with canonical references. A queued entry has no Run.
-pub struct Submitted<'a> {
-    pub receipt: Response<models::Submitted>,
-    pub thread: Thread<'a>,
-    pub entry: Entry<'a>,
-    pub run: Option<Run<'a>>,
+/// Authoritative exact Run result, with direct workflow fields and explicit HTTP evidence.
+#[derive(Clone)]
+pub struct RunOutcome {
+    pub status: models::RunStatus,
+    pub output: serde_json::Value,
+    pub text: Option<String>,
+    pub pending_approvals: Vec<models::PendingCall>,
+    pub pending_calls: Vec<models::PendingCall>,
+    pub failure: Option<models::Failure>,
+    pub thread_id: String,
+    pub run_id: String,
+    pub run: Run,
+    pub http_response: Response<models::RunView>,
 }
-impl<'a> Submitted<'a> {
-    /// Bind a raw schema-level submission receipt to authored local handles.
-    pub fn bind(client: &'a Client, receipt: Response<models::Submitted>) -> Result<Self, Error> {
+impl RunOutcome {
+    fn new(mut run: Run, snapshot: Response<models::RunView>) -> Self {
+        run.thread_id = Some(snapshot.data.thread_id.clone());
+        let output = snapshot
+            .data
+            .output
+            .as_deref()
+            .cloned()
+            .unwrap_or(serde_json::Value::Null);
+        Self {
+            status: snapshot.data.status.clone(),
+            text: output.as_str().map(str::to_owned),
+            output,
+            pending_approvals: snapshot
+                .data
+                .pending
+                .as_ref()
+                .map(|p| p.approvals.clone())
+                .unwrap_or_default(),
+            pending_calls: snapshot
+                .data
+                .pending
+                .as_ref()
+                .map(|p| p.calls.clone())
+                .unwrap_or_default(),
+            failure: snapshot.data.failure.as_deref().cloned(),
+            thread_id: snapshot.data.thread_id.clone(),
+            run_id: snapshot.data.id.clone(),
+            run,
+            http_response: snapshot,
+        }
+    }
+    pub fn decode_output<T: serde::de::DeserializeOwned>(&self) -> Result<T, serde_json::Error> {
+        serde_json::from_value(self.output.clone())
+    }
+}
+
+/// Advanced acknowledgement binding. `run` here is provisional evidence, not incorporation.
+pub struct Submitted {
+    pub receipt: Response<models::Submitted>,
+    pub thread: Thread,
+    pub entry: Entry,
+    pub run: Option<Run>,
+}
+impl Submitted {
+    pub fn bind(client: &Client, receipt: Response<models::Submitted>) -> Result<Self, Error> {
         let value = &receipt.data;
         if value.thread.workspace_id.is_empty()
             || value.thread.id.is_empty()
@@ -240,15 +286,15 @@ impl<'a> Submitted<'a> {
                 .as_ref()
                 .is_some_and(|run| run.id.is_empty() || run.thread_id != value.thread.id)
         {
-            return Err(ProtocolError::response(
-                ProtocolKind::InvalidReceipt,
-                receipt.status.as_u16(),
-                &receipt.headers,
-            ));
+            return Err(invalid(&receipt));
         }
-        let thread = client.thread(value.thread.id.clone());
-        let entry = client.entry(value.thread.id.clone(), value.entry.id.clone());
-        let run = value.run.as_ref().map(|run| client.run(run.id.clone()));
+        let thread = client.thread(&value.thread.id);
+        let entry = client.entry(&value.thread.id, &value.entry.id);
+        let run = value.run.as_ref().map(|view| Run {
+            id: view.id.clone(),
+            thread_id: Some(view.thread_id.clone()),
+            client: client.clone(),
+        });
         Ok(Self {
             receipt,
             thread,
@@ -256,125 +302,72 @@ impl<'a> Submitted<'a> {
             run,
         })
     }
-
-    /// Wait until this Entry is incorporated (not merely assigned), then observe
-    /// its assigned exact Run. One deadline covers both phases and in-flight reads.
-    pub async fn wait(&self) -> Result<RunOutcome<'a>, Error> {
-        self.wait_with(DEFAULT_WAIT, POLL).await
-    }
-    /// Customize a single total deadline and polling interval; neither restarts at
-    /// the Entry-to-Run transition. Dropping this future stops only local observation.
-    pub async fn wait_with(
-        &self,
-        timeout: Duration,
-        interval: Duration,
-    ) -> Result<RunOutcome<'a>, Error> {
-        if timeout.is_zero() || interval.is_zero() {
-            return Err(Error::InvalidInput);
-        }
-        self.entry
-            .resource
-            .0
-            .client
-            .observe(async {
-                tokio::time::timeout(timeout, async {
-                    let run = self.incorporating_run(interval).await?;
-                    let outcome = run.wait_inner(interval).await?;
-                    self.check_run(&outcome.snapshot)?;
-                    if outcome.snapshot.data.id != run.id {
-                        return Err(ProtocolError::response(
-                            ProtocolKind::InvalidReceipt,
-                            outcome.snapshot.status.as_u16(),
-                            &outcome.snapshot.headers,
-                        ));
-                    }
-                    Ok(outcome)
-                })
-                .await
-                .map_err(|_| Error::Timeout)?
-            })
-            .await
-    }
-    fn check_run(&self, snapshot: &Response<models::RunView>) -> Result<(), Error> {
-        if snapshot.data.thread_id != self.receipt.data.thread.id {
-            return Err(ProtocolError::response(
-                ProtocolKind::InvalidReceipt,
-                snapshot.status.as_u16(),
-                &snapshot.headers,
-            ));
-        }
-        Ok(())
-    }
-    async fn incorporating_run(&self, interval: Duration) -> Result<Run<'a>, Error> {
-        loop {
-            let snapshot = self.entry.resource.get(EntryGetOptions::default()).await?;
-            if snapshot.data.id != self.receipt.data.entry.id
-                || snapshot.data.thread_id != self.receipt.data.thread.id
-            {
-                return Err(ProtocolError::response(
-                    ProtocolKind::InvalidReceipt,
-                    snapshot.status.as_u16(),
-                    &snapshot.headers,
-                ));
-            }
-            match snapshot.data.status {
-                models::EntryStatus::Consumed => {
-                    let run_id = snapshot
-                        .data
-                        .assigned_run_id
-                        .as_ref()
-                        .filter(|id| !id.is_empty())
-                        .ok_or_else(|| {
-                            ProtocolError::response(
-                                ProtocolKind::InvalidReceipt,
-                                snapshot.status.as_u16(),
-                                &snapshot.headers,
-                            )
-                        })?;
-                    return Ok(self.entry.resource.0.client.run(run_id.clone()));
-                }
-                models::EntryStatus::Failed | models::EntryStatus::Withdrawn => {
-                    return Err(Error::Submission(Box::new(SubmissionError {
-                        thread_id: self.receipt.data.thread.id.clone(),
-                        entry_id: self.receipt.data.entry.id.clone(),
-                        entry: snapshot,
-                    })));
-                }
-                models::EntryStatus::Pending | models::EntryStatus::Assigned => {
-                    tokio::time::sleep(interval).await
-                }
-            }
-        }
+    pub fn observe(
+        self,
+        key: Option<String>,
+        options: ObservationOptions,
+    ) -> Result<Interaction, Error> {
+        Interaction::new(
+            self.thread.client.clone(),
+            InteractionIdentity {
+                thread_id: Some(self.thread.id),
+                entry_id: Some(self.entry.id),
+                run_id: None,
+                idempotency_key: key,
+            },
+            ReceiptEvidence::EntrySubmission(self.receipt),
+            None,
+            options,
+        )
     }
 }
 
-/// One finite invocation. `next` yields only frames of the incorporating Run;
-/// `result` returns its authoritative sealed snapshot, even without iteration.
-/// Dropping the object closes the local SSE connection, never interrupts the Run.
-pub struct Interaction<'a> {
-    pub receipt: Response<models::Submitted>,
-    pub thread: Thread<'a>,
-    submitted: Submitted<'a>,
-    run: Option<Run<'a>>,
-    stream: Option<ThreadStream<'a>>,
-    outcome: Option<RunOutcome<'a>>,
+/// One finite observer: result-only, raw frames and text projection share ONE reader.
+/// Dropping or closing releases local I/O, never interrupts remote execution.
+pub struct Interaction {
+    pub identity: InteractionIdentity,
+    pub evidence: ReceiptEvidence,
+    pub thread: Option<Thread>,
+    pub run: Option<Run>,
+    client: Client,
+    stream: Option<ThreadStream>,
+    outcome: Option<RunOutcome>,
     deadline: Instant,
+    interval: Duration,
     poll_at: Instant,
     closed: bool,
+    preview: crate::preview::Preview,
 }
-impl<'a> Interaction<'a> {
-    pub(crate) fn new(submitted: Submitted<'a>) -> Self {
-        Self {
-            receipt: submitted.receipt.clone(),
-            thread: submitted.thread.clone(),
-            submitted,
-            run: None,
+impl Interaction {
+    pub(crate) fn new(
+        client: Client,
+        identity: InteractionIdentity,
+        evidence: ReceiptEvidence,
+        run: Option<Run>,
+        options: ObservationOptions,
+    ) -> Result<Self, Error> {
+        let options = options.freeze()?;
+        if identity.thread_id.as_deref().is_some_and(str::is_empty)
+            || identity.entry_id.as_deref().is_some_and(str::is_empty)
+            || identity.run_id.as_deref().is_some_and(str::is_empty)
+        {
+            return Err(Error::InvalidInput);
+        }
+        let thread = identity.thread_id.as_ref().map(|id| client.thread(id));
+        Ok(Self {
+            client,
+            identity,
+            evidence,
+            thread,
+            run,
             stream: None,
             outcome: None,
-            deadline: Instant::now() + DEFAULT_WAIT,
-            poll_at: Instant::now() + POLL,
+            deadline: options.deadline.expect("frozen deadline"),
+            interval: options.poll_interval,
+            poll_at: Instant::now() + options.poll_interval,
             closed: false,
-        }
+            preview: Default::default(),
+        })
     }
     fn remaining(&self) -> Result<Duration, Error> {
         self.deadline
@@ -382,53 +375,103 @@ impl<'a> Interaction<'a> {
             .filter(|d| !d.is_zero())
             .ok_or(Error::Timeout)
     }
-    async fn bind(&mut self) -> Result<Run<'a>, Error> {
+    async fn bind(&mut self) -> Result<Run, Error> {
         if let Some(run) = &self.run {
             return Ok(run.clone());
         }
-        let run = tokio::time::timeout(self.remaining()?, self.submitted.incorporating_run(POLL))
-            .await
-            .map_err(|_| Error::Timeout)??;
-        self.run = Some(run.clone());
-        Ok(run)
-    }
-    async fn poll_run(&mut self, run: &Run<'a>) -> Result<bool, Error> {
-        let snapshot = tokio::time::timeout(
+        let thread_id = self.identity.thread_id.clone().ok_or(Error::InvalidInput)?;
+        let entry_id = self.identity.entry_id.clone().ok_or(Error::InvalidInput)?;
+        let client = self.client.clone();
+        let interval = self.interval;
+        let run = tokio::time::timeout(
             self.remaining()?,
-            run.resource.get(RunGetOptions::default()),
+            client.observe(async {
+                loop {
+                    let snapshot = client
+                        .entry(&thread_id, &entry_id)
+                        .resource()
+                        .get(EntryGetOptions::default())
+                        .await?;
+                    if snapshot.data.id != entry_id || snapshot.data.thread_id != thread_id {
+                        return Err(invalid(&snapshot));
+                    }
+                    match snapshot.data.status {
+                        models::EntryStatus::Consumed => {
+                            let id = snapshot
+                                .data
+                                .assigned_run_id
+                                .as_ref()
+                                .filter(|id| !id.is_empty())
+                                .ok_or_else(|| invalid(&snapshot))?;
+                            return Ok(Run {
+                                id: id.clone(),
+                                thread_id: Some(thread_id),
+                                client: client.clone(),
+                            });
+                        }
+                        models::EntryStatus::Failed | models::EntryStatus::Withdrawn => {
+                            return Err(Error::Submission(Box::new(SubmissionError {
+                                thread_id,
+                                entry_id,
+                                entry: snapshot,
+                            })));
+                        }
+                        models::EntryStatus::Pending | models::EntryStatus::Assigned => {
+                            tokio::time::sleep(interval).await
+                        }
+                    }
+                }
+            }),
         )
         .await
         .map_err(|_| Error::Timeout)??;
-        self.submitted.check_run(&snapshot)?;
-        if snapshot.data.id != run.id {
-            return Err(ProtocolError::response(
-                ProtocolKind::InvalidReceipt,
-                snapshot.status.as_u16(),
-                &snapshot.headers,
-            ));
+        self.identity.run_id = Some(run.id.clone());
+        self.run = Some(run.clone());
+        Ok(run)
+    }
+    async fn poll_run(&mut self, run: &Run) -> Result<bool, Error> {
+        let snapshot = tokio::time::timeout(
+            self.remaining()?,
+            run.resource().get(RunGetOptions::default()),
+        )
+        .await
+        .map_err(|_| Error::Timeout)??;
+        run.check(&snapshot)?;
+        if self
+            .identity
+            .thread_id
+            .as_ref()
+            .is_some_and(|id| id != &snapshot.data.thread_id)
+        {
+            return Err(invalid(&snapshot));
         }
-        self.poll_at = Instant::now() + POLL;
+        if self.thread.is_none() {
+            self.identity.thread_id = Some(snapshot.data.thread_id.clone());
+            self.thread = Some(self.client.thread(&snapshot.data.thread_id));
+            if let Some(bound) = &mut self.run {
+                bound.thread_id = Some(snapshot.data.thread_id.clone());
+            }
+        }
+        self.poll_at = Instant::now() + self.interval;
         if sealed(&snapshot.data.status) {
-            self.outcome = Some(RunOutcome {
-                run: run.clone(),
-                snapshot,
-            });
+            self.outcome = Some(RunOutcome::new(run.clone(), snapshot));
             self.close();
             return Ok(true);
         }
         Ok(false)
     }
-    /// Return the next frame from this interaction's exact Run. Gap/reset are
-    /// readback hints; absence of a frame is not evidence that output is durable.
-    pub async fn next(&mut self) -> Result<Option<ThreadFrame>, Error> {
+    async fn next_frame(&mut self) -> Result<Option<ThreadFrame>, Error> {
         if self.closed || self.outcome.is_some() {
             return Ok(None);
         }
         let run = self.bind().await?;
+        if self.thread.is_none() && self.poll_run(&run).await? {
+            return Ok(None);
+        }
         if self.stream.is_none() {
-            let thread = self.thread.clone();
+            let thread = self.thread.clone().ok_or(Error::InvalidInput)?;
             let mut connect = Box::pin(ThreadStream::open(
-                thread.resource.clone(),
+                thread.resource(),
                 StreamOptions::default(),
             ));
             loop {
@@ -436,13 +479,8 @@ impl<'a> Interaction<'a> {
                     return Ok(None);
                 }
                 let ready = tokio::time::timeout(self.remaining()?, async {
-                    tokio::select! {
-                        connected = &mut connect => Some(connected),
-                        _ = tokio::time::sleep_until(self.poll_at) => None,
-                    }
-                })
-                .await
-                .map_err(|_| Error::Timeout)?;
+                    tokio::select! { connected = &mut connect => Some(connected), _ = tokio::time::sleep_until(self.poll_at) => None }
+                }).await.map_err(|_| Error::Timeout)?;
                 if let Some(connected) = ready {
                     self.stream = Some(connected?);
                     break;
@@ -478,15 +516,44 @@ impl<'a> Interaction<'a> {
                 }
                 Some(None) => {
                     self.stream = None;
-                    let _ = self.result().await?;
+                    self.result().await?;
                     return Ok(None);
                 }
                 None => {}
             }
         }
     }
-    /// Read the authoritative exact Run. Does not connect SSE if no frames were requested.
-    pub async fn result(&mut self) -> Result<RunOutcome<'a>, Error> {
+    /// Raw protocol escape hatch. Sequential use after preview interruption is supported.
+    pub async fn next(&mut self) -> Result<Option<ThreadFrame>, Error> {
+        let frame = self.next_frame().await?;
+        if let Some(frame) = &frame {
+            let _ = self.preview.project(frame);
+        }
+        Ok(frame)
+    }
+    /// Lazy root-assistant string chunks, never final output or a lossless transcript.
+    /// Interruption is sticky but does not close result observation or raw iteration.
+    pub async fn next_text(&mut self) -> Result<Option<String>, Error> {
+        self.preview.check()?;
+        loop {
+            let frame = match self.next_frame().await {
+                Err(Error::Protocol(_)) => {
+                    return Err(self
+                        .preview
+                        .interrupt(crate::PreviewInterruptedKind::InvalidProtocol));
+                }
+                other => other?,
+            };
+            let Some(frame) = frame else {
+                return Ok(None);
+            };
+            if let Some(text) = self.preview.project(&frame)? {
+                return Ok(Some(text));
+            }
+        }
+    }
+    /// Authoritative result. Does not connect SSE when only a result is requested.
+    pub async fn result(&mut self) -> Result<RunOutcome, Error> {
         if let Some(outcome) = &self.outcome {
             return Ok(outcome.clone());
         }
@@ -495,26 +562,33 @@ impl<'a> Interaction<'a> {
         }
         self.stream = None;
         let run = self.bind().await?;
-        let outcome = tokio::time::timeout(self.remaining()?, run.wait_inner(POLL))
+        loop {
+            if self.poll_run(&run).await? {
+                return Ok(self.outcome.as_ref().expect("sealed outcome").clone());
+            }
+            let client = self.client.clone();
+            tokio::time::timeout(
+                self.remaining()?,
+                client.observe(async {
+                    tokio::time::sleep_until(self.poll_at).await;
+                    Ok(())
+                }),
+            )
             .await
             .map_err(|_| Error::Timeout)??;
-        self.submitted.check_run(&outcome.snapshot)?;
-        if outcome.snapshot.data.id != run.id {
-            return Err(ProtocolError::response(
-                ProtocolKind::InvalidReceipt,
-                outcome.snapshot.status.as_u16(),
-                &outcome.snapshot.headers,
-            ));
         }
-        self.outcome = Some(outcome.clone());
-        self.close();
-        Ok(outcome)
     }
-    /// Stop local iteration. The remote Run continues until explicitly interrupted.
     pub fn close(&mut self) {
         self.closed = true;
         self.stream = None;
     }
+}
+fn invalid<T>(response: &Response<T>) -> Error {
+    ProtocolError::response(
+        ProtocolKind::InvalidReceipt,
+        response.status.as_u16(),
+        &response.headers,
+    )
 }
 fn sealed(status: &models::RunStatus) -> bool {
     matches!(
@@ -525,7 +599,7 @@ fn sealed(status: &models::RunStatus) -> bool {
             | models::RunStatus::Cancelled
     )
 }
-/// Convenience over the full generated MessagePayload union.
+/// Advanced convenience returning the canonical wire payload.
 pub fn text_payload(text: impl Into<String>) -> models::MessagePayload {
     models::MessagePayload::new(vec![models::Part::Text(Box::new(models::TextPart::new(
         text.into(),

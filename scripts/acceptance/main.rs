@@ -1,6 +1,7 @@
 //! Independent executable consuming only the extracted a13n .crate archive.
 mod display;
 mod sse;
+mod workflow;
 use a13n::{
     Client, Error, ProtocolKind, Secret, TransportKind, TransportStage, UploadFile,
     generated::models as m, resources::*, text_payload,
@@ -34,28 +35,37 @@ fn key() -> String {
             .as_nanos()
     )
 }
-fn bound<'a>(client: &'a Client, raw: a13n::Response<m::Submitted>) -> Result<a13n::Submitted<'a>> {
+fn bound(client: &Client, raw: a13n::Response<m::Submitted>) -> Result<a13n::Submitted> {
     Ok(a13n::Submitted::bind(client, raw)?)
 }
-fn accepted<'a>(submitted: &'a a13n::Submitted<'_>) -> Result<&'a a13n::Run<'a>> {
+fn accepted(submitted: &a13n::Submitted) -> Result<&a13n::Run> {
     submitted
         .run
         .as_ref()
         .ok_or_else(|| "Accepted submission has no Run".into())
 }
-async fn wait(run: &a13n::Run<'_>, expected: m::RunStatus) -> Result<()> {
+async fn wait(run: &a13n::Run, expected: m::RunStatus) -> Result<()> {
     let result = tokio::time::timeout(
         Duration::from_secs(80),
-        run.wait_with(Duration::from_secs(80), Duration::from_millis(100)),
+        run.result(a13n::ObservationOptions {
+            timeout: Duration::from_secs(80),
+            poll_interval: Duration::from_millis(100),
+            ..Default::default()
+        }),
     )
     .await??;
     ensure(
-        result.snapshot.data.status == expected,
-        &format!("Unexpected Run status: {:?}", result.snapshot.data.status),
+        result.http_response.data.status == expected,
+        &format!(
+            "Unexpected Run status: {:?}",
+            result.http_response.data.status
+        ),
     )?;
     let items = run.items().get(Default::default()).await?;
     ensure(
-        items.data.run.id == result.snapshot.data.id && items.data.complete && items.data.baseline,
+        items.data.run.id == result.http_response.data.id
+            && items.data.complete
+            && items.data.baseline,
         "Run Items mismatch",
     )
 }
@@ -116,7 +126,7 @@ async fn offline() -> Result<()> {
                 assert!(input.starts_with("GET /api/v1/workspaces/fail"));
                 (
                     "428 Precondition Required",
-                    r#"{"error":{"code":"precondition_required","message":"missing If-Match","details":{"header":"If-Match"}}}"#,
+                    r#"{"error":{"code":"precondition_required","message":"missing If-Match","details":{"header":"If-Match"},"request_id":null}}"#,
                     "",
                 )
             };
@@ -280,6 +290,28 @@ async fn offline() -> Result<()> {
     server.await?;
     sse::offline().await?;
     display::offline().await?;
+    let mut receipt = m::Submitted::default();
+    receipt.thread.id = "t".into();
+    receipt.thread.workspace_id = "w".into();
+    receipt.entry.id = "e".into();
+    receipt.entry.thread_id = "t".into();
+    receipt.run = None;
+    let mut entry = m::EntryView::default();
+    entry.id = "e".into();
+    entry.thread_id = "t".into();
+    entry.status = m::EntryStatus::Consumed;
+    entry.assigned_run_id = Some("r".into());
+    let mut run = m::RunView::default();
+    run.id = "r".into();
+    run.thread_id = "t".into();
+    run.status = m::RunStatus::Completed;
+    run.output = Some(Box::new(serde_json::json!({"nested":[null,false,0,""]})));
+    workflow::offline(
+        serde_json::to_value(receipt)?,
+        serde_json::to_value(entry)?,
+        serde_json::to_value(run)?,
+    )
+    .await?;
     println!(
         "Installed crate local TCP: typed resource/enums/diagnostics, configuration/media presence, five OAuth/discovery operations, redaction, metadata, pagination, 428, nullable and close passed"
     );
@@ -312,17 +344,19 @@ async fn native_configuration(client: &Client, agent_id: &str) -> Result<()> {
     let agent = client.agent(agent_id);
     let mut first = agent
         .start_with(
-            text_payload("[interruptible] Rust frozen configuration acceptance."),
-            key(),
+            "[interruptible] Rust frozen configuration acceptance.",
             a13n::StartOptions {
-                options: Some(Box::new(configuration_options("first"))),
+                idempotency_key: Some(key()),
+                run_options: Some(a13n::RunOptions::from_wire(configuration_options("first"))),
                 ..Default::default()
             },
         )
         .await?;
-    let thread = first.thread.id.clone();
+    let thread = first.identity.thread_id.clone().unwrap();
     let run_id = first
-        .receipt
+        .evidence
+        .submission()
+        .unwrap()
         .data
         .run
         .as_ref()
@@ -368,11 +402,11 @@ async fn native_configuration(client: &Client, agent_id: &str) -> Result<()> {
         let mut steer = agent
             .send_with(
                 &thread,
-                text_payload("Steering keeps the accepted snapshot."),
-                key(),
+                "Steering keeps the accepted snapshot.",
                 a13n::SendOptions {
+                    idempotency_key: Some(key()),
                     delivery: Some(m::Delivery::Steer),
-                    options: Some(Box::new(options)),
+                    run_options: Some(a13n::RunOptions::from_wire(options)),
                     ..Default::default()
                 },
             )
@@ -394,11 +428,13 @@ async fn native_configuration(client: &Client, agent_id: &str) -> Result<()> {
     let conflict = agent
         .send_with(
             &thread,
-            text_payload("Must not replace active configuration."),
-            key(),
+            "Must not replace active configuration.",
             a13n::SendOptions {
+                idempotency_key: Some(key()),
                 delivery: Some(m::Delivery::Steer),
-                options: Some(Box::new(configuration_options("different"))),
+                run_options: Some(a13n::RunOptions::from_wire(configuration_options(
+                    "different",
+                ))),
                 ..Default::default()
             },
         )
@@ -410,27 +446,27 @@ async fn native_configuration(client: &Client, agent_id: &str) -> Result<()> {
     let mut next = agent
         .send_with(
             &thread,
-            text_payload("Explicit next Run configuration."),
-            key(),
+            "Explicit next Run configuration.",
             a13n::SendOptions {
+                idempotency_key: Some(key()),
                 delivery: Some(m::Delivery::NextRun),
-                options: Some(Box::new(configuration_options("next"))),
+                run_options: Some(a13n::RunOptions::from_wire(configuration_options("next"))),
                 ..Default::default()
             },
         )
         .await?;
     let first_outcome = first.result().await?;
     ensure(
-        *first_outcome.status() == m::RunStatus::Completed,
+        first_outcome.status == m::RunStatus::Completed,
         "Configured first Run status",
     )?;
-    check_configuration(&first_outcome.snapshot.data, "first")?;
+    check_configuration(&first_outcome.http_response.data, "first")?;
     let next_outcome = next.result().await?;
     ensure(
-        next_outcome.run.id != run_id && *next_outcome.status() == m::RunStatus::Completed,
+        next_outcome.run.id != run_id && next_outcome.status == m::RunStatus::Completed,
         "Next Run identity/status",
     )?;
-    check_configuration(&next_outcome.snapshot.data, "next")?;
+    check_configuration(&next_outcome.http_response.data, "next")?;
     println!(
         "Verified HTTPS: native StartOptions/SendOptions configuration, omitted/null/matching steering, immutable conflict and explicit next_run readback"
     );
@@ -569,30 +605,49 @@ async fn live() -> Result<()> {
         .agent(&agent)
         .start_with(
             "Summarize the prior conversation.",
-            key(),
             a13n::StartOptions {
+                idempotency_key: Some(key()),
                 message_history: Some(imported_history.clone()),
                 ..Default::default()
             },
         )
         .await?;
     ensure(
-        high.receipt.data.thread.message_history == imported_history,
+        high.evidence
+            .submission()
+            .unwrap()
+            .data
+            .thread
+            .message_history
+            == imported_history,
         "High-level imported history receipt",
     )?;
     ensure(
-        *high.result().await?.status() == m::RunStatus::Completed,
+        high.result().await?.status == m::RunStatus::Completed,
         "High-level imported history Run",
     )?;
     let mut followup = client
         .agent(&agent)
-        .send(&high.thread.id, "Follow up without reimport.", key())
+        .send_with(
+            high.identity.thread_id.as_deref().unwrap(),
+            "Follow up without reimport.",
+            a13n::SendOptions {
+                idempotency_key: Some(key()),
+                ..Default::default()
+            },
+        )
         .await?;
     ensure(
-        *followup.result().await?.status() == m::RunStatus::Completed,
+        followup.result().await?.status == m::RunStatus::Completed,
         "High-level follow-up Run",
     )?;
-    let after_followup = high.thread.resource().get(Default::default()).await?;
+    let after_followup = high
+        .thread
+        .as_ref()
+        .unwrap()
+        .resource()
+        .get(Default::default())
+        .await?;
     ensure(
         after_followup.data.message_history == imported_history,
         "Follow-up must not reseed imported history",
@@ -605,7 +660,13 @@ async fn live() -> Result<()> {
     // including natural stream termination and authoritative exact-Run readback.
     let mut execution = client
         .agent(&agent)
-        .start("[slow] [long] Rust finite Interaction acceptance.", key())
+        .start_with(
+            "[slow] [long] Rust finite Interaction acceptance.",
+            a13n::StartOptions {
+                idempotency_key: Some(key()),
+                ..Default::default()
+            },
+        )
         .await?;
     let mut frames = 0;
     while tokio::time::timeout(Duration::from_secs(100), execution.next())
@@ -620,7 +681,7 @@ async fn live() -> Result<()> {
     }
     let outcome = execution.result().await?;
     ensure(
-        *outcome.status() == m::RunStatus::Completed,
+        outcome.status == m::RunStatus::Completed,
         "Finite Interaction Run status",
     )?;
     let items = outcome.run.items().get(Default::default()).await?;
@@ -633,14 +694,28 @@ async fn live() -> Result<()> {
 
     if let Ok(prompt) = env::var("A13N_FAILURE_PROMPT") {
         ensure(!prompt.is_empty(), "A13N_FAILURE_PROMPT must not be empty")?;
-        let mut failed = client.agent(&agent).start(prompt, key()).await?;
+        let mut failed = client
+            .agent(&agent)
+            .start_with(
+                prompt,
+                a13n::StartOptions {
+                    idempotency_key: Some(key()),
+                    ..Default::default()
+                },
+            )
+            .await?;
         let failed_result = failed.result().await?;
         ensure(
-            *failed_result.status() == m::RunStatus::Failed,
+            failed_result.status == m::RunStatus::Failed,
             "Failure fixture outcome",
         )?;
-        display::history_followup(&client, &agent, &failed.thread.id, &failed_result.run.id)
-            .await?;
+        display::history_followup(
+            &client,
+            &agent,
+            failed.identity.thread_id.as_deref().unwrap(),
+            &failed_result.run.id,
+        )
+        .await?;
         println!(
             "Verified HTTPS: failed last sealed history continues through normal explicit message"
         );
@@ -667,20 +742,30 @@ async fn live() -> Result<()> {
     )?;
     let mut queued = client
         .agent(&agent)
-        .send(&source.thread.id, "Queued.", key())
+        .send_with(
+            &source.thread.id,
+            "Queued.",
+            a13n::SendOptions {
+                idempotency_key: Some(key()),
+                ..Default::default()
+            },
+        )
         .await?;
     ensure(
-        queued.receipt.data.run.is_none(),
+        queued.evidence.submission().unwrap().data.run.is_none(),
         "Queued entry should have no Run",
     )?;
     wait(accepted(&source)?, m::RunStatus::Completed).await?;
     let queued_result = tokio::time::timeout(Duration::from_secs(100), queued.result()).await??;
     ensure(
-        *queued_result.status() == m::RunStatus::Completed,
+        queued_result.status == m::RunStatus::Completed,
         "Queued interaction did not observe its exact incorporating Run",
     )?;
     let consumed = client
-        .entry(&queued.thread.id, &queued.receipt.data.entry.id)
+        .entry(
+            queued.identity.thread_id.as_deref().unwrap(),
+            queued.identity.entry_id.as_deref().unwrap(),
+        )
         .resource()
         .get(Default::default())
         .await?;
@@ -739,44 +824,47 @@ async fn live() -> Result<()> {
         .agent(required("A13N_CLIENT_TOOL_AGENT")?)
         .start_with(
             "[client] Review local SDK scenario.",
-            key(),
             a13n::StartOptions {
-                options: Some(Box::new(configuration_options("resume"))),
+                idempotency_key: Some(key()),
+                run_options: Some(a13n::RunOptions::from_wire(configuration_options("resume"))),
                 ..Default::default()
             },
         )
         .await?;
     let waiting_outcome = waiting.result().await?;
     ensure(
-        *waiting_outcome.status() == m::RunStatus::Waiting,
+        waiting_outcome.status == m::RunStatus::Waiting,
         "Waiting client-tool outcome",
     )?;
-    let pending = waiting_outcome
-        .pending()
-        .ok_or("Waiting Run has no pending client action")?;
     ensure(
-        pending.approvals.is_empty() && pending.calls.len() == 1,
+        waiting_outcome.pending_approvals.is_empty() && waiting_outcome.pending_calls.len() == 1,
         "Pending client-tool call count",
     )?;
-    let mut request = m::Resume::new(Default::default(), Default::default());
-    request.calls.insert(
-        pending.calls[0].tool_call_id.clone(),
-        m::CallResult::Returned(Box::new(m::Returned::new(
-            m::returned::Status::Returned,
-            Some(serde_json::json!({"decision": "approved"})),
-        ))),
-    );
-    request.input = Some(Some(Box::new(text_payload(
-        "Additional context on the reviewed task.",
-    ))));
-    check_configuration(&waiting_outcome.snapshot.data, "resume")?;
-    let resumed = waiting_outcome.run.resume(&request, key()).await?;
-    check_configuration(&resumed.receipt.data, "resume")?;
+    let answers = std::collections::HashMap::from([(
+        waiting_outcome.pending_calls[0].tool_call_id.clone(),
+        a13n::Answer::returned(serde_json::json!({"decision": "approved"})),
+    )]);
+    check_configuration(&waiting_outcome.http_response.data, "resume")?;
+    let mut resumed = waiting_outcome
+        .run
+        .resume_with(
+            answers,
+            a13n::ResumeOptions {
+                idempotency_key: Some(key()),
+                input: Some(Some("Additional context on the reviewed task.".into())),
+                ..Default::default()
+            },
+        )
+        .await?;
+    check_configuration(&resumed.evidence.resume().unwrap().data, "resume")?;
     ensure(
-        resumed.receipt.data.id != waiting_outcome.run.id,
+        resumed.identity.run_id.as_deref() != Some(waiting_outcome.run.id.as_str()),
         "Resume should create successor Run",
     )?;
-    wait(&resumed.run, m::RunStatus::Completed).await?;
+    ensure(
+        resumed.result().await?.status == m::RunStatus::Completed,
+        "Resume outcome",
+    )?;
     println!(
         "Verified HTTPS: queued entry, interrupt, fork, client-tool resume and exact Run waits"
     );

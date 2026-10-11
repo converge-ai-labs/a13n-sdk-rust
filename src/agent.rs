@@ -1,173 +1,296 @@
-//! Agent-first conversations built on the complete generated resource API.
+//! Agent-first workflows reuse the complete generated resource API and one transport.
 use crate::{
-    Client, Error, Interaction, Submitted,
+    Answer, Client, Error, Input, Interaction, InteractionIdentity, ObservationOptions,
+    ReceiptEvidence, Run, RunOptions, Submitted,
     generated::models,
-    resources::{InboxCreateOptions, ThreadsCreateOptions},
+    resources::{InboxCreateOptions, RunForkOptions, RunResumeOptions, ThreadsCreateOptions},
+    workflow::{answers_wire, request_key},
 };
+use std::collections::HashMap;
 
-/// Message input. A string becomes a single text part; full structured payloads
-/// (including ordered media URL/file references and JSON values) pass through unchanged.
-/// Acquisition, media preparation and Run hostname policy remain Service/Harness-owned.
-pub struct Input(pub models::MessagePayload);
-impl From<models::MessagePayload> for Input {
-    fn from(value: models::MessagePayload) -> Self {
-        Self(value)
-    }
-}
-impl From<&str> for Input {
-    fn from(value: &str) -> Self {
-        Self(crate::text_payload(value))
-    }
-}
-impl From<String> for Input {
-    fn from(value: String) -> Self {
-        Self(crate::text_payload(value))
-    }
-}
-
-/// Optional new-Thread fields. `None` omits a nullable field; `Some(None)` sends null.
+/// Optional request selectors and one grouped RunOptions value.
+/// Nullable fields use `None` for omission and `Some(None)` for explicit null.
 #[derive(Default)]
 pub struct StartOptions {
+    pub idempotency_key: Option<String>,
+    pub observation: ObservationOptions,
     pub agent_revision_id: Option<Option<String>>,
     pub delivery: Option<models::Delivery>,
     pub environments: Option<Vec<models::MountCreate>>,
     pub mcp_headers: Option<serde_json::Value>,
     pub memories: Option<Vec<models::MemoryMount>>,
-    /// Completed native Pydantic AI ModelMessage JSON objects for an initial import.
-    /// The Service validates this history; it is not repeated by `send` or `resume`.
-    pub message_history: Option<Vec<std::collections::HashMap<String, serde_json::Value>>>,
-    /// Complete Run options, including `configuration` independently of Agent overrides.
-    /// Configuration omission/null selects Service defaults or retains steering's frozen value;
-    /// an explicit object selects that entire snapshot without SDK merging or normalization.
-    pub options: Option<Box<models::RunOptionsInput>>,
+    pub message_history: Option<Vec<HashMap<String, serde_json::Value>>>,
+    pub run_options: Option<RunOptions>,
     pub session_id: Option<Option<String>>,
 }
-/// Optional continuation message fields.
 #[derive(Default)]
 pub struct SendOptions {
+    pub idempotency_key: Option<String>,
+    pub observation: ObservationOptions,
     pub agent_revision_id: Option<Option<String>>,
     pub delivery: Option<models::Delivery>,
-    /// Complete Run options, including `configuration` independently of Agent overrides.
-    /// Configuration omission/null selects Service defaults or retains steering's frozen value;
-    /// an explicit object selects that entire snapshot without SDK merging or normalization.
-    pub options: Option<Box<models::RunOptionsInput>>,
+    pub run_options: Option<RunOptions>,
 }
-
-/// A local Agent ID binding, never a Service-side thread-owner assignment.
+#[derive(Default)]
+pub struct ResumeOptions {
+    pub idempotency_key: Option<String>,
+    pub observation: ObservationOptions,
+    pub input: Option<Option<Input>>,
+}
+#[derive(Default)]
+pub struct ForkOptions {
+    pub idempotency_key: Option<String>,
+    pub observation: ObservationOptions,
+    pub agent_revision_id: Option<Option<String>>,
+    pub delivery: Option<models::Delivery>,
+    pub environments: Option<Vec<models::MountCreate>>,
+    pub fresh_environments: Option<bool>,
+    pub memories: Option<Vec<models::MemoryMount>>,
+    pub run_options: Option<RunOptions>,
+}
+/// Owned Agent ID selection, never a permanent Thread owner assignment.
 #[derive(Clone)]
-pub struct Agent<'a> {
-    client: &'a Client,
+pub struct Agent {
+    client: Client,
     id: String,
 }
 impl Client {
-    /// Bind an Agent ID locally. The ordinary API-key path needs no workspace ID.
-    pub fn agent(&self, id: impl Into<String>) -> Agent<'_> {
+    pub fn agent(&self, id: impl Into<String>) -> Agent {
         Agent {
-            client: self,
+            client: self.clone(),
             id: id.into(),
         }
     }
 }
-impl<'a> Agent<'a> {
+impl Agent {
     pub fn id(&self) -> &str {
         &self.id
     }
-
-    /// Create a Thread and submit its initial message. Acceptance is not completion.
-    /// The caller supplies a stable request key for explicit readback after uncertainty.
-    pub async fn start(
-        &self,
-        input: impl Into<Input>,
-        idempotency_key: impl Into<String>,
-    ) -> Result<Interaction<'a>, Error> {
-        self.start_with(input, idempotency_key, StartOptions::default())
-            .await
+    pub async fn start(&self, input: impl Into<Input>) -> Result<Interaction, Error> {
+        self.start_with(input, StartOptions::default()).await
     }
-    /// Start with all typed new-Thread fields; no Service scheduling is inferred locally.
+    /// One key is chosen before dispatch; no mutation is automatically retried.
+    /// Persist your own key/body before sending when cancellation-safe recovery matters.
     pub async fn start_with(
         &self,
         input: impl Into<Input>,
-        idempotency_key: impl Into<String>,
         options: StartOptions,
-    ) -> Result<Interaction<'a>, Error> {
+    ) -> Result<Interaction, Error> {
         if self.id.is_empty() {
             return Err(Error::InvalidInput);
         }
-        let mut body = models::NewThread::new(self.id.clone(), input.into().0);
+        let key = request_key(options.idempotency_key)?;
+        let request_deadline = options.observation.deadline;
+        let observation = options.observation.freeze()?;
+        let mut body = models::NewThread::new(self.id.clone(), input.into().into_wire());
         body.agent_revision_id = options.agent_revision_id;
         body.delivery = options.delivery;
         body.environments = options.environments;
         body.mcp_headers = options.mcp_headers;
         body.memories = options.memories;
         body.message_history = options.message_history;
-        body.options = options.options;
+        body.options = options.run_options.map(|v| Box::new(v.into_wire()));
         body.session_id = options.session_id;
-        let submitted = self
-            .client
-            .resources()
-            .threads()
-            .create(
-                &body,
-                ThreadsCreateOptions {
-                    idempotency_key: idempotency_key.into(),
-                    ..Default::default()
+        self.client
+            .mutation(
+                "start",
+                key.clone(),
+                None,
+                None,
+                request_deadline,
+                async |transport| {
+                    let receipt = transport
+                        .resources()
+                        .threads()
+                        .create(
+                            &body,
+                            ThreadsCreateOptions {
+                                idempotency_key: key.clone(),
+                                ..Default::default()
+                            },
+                        )
+                        .await?;
+                    Submitted::bind(&self.client, receipt)?.observe(Some(key), observation)
                 },
             )
-            .await?;
-        Ok(Interaction::new(Submitted::bind(self.client, submitted)?))
-    }
-
-    /// Continue an existing Thread with THIS Agent. Threads have no permanent Agent.
-    pub async fn send(
-        &self,
-        thread_id: impl Into<String>,
-        input: impl Into<Input>,
-        idempotency_key: impl Into<String>,
-    ) -> Result<Interaction<'a>, Error> {
-        self.send_with(thread_id, input, idempotency_key, SendOptions::default())
             .await
     }
-    /// Continue with the complete message selection and delivery options.
+    pub async fn send(
+        &self,
+        thread: impl Into<String>,
+        input: impl Into<Input>,
+    ) -> Result<Interaction, Error> {
+        self.send_with(thread, input, SendOptions::default()).await
+    }
     pub async fn send_with(
         &self,
-        thread_id: impl Into<String>,
+        thread: impl Into<String>,
         input: impl Into<Input>,
-        idempotency_key: impl Into<String>,
         options: SendOptions,
-    ) -> Result<Interaction<'a>, Error> {
+    ) -> Result<Interaction, Error> {
+        let thread = thread.into();
+        if self.id.is_empty() || thread.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let key = request_key(options.idempotency_key)?;
+        let request_deadline = options.observation.deadline;
+        let observation = options.observation.freeze()?;
+        let mut body = models::Message::new(self.id.clone(), input.into().into_wire());
+        body.agent_revision_id = options.agent_revision_id;
+        body.delivery = options.delivery;
+        body.options = options.run_options.map(|v| Box::new(v.into_wire()));
+        self.client
+            .mutation(
+                "send",
+                key.clone(),
+                Some(thread.clone()),
+                None,
+                request_deadline,
+                async |transport| {
+                    let receipt = transport
+                        .resources()
+                        .threads()
+                        .at(&thread)
+                        .inbox()
+                        .create(
+                            &body,
+                            InboxCreateOptions {
+                                idempotency_key: key.clone(),
+                                ..Default::default()
+                            },
+                        )
+                        .await?;
+                    let submitted = Submitted::bind(&self.client, receipt)?;
+                    if submitted.thread.id != thread {
+                        return Err(invalid(&submitted.receipt));
+                    }
+                    submitted.observe(Some(key), observation)
+                },
+            )
+            .await
+    }
+}
+impl Run {
+    pub async fn resume(&self, answers: HashMap<String, Answer>) -> Result<Interaction, Error> {
+        self.resume_with(answers, ResumeOptions::default()).await
+    }
+    /// One complete atomic answer batch returns the distinct authoritative successor.
+    /// No Entry is fabricated and no client tool executes automatically.
+    pub async fn resume_with(
+        &self,
+        answers: HashMap<String, Answer>,
+        options: ResumeOptions,
+    ) -> Result<Interaction, Error> {
         if self.id.is_empty() {
             return Err(Error::InvalidInput);
         }
-        let thread_id = thread_id.into();
-        if thread_id.is_empty() {
-            return Err(Error::InvalidInput);
-        }
-        let mut body = models::Message::new(self.id.clone(), input.into().0);
-        body.agent_revision_id = options.agent_revision_id;
-        body.delivery = options.delivery;
-        body.options = options.options;
-        let submitted = self
-            .client
-            .resources()
-            .threads()
-            .at(thread_id.clone())
-            .inbox()
-            .create(
-                &body,
-                InboxCreateOptions {
-                    idempotency_key: idempotency_key.into(),
-                    ..Default::default()
+        let key = request_key(options.idempotency_key)?;
+        let request_deadline = options.observation.deadline;
+        let observation = options.observation.freeze()?;
+        let mut body = answers_wire(answers);
+        body.input = options.input.map(|v| v.map(|v| Box::new(v.into_wire())));
+        self.client
+            .mutation(
+                "resume",
+                key.clone(),
+                self.thread_id.clone(),
+                Some(self.id.clone()),
+                request_deadline,
+                async |transport| {
+                    let receipt = transport
+                        .resources()
+                        .runs()
+                        .at(&self.id)
+                        .resume(
+                            &body,
+                            RunResumeOptions {
+                                idempotency_key: key.clone(),
+                                ..Default::default()
+                            },
+                        )
+                        .await?;
+                    if receipt.data.id.is_empty()
+                        || receipt.data.id == self.id
+                        || receipt.data.thread_id.is_empty()
+                        || self
+                            .thread_id
+                            .as_ref()
+                            .is_some_and(|id| id != &receipt.data.thread_id)
+                    {
+                        return Err(invalid(&receipt));
+                    }
+                    let run = Run {
+                        id: receipt.data.id.clone(),
+                        thread_id: Some(receipt.data.thread_id.clone()),
+                        client: self.client.clone(),
+                    };
+                    Interaction::new(
+                        self.client.clone(),
+                        InteractionIdentity {
+                            thread_id: run.thread_id.clone(),
+                            entry_id: None,
+                            run_id: Some(run.id.clone()),
+                            idempotency_key: Some(key),
+                        },
+                        ReceiptEvidence::ResumeRunReceipt(Box::new(receipt)),
+                        Some(run),
+                        observation,
+                    )
                 },
             )
-            .await?;
-        let submitted = Submitted::bind(self.client, submitted)?;
-        if submitted.thread.id != thread_id {
-            return Err(crate::ProtocolError::response(
-                crate::ProtocolKind::InvalidReceipt,
-                submitted.receipt.status.as_u16(),
-                &submitted.receipt.headers,
-            ));
-        }
-        Ok(Interaction::new(submitted))
+            .await
     }
+    /// Fork uses the existing wire operation: a new Thread/Entry with normal incorporation.
+    pub async fn fork(
+        &self,
+        agent_id: impl Into<String>,
+        input: impl Into<Input>,
+        options: ForkOptions,
+    ) -> Result<Interaction, Error> {
+        let agent = agent_id.into();
+        if self.id.is_empty() || agent.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let key = request_key(options.idempotency_key)?;
+        let request_deadline = options.observation.deadline;
+        let observation = options.observation.freeze()?;
+        let mut body = models::Fork::new(agent, input.into().into_wire());
+        body.agent_revision_id = options.agent_revision_id;
+        body.delivery = options.delivery;
+        body.environments = options.environments;
+        body.fresh_environments = options.fresh_environments;
+        body.memories = options.memories;
+        body.options = options.run_options.map(|v| Box::new(v.into_wire()));
+        self.client
+            .mutation(
+                "fork",
+                key.clone(),
+                self.thread_id.clone(),
+                Some(self.id.clone()),
+                request_deadline,
+                async |transport| {
+                    let receipt = transport
+                        .resources()
+                        .runs()
+                        .at(&self.id)
+                        .fork(
+                            &body,
+                            RunForkOptions {
+                                idempotency_key: key.clone(),
+                                ..Default::default()
+                            },
+                        )
+                        .await?;
+                    Submitted::bind(&self.client, receipt)?.observe(Some(key), observation)
+                },
+            )
+            .await
+    }
+}
+fn invalid<T>(response: &crate::Response<T>) -> Error {
+    crate::ProtocolError::response(
+        crate::ProtocolKind::InvalidReceipt,
+        response.status.as_u16(),
+        &response.headers,
+    )
 }
