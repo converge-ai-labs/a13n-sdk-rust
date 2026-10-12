@@ -191,6 +191,53 @@ fn uncommon_supported_options_are_constructible_without_generated_imports() {
 }
 
 #[tokio::test]
+async fn native_api_and_authored_workflow_share_client_auth_and_shutdown() {
+    let mut fixture = server(|request| {
+        if request.method == "POST" {
+            Reply::json(201, receipt())
+        } else if request.target.ends_with("/inbox/e") {
+            Reply::json(200, entry("consumed", Some("r")))
+        } else {
+            assert!(request.target.ends_with("/runs/r"));
+            Reply::json(200, run("r", "completed", json!("same client")))
+        }
+    })
+    .await;
+    let sdk = client(&fixture);
+    let api_run = sdk.api().runs().at("r");
+    let native = api_run.get(Default::default()).await.unwrap();
+    let clone = sdk.clone();
+    let agent = clone.agent("a");
+    drop(clone);
+    let mut authored = agent.start("same client").await.unwrap();
+    let outcome = authored.result().await.unwrap();
+    assert_eq!(native.data.id, outcome.run_id);
+    assert_eq!(native.data.output.as_deref(), Some(&outcome.output));
+    let mut auth = None;
+    for _ in 0..4 {
+        let request = fixture.requests.recv().await.unwrap();
+        let header = request
+            .headers
+            .lines()
+            .find(|line| line.starts_with("authorization: "))
+            .unwrap();
+        if let Some(previous) = &auth {
+            assert_eq!(header, previous);
+        } else {
+            auth = Some(header.to_owned());
+        }
+    }
+    assert!(fixture.requests.try_recv().is_err());
+    sdk.clone().close();
+    assert!(matches!(
+        api_run.get(Default::default()).await,
+        Err(Error::Closed)
+    ));
+    assert!(matches!(agent.start("closed").await, Err(Error::Closed)));
+    assert!(fixture.requests.try_recv().is_err());
+}
+
+#[tokio::test]
 async fn direct_output_preserves_all_json_values_and_never_reads_items() {
     for output in [
         json!(""),

@@ -13,7 +13,7 @@ use std::{
 async fn explicit_bindings_cas_headers_and_nullable_bodies() {
     let mut server = server(|_| Reply::json(200, sample("Agent"))).await;
     let client = client(&server);
-    let resource = client.resources().agents().at("agent /+中");
+    let resource = client.api().agents().at("agent /+中");
     assert!(server.requests.try_recv().is_err());
     let body = models::AgentUpdate {
         name: Some(None),
@@ -47,7 +47,7 @@ async fn explicit_bindings_cas_headers_and_nullable_bodies() {
     assert_eq!(request.json(), json!({"name":null,"labels":{"team":"dev"}}));
     for bad in ["", ".", ".."] {
         assert!(matches!(
-            client.resources().workspaces().at(bad).get().await,
+            client.api().workspaces().at(bad).get().await,
             Err(Error::InvalidInput)
         ));
     }
@@ -67,7 +67,7 @@ async fn paging_is_lazy_owned_repeated_query_and_loop_checked() {
         limit: Some(2),
         ..Default::default()
     };
-    let mut pages = client.resources().agents().pages(original.clone());
+    let mut pages = client.api().agents().pages(original.clone());
     original.q = Some("changed".into());
     assert!(server.requests.try_recv().is_err());
     assert_eq!(pages.next().await.unwrap().unwrap().etag(), Some("\"v1\""));
@@ -89,7 +89,7 @@ async fn paging_is_lazy_owned_repeated_query_and_loop_checked() {
     }
     let looping = server_loop().await;
     let client = common::client(&looping);
-    let mut pages = client.resources().workspaces().pages(Default::default());
+    let mut pages = client.api().workspaces().pages(Default::default());
     pages.next().await.unwrap();
     assert!(matches!(pages.next().await, Err(Error::Protocol(_))));
     assert!(pages.next().await.unwrap().is_none());
@@ -102,14 +102,7 @@ async fn structured_failures_bounds_no_retry_and_redirect_policy() {
     for status in [403, 409, 412, 429, 503] {
         let mut server=server(move |_|{let mut reply=Reply::json(status,json!({"error":{"code":"precondition_failed","message":"Changed","details":{"version":2},"request_id":"req_body"}}));reply.headers.push_str("Retry-After: 5\r\n");reply}).await;
         let client = client(&server);
-        let Error::Api(error) = client
-            .resources()
-            .workspaces()
-            .at("w")
-            .get()
-            .await
-            .unwrap_err()
-        else {
+        let Error::Api(error) = client.api().workspaces().at("w").get().await.unwrap_err() else {
             panic!("api error")
         };
         assert_eq!(error.status, status);
@@ -127,7 +120,7 @@ async fn structured_failures_bounds_no_retry_and_redirect_policy() {
             .build()
             .unwrap();
         assert!(matches!(
-            client.resources().workspaces().at("w").get().await,
+            client.api().workspaces().at("w").get().await,
             Err(Error::Protocol(_))
         ));
     }
@@ -140,7 +133,7 @@ async fn structured_failures_bounds_no_retry_and_redirect_policy() {
     let client = client(&server);
     assert!(matches!(
         client
-            .resources()
+            .api()
             .threads()
             .create(
                 &models::NewThread::new("a".into(), text_payload("hi")),
@@ -164,7 +157,7 @@ async fn structured_failures_bounds_no_retry_and_redirect_policy() {
     .await;
     let client = common::client(&callback);
     let response = client
-        .resources()
+        .api()
         .connections()
         .callback()
         .get(ConnectionsCallbackGetOptions {
@@ -196,7 +189,7 @@ async fn explicit_workspace_header_replaces_session_default_once_and_unscoped_st
         .build()
         .unwrap();
     client
-        .resources()
+        .api()
         .agents()
         .at("a")
         .get(AgentGetOptions {
@@ -205,13 +198,13 @@ async fn explicit_workspace_header_replaces_session_default_once_and_unscoped_st
         .await
         .unwrap();
     client
-        .resources()
+        .api()
         .agents()
         .at("a")
         .get(Default::default())
         .await
         .unwrap();
-    client.resources().workspaces().at("w").get().await.unwrap();
+    client.api().workspaces().at("w").get().await.unwrap();
     let scope = |headers: &str| -> Vec<String> {
         headers
             .lines()
@@ -242,7 +235,7 @@ async fn session_uses_current_csrf_and_shared_cookie_jar() {
         .http_builder(reqwest::Client::builder().no_proxy())
         .build()
         .unwrap();
-    let workspace = client.resources().workspaces().at("w");
+    let workspace = client.api().workspaces().at("w");
     workspace.get().await.unwrap();
     let request = server.requests.recv().await.unwrap();
     assert!(request.headers.contains("cookie: session=valid"));
@@ -303,14 +296,14 @@ async fn streaming_download_and_owned_uploads_preserve_mime_and_shutdown() {
     })
     .await;
     let client = client(&server);
-    let workspace = client.resources().workspaces().at("w");
+    let workspace = client.api().workspaces().at("w");
     let file = UploadFile {
         name: "upload.bin".into(),
         content_type: "application/octet-stream".into(),
         body: vec![7; 300000].into(),
     };
     client
-        .resources()
+        .api()
         .uploads()
         .create(
             file,
@@ -365,7 +358,7 @@ async fn streaming_download_and_owned_uploads_preserve_mime_and_shutdown() {
     let mut response = tokio::time::timeout(
         Duration::from_secs(1),
         client
-            .resources()
+            .api()
             .assets()
             .at("a")
             .content()
@@ -396,7 +389,7 @@ async fn low_level_thread_create_roundtrips_imported_native_message_objects() {
     let mut body = models::NewThread::new("agent".into(), text_payload("Continue"));
     body.message_history = Some(serde_json::from_value(history.clone()).unwrap());
     let response = client
-        .resources()
+        .api()
         .threads()
         .create(
             &body,
@@ -439,7 +432,7 @@ async fn submitted_uses_canonical_scope_and_queued_entry_has_no_run() {
     let client = client(&server);
     let body = models::NewThread::new("agent".into(), text_payload("hi"));
     let raw = client
-        .resources()
+        .api()
         .threads()
         .create(
             &body,
@@ -580,7 +573,7 @@ async fn model_provider_oauth_and_discovery_share_scoped_transport_and_faithful_
         .workspace("session-ws")
         .build()
         .unwrap();
-    let provider = sdk.resources().model_providers().at("p /中");
+    let provider = sdk.api().model_providers().at("p /中");
     let status = provider
         .authorization()
         .get(Default::default())
@@ -650,7 +643,7 @@ async fn model_provider_oauth_and_discovery_share_scoped_transport_and_faithful_
         }
     }
     let key = client(&fixture);
-    key.resources()
+    key.api()
         .model_providers()
         .at("p")
         .authorization()

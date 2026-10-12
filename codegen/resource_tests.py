@@ -55,7 +55,7 @@ def generate_tests(document: dict, nodes: dict, tests: list, output: Path) -> No
     ]
     for test in tests:
         op = test["op"]
-        chain = "client.resources()"
+        chain = "client.api()"
         current = ""
         expected = op["path"]
         for segment in test["owner"].split("/") if test["owner"] else []:

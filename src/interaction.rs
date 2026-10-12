@@ -51,7 +51,7 @@ pub struct Thread {
 }
 impl Thread {
     pub fn resource(&self) -> ThreadResource<'_> {
-        self.client.resources().threads().at(&self.id)
+        self.client.api().threads().at(&self.id)
     }
 }
 #[derive(Clone)]
@@ -63,7 +63,7 @@ pub struct Entry {
 impl Entry {
     pub fn resource(&self) -> EntryResource<'_> {
         self.client
-            .resources()
+            .api()
             .threads()
             .at(&self.thread_id)
             .inbox()
@@ -116,7 +116,7 @@ pub struct Run {
 }
 impl Run {
     pub fn resource(&self) -> RunResource<'_> {
-        self.client.resources().runs().at(&self.id)
+        self.client.api().runs().at(&self.id)
     }
     /// Advanced committed display/window readback; not a final-reply helper.
     pub fn items(&self) -> crate::resources::RunItemsResource<'_> {

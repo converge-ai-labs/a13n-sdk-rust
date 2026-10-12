@@ -147,7 +147,7 @@ pub async fn verify(
     let forwarding = bridge(listener, http, service.to_owned(), token.to_owned());
     let observing = async {
         let client = Client::new(&url, Secret::new(token))?;
-        let handle = client.resources().threads().at(thread);
+        let handle = client.api().threads().at(thread);
         let mut stream = ThreadStream::open(
             handle,
             StreamOptions {
@@ -254,7 +254,7 @@ pub async fn offline() -> Result<()> {
     let client = Client::new(&base, Secret::new("offline-token"))?;
     let items = client.run("r").items().get(Default::default()).await?.data;
     let mut reader = ThreadStream::open(
-        client.resources().threads().at("t"),
+        client.api().threads().at("t"),
         StreamOptions {
             run: Some(items.run.id),
             position: items.position,

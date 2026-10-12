@@ -57,6 +57,7 @@ pub async fn offline(receipt: Value, entry: Value, run: Value) -> Result<()> {
             "<html>gateway timeout</html>".into(),
         ),
         ("GET /api/v1/runs/r ", run.to_string()),
+        ("GET /api/v1/runs/r ", run.to_string()),
     ];
     let server = tokio::spawn(async move {
         let mut chosen_keys = Vec::new();
@@ -76,6 +77,7 @@ pub async fn offline(receipt: Value, entry: Value, run: Value) -> Result<()> {
             let headers = String::from_utf8(request[..header_end].to_vec()).unwrap();
             assert!(headers.starts_with(expected), "request {index}: {headers}");
             let lower = headers.to_ascii_lowercase();
+            assert!(lower.contains("authorization: bearer offline-token\r\n"));
             let length = lower
                 .lines()
                 .find_map(|line| line.strip_prefix("content-length: "))
@@ -310,12 +312,22 @@ pub async fn offline(receipt: Value, entry: Value, run: Value) -> Result<()> {
             == "r",
         "Owned task-safe handles retain shared Client",
     )?;
+    let native = client.api().runs().at("r").get(Default::default()).await?;
+    ensure(
+        native.data.id == "r" && native.data.status == RunStatus::Completed,
+        "Canonical native api and authored workflow share one Client/auth/lifetime",
+    )?;
     let keys = server.await?;
     ensure(
         keys[0] == first_key && keys[2] == followup_key && keys[5] == unknown_key,
         "Keys exposed on identity and unknown-outcome error match actual requests",
     )?;
+    let api_run = client.api().runs().at("r");
     client.clone().close();
+    ensure(
+        matches!(api_run.get(Default::default()).await, Err(Error::Closed)),
+        "Native api handles share explicit Client close",
+    )?;
     ensure(
         matches!(
             client.run("r").result(ObservationOptions::default()).await,
@@ -324,7 +336,7 @@ pub async fn offline(receipt: Value, entry: Value, run: Value) -> Result<()> {
         "Explicit close is shared by all clones",
     )?;
     println!(
-        "Installed crate root-only workflows: minimal start/send, multipart/config/overrides, full structured output, saved identity recovery, one-map resume, finite text/raw/result, fork, optional keys, gateway unknown outcome and task-safe shared close passed"
+        "Installed crate canonical api plus root-only workflows: same Client/auth/shared close, minimal start/send, multipart/config/overrides, full structured output, saved identity recovery, one-map resume, finite text/raw/result, fork, optional keys, gateway unknown outcome and task-safe shared close passed"
     );
     Ok(())
 }

@@ -94,7 +94,7 @@ use std::{env, error::Error};
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::new(&env::var("A13N_SERVICE_URL")?, Secret::new(env::var("A13N_API_TOKEN")?))?;
-    let created = client.resources().agents().create(
+    let created = client.api().agents().create(
         &models::AgentCreate::new(models::AgentConfigInput::new(env::var("A13N_MODEL_KEY")?), "Project explainer".into()),
         Default::default(),
     ).await?;

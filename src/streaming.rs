@@ -350,7 +350,7 @@ impl ThreadStream {
             }
             let response = self
                 .client
-                .resources()
+                .api()
                 .threads()
                 .at(&self.thread_id)
                 .stream()

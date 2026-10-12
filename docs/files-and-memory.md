@@ -13,7 +13,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let url = env::var("A13N_SERVICE_URL")?;
     let client = Client::new(&url, Secret::new(env::var("A13N_API_TOKEN")?))?;
     let original = std::fs::read("report.txt")?;
-    let upload = client.resources().uploads().create(
+    let upload = client.api().uploads().create(
         UploadFile {
             name: "report.txt".into(),
             content_type: "text/plain".into(),
@@ -24,19 +24,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
             ..Default::default()
         },
     ).await?;
-    let asset = client.resources().assets().create(
+    let asset = client.api().assets().create(
         &models::AssetCreate::new("Project report".into(), upload.data.upload_id),
         Default::default(),
     ).await?;
 
-    let memory = client.resources().memories().create(
+    let memory = client.api().memories().create(
         &models::MemoryCreate::new("Project notes".into()), Default::default(),
     ).await?;
-    client.resources().memories().at(&memory.data.id).files().create(
+    client.api().memories().at(&memory.data.id).files().create(
         &models::MemoryFileCreate::new("Read the project report.".into(), "notes.md".into()),
         Default::default(),
     ).await?;
-    let file = client.resources().memories().at(&memory.data.id).files().at("notes.md");
+    let file = client.api().memories().at(&memory.data.id).files().at("notes.md");
     let current = file.get(Default::default()).await?;
     let etag = current.etag().ok_or("Memory file has no ETag")?.to_owned();
     let updated = file.replace(
@@ -61,7 +61,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let outcome = interaction.result().await?;
     println!("Run: {} ({:?})", outcome.run.id, outcome.status);
 
-    let mut content = client.resources().assets().at(&asset.data.id).content()
+    let mut content = client.api().assets().at(&asset.data.id).content()
         .get(Default::default()).await?;
     let mut downloaded = Vec::new();
     while let Some(chunk) = content.chunk().await? {

@@ -2659,7 +2659,7 @@ pub async fn dispatch(
             let options = ServiceResourcesAgentComposerOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().agent_composer(options).await?;
+            let response = client.api().agent_composer(options).await?;
             output::response(response, config).await
         }
         1 => {
@@ -2675,9 +2675,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().agents().pages(options), config).await
+                output::pages(client.api().agents().pages(options), config).await
             } else {
-                let response = client.resources().agents().list(options).await?;
+                let response = client.api().agents().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -2689,7 +2689,7 @@ pub async fn dispatch(
             let options = AgentsCreateOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().agents().create(&body, options).await?;
+            let response = client.api().agents().create(&body, options).await?;
             output::response(response, config).await
         }
         3 => {
@@ -2700,7 +2700,7 @@ pub async fn dispatch(
             let options = AgentsValidateOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().agents().validate(&body, options).await?;
+            let response = client.api().agents().validate(&body, options).await?;
             output::response(response, config).await
         }
         4 => {
@@ -2708,7 +2708,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .agents()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -2725,7 +2725,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .agents()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -2738,7 +2738,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .agents()
                 .at(required(matches, "id")?)
                 .archive(options)
@@ -2754,7 +2754,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .agents()
                 .at(required(matches, "id")?)
                 .duplicate(&body, options)
@@ -2767,7 +2767,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .agents()
                 .at(required(matches, "id")?)
                 .unarchive(options)
@@ -2780,7 +2780,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .agents()
                 .at(required(matches, "agent_id")?)
                 .avatar()
@@ -2793,7 +2793,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .agents()
                 .at(required(matches, "agent_id")?)
                 .avatar()
@@ -2809,7 +2809,7 @@ pub async fn dispatch(
                 content_type: required(matches, "content_type")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .agents()
                 .at(required(matches, "agent_id")?)
                 .avatar()
@@ -2826,7 +2826,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .agents()
                         .at(required(matches, "agent_id")?)
                         .revisions()
@@ -2836,7 +2836,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .agents()
                     .at(required(matches, "agent_id")?)
                     .revisions()
@@ -2855,7 +2855,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .agents()
                 .at(required(matches, "agent_id")?)
                 .revisions()
@@ -2868,7 +2868,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .agents()
                 .at(required(matches, "agent_id")?)
                 .revisions()
@@ -2883,7 +2883,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .agents()
                 .at(required(matches, "agent_id")?)
                 .revisions()
@@ -2899,9 +2899,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().assets().pages(options), config).await
+                output::pages(client.api().assets().pages(options), config).await
             } else {
-                let response = client.resources().assets().list(options).await?;
+                let response = client.api().assets().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -2913,7 +2913,7 @@ pub async fn dispatch(
             let options = AssetsCreateOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().assets().create(&body, options).await?;
+            let response = client.api().assets().create(&body, options).await?;
             output::response(response, config).await
         }
         18 => {
@@ -2922,7 +2922,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .assets()
                 .at(required(matches, "id")?)
                 .delete(options)
@@ -2934,7 +2934,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .assets()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -2946,7 +2946,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .assets()
                 .at(required(matches, "asset_id")?)
                 .content()
@@ -2959,7 +2959,7 @@ pub async fn dispatch(
             input::validate(21, &value)?;
             let body: models::BootstrapInput = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
-            let response = client.resources().auth().bootstrap(&body).await?;
+            let response = client.api().auth().bootstrap(&body).await?;
             output::response(response, config).await
         }
         22 => {
@@ -2967,15 +2967,15 @@ pub async fn dispatch(
             input::validate(22, &value)?;
             let body: models::LoginInput = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
-            let response = client.resources().auth().login(&body).await?;
+            let response = client.api().auth().login(&body).await?;
             output::response(response, config).await
         }
         23 => {
-            let response = client.resources().auth().logout().await?;
+            let response = client.api().auth().logout().await?;
             output::response(response, config).await
         }
         24 => {
-            let response = client.resources().auth().configuration().get().await?;
+            let response = client.api().auth().configuration().get().await?;
             output::response(response, config).await
         }
         25 => {
@@ -2983,12 +2983,7 @@ pub async fn dispatch(
             input::validate(25, &value)?;
             let body: models::EmailChangeConfirm = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
-            let response = client
-                .resources()
-                .auth()
-                .email_change()
-                .confirm(&body)
-                .await?;
+            let response = client.api().auth().email_change().confirm(&body).await?;
             output::response(response, config).await
         }
         26 => {
@@ -2996,12 +2991,7 @@ pub async fn dispatch(
             input::validate(26, &value)?;
             let body: models::PasswordReset = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
-            let response = client
-                .resources()
-                .auth()
-                .password_reset()
-                .create(&body)
-                .await?;
+            let response = client.api().auth().password_reset().create(&body).await?;
             output::response(response, config).await
         }
         27 => {
@@ -3009,16 +2999,11 @@ pub async fn dispatch(
             input::validate(27, &value)?;
             let body: models::PasswordResetConfirm = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
-            let response = client
-                .resources()
-                .auth()
-                .password_reset()
-                .confirm(&body)
-                .await?;
+            let response = client.api().auth().password_reset().confirm(&body).await?;
             output::response(response, config).await
         }
         28 => {
-            let response = client.resources().auth().session().get().await?;
+            let response = client.api().auth().session().get().await?;
             output::response(response, config).await
         }
         29 => {
@@ -3028,9 +3013,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().connections().pages(options), config).await
+                output::pages(client.api().connections().pages(options), config).await
             } else {
-                let response = client.resources().connections().list(options).await?;
+                let response = client.api().connections().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -3042,11 +3027,7 @@ pub async fn dispatch(
             let options = ConnectionsCreateOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client
-                .resources()
-                .connections()
-                .create(&body, options)
-                .await?;
+            let response = client.api().connections().create(&body, options).await?;
             output::response(response, config).await
         }
         31 => {
@@ -3057,21 +3038,11 @@ pub async fn dispatch(
                 iss: input::optional(matches, "iss")?,
                 session_uri: input::optional(matches, "session_uri")?,
             };
-            let response = client
-                .resources()
-                .connections()
-                .callback()
-                .get(options)
-                .await?;
+            let response = client.api().connections().callback().get(options).await?;
             output::response(response, config).await
         }
         32 => {
-            let response = client
-                .resources()
-                .connections()
-                .redirect_uri()
-                .get()
-                .await?;
+            let response = client.api().connections().redirect_uri().get().await?;
             output::response(response, config).await
         }
         33 => {
@@ -3079,7 +3050,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .connections()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -3096,7 +3067,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .connections()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -3113,7 +3084,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .connections()
                 .at(required(matches, "id")?)
                 .authorize(&body, options)
@@ -3126,7 +3097,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .connections()
                 .at(required(matches, "id")?)
                 .revoke(options)
@@ -3138,7 +3109,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .connections()
                 .at(required(matches, "id")?)
                 .test(options)
@@ -3150,7 +3121,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .connections()
                 .at(required(matches, "connection_id")?)
                 .tools()
@@ -3165,17 +3136,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(
-                    client.resources().connector_providers().pages(options),
-                    config,
-                )
-                .await
+                output::pages(client.api().connector_providers().pages(options), config).await
             } else {
-                let response = client
-                    .resources()
-                    .connector_providers()
-                    .list(options)
-                    .await?;
+                let response = client.api().connector_providers().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -3188,7 +3151,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .connector_providers()
                 .create(&body, options)
                 .await?;
@@ -3199,7 +3162,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .connector_providers()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -3216,7 +3179,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .connector_providers()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -3228,7 +3191,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .connector_providers()
                 .at(required(matches, "id")?)
                 .test(options)
@@ -3246,7 +3209,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .connector_providers()
                         .at(required(matches, "provider_id")?)
                         .apps()
@@ -3256,7 +3219,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .connector_providers()
                     .at(required(matches, "provider_id")?)
                     .apps()
@@ -3270,7 +3233,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .connector_providers()
                 .at(required(matches, "provider_id")?)
                 .apps()
@@ -3284,7 +3247,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .connector_providers()
                 .at(required(matches, "provider_id")?)
                 .apps()
@@ -3301,17 +3264,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(
-                    client.resources().environment_providers().pages(options),
-                    config,
-                )
-                .await
+                output::pages(client.api().environment_providers().pages(options), config).await
             } else {
-                let response = client
-                    .resources()
-                    .environment_providers()
-                    .list(options)
-                    .await?;
+                let response = client.api().environment_providers().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -3324,7 +3279,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .environment_providers()
                 .create(&body, options)
                 .await?;
@@ -3335,7 +3290,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .environment_providers()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -3352,7 +3307,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .environment_providers()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -3364,7 +3319,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .environment_providers()
                 .at(required(matches, "id")?)
                 .test(options)
@@ -3379,17 +3334,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(
-                    client.resources().environment_templates().pages(options),
-                    config,
-                )
-                .await
+                output::pages(client.api().environment_templates().pages(options), config).await
             } else {
-                let response = client
-                    .resources()
-                    .environment_templates()
-                    .list(options)
-                    .await?;
+                let response = client.api().environment_templates().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -3402,7 +3349,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .environment_templates()
                 .create(&body, options)
                 .await?;
@@ -3413,7 +3360,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .environment_templates()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -3430,7 +3377,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .environment_templates()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -3445,9 +3392,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().environments().pages(options), config).await
+                output::pages(client.api().environments().pages(options), config).await
             } else {
-                let response = client.resources().environments().list(options).await?;
+                let response = client.api().environments().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -3459,11 +3406,7 @@ pub async fn dispatch(
             let options = EnvironmentsCreateOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client
-                .resources()
-                .environments()
-                .create(&body, options)
-                .await?;
+            let response = client.api().environments().create(&body, options).await?;
             output::response(response, config).await
         }
         58 => {
@@ -3472,7 +3415,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .environments()
                 .at(required(matches, "id")?)
                 .delete(options)
@@ -3484,7 +3427,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .environments()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -3501,7 +3444,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .environments()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -3514,7 +3457,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .environments()
                 .at(required(matches, "id")?)
                 .stop(options)
@@ -3527,7 +3470,7 @@ pub async fn dispatch(
             let body: models::InvitationAccept = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
-                .resources()
+                .api()
                 .invitations()
                 .at(required(matches, "id")?)
                 .accept(&body)
@@ -3541,9 +3484,9 @@ pub async fn dispatch(
                 cursor: input::optional(matches, "cursor")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().mcp_servers().pages(options), config).await
+                output::pages(client.api().mcp_servers().pages(options), config).await
             } else {
-                let response = client.resources().mcp_servers().list(options).await?;
+                let response = client.api().mcp_servers().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -3552,7 +3495,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .media_understanding_defaults()
                 .get(options)
                 .await?;
@@ -3568,7 +3511,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .media_understanding_defaults()
                 .replace(&body, options)
                 .await?;
@@ -3584,9 +3527,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().memories().pages(options), config).await
+                output::pages(client.api().memories().pages(options), config).await
             } else {
-                let response = client.resources().memories().list(options).await?;
+                let response = client.api().memories().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -3598,7 +3541,7 @@ pub async fn dispatch(
             let options = MemoriesCreateOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().memories().create(&body, options).await?;
+            let response = client.api().memories().create(&body, options).await?;
             output::response(response, config).await
         }
         68 => {
@@ -3607,7 +3550,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "id")?)
                 .delete(options)
@@ -3619,7 +3562,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -3636,7 +3579,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -3653,7 +3596,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .memories()
                         .at(required(matches, "memory_id")?)
                         .files()
@@ -3663,7 +3606,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .memories()
                     .at(required(matches, "memory_id")?)
                     .files()
@@ -3681,7 +3624,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "memory_id")?)
                 .files()
@@ -3699,7 +3642,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "id")?)
                 .files()
@@ -3713,7 +3656,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "memory_id")?)
                 .files()
@@ -3727,7 +3670,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "memory_id")?)
                 .files()
@@ -3746,7 +3689,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "memory_id")?)
                 .files()
@@ -3764,7 +3707,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .memories()
                         .at(required(matches, "memory_id")?)
                         .records()
@@ -3774,7 +3717,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .memories()
                     .at(required(matches, "memory_id")?)
                     .records()
@@ -3792,7 +3735,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "memory_id")?)
                 .records()
@@ -3809,7 +3752,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "id")?)
                 .records()
@@ -3822,7 +3765,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "memory_id")?)
                 .records()
@@ -3840,7 +3783,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "memory_id")?)
                 .records()
@@ -3855,7 +3798,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "memory_id")?)
                 .revisions()
@@ -3874,7 +3817,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .memories()
                         .at(required(matches, "memory_id")?)
                         .revisions()
@@ -3884,7 +3827,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .memories()
                     .at(required(matches, "memory_id")?)
                     .revisions()
@@ -3898,7 +3841,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "memory_id")?)
                 .revisions()
@@ -3915,7 +3858,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memories()
                 .at(required(matches, "memory_id")?)
                 .revisions()
@@ -3933,9 +3876,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().memory_providers().pages(options), config).await
+                output::pages(client.api().memory_providers().pages(options), config).await
             } else {
-                let response = client.resources().memory_providers().list(options).await?;
+                let response = client.api().memory_providers().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -3948,7 +3891,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memory_providers()
                 .create(&body, options)
                 .await?;
@@ -3959,7 +3902,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memory_providers()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -3976,7 +3919,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memory_providers()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -3988,7 +3931,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .memory_providers()
                 .at(required(matches, "id")?)
                 .test(options)
@@ -3996,7 +3939,7 @@ pub async fn dispatch(
             output::response(response, config).await
         }
         91 => {
-            let response = client.resources().model_catalog().list().await?;
+            let response = client.api().model_catalog().list().await?;
             output::response(response, config).await
         }
         92 => {
@@ -4006,9 +3949,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().model_providers().pages(options), config).await
+                output::pages(client.api().model_providers().pages(options), config).await
             } else {
-                let response = client.resources().model_providers().list(options).await?;
+                let response = client.api().model_providers().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -4021,7 +3964,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .model_providers()
                 .create(&body, options)
                 .await?;
@@ -4032,7 +3975,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .model_providers()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -4049,7 +3992,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .model_providers()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -4065,7 +4008,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .model_providers()
                 .at(required(matches, "id")?)
                 .authorize(&body, options)
@@ -4077,7 +4020,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .model_providers()
                 .at(required(matches, "id")?)
                 .test(options)
@@ -4089,7 +4032,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .model_providers()
                 .at(required(matches, "provider_id")?)
                 .authorization()
@@ -4102,7 +4045,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .model_providers()
                 .at(required(matches, "provider_id")?)
                 .authorization()
@@ -4119,7 +4062,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .model_providers()
                 .at(required(matches, "id")?)
                 .authorization()
@@ -4132,7 +4075,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .model_providers()
                 .at(required(matches, "provider_id")?)
                 .models()
@@ -4147,9 +4090,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().models().pages(options), config).await
+                output::pages(client.api().models().pages(options), config).await
             } else {
-                let response = client.resources().models().list(options).await?;
+                let response = client.api().models().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -4161,7 +4104,7 @@ pub async fn dispatch(
             let options = ModelsCreateOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().models().create(&body, options).await?;
+            let response = client.api().models().create(&body, options).await?;
             output::response(response, config).await
         }
         104 => {
@@ -4169,7 +4112,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .models()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -4186,7 +4129,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .models()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -4199,15 +4142,15 @@ pub async fn dispatch(
                 cursor: input::optional(matches, "cursor")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().organizations().pages(options), config).await
+                output::pages(client.api().organizations().pages(options), config).await
             } else {
-                let response = client.resources().organizations().list(options).await?;
+                let response = client.api().organizations().list(options).await?;
                 output::response(response, config).await
             }
         }
         107 => {
             let response = client
-                .resources()
+                .api()
                 .organizations()
                 .at(required(matches, "id")?)
                 .get()
@@ -4223,7 +4166,7 @@ pub async fn dispatch(
                 if_match: required(matches, "if_match")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .organizations()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -4238,7 +4181,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .organizations()
                         .at(config.required("organization_id")?)
                         .audit_events()
@@ -4248,7 +4191,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .organizations()
                     .at(config.required("organization_id")?)
                     .audit_events()
@@ -4265,7 +4208,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .organizations()
                         .at(config.required("organization_id")?)
                         .grants()
@@ -4275,7 +4218,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .organizations()
                     .at(config.required("organization_id")?)
                     .grants()
@@ -4290,7 +4233,7 @@ pub async fn dispatch(
             let body: models::GrantCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
-                .resources()
+                .api()
                 .organizations()
                 .at(config.required("organization_id")?)
                 .grants()
@@ -4300,7 +4243,7 @@ pub async fn dispatch(
         }
         112 => {
             let response = client
-                .resources()
+                .api()
                 .organizations()
                 .at(config.required("organization_id")?)
                 .grants()
@@ -4315,7 +4258,7 @@ pub async fn dispatch(
             let body: models::GrantUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
-                .resources()
+                .api()
                 .organizations()
                 .at(config.required("organization_id")?)
                 .grants()
@@ -4329,7 +4272,7 @@ pub async fn dispatch(
                 if_match: required(matches, "if_match")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .organizations()
                 .at(config.required("organization_id")?)
                 .icon()
@@ -4339,7 +4282,7 @@ pub async fn dispatch(
         }
         115 => {
             let response = client
-                .resources()
+                .api()
                 .organizations()
                 .at(config.required("organization_id")?)
                 .icon()
@@ -4354,7 +4297,7 @@ pub async fn dispatch(
                 content_type: required(matches, "content_type")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .organizations()
                 .at(config.required("organization_id")?)
                 .icon()
@@ -4370,7 +4313,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .organizations()
                         .at(config.required("organization_id")?)
                         .invitations()
@@ -4380,7 +4323,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .organizations()
                     .at(config.required("organization_id")?)
                     .invitations()
@@ -4395,7 +4338,7 @@ pub async fn dispatch(
             let body: models::InvitationCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
-                .resources()
+                .api()
                 .organizations()
                 .at(config.required("organization_id")?)
                 .invitations()
@@ -4408,7 +4351,7 @@ pub async fn dispatch(
                 if_match: required(matches, "if_match")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .organizations()
                 .at(config.required("organization_id")?)
                 .invitations()
@@ -4422,7 +4365,7 @@ pub async fn dispatch(
                 if_match: required(matches, "if_match")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .organizations()
                 .at(config.required("organization_id")?)
                 .invitations()
@@ -4440,7 +4383,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .organizations()
                         .at(config.required("organization_id")?)
                         .members()
@@ -4450,7 +4393,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .organizations()
                     .at(config.required("organization_id")?)
                     .members()
@@ -4467,7 +4410,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .organizations()
                         .at(config.required("organization_id")?)
                         .workspaces()
@@ -4477,7 +4420,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .organizations()
                     .at(config.required("organization_id")?)
                     .workspaces()
@@ -4492,7 +4435,7 @@ pub async fn dispatch(
             let body: models::WorkspaceCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
-                .resources()
+                .api()
                 .organizations()
                 .at(config.required("organization_id")?)
                 .workspaces()
@@ -4502,7 +4445,7 @@ pub async fn dispatch(
         }
         124 => {
             let response = client
-                .resources()
+                .api()
                 .provider_types()
                 .at(input::option::<ProviderKind>(required(matches, "id")?)?)
                 .list()
@@ -4514,7 +4457,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .runs()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -4531,7 +4474,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .runs()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -4548,7 +4491,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .runs()
                 .at(required(matches, "id")?)
                 .fork(&body, options)
@@ -4560,7 +4503,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .runs()
                 .at(required(matches, "id")?)
                 .interrupt(options)
@@ -4577,7 +4520,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .runs()
                 .at(required(matches, "id")?)
                 .resume(&body, options)
@@ -4589,7 +4532,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .runs()
                 .at(required(matches, "run_id")?)
                 .attempts()
@@ -4606,7 +4549,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .runs()
                         .at(required(matches, "run_id")?)
                         .attempts()
@@ -4618,7 +4561,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .runs()
                     .at(required(matches, "run_id")?)
                     .attempts()
@@ -4637,7 +4580,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .runs()
                 .at(required(matches, "run_id")?)
                 .items()
@@ -4653,7 +4596,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .runs()
                         .at(required(matches, "run_id")?)
                         .lineage()
@@ -4663,7 +4606,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .runs()
                     .at(required(matches, "run_id")?)
                     .lineage()
@@ -4686,9 +4629,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().sessions().pages(options), config).await
+                output::pages(client.api().sessions().pages(options), config).await
             } else {
-                let response = client.resources().sessions().list(options).await?;
+                let response = client.api().sessions().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -4700,7 +4643,7 @@ pub async fn dispatch(
             let options = SessionsCreateOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().sessions().create(&body, options).await?;
+            let response = client.api().sessions().create(&body, options).await?;
             output::response(response, config).await
         }
         136 => {
@@ -4708,7 +4651,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .sessions()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -4725,7 +4668,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .sessions()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -4743,9 +4686,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().skills().pages(options), config).await
+                output::pages(client.api().skills().pages(options), config).await
             } else {
-                let response = client.resources().skills().list(options).await?;
+                let response = client.api().skills().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -4757,7 +4700,7 @@ pub async fn dispatch(
             let options = SkillsCreateOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().skills().create(&body, options).await?;
+            let response = client.api().skills().create(&body, options).await?;
             output::response(response, config).await
         }
         140 => {
@@ -4768,7 +4711,7 @@ pub async fn dispatch(
             let options = SkillsValidateOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().skills().validate(&body, options).await?;
+            let response = client.api().skills().validate(&body, options).await?;
             output::response(response, config).await
         }
         141 => {
@@ -4776,7 +4719,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .skills()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -4793,7 +4736,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .skills()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -4806,7 +4749,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .skills()
                 .at(required(matches, "id")?)
                 .archive(options)
@@ -4819,7 +4762,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .skills()
                 .at(required(matches, "id")?)
                 .unarchive(options)
@@ -4835,7 +4778,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .skills()
                         .at(required(matches, "skill_id")?)
                         .revisions()
@@ -4845,7 +4788,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .skills()
                     .at(required(matches, "skill_id")?)
                     .revisions()
@@ -4864,7 +4807,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .skills()
                 .at(required(matches, "skill_id")?)
                 .revisions()
@@ -4877,7 +4820,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .skills()
                 .at(required(matches, "skill_id")?)
                 .revisions()
@@ -4892,7 +4835,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .skills()
                 .at(required(matches, "skill_id")?)
                 .revisions()
@@ -4906,7 +4849,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .skills()
                 .at(required(matches, "skill_id")?)
                 .revisions()
@@ -4921,7 +4864,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .skills()
                 .at(required(matches, "skill_id")?)
                 .revisions()
@@ -4939,9 +4882,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().subscriptions().pages(options), config).await
+                output::pages(client.api().subscriptions().pages(options), config).await
             } else {
-                let response = client.resources().subscriptions().list(options).await?;
+                let response = client.api().subscriptions().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -4953,11 +4896,7 @@ pub async fn dispatch(
             let options = SubscriptionsCreateOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client
-                .resources()
-                .subscriptions()
-                .create(&body, options)
-                .await?;
+            let response = client.api().subscriptions().create(&body, options).await?;
             output::response(response, config).await
         }
         153 => {
@@ -4966,7 +4905,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .subscriptions()
                 .at(required(matches, "id")?)
                 .delete(options)
@@ -4978,7 +4917,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .subscriptions()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -4995,7 +4934,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .subscriptions()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -5011,7 +4950,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .subscriptions()
                         .at(required(matches, "subscription_id")?)
                         .deliveries()
@@ -5021,7 +4960,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .subscriptions()
                     .at(required(matches, "subscription_id")?)
                     .deliveries()
@@ -5035,7 +4974,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .subscriptions()
                 .at(required(matches, "subscription_id")?)
                 .deliveries()
@@ -5053,9 +4992,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().threads().pages(options), config).await
+                output::pages(client.api().threads().pages(options), config).await
             } else {
-                let response = client.resources().threads().list(options).await?;
+                let response = client.api().threads().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -5068,7 +5007,7 @@ pub async fn dispatch(
                 idempotency_key: required(matches, "idempotency_key")?.to_owned(),
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().threads().create(&body, options).await?;
+            let response = client.api().threads().create(&body, options).await?;
             output::response(response, config).await
         }
         160 => {
@@ -5076,7 +5015,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -5093,7 +5032,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -5106,7 +5045,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "id")?)
                 .archive(options)
@@ -5118,7 +5057,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "thread_id")?)
                 .environments()
@@ -5136,7 +5075,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "thread_id")?)
                 .environments()
@@ -5150,7 +5089,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "thread_id")?)
                 .environments()
@@ -5169,7 +5108,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .threads()
                         .at(required(matches, "thread_id")?)
                         .inbox()
@@ -5179,7 +5118,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .threads()
                     .at(required(matches, "thread_id")?)
                     .inbox()
@@ -5198,7 +5137,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "thread_id")?)
                 .inbox()
@@ -5216,7 +5155,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "thread_id")?)
                 .inbox()
@@ -5231,7 +5170,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "thread_id")?)
                 .inbox()
@@ -5245,7 +5184,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "thread_id")?)
                 .inbox()
@@ -5264,7 +5203,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "thread_id")?)
                 .inbox()
@@ -5278,7 +5217,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "thread_id")?)
                 .memories()
@@ -5296,7 +5235,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "thread_id")?)
                 .memories()
@@ -5310,7 +5249,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "thread_id")?)
                 .memories()
@@ -5329,7 +5268,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "thread_id")?)
                 .memories()
@@ -5347,7 +5286,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .threads()
                         .at(required(matches, "thread_id")?)
                         .runs()
@@ -5357,7 +5296,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .threads()
                     .at(required(matches, "thread_id")?)
                     .runs()
@@ -5374,7 +5313,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .threads()
                 .at(required(matches, "thread_id")?)
                 .stream()
@@ -5386,14 +5325,14 @@ pub async fn dispatch(
             let options = ToolsetsListOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().toolsets().list(options).await?;
+            let response = client.api().toolsets().list(options).await?;
             output::response(response, config).await
         }
         179 => {
             let options = TraceBackendGetOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().trace_backend().get(options).await?;
+            let response = client.api().trace_backend().get(options).await?;
             output::response(response, config).await
         }
         180 => {
@@ -5409,9 +5348,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().traces().pages(options), config).await
+                output::pages(client.api().traces().pages(options), config).await
             } else {
-                let response = client.resources().traces().list(options).await?;
+                let response = client.api().traces().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -5420,7 +5359,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .traces()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -5436,7 +5375,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .traces()
                         .at(required(matches, "trace_id")?)
                         .spans()
@@ -5446,7 +5385,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .traces()
                     .at(required(matches, "trace_id")?)
                     .spans()
@@ -5461,7 +5400,7 @@ pub async fn dispatch(
                 idempotency_key: required(matches, "idempotency_key")?.to_owned(),
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().uploads().create(file, options).await?;
+            let response = client.api().uploads().create(file, options).await?;
             output::response(response, config).await
         }
         184 => {
@@ -5473,7 +5412,7 @@ pub async fn dispatch(
                 ingested_before: input::optional(matches, "ingested_before")?,
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().usage().get(options).await?;
+            let response = client.api().usage().get(options).await?;
             output::response(response, config).await
         }
         185 => {
@@ -5485,9 +5424,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().usage().agents().pages(options), config).await
+                output::pages(client.api().usage().agents().pages(options), config).await
             } else {
-                let response = client.resources().usage().agents().list(options).await?;
+                let response = client.api().usage().agents().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -5500,9 +5439,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().usage().models().pages(options), config).await
+                output::pages(client.api().usage().models().pages(options), config).await
             } else {
-                let response = client.resources().usage().models().list(options).await?;
+                let response = client.api().usage().models().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -5513,11 +5452,11 @@ pub async fn dispatch(
                 timezone: input::optional(matches, "timezone")?,
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client.resources().usage().overview().get(options).await?;
+            let response = client.api().usage().overview().get(options).await?;
             output::response(response, config).await
         }
         188 => {
-            let response = client.resources().users().me().get().await?;
+            let response = client.api().users().me().get().await?;
             output::response(response, config).await
         }
         189 => {
@@ -5528,12 +5467,7 @@ pub async fn dispatch(
             let options = UsersMeUpdateOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
-            let response = client
-                .resources()
-                .users()
-                .me()
-                .update(&body, options)
-                .await?;
+            let response = client.api().users().me().update(&body, options).await?;
             output::response(response, config).await
         }
         190 => {
@@ -5541,7 +5475,7 @@ pub async fn dispatch(
             input::validate(190, &value)?;
             let body: models::AccountDisable = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
-            let response = client.resources().users().me().disable(&body).await?;
+            let response = client.api().users().me().disable(&body).await?;
             output::response(response, config).await
         }
         191 => {
@@ -5549,7 +5483,7 @@ pub async fn dispatch(
             input::validate(191, &value)?;
             let body: models::PasswordChange = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
-            let response = client.resources().users().me().password(&body).await?;
+            let response = client.api().users().me().password(&body).await?;
             output::response(response, config).await
         }
         192 => {
@@ -5559,18 +5493,13 @@ pub async fn dispatch(
             };
             if matches.get_flag("all") {
                 output::pages(
-                    client
-                        .resources()
-                        .users()
-                        .me()
-                        .audit_events()
-                        .pages(options),
+                    client.api().users().me().audit_events().pages(options),
                     config,
                 )
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .users()
                     .me()
                     .audit_events()
@@ -5583,13 +5512,7 @@ pub async fn dispatch(
             let options = UsersMeAvatarDeleteOptions {
                 if_match: required(matches, "if_match")?.to_owned(),
             };
-            let response = client
-                .resources()
-                .users()
-                .me()
-                .avatar()
-                .delete(options)
-                .await?;
+            let response = client.api().users().me().avatar().delete(options).await?;
             output::response(response, config).await
         }
         194 => {
@@ -5599,7 +5522,7 @@ pub async fn dispatch(
                 content_type: required(matches, "content_type")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .users()
                 .me()
                 .avatar()
@@ -5614,13 +5537,9 @@ pub async fn dispatch(
                 cursor: input::optional(matches, "cursor")?,
             };
             if matches.get_flag("all") {
-                output::pages(
-                    client.resources().users().me().keys().pages(options),
-                    config,
-                )
-                .await
+                output::pages(client.api().users().me().keys().pages(options), config).await
             } else {
-                let response = client.resources().users().me().keys().list(options).await?;
+                let response = client.api().users().me().keys().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -5629,7 +5548,7 @@ pub async fn dispatch(
             input::validate(196, &value)?;
             let body: models::UserKeyCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
-            let response = client.resources().users().me().keys().create(&body).await?;
+            let response = client.api().users().me().keys().create(&body).await?;
             output::response(response, config).await
         }
         197 => {
@@ -5637,7 +5556,7 @@ pub async fn dispatch(
                 if_match: required(matches, "if_match")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .users()
                 .me()
                 .keys()
@@ -5653,18 +5572,13 @@ pub async fn dispatch(
             };
             if matches.get_flag("all") {
                 output::pages(
-                    client
-                        .resources()
-                        .users()
-                        .me()
-                        .login_sessions()
-                        .pages(options),
+                    client.api().users().me().login_sessions().pages(options),
                     config,
                 )
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .users()
                     .me()
                     .login_sessions()
@@ -5675,7 +5589,7 @@ pub async fn dispatch(
         }
         199 => {
             let response = client
-                .resources()
+                .api()
                 .users()
                 .me()
                 .login_sessions()
@@ -5686,7 +5600,7 @@ pub async fn dispatch(
         }
         200 => {
             let response = client
-                .resources()
+                .api()
                 .users()
                 .at(required(matches, "user_id")?)
                 .avatar()
@@ -5701,9 +5615,9 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().web_providers().pages(options), config).await
+                output::pages(client.api().web_providers().pages(options), config).await
             } else {
-                let response = client.resources().web_providers().list(options).await?;
+                let response = client.api().web_providers().list(options).await?;
                 output::response(response, config).await
             }
         }
@@ -5715,11 +5629,7 @@ pub async fn dispatch(
             let options = WebProvidersCreateOptions {
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            let response = client
-                .resources()
-                .web_providers()
-                .create(&body, options)
-                .await?;
+            let response = client.api().web_providers().create(&body, options).await?;
             output::response(response, config).await
         }
         203 => {
@@ -5727,7 +5637,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .web_providers()
                 .at(required(matches, "id")?)
                 .get(options)
@@ -5744,7 +5654,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .web_providers()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -5756,7 +5666,7 @@ pub async fn dispatch(
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
-                .resources()
+                .api()
                 .web_providers()
                 .at(required(matches, "id")?)
                 .test(options)
@@ -5769,15 +5679,15 @@ pub async fn dispatch(
                 cursor: input::optional(matches, "cursor")?,
             };
             if matches.get_flag("all") {
-                output::pages(client.resources().workspaces().pages(options), config).await
+                output::pages(client.api().workspaces().pages(options), config).await
             } else {
-                let response = client.resources().workspaces().list(options).await?;
+                let response = client.api().workspaces().list(options).await?;
                 output::response(response, config).await
             }
         }
         207 => {
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(required(matches, "id")?)
                 .get()
@@ -5793,7 +5703,7 @@ pub async fn dispatch(
                 if_match: required(matches, "if_match")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(required(matches, "id")?)
                 .update(&body, options)
@@ -5805,7 +5715,7 @@ pub async fn dispatch(
                 if_match: required(matches, "if_match")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .archive(options)
@@ -5820,7 +5730,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .workspaces()
                         .at(config.required("workspace_id")?)
                         .audit_events()
@@ -5830,7 +5740,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .workspaces()
                     .at(config.required("workspace_id")?)
                     .audit_events()
@@ -5847,7 +5757,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .workspaces()
                         .at(config.required("workspace_id")?)
                         .grants()
@@ -5857,7 +5767,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .workspaces()
                     .at(config.required("workspace_id")?)
                     .grants()
@@ -5872,7 +5782,7 @@ pub async fn dispatch(
             let body: models::GrantCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .grants()
@@ -5882,7 +5792,7 @@ pub async fn dispatch(
         }
         213 => {
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .grants()
@@ -5897,7 +5807,7 @@ pub async fn dispatch(
             let body: models::GrantUpdate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .grants()
@@ -5911,7 +5821,7 @@ pub async fn dispatch(
                 if_match: required(matches, "if_match")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .icon()
@@ -5921,7 +5831,7 @@ pub async fn dispatch(
         }
         216 => {
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .icon()
@@ -5936,7 +5846,7 @@ pub async fn dispatch(
                 content_type: required(matches, "content_type")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .icon()
@@ -5952,7 +5862,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .workspaces()
                         .at(config.required("workspace_id")?)
                         .invitations()
@@ -5962,7 +5872,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .workspaces()
                     .at(config.required("workspace_id")?)
                     .invitations()
@@ -5977,7 +5887,7 @@ pub async fn dispatch(
             let body: models::InvitationCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .invitations()
@@ -5990,7 +5900,7 @@ pub async fn dispatch(
                 if_match: required(matches, "if_match")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .invitations()
@@ -6004,7 +5914,7 @@ pub async fn dispatch(
                 if_match: required(matches, "if_match")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .invitations()
@@ -6022,7 +5932,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .workspaces()
                         .at(config.required("workspace_id")?)
                         .keys()
@@ -6032,7 +5942,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .workspaces()
                     .at(config.required("workspace_id")?)
                     .keys()
@@ -6046,7 +5956,7 @@ pub async fn dispatch(
                 if_match: required(matches, "if_match")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .keys()
@@ -6063,7 +5973,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .workspaces()
                         .at(config.required("workspace_id")?)
                         .service_accounts()
@@ -6073,7 +5983,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .workspaces()
                     .at(config.required("workspace_id")?)
                     .service_accounts()
@@ -6088,7 +5998,7 @@ pub async fn dispatch(
             let body: models::ServiceAccountCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .service_accounts()
@@ -6101,7 +6011,7 @@ pub async fn dispatch(
                 if_match: required(matches, "if_match")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .service_accounts()
@@ -6112,7 +6022,7 @@ pub async fn dispatch(
         }
         227 => {
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .service_accounts()
@@ -6130,7 +6040,7 @@ pub async fn dispatch(
                 if_match: required(matches, "if_match")?.to_owned(),
             };
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .service_accounts()
@@ -6147,7 +6057,7 @@ pub async fn dispatch(
             if matches.get_flag("all") {
                 output::pages(
                     client
-                        .resources()
+                        .api()
                         .workspaces()
                         .at(config.required("workspace_id")?)
                         .service_accounts()
@@ -6159,7 +6069,7 @@ pub async fn dispatch(
                 .await
             } else {
                 let response = client
-                    .resources()
+                    .api()
                     .workspaces()
                     .at(config.required("workspace_id")?)
                     .service_accounts()
@@ -6176,7 +6086,7 @@ pub async fn dispatch(
             let body: models::KeyCreate = serde_json::from_value(value)
                 .map_err(|_| CliError::input("request body does not match --schema"))?;
             let response = client
-                .resources()
+                .api()
                 .workspaces()
                 .at(config.required("workspace_id")?)
                 .service_accounts()
@@ -6187,11 +6097,11 @@ pub async fn dispatch(
             output::response(response, config).await
         }
         231 => {
-            let response = client.resources().healthz().get().await?;
+            let response = client.api().healthz().get().await?;
             output::response(response, config).await
         }
         232 => {
-            let response = client.resources().readyz().get().await?;
+            let response = client.api().readyz().get().await?;
             output::response(response, config).await
         }
         _ => Err(CliError::input("unknown operation")),

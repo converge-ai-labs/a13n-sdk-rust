@@ -26,7 +26,7 @@ async fn all_variants_and_cursor_acknowledgement_are_typed() {
     );
     let server = server(move |_| Reply::sse(&wire)).await;
     let client = client(&server);
-    let mut stream = ThreadStream::open(client.resources().threads().at("th"), options())
+    let mut stream = ThreadStream::open(client.api().threads().at("th"), options())
         .await
         .unwrap();
     assert_eq!(stream.response().unwrap().0, 200);
@@ -73,7 +73,7 @@ async fn cancellation_keeps_partial_line_utf8_and_frame_state() {
     })
     .await;
     let client = client(&server);
-    let mut stream = ThreadStream::open(client.resources().threads().at("t"), options())
+    let mut stream = ThreadStream::open(client.api().threads().at("t"), options())
         .await
         .unwrap();
     assert!(
@@ -94,7 +94,7 @@ async fn cancellation_keeps_partial_line_utf8_and_frame_state() {
 async fn parent_close_rejects_buffered_frames_before_ack() {
     let server = server(|_| Reply::sse(&BOUNDARY.repeat(2))).await;
     let client = client(&server);
-    let mut stream = ThreadStream::open(client.resources().threads().at("t"), options())
+    let mut stream = ThreadStream::open(client.api().threads().at("t"), options())
         .await
         .unwrap();
     assert!(stream.next().await.unwrap().is_some());
@@ -113,7 +113,7 @@ async fn reconnect_sends_only_applied_cursor_and_progress_resets_budget() {
     .await;
     let client = client(&server);
     let mut stream = ThreadStream::open(
-        client.resources().threads().at("t"),
+        client.api().threads().at("t"),
         StreamOptions {
             max_reconnects: 1,
             ..options()
@@ -151,7 +151,7 @@ async fn hints_do_not_reset_retry_budget() {
     .await;
     let client = client(&server);
     let mut stream = ThreadStream::open(
-        client.resources().threads().at("t"),
+        client.api().threads().at("t"),
         StreamOptions {
             max_reconnects: 1,
             ..options()
@@ -180,7 +180,7 @@ async fn recovery_delay_survives_cancelled_read_and_parent_close() {
     .await;
     let client = client(&server);
     let mut stream = ThreadStream::open(
-        client.resources().threads().at("t"),
+        client.api().threads().at("t"),
         StreamOptions {
             max_reconnects: 3,
             ..options()
@@ -221,7 +221,7 @@ async fn malformed_frames_utf8_limits_and_auth_are_terminal() {
         let server = server(move |_| Reply::sse(wire)).await;
         let client = client(&server);
         let mut stream = ThreadStream::open(
-            client.resources().threads().at("t"),
+            client.api().threads().at("t"),
             StreamOptions {
                 max_reconnects: 2,
                 ..options()
@@ -238,7 +238,7 @@ async fn malformed_frames_utf8_limits_and_auth_are_terminal() {
         let server = server(move |_| Reply::bytes(200, "text/event-stream", body.clone())).await;
         let client = client(&server);
         let mut stream = ThreadStream::open(
-            client.resources().threads().at("t"),
+            client.api().threads().at("t"),
             StreamOptions {
                 max_frame_bytes: 50,
                 ..options()
@@ -253,7 +253,7 @@ async fn malformed_frames_utf8_limits_and_auth_are_terminal() {
         let client = client(&server);
         assert!(matches!(
             ThreadStream::open(
-                client.resources().threads().at("t"),
+                client.api().threads().at("t"),
                 StreamOptions {
                     max_reconnects: 3,
                     ..options()
@@ -287,7 +287,7 @@ async fn snapshot_coverage_advances_only_after_apply_and_reconnect_sends_both_po
     .await;
     let client = common::client(&fixture);
     let mut reader = ThreadStream::open(
-        client.resources().threads().at("t"),
+        client.api().threads().at("t"),
         StreamOptions {
             run: Some("r".into()),
             position: Some("1-2".into()),
@@ -332,7 +332,7 @@ async fn gaps_resets_and_foreign_runs_never_advance_claimed_coverage() {
         let fixture = server(move |_| Reply::sse(&wire)).await;
         let client = common::client(&fixture);
         let mut reader = ThreadStream::open(
-            client.resources().threads().at("t"),
+            client.api().threads().at("t"),
             StreamOptions {
                 run: Some("r".into()),
                 position: Some("1-2".into()),
@@ -350,7 +350,7 @@ async fn gaps_resets_and_foreign_runs_never_advance_claimed_coverage() {
     }
     let fixture = server(move |_| Reply::sse(&delta("r", 1, 3, "100-3"))).await;
     let client = common::client(&fixture);
-    let mut unclaimed = ThreadStream::open(client.resources().threads().at("t"), options())
+    let mut unclaimed = ThreadStream::open(client.api().threads().at("t"), options())
         .await
         .unwrap();
     unclaimed.next().await.unwrap();
@@ -367,7 +367,7 @@ async fn covered_boundary_and_drop_do_not_ack_new_position() {
     let fixture = server(move |_| Reply::sse(&wire)).await;
     let client = common::client(&fixture);
     let mut reader = ThreadStream::open(
-        client.resources().threads().at("t"),
+        client.api().threads().at("t"),
         StreamOptions {
             run: Some("r".into()),
             position: Some("1-2".into()),
@@ -401,7 +401,7 @@ async fn coverage_options_and_gap_position_validate_only_wire_shape() {
         (Some("r"), Some("1-000")),
     ] {
         let result = ThreadStream::open(
-            client.resources().threads().at("t"),
+            client.api().threads().at("t"),
             StreamOptions {
                 run: run.map(str::to_owned),
                 position: position.map(str::to_owned),
@@ -420,7 +420,7 @@ async fn coverage_options_and_gap_position_validate_only_wire_shape() {
         let wire = format!("event: gap\ndata: {payload}\n\n");
         let fixture = server(move |_| Reply::sse(&wire)).await;
         let client = common::client(&fixture);
-        let mut reader = ThreadStream::open(client.resources().threads().at("t"), options())
+        let mut reader = ThreadStream::open(client.api().threads().at("t"), options())
             .await
             .unwrap();
         assert!(matches!(
@@ -442,7 +442,7 @@ async fn sequence_holes_boundaries_and_attempt_changes_freeze_coverage_until_reo
         let fixture = server(move |_| Reply::sse(&wire)).await;
         let client = client(&fixture);
         let mut reader = ThreadStream::open(
-            client.resources().threads().at("t"),
+            client.api().threads().at("t"),
             StreamOptions {
                 run: Some("r".into()),
                 position: Some("1-2".into()),
@@ -465,7 +465,7 @@ async fn coverage_with_missing_or_stale_hint_accepts_filtered_replay_without_loc
         let mut fixture = server(|_| Reply::sse(&format!("{}event: boundary\nid: 100-3\ndata: {{\"run_id\":\"r\",\"attempt\":1,\"sequence\":3}}\n\n", delta("r", 1, 3, "100-3")))).await;
         let client = client(&fixture);
         let mut reader = ThreadStream::open(
-            client.resources().threads().at("t"),
+            client.api().threads().at("t"),
             StreamOptions {
                 run: Some("r".into()),
                 position: Some("1-2".into()),
@@ -508,7 +508,7 @@ async fn delta_required_nullable_item_and_optional_metadata_preserve_exact_wire(
         let wire = format!("event: delta\nid: 100-1\ndata: {payload}\n\n");
         let fixture = server(move |_| Reply::sse(&wire)).await;
         let sdk = common::client(&fixture);
-        let mut reader = ThreadStream::open(sdk.resources().threads().at("t"), options())
+        let mut reader = ThreadStream::open(sdk.api().threads().at("t"), options())
             .await
             .unwrap();
         let Some(ThreadFrame::Delta { data, .. }) = reader.next().await.unwrap() else {
@@ -520,7 +520,7 @@ async fn delta_required_nullable_item_and_optional_metadata_preserve_exact_wire(
     }
     let fixture = server(|_| Reply::sse("event: delta\nid: 100-1\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":1,\"event\":{}}\n\n")).await;
     let sdk = common::client(&fixture);
-    let mut reader = ThreadStream::open(sdk.resources().threads().at("t"), options())
+    let mut reader = ThreadStream::open(sdk.api().threads().at("t"), options())
         .await
         .unwrap();
     assert!(matches!(reader.next().await, Err(Error::Protocol(_))));
