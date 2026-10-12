@@ -56,7 +56,7 @@ pub async fn run(
     client: &Client,
     config: &Effective,
 ) -> Result<(), CliError> {
-    let resources = client.resources();
+    let resources = client.api();
     match matches.subcommand() {
         Some(("agents", agents)) => {
             let (action, leaf) = agents

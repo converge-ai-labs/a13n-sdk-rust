@@ -37,7 +37,7 @@ async fn transport_stages_categories_and_sources_are_safe() {
     let base = format!("http://{}/private", listener.local_addr().unwrap());
     drop(listener);
     let client = Client::builder(base).build().unwrap();
-    let error = client.resources().healthz().get().await.unwrap_err();
+    let error = client.api().healthz().get().await.unwrap_err();
     assert!(
         matches!(&error, Error::Transport(e) if e.stage == TransportStage::Request && e.kind == TransportKind::Connect)
     );
@@ -63,7 +63,7 @@ async fn transport_stages_categories_and_sources_are_safe() {
             .build()
             .unwrap();
         let error = client
-            .resources()
+            .api()
             .workspaces()
             .at("private")
             .get()
@@ -94,7 +94,7 @@ async fn response_diagnostics_preserve_metadata_without_printing_it() {
             .build()
             .unwrap();
         let error = client
-            .resources()
+            .api()
             .workspaces()
             .at("private")
             .get()
@@ -114,13 +114,10 @@ async fn response_diagnostics_preserve_metadata_without_printing_it() {
 async fn stream_diagnostics_do_not_change_recovery_or_cursor_semantics() {
     let origin = server(|_| Reply::bytes(200, "application/json", b"private".to_vec())).await;
     let client = common::client(&origin);
-    let error = ThreadStream::open(
-        client.resources().threads().at("t"),
-        StreamOptions::default(),
-    )
-    .await
-    .err()
-    .unwrap();
+    let error = ThreadStream::open(client.api().threads().at("t"), StreamOptions::default())
+        .await
+        .err()
+        .unwrap();
     assert!(
         matches!(&error, Error::Protocol(e) if e.kind == ProtocolKind::UnexpectedContentType && e.status == Some(200))
     );
@@ -128,12 +125,9 @@ async fn stream_diagnostics_do_not_change_recovery_or_cursor_semantics() {
 
     let origin = server(|_| Reply::sse("event: changed\ndata: private\n\n")).await;
     let client = common::client(&origin);
-    let mut stream = ThreadStream::open(
-        client.resources().threads().at("t"),
-        StreamOptions::default(),
-    )
-    .await
-    .unwrap();
+    let mut stream = ThreadStream::open(client.api().threads().at("t"), StreamOptions::default())
+        .await
+        .unwrap();
     let error = stream.next().await.unwrap_err();
     assert!(matches!(&error, Error::Protocol(e) if e.kind == ProtocolKind::InvalidFrame));
     assert_eq!(stream.applied_cursor(), None);
@@ -156,7 +150,7 @@ async fn domain_enums_keep_wire_values_for_paths_and_queries() {
     let client = common::client(&origin);
     // Query serialization uses the same serde representation as ordinary models.
     client
-        .resources()
+        .api()
         .organizations()
         .at("o")
         .members()
@@ -176,7 +170,7 @@ async fn domain_enums_keep_wire_values_for_paths_and_queries() {
             .contains("kind=service_account")
     );
     client
-        .resources()
+        .api()
         .skills()
         .list(SkillsListOptions {
             source: Some(SkillsSource::Github),
@@ -194,7 +188,7 @@ async fn domain_enums_keep_wire_values_for_paths_and_queries() {
             .contains("source=github")
     );
     client
-        .resources()
+        .api()
         .provider_types()
         .at(ProviderKind::Memory)
         .list()

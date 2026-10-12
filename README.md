@@ -76,6 +76,12 @@ The first reply comes directly from full Run output, with no Items request. `tex
 
 The [application guide](docs/README.md) arranges these chapters by task. The complete generated resource API covers the pinned Service operations, including admin resources, pagination, binary transfers and conditional ETag updates. No automatic write retry, approval, remote interruption or successor following is hidden behind an Agent call. The [SDK contract](spec/README.md), [pinned upstream inputs](contract/README.md) and [CLI workflows](a13n-service-cli/docs/README.md) provide deeper reference.
 
+## Native Service API and migration
+
+Use `client.api().agents()` (or another collection on `client.api()`) for the complete typed native Service API. It shares this Client's transport, authentication, workspace context and shutdown; it is not another client. Keep `client.agent(agent_id)` for authored start/send workflows and finite Interaction results.
+
+Before 0.1, migrate `client.resources()` calls to `client.api()`; the old accessor is removed without an alias. Existing `a13n::resources` option types, resource handles and their borrowed lifetimes are unchanged. See [authentication and resource examples](docs/auth-and-resources.md) for runnable low-level calls.
+
 ## Develop this checkout
 
 Use Rust 1.97.0, Python 3.13, uv and Make. `make generate` reads the locally pinned contract and regenerates SDK/CLI-owned code; `make check-all` checks code, tests, packaging, the independent extracted-crate consumer and CLI. Local checks do not publish anything or prove live Service compatibility. Licensed under Apache-2.0.

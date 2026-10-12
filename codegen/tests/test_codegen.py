@@ -128,7 +128,7 @@ def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
     codegen.generate_cli(document, nodes, tests, tmp_path / "cli/generated.rs")
     cli = (tmp_path / "cli/generated.rs").read_text()
     assert '"autogen-probe get"' in cli
-    assert "client.resources().autogen_probe().get(" in cli
+    assert "client.api().autogen_probe().get(" in cli
     assert '"/api/v1/autogen-probe"' in cli
     assert (tmp_path / "cli/schemas.json").exists()
     ordinary = (target / "resources.rs").read_text()
@@ -141,7 +141,7 @@ def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
     assert '#[serde(rename = "ice_cold")] IceCold' in ordinary
     assert "A local resource reference borrowing" in ordinary
     assert "`None` omits this parameter" in ordinary
-    assert "client.resources().autogen_probe().get(" in (target / "resource_tests.rs").read_text()
+    assert "client.api().autogen_probe().get(" in (target / "resource_tests.rs").read_text()
 
 
 def test_streaming_and_multimime_adapters_preserve_pinned_contract() -> None:

@@ -129,10 +129,9 @@ async fn ordinal_windows_preserve_whole_tail_and_do_not_autoload_history_or_clai
                 && page.resume_after == Some(None)
         );
     }
-    let mut reader =
-        ThreadStream::open(sdk.resources().threads().at("t"), StreamOptions::default())
-            .await
-            .unwrap();
+    let mut reader = ThreadStream::open(sdk.api().threads().at("t"), StreamOptions::default())
+        .await
+        .unwrap();
     assert!(matches!(
         reader.next().await.unwrap(),
         Some(ThreadFrame::Gap(_))
@@ -215,7 +214,7 @@ async fn sealed_historical_readback_cannot_heal_or_seal_an_existing_gapped_reade
     }).await;
     let sdk = client(&fixture);
     let mut reader = ThreadStream::open(
-        sdk.resources().threads().at("t"),
+        sdk.api().threads().at("t"),
         StreamOptions {
             run: Some("r".into()),
             position: Some("1-9".into()),

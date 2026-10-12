@@ -200,7 +200,7 @@ async fn generated_resources_forward_native_model_settings_and_upload_id() {
     let body: ModelCreate = serde_json::from_value(json!({"name":"model","provider_id":"provider","config":{"model_api":"provider:model","model_name":"example","settings":{"nested":{"array":[true,null,4]},"timeout":2.5}}})).unwrap();
     assert!(
         client
-            .resources()
+            .api()
             .models()
             .create(&body, Default::default())
             .await
@@ -219,7 +219,7 @@ async fn generated_resources_forward_native_model_settings_and_upload_id() {
     );
     assert!(
         client
-            .resources()
+            .api()
             .assets()
             .create(&body, Default::default())
             .await
@@ -283,7 +283,7 @@ async fn native_model_media_policy_forwarding_never_applies_client_side_defaults
     .await;
     let sdk = client(&fixture);
     let body: ModelCreate = serde_json::from_value(json!({"name":"model","provider_id":"p","config":{"model_api":"provider:model","model_name":"m","characteristics":{"image_input":{"split_large_images":false,"max_image_bytes":0,"max_images":0},"url_input":{"video":["youtube"]},"video_input":{"max_video_bytes":4096}}}})).unwrap();
-    sdk.resources()
+    sdk.api()
         .models()
         .create(&body, Default::default())
         .await

@@ -171,7 +171,7 @@ def command(trie: dict, name: str, op_tests: list[dict], definitions: list[str])
 
 def chain(op: dict, owner: str) -> str:
     parts = owner.split("/") if owner else []
-    expr = "client.resources()"
+    expr = "client.api()"
     for part in parts:
         if part.startswith("{"):
             param = part[1:-1]

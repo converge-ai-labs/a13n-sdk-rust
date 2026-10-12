@@ -77,7 +77,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if !snapshot.baseline { return Err("Historical window cannot seed a live reader".into()); }
     println!("Committed Items: {:#?}", snapshot.items);
     let position = snapshot.position.ok_or("No committed display yet; wait for a checkpoint")?;
-    let mut reader = ThreadStream::open(client.resources().threads().at(thread_id), StreamOptions {
+    let mut reader = ThreadStream::open(client.api().threads().at(thread_id), StreamOptions {
         run: Some(snapshot.run.id),
         position: Some(position),
         after: snapshot.resume_after.flatten(), // Omitted and explicit null both mean no hint.

@@ -130,11 +130,8 @@ pub async fn offline() -> Result<()> {
         matches!(run.items().get(RunItemsGetOptions{before:Some(1),after:Some(0),..Default::default()}).await,Err(Error::Api(ref error)) if error.status == 400),
         "Installed Service window error",
     )?;
-    let mut reader = ThreadStream::open(
-        client.resources().threads().at("t"),
-        StreamOptions::default(),
-    )
-    .await?;
+    let mut reader =
+        ThreadStream::open(client.api().threads().at("t"), StreamOptions::default()).await?;
     let Some(ThreadFrame::Delta { data, .. }) = reader.next().await? else {
         return Err("Missing native metadata delta".into());
     };
@@ -171,7 +168,7 @@ pub async fn history_followup(
     previous: &str,
 ) -> Result<()> {
     let read = client
-        .resources()
+        .api()
         .threads()
         .at(thread)
         .get(Default::default())

@@ -138,7 +138,7 @@ async fn offline() -> Result<()> {
         }
     });
     let client = Client::new(&base_url, Secret::new("offline-token"))?;
-    let resources = client.resources();
+    let resources = client.api();
     let mut pages = resources.threads().pages(ThreadsListOptions::default());
     let first = pages.next().await?.ok_or("Missing first page")?;
     ensure(
@@ -485,9 +485,9 @@ async fn live() -> Result<()> {
         .bearer(Secret::new(token.clone()))
         .http_builder(http)
         .build()?;
-    let resources = client.resources();
+    let resources = client.api();
     let workspace_id = required("A13N_WORKSPACE")?;
-    let ws = client.resources();
+    let ws = client.api();
     let agent = required("A13N_AGENT")?;
     native_configuration(&client, &agent).await?;
     ensure(
@@ -509,7 +509,7 @@ async fn live() -> Result<()> {
         "HTTPS auth configuration",
     )?;
     let canonical = resources.workspaces().at(&workspace_id).get().await?.data;
-    let key_ws = client.resources();
+    let key_ws = client.api();
     let request = m::NewThread::new(
         agent.clone(),
         text_payload("[slow] [long] Rust SDK installed-crate acceptance."),
@@ -1001,7 +1001,7 @@ async fn live() -> Result<()> {
 
 async fn memory(client: &Client, ws: &ServiceResources<'_>, agent: &str) -> Result<()> {
     let provider = client
-        .resources()
+        .api()
         .memory_providers()
         .at(required("A13N_MEMORY_PROVIDER")?);
     ensure(

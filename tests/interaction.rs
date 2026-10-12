@@ -507,7 +507,7 @@ async fn start_send_and_message_preserve_complete_configuration_and_ordered_medi
         interaction.close();
         let mut request = models::Message::new("a".into(), message);
         request.options = Some(Box::new(options));
-        sdk.resources()
+        sdk.api()
             .threads()
             .at("t")
             .inbox()
@@ -673,7 +673,7 @@ async fn explicit_normal_message_continues_last_sealed_failed_or_cancelled_run()
         let prior = sdk.run("prior").result(Default::default()).await.unwrap();
         assert_eq!(serde_json::to_value(&prior.status).unwrap(), status);
         let thread = sdk
-            .resources()
+            .api()
             .threads()
             .at("t")
             .get(Default::default())

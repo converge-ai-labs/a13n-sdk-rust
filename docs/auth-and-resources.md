@@ -12,7 +12,7 @@ use std::{env, error::Error};
 async fn main() -> Result<(), Box<dyn Error>> {
     let url = env::var("A13N_SERVICE_URL")?;
     let client = Client::new(&url, Secret::new(env::var("A13N_API_TOKEN")?))?;
-    let mut pages = client.resources().agents().pages(AgentsListOptions {
+    let mut pages = client.api().agents().pages(AgentsListOptions {
         limit: Some(10), ..Default::default()
     });
     while let Some(page) = pages.next().await? {
@@ -22,7 +22,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let id = env::var("A13N_DISPOSABLE_AGENT_ID")?;
-    let agent = client.resources().agents().at(&id); // Local binding; no HTTP call yet.
+    let agent = client.api().agents().at(&id); // Local binding; no HTTP call yet.
     let current = agent.get(Default::default()).await?;
     let etag = current.etag().ok_or("Agent response has no ETag")?;
     let change = models::AgentUpdate {
@@ -58,7 +58,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .session(jar, move || current_csrf.read().ok().map(|value| value.clone()))
         .workspace(env::var("A13N_WORKSPACE_ID")?)
         .build()?;
-    let agents = client.resources().agents().list(Default::default()).await?;
+    let agents = client.api().agents().list(Default::default()).await?;
     println!("Session Agents on first page: {}", agents.data.items.len());
     Ok(())
 }
@@ -72,7 +72,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 - **Login session:** use the cookie jar, live CSRF callback and explicit workspace shown above. This is not an alternative workspace-selection mechanism for an API key.
 - **Public/admin operations:** health and other public calls need no token. Administrative operations carry their own declared path IDs and authorization; a workspace-scoped session default is not added to unrelated operations. For private TLS roots, configure `.http_builder(...)` and keep certificate verification enabled.
 
-`client.resources()` is the complete typed generated resource graph. `.at(id)` is only a local handle; an async leaf method performs a request. `Response<T>` keeps `data`, actual HTTP status and headers, ETag and request ID. A field typed `Option<Option<T>>` can be omitted (`None`), sent as JSON null (`Some(None)`) or sent with a value (`Some(Some(value))`), but the **Service** defines what null means for each field. The generated operations include the contract's status/headers, cursor pagination, binary ownership and administrative endpoints. `Client::execute` exposes the generated API functions on the same transport when you need an advanced direct call.
+`client.api()` is the complete typed generated resource graph, for example `client.api().agents()`. Migrate older `client.resources()` calls to `client.api()`; no compatibility accessor remains. Authored `client.agent(id)` workflows are unchanged, as are `a13n::resources` option types and borrowed resource handles. `.at(id)` is only a local handle; an async leaf method performs a request. `Response<T>` keeps `data`, actual HTTP status and headers, ETag and request ID. A field typed `Option<Option<T>>` can be omitted (`None`), sent as JSON null (`Some(None)`) or sent with a value (`Some(Some(value))`), but the **Service** defines what null means for each field. The generated operations include the contract's status/headers, cursor pagination, binary ownership and administrative endpoints. `Client::execute` exposes the generated API functions on the same transport when you need an advanced direct call.
 
 **Common mistakes:** Do not use an Agent name where an Agent ID is required; Models alone use keys. A session workspace header must not be copied into every request. Keep raw credentials and request bodies out of logs; see [errors and recovery](errors-and-recovery.md) for safe diagnostics.
 
@@ -87,7 +87,7 @@ use std::{env, error::Error};
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::new(&env::var("A13N_SERVICE_URL")?, Secret::new(env::var("A13N_API_TOKEN")?))?;
-    let provider = client.resources().model_providers().at(env::var("A13N_MODEL_PROVIDER_ID")?);
+    let provider = client.api().model_providers().at(env::var("A13N_MODEL_PROVIDER_ID")?);
     let status = provider.authorization().get(Default::default()).await?;
     println!("Authorization state: {:?}, HTTP {}", status.data.state, status.status);
     let discovered = provider.models().get(Default::default()).await?;

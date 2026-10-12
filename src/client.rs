@@ -277,7 +277,14 @@ impl Client {
     pub fn new(base_url: &str, token: Secret) -> Result<Self, Error> {
         Self::builder(base_url).bearer(token).build()
     }
-    pub fn resources(&self) -> crate::resources::ServiceResources<'_> {
+    /// Complete native Service API on this Client's shared transport and authentication.
+    /// This borrowed graph binds resource IDs locally; leaf operations perform I/O.
+    /// The obsolete pre-0.1 resources accessor is intentionally absent.
+    /// ```compile_fail
+    /// use a13n::Client;
+    /// fn obsolete(client: &Client) { let _ = client.resources(); }
+    /// ```
+    pub fn api(&self) -> crate::resources::ServiceResources<'_> {
         crate::resources::ServiceResources(crate::resources::Binding {
             client: self,
             ids: Vec::new(),

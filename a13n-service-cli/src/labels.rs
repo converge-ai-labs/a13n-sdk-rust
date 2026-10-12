@@ -28,7 +28,7 @@ pub async fn run(
         .ok_or_else(|| CliError::input("missing labels command"))?;
     let resource = required(matches, "resource")?;
     let id = required(matches, "id")?;
-    let resources = client.resources();
+    let resources = client.api();
     let set: Option<HashMap<String, String>> = matches
         .get_one::<String>("set")
         .map(|value| {

@@ -100,7 +100,7 @@ impl Agent {
                 request_deadline,
                 async |transport| {
                     let receipt = transport
-                        .resources()
+                        .api()
                         .threads()
                         .create(
                             &body,
@@ -148,7 +148,7 @@ impl Agent {
                 request_deadline,
                 async |transport| {
                     let receipt = transport
-                        .resources()
+                        .api()
                         .threads()
                         .at(&thread)
                         .inbox()
@@ -198,7 +198,7 @@ impl Run {
                 request_deadline,
                 async |transport| {
                     let receipt = transport
-                        .resources()
+                        .api()
                         .runs()
                         .at(&self.id)
                         .resume(
@@ -270,7 +270,7 @@ impl Run {
                 request_deadline,
                 async |transport| {
                     let receipt = transport
-                        .resources()
+                        .api()
                         .runs()
                         .at(&self.id)
                         .fork(
