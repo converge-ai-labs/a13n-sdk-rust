@@ -28,6 +28,9 @@ pub struct DisplayContinuation {
     #[serde(rename = "full_content", skip_serializing_if = "Option::is_none")]
     pub full_content: Option<bool>,
 
+    #[serde(rename = "memory_sources", skip_serializing_if = "Option::is_none")]
+    pub memory_sources: Option<std::collections::HashMap<String, Vec<models::MemorySource>>>,
+
     #[serde(rename = "next_ordinal")]
     pub next_ordinal: i32,
 
@@ -55,6 +58,7 @@ impl DisplayContinuation {
             arguments: None,
             fragments: None,
             full_content: None,
+            memory_sources: None,
             next_ordinal,
             observer: None,
             position: Box::new(position),

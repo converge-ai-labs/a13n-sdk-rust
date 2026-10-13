@@ -97,12 +97,8 @@ async fn result_only_waits_for_consumed_entry_not_provisional_assignment() {
 
 #[tokio::test]
 async fn start_imports_native_history_once_and_thread_readback_preserves_json() {
-    let history = json!([
-        {"kind":"request", "parts":[{"part_kind":"user-prompt", "content":"Earlier question"}],
-         "metadata":{"external":"value", "count": 3}},
-        {"kind":"response", "parts":[{"part_kind":"text", "content":"Earlier answer"}],
-         "usage":{"input_tokens": 5}}
-    ]);
+    let history_json = r#"[{"parts":[{"content":"Earlier question","part_kind":"user-prompt"}],"kind":"request","metadata":{"z":false,"a":null}},{"parts":[{"args":{"z":0,"a":{"second":2,"first":1}},"tool_call_id":"call","tool_name":"lookup","part_kind":"tool-call"}],"kind":"response"},{"parts":[{"content":{"z":[],"a":{}},"tool_call_id":"call","tool_name":"lookup","part_kind":"tool-return"}],"kind":"request"}]"#;
+    let history: Value = serde_json::from_str(history_json).unwrap();
     let mut accepted = receipt();
     accepted["thread"]["message_history"] = history.clone();
     let mut thread = sample("ThreadView");
@@ -167,8 +163,17 @@ async fn start_imports_native_history_once_and_thread_readback_preserves_json() 
         )
         .await
         .unwrap();
+    assert_eq!(
+        serde_json::to_string(&readback.data.message_history).unwrap(),
+        history_json
+    );
     let first = fixture.requests.recv().await.unwrap();
     assert_eq!(first.json()["message_history"], history);
+    assert!(
+        String::from_utf8(first.body.clone())
+            .unwrap()
+            .contains(history_json)
+    );
     assert_eq!(
         first.json()["payload"]["content"][0]["text"],
         "New question"

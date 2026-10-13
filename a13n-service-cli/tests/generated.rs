@@ -63,6 +63,40 @@ fn binary(args: &[&str]) -> std::process::Output {
 }
 
 #[test]
+fn required_array_query_dispatch_preserves_every_repeated_entry_id() {
+    let missing = binary(&["sessions", "message-authors", "list", "--session", "s"]);
+    assert_eq!(missing.status.code(), Some(2));
+    let (base, server) = serve(vec![(
+        200,
+        vec![("Content-Type", "application/json")],
+        br#"{"items":[]}"#.to_vec(),
+    )]);
+    let output = binary(&[
+        "--base-url",
+        &base,
+        "sessions",
+        "message-authors",
+        "list",
+        "--session",
+        "s",
+        "--entry-id",
+        "ent one",
+        "--entry-id",
+        "ent/two",
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let requests = server.join().unwrap();
+    assert_eq!(requests.len(), 1);
+    assert!(requests[0].starts_with(
+        "GET /api/v1/sessions/s/message-authors?entry_id=ent+one&entry_id=ent%2Ftwo HTTP/1.1\r\n"
+    ));
+}
+
+#[test]
 fn paginates_without_losing_page_bodies_or_metadata() {
     let (base, server) = serve(vec![
         (
@@ -1199,8 +1233,8 @@ fn events_jsonl_preserves_optional_null_and_populated_item_metadata() {
     use serde_json::json;
     for item in [
         json!({"id":"i","kind":"observation","state":"failed"}),
-        json!({"id":"i","kind":"observation","state":"failed","ordinal":null,"response_group":null,"failure":null}),
-        json!({"id":"i","kind":"observation","state":"failed","ordinal":42,"response_group":"child","failure":{"custom":[false,null,[]]}}),
+        json!({"id":"i","kind":"observation","state":"failed","ordinal":null,"response_group":null,"failure":null,"memory_sources":null}),
+        json!({"id":"i","kind":"observation","state":"failed","ordinal":42,"response_group":"child","failure":{"custom":[false,null,[]]},"memory_sources":[{"kind":"record","memory":"notes","status":"recalled","records":[{"id":"r","sha256":"digest"}],"sources_truncated":false}]}),
     ] {
         let event = json!({"type":"CUSTOM","subagentRunId":"child","value":{"unknown":null}});
         let body = format!(

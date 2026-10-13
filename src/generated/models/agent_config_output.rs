@@ -30,6 +30,9 @@ pub struct AgentConfigOutput {
     #[serde(rename = "instructions", skip_serializing_if = "Option::is_none")]
     pub instructions: Option<String>,
 
+    #[serde(rename = "lazy_environment", skip_serializing_if = "Option::is_none")]
+    pub lazy_environment: Option<bool>,
+
     #[serde(
         rename = "media_understanding",
         skip_serializing_if = "Option::is_none"
@@ -78,6 +81,9 @@ pub struct AgentConfigOutput {
     )]
     pub reviewer: Option<Option<Box<models::AgentReviewer>>>,
 
+    #[serde(rename = "skill_sync", skip_serializing_if = "Option::is_none")]
+    pub skill_sync: Option<Box<models::SkillSync>>,
+
     #[serde(rename = "skills", skip_serializing_if = "Option::is_none")]
     pub skills: Option<Vec<models::SkillSelection>>,
 
@@ -101,6 +107,7 @@ impl AgentConfigOutput {
             connection_tools: None,
             default_environment_template_id: None,
             instructions: None,
+            lazy_environment: None,
             media_understanding: None,
             memory_mounts: None,
             model,
@@ -110,6 +117,7 @@ impl AgentConfigOutput {
             plugins: None,
             retries: None,
             reviewer: None,
+            skill_sync: None,
             skills: None,
             subagent_mode: None,
             subagents: None,

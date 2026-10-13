@@ -39,6 +39,14 @@ pub struct AgentOverrideInput {
     pub instructions: Option<Option<String>>,
 
     #[serde(
+        rename = "lazy_environment",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub lazy_environment: Option<Option<bool>>,
+
+    #[serde(
         rename = "media_understanding",
         default,
         with = "::serde_with::rust::double_option",
@@ -103,6 +111,14 @@ pub struct AgentOverrideInput {
     pub reviewer: Option<Option<Box<models::AgentReviewer>>>,
 
     #[serde(
+        rename = "skill_sync",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub skill_sync: Option<Option<Box<models::AgentOverrideInputSkillSync>>>,
+
+    #[serde(
         rename = "skills",
         default,
         with = "::serde_with::rust::double_option",
@@ -134,6 +150,7 @@ impl AgentOverrideInput {
             client_tools: None,
             connection_tools: None,
             instructions: None,
+            lazy_environment: None,
             media_understanding: None,
             model: None,
             model_characteristics: None,
@@ -142,6 +159,7 @@ impl AgentOverrideInput {
             plugins: None,
             retries: None,
             reviewer: None,
+            skill_sync: None,
             skills: None,
             subagents: None,
             toolsets: None,

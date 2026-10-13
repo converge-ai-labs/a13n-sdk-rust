@@ -42,11 +42,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 ## Every valid Run option is public
 
-`RunOptions` exposes configuration, overrides, labels and max_usage as thin canonical-wire-backed builders. `RunConfiguration` exposes allowed_hosts and arbitrary namespaced extensions. `Overrides` exposes **all** current fields: client_tools, connection_tools, instructions, media_understanding, model, model_characteristics, model_settings, output_spec, plugins, retries, reviewer, skills, subagents and toolsets. Nested canonical types such as `OutputSpec`, `UsageLimit`, `ClientToolDefinition` and `RetryOverride` are root exports. Their permission/reviewer enums are also public (`ClientToolPermission`, `ToolPermissionSetting`, `ReviewerOnError`, `ReviewerOnFlagged`, `RuleOnFlagged`, `ToolRiskLevel`), as are `MemoryAccess` and `ToolReviewRule`. Arbitrary settings and subagent maps remain native JSON, not stringified dictionaries. Advanced `from_wire`/`into_wire` is explicit and not required to use a supported option.
+`RunOptions` exposes configuration, overrides, labels and max_usage as thin canonical-wire-backed builders. `RunConfiguration` exposes allowed_hosts and arbitrary namespaced extensions. `Overrides` exposes **all** current fields: client_tools, connection_tools, instructions, lazy_environment, media_understanding, model, model_characteristics, model_settings, output_spec, plugins, retries, reviewer, skill_sync, skills, subagents and toolsets. Nested canonical types such as `OutputSpec`, `UsageLimit`, `ClientToolDefinition` and `RetryOverride` are root exports. Their permission/reviewer enums are also public (`ClientToolPermission`, `ToolPermissionSetting`, `ReviewerOnError`, `ReviewerOnFlagged`, `RuleOnFlagged`, `ToolRiskLevel`), as are `MemoryAccess` and `ToolReviewRule`. Arbitrary settings and subagent maps remain native JSON, not stringified dictionaries. Advanced `from_wire`/`into_wire` is explicit and not required to use a supported option.
 
 For nullable builders, not calling the method omits the field; passing `None` sends null; passing `Some(value)` sends that exact value. Empty maps/arrays/strings, false and zero remain values. Configuration is a complete snapshot, not a local merge: omission/null selects defaults for new Runs and retains an active Run's frozen snapshot when steering. `.configuration(Some(RunConfiguration::new()))` sends `{}`; `.allowed_hosts(None)` is unrestricted and `.allowed_hosts(Some(vec![]))` denies all destinations. A differing explicit active-Run snapshot returns Service `409` with reason `run_configuration_immutable`; the SDK never retries or silently switches delivery. Waiting is sealed, not active. Explicit `SendOptions.delivery = Some(a13n::Delivery::NextRun)` chooses a later Run; recovery/resume/children retain their inherited snapshot. Read `outcome.http_response.data.options.configuration` for authoritative readback.
 
 `StartOptions` also exposes revision, delivery, environment/Memory mounts, Session ID, MCP headers and imported history; `SendOptions` exposes revision, delivery and grouped Run options. Service owns Agent/Model defaults, settings replacement, host normalization and provider routing. No option makes an Agent the permanent Thread owner.
+
+`lazy_environment(Some(false))` asks Service to prepare mounted instances before execution; an Environment ID alone does not mean it is ready. Skill sync defaults to shared conventional names at `/workspace/.agents/skills/<name>` (`overwrite=true`, `cleanup=false`). `OverrideSkillSync::Shared(Box::new(SharedSkillSync { mode: Some(SharedSkillSyncMode::Shared), overwrite: Some(false), cleanup: Some(false) }))` selects an explicit shared policy. Opt into isolated package reuse with `OverrideSkillSync::Isolated(Box::new(IsolatedSkillSync { mode: Some(IsolatedSkillSyncMode::Isolated), cache_count: Some(128) }))`; all these canonical types are root exports. Explicit mode is required. A Run override replaces the entire policy; isolated cache_count zero disables trimming. Shared cleanup removes names outside the Agent's selection, including other Agents' skills. The SDK never synchronizes these directories itself.
 
 ## Fork from an exact Run
 
@@ -58,12 +60,13 @@ A new Thread can import completed Pydantic AI ModelMessage JSON before its first
 
 ```rust
 use a13n::{Client, Secret, StartOptions};
-use std::{collections::HashMap, env, error::Error};
+use serde_json::{Map, Value};
+use std::{env, error::Error};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::new(&env::var("A13N_SERVICE_URL")?, Secret::new(env::var("A13N_API_TOKEN")?))?;
-    let history: Vec<HashMap<String, serde_json::Value>> = serde_json::from_value(serde_json::json!([
+    let history: Vec<Map<String, Value>> = serde_json::from_value(serde_json::json!([
         {"kind":"request","parts":[{"part_kind":"user-prompt","content":"Is A-100 available?"}]},
         {"kind":"response","parts":[{"part_kind":"tool-call","tool_name":"lookup_inventory","tool_call_id":"previous-call-1","args":{"sku":"A-100"}}]},
         {"kind":"request","parts":[{"part_kind":"tool-return","tool_name":"lookup_inventory","tool_call_id":"previous-call-1","content":{"quantity":3}}]},
@@ -75,13 +78,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
         },
     ).await?;
     let thread = interaction.thread.as_ref().ok_or("Missing Thread")?.resource().get(Default::default()).await?;
-    assert_eq!(thread.data.message_history, history);
+    assert_eq!(serde_json::to_string(&thread.data.message_history)?, serde_json::to_string(&history)?);
     println!("Thread {}, exact Run status: {:?}", thread.data.id, interaction.result().await?.status);
     Ok(())
 }
 ```
 
-This is native Pydantic AI history, **not** UI Items, OpenAI chat messages, a Harness checkpoint or authorization to execute historical tools. Service validates completed tool/result pairing, at most 256 messages and 262144 normalized UTF-8 bytes; it rejects media, system instructions and unresolved calls before creating a Thread. Follow-up sends never repeat message_history. The accepted import remains immutable in Thread readback; an initial failed Run can still start a later root Run from it, while a fork inherits checkpoint context.
+This is native Pydantic AI history, **not** UI Items, OpenAI chat messages, a Harness checkpoint or authorization to execute historical tools. Service validates completed tool/result pairing, at most 256 messages and 262144 normalized UTF-8 bytes; it rejects media, system instructions and unresolved calls before creating a Thread. Follow-up sends never repeat message_history. Messages use ordered `serde_json::Map<String, Value>`, and nested `Value` objects preserve insertion order. Service retains submitted key order, including tool arguments/results; persist that same order for immutable history and recovery. The accepted import remains immutable in Thread readback; an initial failed Run can still start a later root Run from it, while a fork inherits checkpoint context.
 
 ## Advanced setup: create an Agent
 

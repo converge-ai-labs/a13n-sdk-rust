@@ -26,6 +26,10 @@ pub enum ToolsetKey {
     Assets,
     #[serde(rename = "configuration")]
     Configuration,
+    #[serde(rename = "traces")]
+    Traces,
+    #[serde(rename = "findings")]
+    Findings,
 }
 
 impl std::fmt::Display for ToolsetKey {
@@ -37,6 +41,8 @@ impl std::fmt::Display for ToolsetKey {
             Self::Memory => write!(f, "memory"),
             Self::Assets => write!(f, "assets"),
             Self::Configuration => write!(f, "configuration"),
+            Self::Traces => write!(f, "traces"),
+            Self::Findings => write!(f, "findings"),
         }
     }
 }

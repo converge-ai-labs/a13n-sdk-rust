@@ -219,14 +219,16 @@ def dispatch_case(index: int, test: dict) -> str:
         for field, typ, required_field in fields:
             if field == "content_type" and media and "multipart/form-data" not in media:
                 value = 'required(matches, "content_type")?.to_owned()'
+            elif "Vec<" in typ:
+                value = f"input::many(matches, {q(field)})?"
+                if required_field:
+                    value += f".ok_or_else(|| CliError::input({q(f'missing --{field}')}))?"
             elif required_field:
                 value = (
                     f"input::option(required(matches, {q(field)})?)?"
                     if typ != "String"
                     else f"required(matches, {q(field)})?.to_owned()"
                 )
-            elif "Vec<" in typ:
-                value = f"input::many(matches, {q(field)})?"
             else:
                 value = f"input::optional(matches, {q(field)})?"
             expressions.append(f"{identifier(field)}: {value}")

@@ -50,6 +50,13 @@ pub struct ItemRef {
         skip_serializing_if = "Option::is_none"
     )]
     pub failure: Option<Option<Map<String, Value>>>,
+    /// Source evidence only; the reader never expands memory or archived content.
+    #[serde(
+        default,
+        with = "serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub memory_sources: Option<Option<Vec<crate::generated::models::MemorySource>>>,
 }
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct Boundary {
@@ -64,7 +71,7 @@ pub struct Delta {
     pub sequence: i64,
     pub event: Map<String, Value>,
     #[serde(deserialize_with = "Option::deserialize")]
-    pub item: Option<ItemRef>,
+    pub item: Option<Box<ItemRef>>,
 }
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct Changed {

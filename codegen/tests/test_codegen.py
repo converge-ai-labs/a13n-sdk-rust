@@ -23,6 +23,10 @@ def test_adapter_keeps_typed_unions_and_contract_unchanged() -> None:
         assert schemas[name] == document["components"]["schemas"][name]
     assert schemas["RunStatus"]["x-rust-unknown-enum"]
     assert "x-rust-unknown-enum" not in schemas["ItemKind"]
+    for name in ("NewThread", "ThreadView"):
+        assert schemas[name]["properties"]["message_history"]["x-rust-type"] == (
+            "Vec<serde_json::Map<String, serde_json::Value>>"
+        )
 
 
 def test_schema_adapters_preserve_presence_constants_binary_and_sensitive_data() -> None:
@@ -111,6 +115,12 @@ def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
     document["paths"]["/api/v1/autogen-probe"]["get"]["parameters"] = [
         {"name": "autogen_probe_value", "in": "query", "schema": {"type": "string"}},
         {
+            "name": "required_entries",
+            "in": "query",
+            "required": True,
+            "schema": {"type": "array", "items": {"type": "string"}},
+        },
+        {
             "name": "flavor",
             "in": "query",
             "schema": {"anyOf": [{"type": "string", "enum": ["warm", "ice_cold"]}, {"type": "null"}]},
@@ -130,6 +140,7 @@ def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
     assert '"autogen-probe get"' in cli
     assert "client.api().autogen_probe().get(" in cli
     assert '"/api/v1/autogen-probe"' in cli
+    assert 'required_entries: input::many(matches, "required_entries")?.ok_or_else(' in cli
     assert (tmp_path / "cli/schemas.json").exists()
     ordinary = (target / "resources.rs").read_text()
     assert "pub autogen_probe_value:Option<String>" in ordinary

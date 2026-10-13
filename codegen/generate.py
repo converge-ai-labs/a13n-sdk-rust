@@ -72,6 +72,11 @@ def prepare(document: dict) -> dict:
             for child in value:
                 visit(child)
 
+    # Imported native history is immutable ordered JSON, including each message
+    # object. HashMap would reorder the model-visible context at the wire boundary.
+    for name, schema in schemas.items():
+        if name in {"NewThread", "ThreadView"}:
+            schema["properties"]["message_history"]["x-rust-type"] = "Vec<serde_json::Map<String, serde_json::Value>>"
     visit(document)
     schemas["RunStatus"]["x-rust-unknown-enum"] = True
     return document

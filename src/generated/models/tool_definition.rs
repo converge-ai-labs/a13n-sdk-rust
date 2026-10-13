@@ -25,6 +25,9 @@ pub struct ToolDefinition {
     #[serde(rename = "deployment_supported")]
     pub deployment_supported: bool,
 
+    #[serde(rename = "description", skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+
     #[serde(rename = "display_name")]
     pub display_name: String,
 
@@ -62,6 +65,7 @@ impl ToolDefinition {
             default_enabled,
             default_permission,
             deployment_supported,
+            description: None,
             display_name,
             execution_id,
             key,
