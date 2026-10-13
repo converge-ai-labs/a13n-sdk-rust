@@ -41,7 +41,7 @@ pub struct NewThread {
     /// Pydantic AI ModelMessage JSON objects, validated by the Service. Imports completed user text, model text and closed tool-call/JSON-result exchanges; no instructions, media or suspended execution. At most 256 messages and 256 KiB of normalized JSON.
 
     #[serde(rename = "message_history", skip_serializing_if = "Option::is_none")]
-    pub message_history: Option<Vec<std::collections::HashMap<String, serde_json::Value>>>,
+    pub message_history: Option<Vec<serde_json::Map<String, serde_json::Value>>>,
 
     #[serde(rename = "options", skip_serializing_if = "Option::is_none")]
     pub options: Option<Box<models::RunOptionsInput>>,

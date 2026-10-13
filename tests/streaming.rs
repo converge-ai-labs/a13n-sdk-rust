@@ -498,10 +498,15 @@ async fn delta_required_nullable_item_and_optional_metadata_preserve_exact_wire(
     nulls["ordinal"] = Value::Null;
     nulls["response_group"] = Value::Null;
     nulls["failure"] = Value::Null;
+    nulls["memory_sources"] = Value::Null;
     let mut populated = base.clone();
     populated["ordinal"] = json!(42);
     populated["response_group"] = json!("child-group");
     populated["failure"] = json!({"type":"custom","details":{"values":[false,null,0,[]]}});
+    populated["memory_sources"] = json!([
+        {"kind":"file","memory":"notes","memory_id":null,"status":"changes","cursor":"next","files":[{"path":"a.md","sha256":"digest","bytes":0,"truncated":false}],"records":[],"sources_truncated":false},
+        {"kind":"record","memory":"facts","status":"recalled","records":[{"id":"record","sha256":"digest"}]}
+    ]);
     let event = json!({"type":"CUSTOM","name":"org.example.future","subagentRunId":"child","value":{"null":null,"empty":[],"enabled":false}});
     for item in [Value::Null, base, nulls, populated] {
         let payload = json!({"run_id":"r","attempt":1,"sequence":1,"event":event,"item":item});

@@ -19,7 +19,7 @@ pub struct StartOptions {
     pub environments: Option<Vec<models::MountCreate>>,
     pub mcp_headers: Option<serde_json::Value>,
     pub memories: Option<Vec<models::MemoryMount>>,
-    pub message_history: Option<Vec<HashMap<String, serde_json::Value>>>,
+    pub message_history: Option<Vec<serde_json::Map<String, serde_json::Value>>>,
     pub run_options: Option<RunOptions>,
     pub session_id: Option<Option<String>>,
 }

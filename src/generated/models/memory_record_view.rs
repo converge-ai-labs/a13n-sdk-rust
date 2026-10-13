@@ -18,6 +18,14 @@ pub struct MemoryRecordView {
     pub id: String,
 
     #[serde(
+        rename = "provenance",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub provenance: Option<Option<Box<models::MemoryRecordProvenance>>>,
+
+    #[serde(
         rename = "score",
         default,
         with = "::serde_with::rust::double_option",
@@ -42,6 +50,7 @@ impl MemoryRecordView {
     pub fn new(id: String, text: String) -> MemoryRecordView {
         MemoryRecordView {
             id,
+            provenance: None,
             score: None,
             text,
             updated_at: None,

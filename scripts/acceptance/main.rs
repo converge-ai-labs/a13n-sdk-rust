@@ -1,4 +1,5 @@
 //! Independent executable consuming only the extracted a13n .crate archive.
+mod catchup;
 mod display;
 mod sse;
 mod workflow;
@@ -290,6 +291,7 @@ async fn offline() -> Result<()> {
     server.await?;
     sse::offline().await?;
     display::offline().await?;
+    catchup::offline().await?;
     let mut receipt = m::Submitted::default();
     receipt.thread.id = "t".into();
     receipt.thread.workspace_id = "w".into();
@@ -490,6 +492,7 @@ async fn live() -> Result<()> {
     let ws = client.api();
     let agent = required("A13N_AGENT")?;
     native_configuration(&client, &agent).await?;
+    catchup::live(&client, &agent).await?;
     ensure(
         resources.healthz().get().await?.status.as_u16() == 200,
         "HTTPS health",
@@ -570,11 +573,12 @@ async fn live() -> Result<()> {
     wait(accepted(&submitted)?, m::RunStatus::Completed).await?;
     println!("Verified HTTPS: typed submission, 201/200 replay, canonical binding, Run readback");
 
-    let imported_history: Vec<std::collections::HashMap<String, serde_json::Value>> =
-        serde_json::from_value(serde_json::json!([
+    let imported_history: Vec<serde_json::Map<String, serde_json::Value>> = serde_json::from_value(
+        serde_json::json!([
             {"kind": "request", "parts": [{"part_kind": "user-prompt", "content": "Earlier question."}]},
             {"kind": "response", "parts": [{"part_kind": "text", "content": "Earlier answer."}]}
-        ]))?;
+        ]),
+    )?;
     let mut imported_request =
         m::NewThread::new(agent.clone(), text_payload("Continue after import."));
     imported_request.message_history = Some(imported_history.clone());

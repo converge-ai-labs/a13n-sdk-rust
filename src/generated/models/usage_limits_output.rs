@@ -11,7 +11,7 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// UsageLimitsOutput : Limits on model usage.  The request count is tracked by pydantic_ai, and the request limit is checked before each request to the model. Token counts are provided in responses from the model, and the token limits are checked after each response.  Each of the limits can be set to `None` to disable that limit.
+/// UsageLimitsOutput : Limits on model usage.  The request count is tracked by Pydantic AI, and the request limit is checked at the start of each step of the agent loop. Token counts are provided in responses from the model, and the token limits are checked after each response.  Each of the limits can be set to `None` to disable that limit.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UsageLimitsOutput {
     #[serde(
@@ -78,7 +78,7 @@ pub struct UsageLimitsOutput {
 }
 
 impl UsageLimitsOutput {
-    /// Limits on model usage.  The request count is tracked by pydantic_ai, and the request limit is checked before each request to the model. Token counts are provided in responses from the model, and the token limits are checked after each response.  Each of the limits can be set to `None` to disable that limit.
+    /// Limits on model usage.  The request count is tracked by Pydantic AI, and the request limit is checked at the start of each step of the agent loop. Token counts are provided in responses from the model, and the token limits are checked after each response.  Each of the limits can be set to `None` to disable that limit.
     pub fn new() -> UsageLimitsOutput {
         UsageLimitsOutput {
             cost_limit: None,

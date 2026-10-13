@@ -46,6 +46,15 @@ def offline(source: Path) -> None:
         "ordinal": 42,
         "response_group": None,
         "failure": {"custom": [False, None, []]},
+        "memory_sources": [
+            {
+                "kind": "record",
+                "memory": "notes",
+                "status": "recalled",
+                "records": [{"id": "r", "sha256": "digest"}],
+                "sources_truncated": False,
+            }
+        ],
     }
     native_event = {
         "type": "TOOL_CALL_RESULT",
@@ -133,7 +142,7 @@ def offline(source: Path) -> None:
 
         def serve() -> None:
             try:
-                for _ in range(29):
+                for _ in range(32):
                     connection, _ = listener.accept()
                     with connection:
                         connection.settimeout(5)
@@ -195,6 +204,26 @@ def offline(source: Path) -> None:
                             if "before" in query and "after" in query:
                                 status = 400
                                 response = {"error": {"code": "invalid_argument", "message": "exclude before/after"}}
+                        if path == "/api/v1/runs/r/contents/c":
+                            status = 200
+                            response = {
+                                "id": "c",
+                                "media_type": "application/json",
+                                "value": {"z": False, "a": [None, 0]},
+                                "truncated": False,
+                            }
+                        if path == "/api/v1/sessions/s/message-authors?entry_id=e&entry_id=other":
+                            status = 200
+                            response = {
+                                "items": [
+                                    {
+                                        "entry_id": "e",
+                                        "principal_id": "p",
+                                        "principal": None,
+                                        "submitted_at": "2026-10-13T00:00:00Z",
+                                    }
+                                ]
+                            }
                         if path.endswith("/stream"):
                             status = 200
                             content_type = "text/event-stream"
@@ -342,12 +371,48 @@ def offline(source: Path) -> None:
             assert history["position"] is None and history["continuation"] is None and history["resume_after"] is None
             assert captured[-1][1] == f"/api/v1/runs/r/items?{flag[2:]}={value}&limit=2"
         execute("runs", "items", "get", "--run", "r", "--before", "1", "--after", "0", code=2)
+        content = execute("runs", "contents", "get", "c", "--run", "r")
+        assert content["value"] == {"z": False, "a": [None, 0]} and not content["truncated"]
+        authors = execute(
+            "sessions", "message-authors", "list", "--session", "s", "--entry-id", "e", "--entry-id", "other"
+        )
+        assert authors["items"][0]["entry_id"] == "e"
+        assert captured[-1][1] == "/api/v1/sessions/s/message-authors?entry_id=e&entry_id=other"
+        ordered_history = [
+            {
+                "parts": [{"args": {"z": 0, "a": {"second": 2, "first": 1}}, "part_kind": "tool-call"}],
+                "kind": "response",
+            }
+        ]
+        execute(
+            "threads",
+            "create",
+            "--body",
+            json.dumps(
+                {
+                    "agent_id": "a",
+                    "payload": native_payload,
+                    "message_history": ordered_history,
+                    "options": {
+                        "overrides": {"lazy_environment": False, "skill_sync": {"mode": "isolated", "cache_count": 0}}
+                    },
+                }
+            ),
+            "--idempotency-key",
+            "ordered",
+            code=4,
+        )
+        assert json.dumps(captured[-1][2]["message_history"]) == json.dumps(ordered_history)
+        assert captured[-1][2]["options"]["overrides"] == {
+            "lazy_environment": False,
+            "skill_sync": {"mode": "isolated", "cache_count": 0},
+        }
         server.join(timeout=12)
-        assert not server.is_alive() and not failures and len(captured) == 29, (
+        assert not server.is_alive() and not failures and len(captured) == 32, (
             "Copied CLI offline server did not complete"
         )
     print(
-        "Copied CLI local TCP: configuration omission/null/empty/native JSON, typed payload file/stdin, media policy, five OAuth/discovery commands, native child ItemRef metadata, ordinal windows, whole tail > limit, recursive continuation and historical null metadata passed",
+        "Copied CLI local TCP: configuration omission/null/empty/native JSON, typed payload file/stdin, media policy, five OAuth/discovery commands, native child ItemRef/memory provenance, ordered imported history, explicit Run content/Session authors, skill/lazy overrides, ordinal windows, whole tail > limit, recursive continuation and historical null metadata passed",
         flush=True,
     )
 
@@ -613,9 +678,84 @@ def main() -> None:
         assert received_image.read_bytes() == png
         print("Copied CLI verified HTTPS: 300KB multipart/binary and explicit PNG MIME", flush=True)
 
+        large_text = "Saved display Unicode evidence: " + "語" * 16000
+        large = call(
+            "threads",
+            "create",
+            "--body",
+            json.dumps(
+                {
+                    "agent_id": agent,
+                    "payload": payload(large_text),
+                    "options": {
+                        "overrides": {"lazy_environment": False, "skill_sync": {"mode": "isolated", "cache_count": 0}}
+                    },
+                }
+            ),
+            "--idempotency-key",
+            str(uuid.uuid4()),
+            status=201,
+        )["data"]
+        deadline = time.monotonic() + 80
+        while True:
+            incorporated = call("threads", "inbox", "get", large["entry"]["id"], "--thread", large["thread"]["id"])[
+                "data"
+            ]
+            if incorporated["status"] == "consumed":
+                break
+            assert incorporated["status"] in {"pending", "assigned"} and time.monotonic() < deadline
+            time.sleep(0.1)
+        large_run_id = incorporated["assigned_run_id"]
+        assert call("runs", "wait", large_run_id)["data"]["status"] == "completed"
+        large_items = call("runs", "items", "get", "--run", large_run_id)["data"]
+        reference = next(
+            ref
+            for item in large_items["items"]
+            for ref in item.get("content_refs", {}).values()
+            if ref["size_bytes"] == len(large_text.encode())
+        )
+        content = call("runs", "contents", "get", reference["id"], "--run", large_run_id)["data"]
+        assert content["value"] == large_text and content["media_type"] == "text/plain" and not content["truncated"]
+        authors = call(
+            "sessions",
+            "message-authors",
+            "list",
+            "--session",
+            large["thread"]["session_id"],
+            "--entry-id",
+            large["entry"]["id"],
+            "--entry-id",
+            "ent_missing",
+        )["data"]["items"]
+        assert len(authors) == 1 and authors[0]["entry_id"] == large["entry"]["id"]
+        print(
+            "Copied CLI verified HTTPS: 48KB Unicode content refs/read, exact Entry authors, lazy/isolated options",
+            flush=True,
+        )
         history = [
-            {"kind": "request", "parts": [{"part_kind": "user-prompt", "content": "Imported question."}]},
-            {"kind": "response", "parts": [{"part_kind": "text", "content": "Imported answer."}]},
+            {"parts": [{"content": "Imported question.", "part_kind": "user-prompt"}], "kind": "request"},
+            {
+                "parts": [
+                    {
+                        "args": {"z": 0, "a": {"second": 2, "first": 1}},
+                        "tool_call_id": "imported",
+                        "tool_name": "lookup",
+                        "part_kind": "tool-call",
+                    }
+                ],
+                "kind": "response",
+            },
+            {
+                "parts": [
+                    {
+                        "content": {"z": [], "a": False},
+                        "tool_call_id": "imported",
+                        "tool_name": "lookup",
+                        "part_kind": "tool-return",
+                    }
+                ],
+                "kind": "request",
+            },
         ]
         request = {
             "agent_id": agent,
@@ -631,7 +771,7 @@ def main() -> None:
         assert first["data"]["thread"]["message_history"] == history
         run_id = first["data"]["run"]["id"]
         thread_id = first["data"]["thread"]["id"]
-        assert call("threads", "get", thread_id)["data"]["message_history"] == history
+        assert json.dumps(call("threads", "get", thread_id)["data"]["message_history"]) == json.dumps(history)
         if os.name != "nt":
             checkpoint_deadline = time.monotonic() + 80
             while True:

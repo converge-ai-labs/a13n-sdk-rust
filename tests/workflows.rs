@@ -70,6 +70,7 @@ fn public_input_and_every_options_builder_preserve_wire_presence() {
         .client_tools(None)
         .connection_tools(None)
         .instructions(Some(String::new()))
+        .lazy_environment(Some(false))
         .media_understanding(None)
         .model(None)
         .model_characteristics(None)
@@ -81,6 +82,7 @@ fn public_input_and_every_options_builder_preserve_wire_presence() {
         .plugins(None)
         .retries(None)
         .reviewer(None)
+        .skill_sync(None)
         .skills(None)
         .subagents(Some(json!({"nested":[null,{},[]]})))
         .toolsets(Some(HashMap::new()));
@@ -98,7 +100,7 @@ fn public_input_and_every_options_builder_preserve_wire_presence() {
         .max_usage(None);
     assert_eq!(
         serde_json::to_value(options).unwrap(),
-        json!({"configuration":{"allowed_hosts":[],"extensions":{"org.test":{"empty":"","flag":false}}},"labels":{},"max_usage":null,"overrides":{"client_tools":null,"connection_tools":null,"instructions":"","media_understanding":null,"model":null,"model_characteristics":null,"model_settings":{"enabled":false,"zero":0},"output_spec":null,"plugins":null,"retries":null,"reviewer":null,"skills":null,"subagents":{"nested":[null,{},[]]},"toolsets":{}}})
+        json!({"configuration":{"allowed_hosts":[],"extensions":{"org.test":{"empty":"","flag":false}}},"labels":{},"max_usage":null,"overrides":{"client_tools":null,"connection_tools":null,"instructions":"","lazy_environment":false,"media_understanding":null,"model":null,"model_characteristics":null,"model_settings":{"enabled":false,"zero":0},"output_spec":null,"plugins":null,"retries":null,"reviewer":null,"skill_sync":null,"skills":null,"subagents":{"nested":[null,{},[]]},"toolsets":{}}})
     );
     assert_eq!(
         serde_json::to_value(RunOptions::new().configuration(None).overrides(None)).unwrap(),

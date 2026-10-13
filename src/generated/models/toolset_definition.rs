@@ -19,6 +19,9 @@ pub struct ToolsetDefinition {
     #[serde(rename = "default_enabled")]
     pub default_enabled: bool,
 
+    #[serde(rename = "description", skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+
     #[serde(rename = "display_name")]
     pub display_name: String,
 
@@ -40,6 +43,7 @@ impl ToolsetDefinition {
         ToolsetDefinition {
             config_schema,
             default_enabled,
+            description: None,
             display_name,
             key,
             tools,

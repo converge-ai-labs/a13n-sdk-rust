@@ -142,6 +142,7 @@ impl Overrides {
     override_field!(client_tools, Vec<models::ClientToolDefinition>);
     override_field!(connection_tools, Vec<models::ConnectionSelection>);
     override_field!(instructions, String);
+    override_field!(lazy_environment, bool);
     boxed_override_field!(media_understanding, models::MediaUnderstandingSelection);
     override_field!(model, String);
     boxed_override_field!(model_characteristics, models::AgentModelCharacteristics);
@@ -150,6 +151,7 @@ impl Overrides {
     override_field!(plugins, Vec<models::PluginSelection>);
     boxed_override_field!(retries, models::RetryOverride);
     boxed_override_field!(reviewer, models::AgentReviewer);
+    boxed_override_field!(skill_sync, models::AgentOverrideInputSkillSync);
     override_field!(skills, Vec<models::SkillSelection>);
     override_field!(subagents, Value);
     override_field!(toolsets, HashMap<String, models::ToolsetSelection>);

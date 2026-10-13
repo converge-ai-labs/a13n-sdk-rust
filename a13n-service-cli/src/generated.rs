@@ -4880,7 +4880,8 @@ pub async fn dispatch(
         }
         146 => {
             let options = SessionMessageAuthorsListOptions {
-                entry_id: input::option(required(matches, "entry_id")?)?,
+                entry_id: input::many(matches, "entry_id")?
+                    .ok_or_else(|| CliError::input("missing --entry_id"))?,
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client
