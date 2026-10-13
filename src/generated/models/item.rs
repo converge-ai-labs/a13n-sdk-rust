@@ -16,6 +16,9 @@ pub struct Item {
     #[serde(rename = "content")]
     pub content: std::collections::HashMap<String, serde_json::Value>,
 
+    #[serde(rename = "content_refs", skip_serializing_if = "Option::is_none")]
+    pub content_refs: Option<std::collections::HashMap<String, models::ContentRef>>,
+
     #[serde(
         rename = "ended_at",
         default,
@@ -59,6 +62,7 @@ impl Item {
     ) -> Item {
         Item {
             content,
+            content_refs: None,
             ended_at: None,
             first_stream_id,
             id,

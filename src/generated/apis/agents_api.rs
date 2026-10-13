@@ -796,13 +796,14 @@ pub async fn get_revision_api_v1_agents_agent_id_revisions_revision_id_get(
     }
 }
 
-/// Agents of the workspace. `q` matches the name or description, ignoring case; `archived` keeps only archived agents, or only open ones; `source=builtin` finds the Agent Composer; the skill filters keep those with a revision pinning that skill or that skill revision.
+/// Agents of the workspace. `q` matches the name or description, ignoring case; `archived` keeps only archived agents, or only open ones; `source=builtin` finds managed presets; the skill filters keep those with a revision pinning that skill or that skill revision.
 pub async fn list_agents_api_v1_agents_get(
     configuration: &configuration::Configuration,
     label: Option<Vec<String>>,
     q: Option<&str>,
     archived: Option<bool>,
     source: Option<&str>,
+    preset_kind: Option<&str>,
     skill_id: Option<&str>,
     skill_revision_id: Option<&str>,
     limit: Option<i32>,
@@ -814,6 +815,7 @@ pub async fn list_agents_api_v1_agents_get(
     let p_query_q = q;
     let p_query_archived = archived;
     let p_query_source = source;
+    let p_query_preset_kind = preset_kind;
     let p_query_skill_id = skill_id;
     let p_query_skill_revision_id = skill_revision_id;
     let p_query_limit = limit;
@@ -850,6 +852,9 @@ pub async fn list_agents_api_v1_agents_get(
     }
     if let Some(ref param_value) = p_query_source {
         req_builder = req_builder.query(&[("source", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_preset_kind {
+        req_builder = req_builder.query(&[("preset_kind", &param_value.to_string())]);
     }
     if let Some(ref param_value) = p_query_skill_id {
         req_builder = req_builder.query(&[("skill_id", &param_value.to_string())]);
