@@ -504,6 +504,8 @@ pub mod run_page;
 pub use self::run_page::RunPage;
 pub mod run_status;
 pub use self::run_status::RunStatus;
+pub mod run_usage;
+pub use self::run_usage::RunUsage;
 pub mod run_view;
 pub use self::run_view::RunView;
 pub mod selected_trace;
