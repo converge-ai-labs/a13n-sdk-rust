@@ -13,6 +13,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AgentConfigInput {
+    #[serde(rename = "builtin_skills", skip_serializing_if = "Option::is_none")]
+    pub builtin_skills: Option<std::collections::HashSet<BuiltinSkills>>,
+
     #[serde(rename = "client_tools", skip_serializing_if = "Option::is_none")]
     pub client_tools: Option<Vec<models::ClientToolDefinition>>,
 
@@ -62,6 +65,9 @@ pub struct AgentConfigInput {
     )]
     pub output_spec: Option<Option<Box<models::OutputSpec>>>,
 
+    #[serde(rename = "platform_tools", skip_serializing_if = "Option::is_none")]
+    pub platform_tools: Option<Box<models::PlatformSelection>>,
+
     #[serde(rename = "plugins", skip_serializing_if = "Option::is_none")]
     pub plugins: Option<Vec<models::PluginSelection>>,
 
@@ -103,6 +109,7 @@ pub struct AgentConfigInput {
 impl AgentConfigInput {
     pub fn new(model: String) -> AgentConfigInput {
         AgentConfigInput {
+            builtin_skills: None,
             client_tools: None,
             connection_tools: None,
             default_environment_template_id: None,
@@ -114,6 +121,7 @@ impl AgentConfigInput {
             model_characteristics: None,
             model_settings: None,
             output_spec: None,
+            platform_tools: None,
             plugins: None,
             retries: None,
             reviewer: None,
@@ -124,6 +132,18 @@ impl AgentConfigInput {
             toolsets: None,
             user_questions: None,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum BuiltinSkills {
+    #[serde(rename = "platform-operations")]
+    PlatformOperations,
+}
+
+impl Default for BuiltinSkills {
+    fn default() -> BuiltinSkills {
+        Self::PlatformOperations
     }
 }
 ///

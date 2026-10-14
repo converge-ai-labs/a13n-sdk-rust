@@ -75,6 +75,40 @@ impl std::fmt::Display for ProviderKind {
         f.write_str(self.as_str())
     }
 }
+/// Allowed values for the `status` selector. Serialized using Service wire values.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum RunsStatus {
+    #[serde(rename = "accepted")]
+    Accepted,
+    #[serde(rename = "running")]
+    Running,
+    #[serde(rename = "waiting")]
+    Waiting,
+    #[serde(rename = "completed")]
+    Completed,
+    #[serde(rename = "failed")]
+    Failed,
+    #[serde(rename = "cancelled")]
+    Cancelled,
+}
+impl RunsStatus {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Accepted => "accepted",
+            Self::Running => "running",
+            Self::Waiting => "waiting",
+            Self::Completed => "completed",
+            Self::Failed => "failed",
+            Self::Cancelled => "cancelled",
+        }
+    }
+}
+impl std::fmt::Display for RunsStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
 /// Allowed values for the `source` selector. Serialized using Service wire values.
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -5864,10 +5898,107 @@ impl<'a> ProviderTypeResource<'a> {
 
 #[derive(Clone)]
 pub struct RunsResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`RunsResource::list`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct RunsListOptions {
+    /// Query parameter `agent_id`. `None` omits this parameter.
+    pub agent_id: Option<String>,
+    /// Query parameter `session_id`. `None` omits this parameter.
+    pub session_id: Option<String>,
+    /// Query parameter `thread_id`. `None` omits this parameter.
+    pub thread_id: Option<String>,
+    /// Query parameter `principal_id`. `None` omits this parameter.
+    pub principal_id: Option<String>,
+    /// Query parameter `status`. `None` omits this parameter.
+    pub status: Option<RunsStatus>,
+    /// Query parameter `created_after`. `None` omits this parameter.
+    pub created_after: Option<chrono::DateTime<chrono::FixedOffset>>,
+    /// Query parameter `created_before`. `None` omits this parameter.
+    pub created_before: Option<chrono::DateTime<chrono::FixedOffset>>,
+    /// Query parameter `limit`. `None` omits this parameter.
+    pub limit: Option<i32>,
+    /// Query parameter `cursor`. `None` omits this parameter.
+    pub cursor: Option<String>,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Page source owned by [`RunsResource::pages`].
+pub struct RunsPages<'a> {
+    resource: RunsResource<'a>,
+    options: RunsListOptions,
+}
+impl PageSource for RunsPages<'_> {
+    type Page = models::RunPage;
+    async fn fetch(&self, cursor: Option<String>) -> Result<Response<Self::Page>, Error> {
+        let mut options = self.options.clone();
+        options.cursor = cursor;
+        self.resource.list(options).await
+    }
+    fn cursor(page: &Self::Page) -> Option<String> {
+        page.next_cursor.clone()
+    }
+}
 impl<'a> RunsResource<'a> {
     /// Bind `run_id` locally without an HTTP request. The returned reference borrows the client, not this collection.
     pub fn at(&self, id: impl Into<String>) -> RunResource<'a> {
         RunResource(self.0.select(id.into()))
+    }
+    /// List Runs.
+    ///
+    /// `GET /api/v1/runs`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn list(&self, options: RunsListOptions) -> Result<Response<models::RunPage>, Error> {
+        let mut request =
+            self.0
+                .client
+                .request(reqwest::Method::GET, "/api/v1/runs", &self.0.ids)?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        if let Some(value) = &options.agent_id {
+            request = query(request, "agent_id", value)?;
+        }
+        if let Some(value) = &options.session_id {
+            request = query(request, "session_id", value)?;
+        }
+        if let Some(value) = &options.thread_id {
+            request = query(request, "thread_id", value)?;
+        }
+        if let Some(value) = &options.principal_id {
+            request = query(request, "principal_id", value)?;
+        }
+        if let Some(value) = &options.status {
+            request = query(request, "status", value)?;
+        }
+        if let Some(value) = &options.created_after {
+            request = query(request, "created_after", value)?;
+        }
+        if let Some(value) = &options.created_before {
+            request = query(request, "created_before", value)?;
+        }
+        if let Some(value) = &options.limit {
+            request = query(request, "limit", value)?;
+        }
+        if let Some(value) = &options.cursor {
+            request = query(request, "cursor", value)?;
+        }
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Iterate cursor pages lazily with owned options. Each page retains status and headers; no prefetch occurs. Drop the pager to stop reads.
+    pub fn pages(&self, options: RunsListOptions) -> Pages<RunsPages<'a>> {
+        let cursor = options.cursor.clone();
+        Pages::new(
+            RunsPages {
+                resource: self.clone(),
+                options,
+            },
+            cursor,
+        )
     }
 }
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
@@ -6109,10 +6240,39 @@ impl<'a> RunAttemptsResource<'a> {
 
 #[derive(Clone)]
 pub struct RunAttemptResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`RunAttemptResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct RunAttemptGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
 impl<'a> RunAttemptResource<'a> {
     /// Access `trace` locally, sharing the client and explicit scope.
     pub fn trace(&self) -> RunAttemptTraceResource<'a> {
         RunAttemptTraceResource(self.0.clone())
+    }
+    /// Get Attempt.
+    ///
+    /// `GET /api/v1/runs/{run_id}/attempts/{attempt_id}`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: RunAttemptGetOptions,
+    ) -> Result<Response<models::AttemptView>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/runs/{run_id}/attempts/{attempt_id}",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
     }
 }
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
@@ -11572,6 +11732,7 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "ProviderTypeResource",
         "list",
     ),
+    ("GET", "/api/v1/runs", "RunsResource", "list"),
     ("GET", "/api/v1/runs/{run_id}", "RunResource", "get"),
     ("PATCH", "/api/v1/runs/{run_id}", "RunResource", "update"),
     ("POST", "/api/v1/runs/{run_id}/fork", "RunResource", "fork"),
@@ -11592,6 +11753,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/runs/{run_id}/attempts",
         "RunAttemptsResource",
         "list",
+    ),
+    (
+        "GET",
+        "/api/v1/runs/{run_id}/attempts/{attempt_id}",
+        "RunAttemptResource",
+        "get",
     ),
     (
         "GET",
