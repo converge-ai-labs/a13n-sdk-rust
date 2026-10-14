@@ -498,6 +498,8 @@ pub mod returned;
 pub use self::returned::Returned;
 pub mod revoked_connection;
 pub use self::revoked_connection::RevokedConnection;
+pub mod run_agent;
+pub use self::run_agent::RunAgent;
 pub mod run_configuration_input;
 pub use self::run_configuration_input::RunConfigurationInput;
 pub mod run_configuration_output;
