@@ -2320,6 +2320,14 @@ impl<'a> EnvironmentProvidersResource<'a> {
 
 #[derive(Clone)]
 pub struct EnvironmentProviderResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`EnvironmentProviderResource::delete`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct EnvironmentProviderDeleteOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
 /// Query and header options for [`EnvironmentProviderResource::get`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
 pub struct EnvironmentProviderGetOptions {
@@ -2341,6 +2349,39 @@ pub struct EnvironmentProviderTestOptions {
     pub x_workspace_id: Option<String>,
 }
 impl<'a> EnvironmentProviderResource<'a> {
+    /// Access `references` locally, sharing the client and explicit scope.
+    pub fn references(&self) -> EnvironmentProviderReferencesResource<'a> {
+        EnvironmentProviderReferencesResource(self.0.clone())
+    }
+    /// Delete Environment Provider.
+    ///
+    /// `DELETE /api/v1/environment-providers/{provider_id}`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn delete(
+        &self,
+        options: EnvironmentProviderDeleteOptions,
+    ) -> Result<Response<()>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::DELETE,
+            "/api/v1/environment-providers/{provider_id}",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        let response = self.0.client.json(request, &[204]).await?;
+        Ok(response)
+    }
     /// Get environment provider.
     ///
     /// `GET /api/v1/environment-providers/{provider_id}`.
@@ -2411,6 +2452,41 @@ impl<'a> EnvironmentProviderResource<'a> {
         let mut request = self.0.client.request(
             reqwest::Method::POST,
             "/api/v1/environment-providers/{provider_id}/test",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct EnvironmentProviderReferencesResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`EnvironmentProviderReferencesResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct EnvironmentProviderReferencesGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> EnvironmentProviderReferencesResource<'a> {
+    /// Environment Provider References.
+    ///
+    /// `GET /api/v1/environment-providers/{provider_id}/references`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: EnvironmentProviderReferencesGetOptions,
+    ) -> Result<Response<models::EnvironmentProviderReferences>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/environment-providers/{provider_id}/references",
             &self.0.ids,
         )?;
         request = self
@@ -11451,6 +11527,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "create",
     ),
     (
+        "DELETE",
+        "/api/v1/environment-providers/{provider_id}",
+        "EnvironmentProviderResource",
+        "delete",
+    ),
+    (
         "GET",
         "/api/v1/environment-providers/{provider_id}",
         "EnvironmentProviderResource",
@@ -11467,6 +11549,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/environment-providers/{provider_id}/test",
         "EnvironmentProviderResource",
         "test",
+    ),
+    (
+        "GET",
+        "/api/v1/environment-providers/{provider_id}/references",
+        "EnvironmentProviderReferencesResource",
+        "get",
     ),
     (
         "GET",

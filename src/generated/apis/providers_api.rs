@@ -76,6 +76,15 @@ pub enum CreateProviderApiV1WebProvidersPostError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`delete_environment_provider_api_v1_environment_providers_provider_id_delete`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum DeleteEnvironmentProviderApiV1EnvironmentProvidersProviderIdDeleteError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`disconnect_model_authorization_api_v1_model_providers_provider_id_authorization_delete`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -89,6 +98,15 @@ pub enum DisconnectModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationD
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DiscoverModelProviderModelsApiV1ModelProvidersProviderIdModelsGetError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`environment_provider_references_api_v1_environment_providers_provider_id_references_get`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum EnvironmentProviderReferencesApiV1EnvironmentProvidersProviderIdReferencesGetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
@@ -864,6 +882,76 @@ pub async fn create_provider_api_v1_web_providers_post(
     }
 }
 
+pub async fn delete_environment_provider_api_v1_environment_providers_provider_id_delete(
+    configuration: &configuration::Configuration,
+    provider_id: &str,
+    if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<
+    Response<()>,
+    Error<DeleteEnvironmentProviderApiV1EnvironmentProvidersProviderIdDeleteError>,
+> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_provider_id = provider_id;
+    let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/environment-providers/{provider_id}",
+        configuration.base_path,
+        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::DELETE, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_if_match {
+        req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+
+    if !status.is_client_error() && !status.is_server_error() {
+        Ok(Response {
+            data: (),
+            status,
+            headers,
+        })
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<
+            DeleteEnvironmentProviderApiV1EnvironmentProvidersProviderIdDeleteError,
+        > = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
 pub async fn disconnect_model_authorization_api_v1_model_providers_provider_id_authorization_delete(
     configuration: &configuration::Configuration,
     provider_id: &str,
@@ -1016,6 +1104,82 @@ pub async fn discover_model_provider_models_api_v1_model_providers_provider_id_m
         let content = resp.text().await?;
         let entity: Option<DiscoverModelProviderModelsApiV1ModelProvidersProviderIdModelsGetError> =
             serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn environment_provider_references_api_v1_environment_providers_provider_id_references_get(
+    configuration: &configuration::Configuration,
+    provider_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<
+    Response<models::EnvironmentProviderReferences>,
+    Error<EnvironmentProviderReferencesApiV1EnvironmentProvidersProviderIdReferencesGetError>,
+> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_provider_id = provider_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/environment-providers/{provider_id}/references",
+        configuration.base_path,
+        provider_id = crate::generated::apis::urlencode(p_path_provider_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::EnvironmentProviderReferences`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::EnvironmentProviderReferences`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<
+            EnvironmentProviderReferencesApiV1EnvironmentProvidersProviderIdReferencesGetError,
+        > = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
