@@ -2761,6 +2761,10 @@ pub struct EnvironmentStopOptions {
     pub x_workspace_id: Option<String>,
 }
 impl<'a> EnvironmentResource<'a> {
+    /// Access `computer` locally, sharing the client and explicit scope.
+    pub fn computer(&self) -> EnvironmentComputerResource<'a> {
+        EnvironmentComputerResource(self.0.clone())
+    }
     /// Delete Environment.
     ///
     /// `DELETE /api/v1/environments/{environment_id}`.
@@ -2873,6 +2877,41 @@ impl<'a> EnvironmentResource<'a> {
             .scoped_request(request, options.x_workspace_id.as_deref());
         request = request.header("If-Match", &options.if_match);
         let response = self.0.client.json(request, &[202]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct EnvironmentComputerResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`EnvironmentComputerResource::check`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct EnvironmentComputerCheckOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> EnvironmentComputerResource<'a> {
+    /// Check Computer.
+    ///
+    /// `POST /api/v1/environments/{environment_id}/computer/check`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn check(
+        &self,
+        options: EnvironmentComputerCheckOptions,
+    ) -> Result<Response<models::ComputerCheck>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/environments/{environment_id}/computer/check",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
 }
@@ -6050,6 +6089,10 @@ impl<'a> RunResource<'a> {
     pub fn contents(&self) -> RunContentsResource<'a> {
         RunContentsResource(self.0.clone())
     }
+    /// Access `images` locally, sharing the client and explicit scope.
+    pub fn images(&self) -> RunImagesResource<'a> {
+        RunImagesResource(self.0.clone())
+    }
     /// Access `items` locally, sharing the client and explicit scope.
     pub fn items(&self) -> RunItemsResource<'a> {
         RunItemsResource(self.0.clone())
@@ -6389,6 +6432,48 @@ impl<'a> RunContentResource<'a> {
             .client
             .scoped_request(request, options.x_workspace_id.as_deref());
         let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct RunImagesResource<'a>(pub(crate) Binding<'a>);
+impl<'a> RunImagesResource<'a> {
+    /// Bind `image_id` locally without an HTTP request. The returned reference borrows the client, not this collection.
+    pub fn at(&self, id: impl Into<String>) -> RunImageResource<'a> {
+        RunImageResource(self.0.select(id.into()))
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct RunImageResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`RunImageResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct RunImageGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> RunImageResource<'a> {
+    /// Run Image.
+    ///
+    /// `GET /api/v1/runs/{run_id}/images/{image_id}`.
+    ///
+    /// Returns an unbuffered body. Read chunks or drop/close it; reads share parent shutdown.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(&self, options: RunImageGetOptions) -> Result<BinaryResponse, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/runs/{run_id}/images/{image_id}",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.send(request, &[200]).await?;
         Ok(response)
     }
 }
@@ -8037,6 +8122,14 @@ pub struct ThreadEnvironmentDeleteOptions {
     /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
     pub x_workspace_id: Option<String>,
 }
+/// Query and header options for [`ThreadEnvironmentResource::update`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ThreadEnvironmentUpdateOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
 impl<'a> ThreadEnvironmentResource<'a> {
     /// Remove Mount.
     ///
@@ -8065,6 +8158,39 @@ impl<'a> ThreadEnvironmentResource<'a> {
             .scoped_request(request, options.x_workspace_id.as_deref());
         request = request.header("If-Match", &options.if_match);
         let response = self.0.client.json(request, &[204]).await?;
+        Ok(response)
+    }
+    /// Update Mount.
+    ///
+    /// `PATCH /api/v1/threads/{thread_id}/environments/{name}`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn update(
+        &self,
+        body: &models::MountUpdate,
+        options: ThreadEnvironmentUpdateOptions,
+    ) -> Result<Response<models::MountView>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::PATCH,
+            "/api/v1/threads/{thread_id}/environments/{name}",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
 }
@@ -11364,6 +11490,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "stop",
     ),
     (
+        "POST",
+        "/api/v1/environments/{environment_id}/computer/check",
+        "EnvironmentComputerResource",
+        "check",
+    ),
+    (
         "GET",
         "/api/v1/finding-analyses",
         "FindingAnalysesResource",
@@ -11774,6 +11906,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
     ),
     (
         "GET",
+        "/api/v1/runs/{run_id}/images/{image_id}",
+        "RunImageResource",
+        "get",
+    ),
+    (
+        "GET",
         "/api/v1/runs/{run_id}/items",
         "RunItemsResource",
         "get",
@@ -11946,6 +12084,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/threads/{thread_id}/environments/{name}",
         "ThreadEnvironmentResource",
         "delete",
+    ),
+    (
+        "PATCH",
+        "/api/v1/threads/{thread_id}/environments/{name}",
+        "ThreadEnvironmentResource",
+        "update",
     ),
     (
         "GET",

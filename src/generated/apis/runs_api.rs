@@ -247,6 +247,15 @@ pub enum RunContentApiV1RunsRunIdContentsContentIdGetError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`run_image_api_v1_runs_run_id_images_image_id_get`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum RunImageApiV1RunsRunIdImagesImageIdGetError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`run_items_api_v1_runs_run_id_items_get`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -2601,6 +2610,57 @@ pub async fn run_content_api_v1_runs_run_id_contents_content_id_get(
     } else {
         let content = resp.text().await?;
         let entity: Option<RunContentApiV1RunsRunIdContentsContentIdGetError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// Read a retained screenshot from committed Run history. Binary media is not an MCP query endpoint.
+pub async fn run_image_api_v1_runs_run_id_images_image_id_get(
+    configuration: &configuration::Configuration,
+    run_id: &str,
+    image_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<reqwest::Response, Error<RunImageApiV1RunsRunIdImagesImageIdGetError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_run_id = run_id;
+    let p_path_image_id = image_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/runs/{run_id}/images/{image_id}",
+        configuration.base_path,
+        run_id = crate::generated::apis::urlencode(p_path_run_id),
+        image_id = crate::generated::apis::urlencode(p_path_image_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+
+    if !status.is_client_error() && !status.is_server_error() {
+        Ok(resp)
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<RunImageApiV1RunsRunIdImagesImageIdGetError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,

@@ -19,6 +19,9 @@ pub struct EnvironmentMount {
     #[serde(rename = "name")]
     pub name: String,
 
+    #[serde(rename = "permission_ceiling", skip_serializing_if = "Option::is_none")]
+    pub permission_ceiling: Option<Box<models::EnvironmentPermissionSetOutput>>,
+
     #[serde(
         rename = "working_directory",
         default,
@@ -33,6 +36,7 @@ impl EnvironmentMount {
         EnvironmentMount {
             environment_id,
             name,
+            permission_ceiling: None,
             working_directory: None,
         }
     }
