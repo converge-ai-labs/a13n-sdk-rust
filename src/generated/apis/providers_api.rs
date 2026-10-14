@@ -2337,7 +2337,7 @@ pub async fn test_provider_api_v1_web_providers_provider_id_test_post(
     }
 }
 
-/// A `config` change must also replace or remove a stored credential: it never follows a new endpoint.
+/// Omitted credentials and extra headers keep their saved values, including when `config` changes.
 pub async fn update_provider_api_v1_connector_providers_provider_id_patch(
     configuration: &configuration::Configuration,
     provider_id: &str,
@@ -2431,7 +2431,7 @@ pub async fn update_provider_api_v1_connector_providers_provider_id_patch(
     }
 }
 
-/// A `config` change must also replace or remove a stored credential: it never follows a new endpoint.
+/// Omitted credentials and extra headers keep their saved values, including when `config` changes.
 pub async fn update_provider_api_v1_environment_providers_provider_id_patch(
     configuration: &configuration::Configuration,
     provider_id: &str,
@@ -2525,7 +2525,7 @@ pub async fn update_provider_api_v1_environment_providers_provider_id_patch(
     }
 }
 
-/// A `config` change must also replace or remove a stored credential: it never follows a new endpoint.
+/// Omitted credentials and extra headers keep their saved values, including when `config` changes.
 pub async fn update_provider_api_v1_memory_providers_provider_id_patch(
     configuration: &configuration::Configuration,
     provider_id: &str,
@@ -2617,7 +2617,7 @@ pub async fn update_provider_api_v1_memory_providers_provider_id_patch(
     }
 }
 
-/// A `config` change must also replace or remove a stored credential: it never follows a new endpoint.
+/// Omitted credentials and extra headers keep their saved values, including when `config` changes.
 pub async fn update_provider_api_v1_model_providers_provider_id_patch(
     configuration: &configuration::Configuration,
     provider_id: &str,
@@ -2709,7 +2709,7 @@ pub async fn update_provider_api_v1_model_providers_provider_id_patch(
     }
 }
 
-/// A `config` change must also replace or remove a stored credential: it never follows a new endpoint.
+/// Omitted credentials and extra headers keep their saved values, including when `config` changes.
 pub async fn update_provider_api_v1_web_providers_provider_id_patch(
     configuration: &configuration::Configuration,
     provider_id: &str,
