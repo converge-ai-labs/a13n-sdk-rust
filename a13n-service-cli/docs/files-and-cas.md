@@ -48,3 +48,26 @@ a13n-service-cli agents update "$AGENT_ID" --if-match "$ETAG" \
 ```
 
 That final command modifies an Agent; point it only at an Agent you intend to edit. Omitted and `null` fields are distinct on the wire, but **null does not universally mean clear**—check the target field's Service semantics. For a catalog with cursors, `agents list --limit 10` reads one page and `agents list --limit 10 --all --include-meta` returns `{"pages":[...]}` with one response envelope per page. Memory revision selectors are integers; restore can return `file: null` after undoing creation. To mount a Memory into an Agent Run, use the SDK's [files and Memory guide](../../docs/files-and-memory.md).
+
+## Select Memory Spaces for a Session
+
+Memory Spaces are reusable resources with a managed file Memory. Create a disposable Space, then select its **Space ID** in Session settings (requires `jq`):
+
+```bash
+a13n-service-cli --include-meta memory-spaces create \
+  --body '{"name":"Project","organization":{"enabled":false}}' > space.json
+SPACE=$(jq -er '.data.id' space.json)
+jq -n --arg id "$SPACE" '{memory:{enabled:true,spaces:[{name:"project",space_id:$id}]}}' > session-create.json
+a13n-service-cli --include-meta sessions create --body @session-create.json > session.json
+SESSION=$(jq -er '.data.id' session.json)
+ETAG=$(jq -er '.etag' session.json)
+a13n-service-cli sessions update "$SESSION" --if-match "$ETAG" \
+  --body '{"memory":{"enabled":false,"spaces":[]}}'
+a13n-service-cli memory-spaces organization get --space "$SPACE"
+a13n-service-cli memory-spaces organizations list --space "$SPACE"
+a13n-service-cli memory-spaces sessions list --space "$SPACE"
+```
+
+Session create omission/null defers inheritance to first successful business-Run acceptance; false explicitly disables participation and an empty spaces list clears selection. PATCH merges provided settings fields and treats outer `memory: null` as no change. `labels session` helpers send labels only, preserving memory. Run readback retains frozen `roots`/`space_id` even after later Session changes. Use the Space's returned `memory_id` for file/revision operations, not standalone mounting. Organization creation returns 202 **request status**, not completed execution; a configured model/authority is required. Space updates/deletes require the Space ETag; deletion requires no bound Session or unsealed Run.
+
+A Thread mount's `permission_ceiling` is an exact action set. Use `threads environments update NAME --thread ID --if-match THREAD_ETAG --body '{"permission_ceiling":{"operations":[]}}'` to replace it with no permitted actions. Omission preserves legacy file/execution access with no Computer access; accepted Runs retain their frozen ceiling. `environments computer check ENVIRONMENT_ID` only probes current readiness, without starting a target, capturing an image or granting input permission.

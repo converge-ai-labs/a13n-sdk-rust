@@ -26,6 +26,7 @@ pub struct FrozenMemoryMount {
     #[serde(rename = "recall", skip_serializing_if = "Option::is_none")]
     pub recall: Option<bool>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_roots")]
     #[serde(rename = "roots", skip_serializing_if = "Option::is_none")]
     pub roots: Option<Vec<String>>,
 
@@ -50,4 +51,9 @@ impl FrozenMemoryMount {
             space_id: None,
         }
     }
+}
+fn deserialize_non_null_roots<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Option<Vec<String>>, D::Error> {
+    <Vec<String>>::deserialize(deserializer).map(Some)
 }

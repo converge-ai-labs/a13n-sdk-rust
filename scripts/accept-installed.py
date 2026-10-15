@@ -46,7 +46,7 @@ def main() -> None:
             raise AssertionError("The .crate archive lacks its library source")
         consumer = temporary / "consumer"
         (consumer / "src").mkdir(parents=True)
-        for name in ("main.rs", "sse.rs", "display.rs", "workflow.rs", "catchup.rs"):
+        for name in ("main.rs", "sse.rs", "display.rs", "workflow.rs", "catchup.rs", "spaces_and_runs.rs"):
             shutil.copyfile(ROOT / "scripts/acceptance" / name, consumer / "src" / name)
         (consumer / "Cargo.toml").write_text(
             '[package]\nname = "a13n-consumer-acceptance"\nversion = "0.0.0"\n'

@@ -1,6 +1,7 @@
 //! Independent executable consuming only the extracted a13n .crate archive.
 mod catchup;
 mod display;
+mod spaces_and_runs;
 mod sse;
 mod workflow;
 use a13n::{
@@ -292,6 +293,7 @@ async fn offline() -> Result<()> {
     sse::offline().await?;
     display::offline().await?;
     catchup::offline().await?;
+    spaces_and_runs::offline().await?;
     let mut receipt = m::Submitted::default();
     receipt.thread.id = "t".into();
     receipt.thread.workspace_id = "w".into();
@@ -493,6 +495,7 @@ async fn live() -> Result<()> {
     let agent = required("A13N_AGENT")?;
     native_configuration(&client, &agent).await?;
     catchup::live(&client, &agent).await?;
+    spaces_and_runs::live(&client, &agent).await?;
     ensure(
         resources.healthz().get().await?.status.as_u16() == 200,
         "HTTPS health",

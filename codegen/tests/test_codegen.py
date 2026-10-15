@@ -27,6 +27,13 @@ def test_adapter_keeps_typed_unions_and_contract_unchanged() -> None:
         assert schemas[name]["properties"]["message_history"]["x-rust-type"] == (
             "Vec<serde_json::Map<String, serde_json::Value>>"
         )
+    assert schemas["RunView"]["properties"]["memory_mounts"]["items"] == {
+        "$ref": "#/components/schemas/FrozenMemoryMount"
+    }
+    legacy, frozen = schemas["MemoryMount"], schemas["FrozenMemoryMount"]
+    assert legacy["required"] == frozen["required"]
+    assert all(value == frozen["properties"][name] for name, value in legacy["properties"].items())
+    assert frozen["properties"]["roots"]["x-rust-non-null"]
 
 
 def test_schema_adapters_preserve_presence_constants_binary_and_sensitive_data() -> None:

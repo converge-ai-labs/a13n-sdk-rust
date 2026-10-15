@@ -139,6 +139,10 @@ macro_rules! boxed_override_field {
     };
 }
 impl Overrides {
+    override_field!(
+        builtin_skills,
+        std::collections::HashSet<models::agent_override_input::BuiltinSkills>
+    );
     override_field!(client_tools, Vec<models::ClientToolDefinition>);
     override_field!(connection_tools, Vec<models::ConnectionSelection>);
     override_field!(instructions, String);
@@ -148,6 +152,7 @@ impl Overrides {
     boxed_override_field!(model_characteristics, models::AgentModelCharacteristics);
     override_field!(model_settings, HashMap<String, Value>);
     boxed_override_field!(output_spec, models::OutputSpec);
+    boxed_override_field!(platform_tools, models::PlatformSelection);
     override_field!(plugins, Vec<models::PluginSelection>);
     boxed_override_field!(retries, models::RetryOverride);
     boxed_override_field!(reviewer, models::AgentReviewer);

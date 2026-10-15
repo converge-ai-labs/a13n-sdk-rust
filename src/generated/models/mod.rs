@@ -338,8 +338,6 @@ pub mod memory_mount_page;
 pub use self::memory_mount_page::MemoryMountPage;
 pub mod memory_mount_update;
 pub use self::memory_mount_update::MemoryMountUpdate;
-pub mod memory_mounts_inner;
-pub use self::memory_mounts_inner::MemoryMountsInner;
 pub mod memory_page;
 pub use self::memory_page::MemoryPage;
 pub mod memory_record_page;

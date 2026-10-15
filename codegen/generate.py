@@ -77,6 +77,14 @@ def prepare(document: dict) -> dict:
     for name, schema in schemas.items():
         if name in {"NewThread", "ThreadView"}:
             schema["properties"]["message_history"]["x-rust-type"] = "Vec<serde_json::Map<String, serde_json::Value>>"
+        if name == "RunView":
+            # FrozenMemoryMount contains every legacy MemoryMount field with the
+            # same required set, plus optional roots/Space identity. Untagged anyOf
+            # would match the legacy subset first and silently discard these.
+            schema["properties"]["memory_mounts"]["items"] = {"$ref": "#/components/schemas/FrozenMemoryMount"}
+        if name == "FrozenMemoryMount":
+            # Missing roots stays omitted; explicit null is not a valid roots array.
+            schema["properties"]["roots"]["x-rust-non-null"] = True
     visit(document)
     schemas["RunStatus"]["x-rust-unknown-enum"] = True
     return document

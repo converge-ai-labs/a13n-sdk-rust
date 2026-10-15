@@ -83,3 +83,21 @@ a13n-service-cli threads stream get --thread "$THREAD" --run "$BASELINE_RUN" \
   --position "$POSITION" --output raw-events.sse
 # Add --last-event-id "$HINT" only when a hint exists; Ctrl-C remains local cancellation.
 ```
+
+## Read execution configuration, Attempts, metrics and screenshots
+
+Use exact IDs from your incorporated submission:
+
+```bash
+a13n-service-cli runs list --thread-id "$THREAD"
+a13n-service-cli runs agent get --run "$RUN"
+a13n-service-cli runs attempts list --run "$RUN"
+# ATTEMPT and RECORD are known IDs from your application or tracing/usage integration.
+a13n-service-cli runs attempts get "$ATTEMPT" --run "$RUN"
+a13n-service-cli usage get --run-id "$RUN"
+a13n-service-cli usage records metrics get --record "$RECORD"
+```
+
+Executed Agent readback contains its frozen revision and config with frozen overrides, while referenced models/connections/templates stay live. It is distinct from current Agent defaults and Run configuration. Usage timing fields are required nullable values: null and zero remain distinct. Output tokens/sec includes full request time, including first-chunk wait; Service owns the calculation. The API has no usage record-list operation.
+
+An Item's `content.tool_images` contains retained screenshot metadata. Fetch a selected reference explicitly with `runs images get "$IMAGE" --run "$RUN" --output screenshot.png`. It streams raw PNG/JPEG bytes, separate from JSON/text `runs contents get`; no event/Item read automatically fetches images. Readiness checks do not grant input permissions, and a retained image ID is not a fresh Computer observation handle. Inspect/reconcile an input unknown outcome rather than replaying it to repair a failed display fetch.
