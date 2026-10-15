@@ -140,9 +140,21 @@ def offline(source: Path) -> None:
             item.update({"id": f"i{ordinal}", "ordinal": ordinal})
             window["items"].append(item)
 
+        frozen_mounts = [
+            {"name": "legacy", "memory_id": "m", "access": "read", "recall": False},
+            {
+                "name": "shared",
+                "memory_id": "m",
+                "access": "write",
+                "roots": ["global/", "sessions/s/"],
+                "space_id": "space",
+            },
+        ]
+        png = bytes([137, 80, 78, 71, 13, 10, 26, 10, 0, 255, 128])
+
         def serve() -> None:
             try:
-                for _ in range(32):
+                for _ in range(45):
                     connection, _ = listener.accept()
                     with connection:
                         connection.settimeout(5)
@@ -224,6 +236,50 @@ def offline(source: Path) -> None:
                                     }
                                 ]
                             }
+                        if path == "/api/v1/memory-spaces":
+                            status, response = 201, sample(schemas["MemorySpace"])
+                            response.update({"id": "space", "enabled": False, "always_load": []})
+                        if path == "/api/v1/memory-spaces/space/organizations":
+                            status, response = 202, {"pending": True, "processed_seq": 0, "history_gap": False}
+                        if path == "/api/v1/sessions/s":
+                            status, response = 200, sample(schemas["SessionView"])
+                            response["memory"] = {"enabled": False, "spaces": []}
+                            response["labels"] = {}
+                            if method == "PATCH":
+                                assert b'if-match: "session:2"' in headers.lower()
+                        if path == "/api/v1/runs/r":
+                            status, response = 200, sample(schemas["RunView"])
+                            response["memory_mounts"] = frozen_mounts
+                        if path == "/api/v1/runs/r/agent":
+                            status, response = 200, sample(schemas["RunAgent"])
+                        if path == "/api/v1/runs/r/attempts/attempt":
+                            status, response = 200, sample(schemas["AttemptView"])
+                        if path == "/api/v1/usage/records/record/metrics":
+                            status, response = (
+                                200,
+                                {
+                                    "time_to_first_chunk_seconds": None,
+                                    "request_duration_seconds": 0.0,
+                                    "output_tokens_per_second": None,
+                                },
+                            )
+                        if path == "/api/v1/environments/env%20%2F/computer/check":
+                            status, response = (
+                                200,
+                                {
+                                    "status": "not_ready",
+                                    "display_count": 0,
+                                    "observe_ready": False,
+                                    "input_ready": False,
+                                    "operations": [],
+                                },
+                            )
+                        if path == "/api/v1/runs/r/images/image%20%2F":
+                            status, content_type, response = 200, "image/png", png
+                        if path == "/api/v1/threads/t/environments/work":
+                            assert b'if-match: "thread:2"' in headers.lower()
+                            status, response = 200, sample(schemas["MountView"])
+                            response["permission_ceiling"] = {"operations": []}
                         if path.endswith("/stream"):
                             status = 200
                             content_type = "text/event-stream"
@@ -240,9 +296,15 @@ def offline(source: Path) -> None:
                                 )
                                 + "\n\n"
                             )
-                        encoded = response.encode() if isinstance(response, str) else json.dumps(response).encode()
+                        encoded = (
+                            response
+                            if isinstance(response, bytes)
+                            else response.encode()
+                            if isinstance(response, str)
+                            else json.dumps(response).encode()
+                        )
                         connection.sendall(
-                            f"HTTP/1.1 {status} Test\r\nContent-Type: {content_type}\r\nContent-Length: {len(encoded)}\r\nConnection: close\r\n\r\n".encode()
+                            f"HTTP/1.1 {status} Test\r\nContent-Type: {content_type}\r\nCache-Control: no-store\r\nContent-Length: {len(encoded)}\r\nConnection: close\r\n\r\n".encode()
                             + encoded
                         )
             except Exception as error:
@@ -407,8 +469,68 @@ def offline(source: Path) -> None:
             "lazy_environment": False,
             "skill_sync": {"mode": "isolated", "cache_count": 0},
         }
+        native_selection = {
+            "overrides": {
+                "builtin_skills": [],
+                "platform_tools": {"groups": [], "read_permission": "deny", "write_permission": "ask"},
+            }
+        }
+        execute(
+            "agents",
+            "start",
+            "a",
+            "--text",
+            "selected",
+            "--options",
+            json.dumps(native_selection),
+            "--idempotency-key",
+            "selected",
+            code=4,
+        )
+        assert captured[-1][2]["options"] == native_selection
+        space_body = {
+            "name": "shared",
+            "enabled": False,
+            "always_load": [],
+            "organization": {"enabled": False, "cooldown_seconds": 0, "trigger": {"type": "any_change"}},
+        }
+        assert not execute("memory-spaces", "create", "--body", json.dumps(space_body))["enabled"]
+        assert captured[-1][2] == space_body
+        assert execute("memory-spaces", "organizations", "create", "--space", "space")["pending"]
+        session_body = {"memory": {"enabled": False, "spaces": []}}
+        execute("sessions", "update", "s", "--if-match", '"session:2"', "--body", json.dumps(session_body))
+        assert captured[-1][2] == session_body and "labels" not in captured[-1][2]
+        execute("labels", "session", "s")
+        execute("labels", "session", "s", "--if-match", '"session:2"', "--set", "{}")
+        assert captured[-1][2] == {"labels": {}}
+        assert execute("runs", "get", "r")["memory_mounts"] == frozen_mounts
+        execute("runs", "agent", "get", "--run", "r")
+        execute("runs", "attempts", "get", "attempt", "--run", "r")
+        metrics = execute("usage", "records", "metrics", "get", "--record", "record")
+        assert metrics == {
+            "time_to_first_chunk_seconds": None,
+            "request_duration_seconds": 0.0,
+            "output_tokens_per_second": None,
+        }
+        assert execute("environments", "computer", "check", "env /")["status"] == "not_ready"
+        image = directory / "retained.png"
+        execute("runs", "images", "get", "image /", "--run", "r", "--output", str(image))
+        assert image.read_bytes() == png
+        execute(
+            "threads",
+            "environments",
+            "update",
+            "work",
+            "--thread",
+            "t",
+            "--if-match",
+            '"thread:2"',
+            "--body",
+            '{"permission_ceiling":{"operations":[]}}',
+        )
+        assert captured[-1][2] == {"permission_ceiling": {"operations": []}}
         server.join(timeout=12)
-        assert not server.is_alive() and not failures and len(captured) == 32, (
+        assert not server.is_alive() and not failures and len(captured) == 45, (
             "Copied CLI offline server did not complete"
         )
     print(
@@ -581,6 +703,121 @@ def main() -> None:
         assert error["error"]["code"] and error["error"]["request_id"], "API error lost its structured evidence"
         print(
             "Copied CLI verified HTTPS: offline UX, public/no-auth, profile, metadata, nullable PATCH and stale CAS",
+            flush=True,
+        )
+
+        # This journey uses the copied CLI only; parent supplies the matching Service.
+        created_space = call(
+            "memory-spaces",
+            "create",
+            body={
+                "name": "CLI Space",
+                "always_load": [],
+                "organization": {
+                    "enabled": False,
+                    "cooldown_seconds": 0,
+                    "trigger": {"type": "change_count", "count": 1},
+                },
+            },
+            status=201,
+        )
+        space_id = created_space["data"]["id"]
+        current_space = call("memory-spaces", "get", space_id)
+        call(
+            "memory-spaces",
+            "update",
+            space_id,
+            "--if-match",
+            read_etag(current_space),
+            body={"description": None, "guide": None},
+        )
+        assert any(item["id"] == space_id for item in call("memory-spaces", "list")["data"]["items"])
+        organization_status = call("memory-spaces", "organization", "get", "--space", space_id)["data"]
+        assert not organization_status["pending"] and organization_status["active_run_id"] is None
+        assert call("memory-spaces", "organizations", "list", "--space", space_id)["data"]["items"] == []
+        selected = {"enabled": True, "spaces": [{"name": "shared", "space_id": space_id}]}
+        selected_session = call("sessions", "create", body={"memory": selected}, status=201)
+        selected_id = selected_session["data"]["id"]
+        call("labels", "session", selected_id, "--set", "{}", "--if-match", read_etag(selected_session))
+        read_session = call("sessions", "get", selected_id)
+        assert (
+            read_session["data"]["memory"]["enabled"]
+            and read_session["data"]["memory"]["spaces"][0]["space_id"] == space_id
+        )
+        selected_receipt = call(
+            "threads",
+            "create",
+            "--idempotency-key",
+            str(uuid.uuid4()),
+            body={
+                "agent_id": agent,
+                "session_id": selected_id,
+                "payload": payload("CLI shared Space readback"),
+                "options": {"overrides": {"builtin_skills": [], "platform_tools": {"groups": []}}},
+            },
+            status=201,
+        )["data"]
+        incorporated = call(
+            "threads", "inbox", "wait", selected_receipt["entry"]["id"], "--thread", selected_receipt["thread"]["id"]
+        )["data"]
+        assert incorporated["status"] == "consumed"
+        selected_run = incorporated["assigned_run_id"]
+        assert call("runs", "wait", selected_run)["data"]["status"] == "completed"
+        frozen = call("runs", "get", selected_run)["data"]["memory_mounts"]
+        shared = next(mount for mount in frozen if mount.get("space_id") == space_id)
+        assert shared["roots"] == ["global/", f"sessions/{selected_id}/"]
+        executed = call("runs", "agent", "get", "--run", selected_run)["data"]
+        assert executed["config"]["builtin_skills"] == [] and executed["config"]["platform_tools"]["groups"] == []
+        assert any(
+            run["id"] == selected_run for run in call("runs", "list", "--session-id", selected_id)["data"]["items"]
+        )
+        attempt = call("runs", "attempts", "list", "--run", selected_run)["data"]["items"][0]
+        assert call("runs", "attempts", "get", attempt["id"], "--run", selected_run)["data"]["run_id"] == selected_run
+        summary = call("usage", "get", "--run-id", selected_run)["data"]
+        assert all(run["run_id"] == selected_run for run in summary["runs"])
+        assert any(
+            session["id"] == selected_id
+            for session in call("memory-spaces", "sessions", "list", "--space", space_id)["data"]["items"]
+        )
+        current_session = call("sessions", "get", selected_id)
+        call(
+            "sessions",
+            "update",
+            selected_id,
+            "--if-match",
+            read_etag(current_session),
+            body={"memory": {"enabled": False, "spaces": []}},
+        )
+        assert call("runs", "get", selected_run)["data"]["memory_mounts"] == frozen
+        current_space = call("memory-spaces", "get", space_id)
+        call("memory-spaces", "delete", space_id, "--if-match", read_etag(current_space), status=204)
+        if organizer_model := os.environ.get("A13N_ORGANIZER_MODEL"):
+            organizer = call(
+                "memory-spaces",
+                "create",
+                body={"name": "CLI organization request", "organization": {"enabled": False, "model": organizer_model}},
+                status=201,
+            )
+            call("memory-spaces", "organizations", "create", "--space", organizer["data"]["id"], status=202)
+            print(
+                "Copied CLI verified HTTPS: manual organization request accepted 202; execution not awaited and disposable Space retained for fixture cleanup",
+                flush=True,
+            )
+        else:
+            print(
+                "NOT_RUN HTTPS manual organization request: A13N_ORGANIZER_MODEL not supplied; 202 wire covered offline",
+                flush=True,
+            )
+        if record := os.environ.get("A13N_MODEL_RECORD"):
+            call("usage", "records", "metrics", "get", "--record", record)
+            print("Copied CLI verified HTTPS: supplied model record metrics", flush=True)
+        else:
+            print(
+                "NOT_RUN HTTPS single-record metrics: A13N_MODEL_RECORD not supplied; nullable/zero covered offline",
+                flush=True,
+            )
+        print(
+            "Copied CLI verified HTTPS: Space CRUD/CAS/status/history, labels preserve Session memory, frozen roots, Run search/executed Agent/Attempt and usage; Computer/provider/screenshots remain offline-only",
             flush=True,
         )
 

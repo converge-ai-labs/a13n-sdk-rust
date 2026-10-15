@@ -29,16 +29,22 @@ pub use client::{
 };
 pub use generated::models::{
     AgentModelCharacteristics, AgentReviewer, ClientToolDefinition, ConnectionSelection, Delivery,
-    EntryStatus, Failure, IsolatedSkillSync, MediaUnderstandingSelection, MemoryAccess,
-    MemoryMount, MountCreate, OutputSpec, OutputVariant, PendingCall, PluginSelection,
-    RetryOverride, RunStatus, SharedSkillSync, SkillSelection, SkillSync, ToolPermissionSetting,
-    ToolReviewRule, ToolRiskLevel, ToolsetSelection, UsageLimit,
+    EntryStatus, EnvironmentAction, EnvironmentPermissionSetInput, Failure, FrozenMemoryMount,
+    IsolatedSkillSync, MediaUnderstandingSelection, MemoryAccess, MemoryMount, MountCreate,
+    OutputSpec, OutputVariant, PendingCall, PlatformGroup, PlatformSelection, PluginSelection,
+    RetryOverride, RunStatus, SessionMemorySettings, SharedSkillSync, SkillSelection, SkillSync,
+    SpaceBinding, ToolPermissionSetting, ToolReviewRule, ToolRiskLevel, ToolsetSelection,
+    UsageLimit,
 };
 pub use generated::models::{
     AgentOverrideInputSkillSync as OverrideSkillSync,
+    agent_override_input::BuiltinSkills as BuiltinSkill,
     agent_reviewer::{OnError as ReviewerOnError, OnFlagged as ReviewerOnFlagged},
     client_tool_definition::Permission as ClientToolPermission,
     isolated_skill_sync::Mode as IsolatedSkillSyncMode,
+    platform_selection::{
+        ReadPermission as PlatformReadPermission, WritePermission as PlatformWritePermission,
+    },
     shared_skill_sync::Mode as SharedSkillSyncMode,
     tool_review_rule::OnFlagged as RuleOnFlagged,
 };

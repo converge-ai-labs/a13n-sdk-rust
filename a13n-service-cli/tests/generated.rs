@@ -275,6 +275,75 @@ fn binary_download_streams_exact_bytes_and_requires_destination() {
 }
 
 #[test]
+fn session_labels_replace_without_sending_memory_and_retained_images_stay_binary() {
+    let mut view = serde_json::to_value(a13n::generated::models::SessionView::default()).unwrap();
+    view["labels"] = serde_json::json!({});
+    view["memory"] = serde_json::json!({"enabled":true,"spaces":[]});
+    let (base, server) = serve(vec![(
+        200,
+        vec![("Content-Type", "application/json")],
+        serde_json::to_vec(&view).unwrap(),
+    )]);
+    let output = binary(&[
+        "--base-url",
+        &base,
+        "labels",
+        "session",
+        "s",
+        "--set",
+        "{}",
+        "--if-match",
+        "\"s:2\"",
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let request = &server.join().unwrap()[0];
+    assert!(request.starts_with("PATCH /api/v1/sessions/s "));
+    assert!(request.to_ascii_lowercase().contains("if-match: \"s:2\""));
+    assert_eq!(
+        serde_json::from_str::<serde_json::Value>(request.split_once("\r\n\r\n").unwrap().1)
+            .unwrap(),
+        serde_json::json!({"labels":{}})
+    );
+
+    let bytes = vec![0, 255, 137, 80, 78, 71, 13, 10, 0, 128];
+    let (base, server) = serve(vec![(
+        200,
+        vec![("Content-Type", "image/png"), ("Cache-Control", "no-store")],
+        bytes.clone(),
+    )]);
+    let file = std::env::temp_dir().join(format!(
+        "a13n-retained-{}-{:?}.png",
+        std::process::id(),
+        thread::current().id()
+    ));
+    let output = binary(&[
+        "--base-url",
+        &base,
+        "runs",
+        "images",
+        "get",
+        "image /",
+        "--run",
+        "r",
+        "--output",
+        file.to_str().unwrap(),
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(output.stdout.is_empty());
+    assert_eq!(std::fs::read(&file).unwrap(), bytes);
+    std::fs::remove_file(file).unwrap();
+    assert!(server.join().unwrap()[0].starts_with("GET /api/v1/runs/r/images/image%20%2F "));
+}
+
+#[test]
 fn profile_overrides_ambient_target_and_credentials_are_not_printed() {
     let (base, server) = serve(vec![(
         200,

@@ -53,6 +53,9 @@ pub struct ThreadView {
     )]
     pub origin_tool_call_id: Option<String>,
 
+    #[serde(rename = "purpose", skip_serializing_if = "Option::is_none")]
+    pub purpose: Option<Purpose>,
+
     #[serde(rename = "session_id")]
     pub session_id: String,
 
@@ -102,6 +105,7 @@ impl ThreadView {
             origin_run_id,
             origin_thread_id,
             origin_tool_call_id,
+            purpose: None,
             session_id,
             subagent,
             updated_at,
@@ -124,5 +128,19 @@ pub enum Origin {
 impl Default for Origin {
     fn default() -> Origin {
         Self::New
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Purpose {
+    #[serde(rename = "conversation")]
+    Conversation,
+    #[serde(rename = "memory_organization")]
+    MemoryOrganization,
+}
+
+impl Default for Purpose {
+    fn default() -> Purpose {
+        Self::Conversation
     }
 }

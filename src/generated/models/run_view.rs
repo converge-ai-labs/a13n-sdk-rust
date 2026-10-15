@@ -72,7 +72,7 @@ pub struct RunView {
     pub max_attempts: i32,
 
     #[serde(rename = "memory_mounts")]
-    pub memory_mounts: Vec<models::MemoryMount>,
+    pub memory_mounts: Vec<models::FrozenMemoryMount>,
 
     #[serde(rename = "options")]
     pub options: Box<models::RunOptionsOutput>,
@@ -149,7 +149,7 @@ impl RunView {
         labels: std::collections::HashMap<String, String>,
         lineage: models::Lineage,
         max_attempts: i32,
-        memory_mounts: Vec<models::MemoryMount>,
+        memory_mounts: Vec<models::FrozenMemoryMount>,
         options: models::RunOptionsOutput,
         output: Option<serde_json::Value>,
         parent_run_id: Option<String>,

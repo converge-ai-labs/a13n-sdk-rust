@@ -63,7 +63,10 @@ pub async fn run(
         ),
         ("session", Some(labels)) => update!(
             sessions,
-            models::SessionUpdate::new(labels),
+            models::SessionUpdate {
+                labels: Some(Some(labels)),
+                ..Default::default()
+            },
             SessionUpdateOptions
         ),
         ("thread", Some(labels)) => update!(

@@ -18,6 +18,8 @@ pub enum ToolsetKey {
     Files,
     #[serde(rename = "shell")]
     Shell,
+    #[serde(rename = "computer")]
+    Computer,
     #[serde(rename = "web")]
     Web,
     #[serde(rename = "memory")]
@@ -37,6 +39,7 @@ impl std::fmt::Display for ToolsetKey {
         match self {
             Self::Files => write!(f, "files"),
             Self::Shell => write!(f, "shell"),
+            Self::Computer => write!(f, "computer"),
             Self::Web => write!(f, "web"),
             Self::Memory => write!(f, "memory"),
             Self::Assets => write!(f, "assets"),

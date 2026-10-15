@@ -58,7 +58,9 @@ async fn transport_stages_categories_and_sources_are_safe() {
             .http_builder(
                 reqwest::Client::builder()
                     .no_proxy()
-                    .timeout(Duration::from_millis(50)),
+                    // Leave local header scheduling time before the deliberate
+                    // 20-second delay; otherwise a Body probe can time out in Request.
+                    .timeout(Duration::from_millis(500)),
             )
             .build()
             .unwrap();
@@ -70,7 +72,8 @@ async fn transport_stages_categories_and_sources_are_safe() {
             .await
             .unwrap_err();
         assert!(
-            matches!(&error, Error::Transport(e) if e.stage == stage && e.kind == TransportKind::Timeout)
+            matches!(&error, Error::Transport(e) if e.stage == stage && e.kind == TransportKind::Timeout),
+            "expected {stage:?} timeout, got {error:?}"
         );
         redacted(&error);
     }

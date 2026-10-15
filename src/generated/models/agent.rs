@@ -52,7 +52,7 @@ pub struct Agent {
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub preset_kind: Option<Option<PresetKind>>,
+    pub preset_kind: Option<Option<models::PresetKind>>,
 
     #[serde(rename = "source")]
     pub source: models::AgentSource,
@@ -106,19 +106,5 @@ impl Agent {
             version,
             workspace_id,
         }
-    }
-}
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum PresetKind {
-    #[serde(rename = "composer")]
-    Composer,
-    #[serde(rename = "finding")]
-    Finding,
-}
-
-impl Default for PresetKind {
-    fn default() -> PresetKind {
-        Self::Composer
     }
 }

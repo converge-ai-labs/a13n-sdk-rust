@@ -13,6 +13,12 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ModelUsage {
+    #[serde(
+        rename = "average_time_to_first_chunk_seconds",
+        deserialize_with = "Option::deserialize"
+    )]
+    pub average_time_to_first_chunk_seconds: Option<f64>,
+
     #[serde(rename = "cache_read_tokens")]
     pub cache_read_tokens: i32,
 
@@ -31,27 +37,37 @@ pub struct ModelUsage {
     #[serde(rename = "output_tokens")]
     pub output_tokens: i32,
 
+    #[serde(
+        rename = "output_tokens_per_second",
+        deserialize_with = "Option::deserialize"
+    )]
+    pub output_tokens_per_second: Option<f64>,
+
     #[serde(rename = "requests")]
     pub requests: i32,
 }
 
 impl ModelUsage {
     pub fn new(
+        average_time_to_first_chunk_seconds: Option<f64>,
         cache_read_tokens: i32,
         cache_write_tokens: i32,
         cost: Option<String>,
         input_tokens: i32,
         model: Option<String>,
         output_tokens: i32,
+        output_tokens_per_second: Option<f64>,
         requests: i32,
     ) -> ModelUsage {
         ModelUsage {
+            average_time_to_first_chunk_seconds,
             cache_read_tokens,
             cache_write_tokens,
             cost,
             input_tokens,
             model,
             output_tokens,
+            output_tokens_per_second,
             requests,
         }
     }

@@ -19,6 +19,9 @@ pub struct MountView {
     #[serde(rename = "name")]
     pub name: String,
 
+    #[serde(rename = "permission_ceiling", skip_serializing_if = "Option::is_none")]
+    pub permission_ceiling: Option<Box<models::EnvironmentPermissionSetOutput>>,
+
     #[serde(rename = "working_directory", deserialize_with = "Option::deserialize")]
     pub working_directory: Option<String>,
 }
@@ -32,6 +35,7 @@ impl MountView {
         MountView {
             environment_id,
             name,
+            permission_ceiling: None,
             working_directory,
         }
     }

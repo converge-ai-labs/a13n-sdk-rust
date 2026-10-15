@@ -22,6 +22,15 @@ pub enum AddMountApiV1ThreadsThreadIdEnvironmentsPostError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`check_computer_api_v1_environments_environment_id_computer_check_post`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum CheckComputerApiV1EnvironmentsEnvironmentIdComputerCheckPostError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`create_environment_api_v1_environments_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -121,6 +130,15 @@ pub enum UpdateEnvironmentApiV1EnvironmentsEnvironmentIdPatchError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`update_mount_api_v1_threads_thread_id_environments_name_patch`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum UpdateMountApiV1ThreadsThreadIdEnvironmentsNamePatchError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`update_template_api_v1_environment_templates_template_id_patch`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -210,6 +228,92 @@ pub async fn add_mount_api_v1_threads_thread_id_environments_post(
     } else {
         let content = resp.text().await?;
         let entity: Option<AddMountApiV1ThreadsThreadIdEnvironmentsPostError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// Probe desktop readiness without capturing the screen, sending input or starting the instance.
+pub async fn check_computer_api_v1_environments_environment_id_computer_check_post(
+    configuration: &configuration::Configuration,
+    environment_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<
+    Response<models::ComputerCheck>,
+    Error<CheckComputerApiV1EnvironmentsEnvironmentIdComputerCheckPostError>,
+> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_environment_id = environment_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/environments/{environment_id}/computer/check",
+        configuration.base_path,
+        environment_id = crate::generated::apis::urlencode(p_path_environment_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ComputerCheck`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ComputerCheck`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<CheckComputerApiV1EnvironmentsEnvironmentIdComputerCheckPostError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
@@ -1110,6 +1214,102 @@ pub async fn update_environment_api_v1_environments_environment_id_patch(
     } else {
         let content = resp.text().await?;
         let entity: Option<UpdateEnvironmentApiV1EnvironmentsEnvironmentIdPatchError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn update_mount_api_v1_threads_thread_id_environments_name_patch(
+    configuration: &configuration::Configuration,
+    thread_id: &str,
+    name: &str,
+    mount_update: models::MountUpdate,
+    if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<
+    Response<models::MountView>,
+    Error<UpdateMountApiV1ThreadsThreadIdEnvironmentsNamePatchError>,
+> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_thread_id = thread_id;
+    let p_path_name = name;
+    let p_body_mount_update = mount_update;
+    let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/threads/{thread_id}/environments/{name}",
+        configuration.base_path,
+        thread_id = crate::generated::apis::urlencode(p_path_thread_id),
+        name = crate::generated::apis::urlencode(p_path_name)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::PATCH, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_if_match {
+        req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+    req_builder = req_builder.json(&p_body_mount_update);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::MountView`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::MountView`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<UpdateMountApiV1ThreadsThreadIdEnvironmentsNamePatchError> =
             serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,

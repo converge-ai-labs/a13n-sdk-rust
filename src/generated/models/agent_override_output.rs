@@ -15,6 +15,14 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AgentOverrideOutput {
     #[serde(
+        rename = "builtin_skills",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub builtin_skills: Option<Option<std::collections::HashSet<BuiltinSkills>>>,
+
+    #[serde(
         rename = "client_tools",
         default,
         with = "::serde_with::rust::double_option",
@@ -87,6 +95,14 @@ pub struct AgentOverrideOutput {
     pub output_spec: Option<Option<Box<models::OutputSpec>>>,
 
     #[serde(
+        rename = "platform_tools",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub platform_tools: Option<Option<Box<models::PlatformSelection>>>,
+
+    #[serde(
         rename = "plugins",
         default,
         with = "::serde_with::rust::double_option",
@@ -147,6 +163,7 @@ impl AgentOverrideOutput {
     /// What one run changes of its revision's configuration; an omitted or null field keeps the revision's.  `toolsets` replaces whole toolsets; `retries` and each subagent edge replace the fields they set, and a null edge removes it; every other field replaces the revision's value.
     pub fn new() -> AgentOverrideOutput {
         AgentOverrideOutput {
+            builtin_skills: None,
             client_tools: None,
             connection_tools: None,
             instructions: None,
@@ -156,6 +173,7 @@ impl AgentOverrideOutput {
             model_characteristics: None,
             model_settings: None,
             output_spec: None,
+            platform_tools: None,
             plugins: None,
             retries: None,
             reviewer: None,
@@ -164,5 +182,17 @@ impl AgentOverrideOutput {
             subagents: None,
             toolsets: None,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum BuiltinSkills {
+    #[serde(rename = "platform-operations")]
+    PlatformOperations,
+}
+
+impl Default for BuiltinSkills {
+    fn default() -> BuiltinSkills {
+        Self::PlatformOperations
     }
 }
