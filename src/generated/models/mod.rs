@@ -404,6 +404,8 @@ pub mod model_pricing_entry_input;
 pub use self::model_pricing_entry_input::ModelPricingEntryInput;
 pub mod model_pricing_entry_output;
 pub use self::model_pricing_entry_output::ModelPricingEntryOutput;
+pub mod model_request_metrics;
+pub use self::model_request_metrics::ModelRequestMetrics;
 pub mod model_update;
 pub use self::model_update::ModelUpdate;
 pub mod model_usage;

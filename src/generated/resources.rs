@@ -9683,6 +9683,10 @@ impl<'a> UsageResource<'a> {
     pub fn overview(&self) -> UsageOverviewResource<'a> {
         UsageOverviewResource(self.0.clone())
     }
+    /// Access `records` locally, sharing the client and explicit scope.
+    pub fn records(&self) -> UsageRecordsResource<'a> {
+        UsageRecordsResource(self.0.clone())
+    }
     /// Summarize Usage.
     ///
     /// `GET /api/v1/usage`.
@@ -9916,6 +9920,61 @@ impl<'a> UsageOverviewResource<'a> {
         if let Some(value) = &options.timezone {
             request = query(request, "timezone", value)?;
         }
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct UsageRecordsResource<'a>(pub(crate) Binding<'a>);
+impl<'a> UsageRecordsResource<'a> {
+    /// Bind `record_id` locally without an HTTP request. The returned reference borrows the client, not this collection.
+    pub fn at(&self, id: impl Into<String>) -> UsageRecordResource<'a> {
+        UsageRecordResource(self.0.select(id.into()))
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct UsageRecordResource<'a>(pub(crate) Binding<'a>);
+impl<'a> UsageRecordResource<'a> {
+    /// Access `metrics` locally, sharing the client and explicit scope.
+    pub fn metrics(&self) -> UsageRecordMetricsResource<'a> {
+        UsageRecordMetricsResource(self.0.clone())
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct UsageRecordMetricsResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`UsageRecordMetricsResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct UsageRecordMetricsGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> UsageRecordMetricsResource<'a> {
+    /// Model Request Metrics.
+    ///
+    /// `GET /api/v1/usage/records/{record_id}/metrics`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: UsageRecordMetricsGetOptions,
+    ) -> Result<Response<models::ModelRequestMetrics>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/usage/records/{record_id}/metrics",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
@@ -12825,6 +12884,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "GET",
         "/api/v1/usage/overview",
         "UsageOverviewResource",
+        "get",
+    ),
+    (
+        "GET",
+        "/api/v1/usage/records/{record_id}/metrics",
+        "UsageRecordMetricsResource",
         "get",
     ),
     ("GET", "/api/v1/users/me", "UsersMeResource", "get"),
