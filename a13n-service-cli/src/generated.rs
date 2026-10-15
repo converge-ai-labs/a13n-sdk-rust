@@ -1933,7 +1933,7 @@ fn group_147() -> Command {
     node
 }
 fn operation_110() -> Command {
-    Command::new("list").about("Get Model Catalog").long_about("The models.dev models the registered model provider types serve, for any signed-in principal. (GET /api/v1/model-catalog). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli model-catalog list").arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("Get Model Catalog").long_about("Read public model metadata and prices. Filter by provider and model to avoid a large full-catalog response.\n\nBoth filters match exactly and combine with AND; omitted filters leave that dimension unrestricted.\nNo match returns empty items with the catalog status. Refreshes always fetch the full catalog when due.\nCopy the selected item's characteristics, pricing and ref into model config, pricing and catalog_ref when saving. (GET /api/v1/model-catalog). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli model-catalog list").arg(Arg::new("provider").long("provider")).arg(Arg::new("model").long("model")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_149() -> Command {
     let mut node = Command::new("model-providers")
@@ -4527,7 +4527,11 @@ pub async fn dispatch(
             }
         }
         110 => {
-            let response = client.api().model_catalog().list().await?;
+            let options = ModelCatalogListOptions {
+                provider: input::optional(matches, "provider")?,
+                model: input::optional(matches, "model")?,
+            };
+            let response = client.api().model_catalog().list(options).await?;
             output::response(response, config).await
         }
         111 => {

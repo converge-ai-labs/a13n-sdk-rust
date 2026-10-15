@@ -5052,6 +5052,14 @@ impl<'a> MemorySpaceSessionsResource<'a> {
 
 #[derive(Clone)]
 pub struct ModelCatalogResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`ModelCatalogResource::list`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ModelCatalogListOptions {
+    /// Query parameter `provider`. Exact catalog channel ID, such as openrouter. `None` omits this parameter.
+    pub provider: Option<String>,
+    /// Query parameter `model`. Exact, case-sensitive model ID within the catalog channel. `None` omits this parameter.
+    pub model: Option<String>,
+}
 impl<'a> ModelCatalogResource<'a> {
     /// Get Model Catalog.
     ///
@@ -5060,11 +5068,20 @@ impl<'a> ModelCatalogResource<'a> {
     /// Preserves the actual HTTP status and headers, including ETag and request ID.
     ///
     /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
-    pub async fn list(&self) -> Result<Response<models::ModelCatalog>, Error> {
-        let request =
+    pub async fn list(
+        &self,
+        options: ModelCatalogListOptions,
+    ) -> Result<Response<models::ModelCatalog>, Error> {
+        let mut request =
             self.0
                 .client
                 .request(reqwest::Method::GET, "/api/v1/model-catalog", &self.0.ids)?;
+        if let Some(value) = &options.provider {
+            request = query(request, "provider", value)?;
+        }
+        if let Some(value) = &options.model {
+            request = query(request, "model", value)?;
+        }
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }

@@ -44,6 +44,7 @@ pub enum GetModelApiV1ModelsKeyGetError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetModelCatalogApiV1ModelCatalogGetError {
+    Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
@@ -297,13 +298,25 @@ pub async fn get_model_api_v1_models_key_get(
     }
 }
 
-/// The models.dev models the registered model provider types serve, for any signed-in principal.
+/// Read public model metadata and prices. Filter by provider and model to avoid a large full-catalog response.  Both filters match exactly and combine with AND; omitted filters leave that dimension unrestricted. No match returns empty items with the catalog status. Refreshes always fetch the full catalog when due. Copy the selected item's characteristics, pricing and ref into model config, pricing and catalog_ref when saving.
 pub async fn get_model_catalog_api_v1_model_catalog_get(
     configuration: &configuration::Configuration,
+    provider: Option<&str>,
+    model: Option<&str>,
 ) -> Result<Response<models::ModelCatalog>, Error<GetModelCatalogApiV1ModelCatalogGetError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_query_provider = provider;
+    let p_query_model = model;
+
     let uri_str = format!("{}/api/v1/model-catalog", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
+    if let Some(ref param_value) = p_query_provider {
+        req_builder = req_builder.query(&[("provider", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_model {
+        req_builder = req_builder.query(&[("model", &param_value.to_string())]);
+    }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
