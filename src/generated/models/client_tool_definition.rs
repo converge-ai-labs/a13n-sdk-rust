@@ -25,6 +25,7 @@ pub struct ClientToolDefinition {
     )]
     pub instruction: Option<Option<String>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_metadata")]
     #[serde(rename = "metadata", skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::HashMap<String, serde_json::Value>>,
 
@@ -34,6 +35,7 @@ pub struct ClientToolDefinition {
     #[serde(rename = "parameters_json_schema")]
     pub parameters_json_schema: std::collections::HashMap<String, serde_json::Value>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_permission")]
     #[serde(rename = "permission", skip_serializing_if = "Option::is_none")]
     pub permission: Option<Permission>,
 }
@@ -55,6 +57,11 @@ impl ClientToolDefinition {
         }
     }
 }
+fn deserialize_non_null_metadata<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum Permission {
@@ -70,4 +77,9 @@ impl Default for Permission {
     fn default() -> Permission {
         Self::Inherit
     }
+}
+fn deserialize_non_null_permission<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

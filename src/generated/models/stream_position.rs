@@ -13,9 +13,11 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StreamPosition {
+    #[serde(deserialize_with = "deserialize_bounded_attempt")]
     #[serde(rename = "attempt")]
     pub attempt: i32,
 
+    #[serde(deserialize_with = "deserialize_bounded_sequence")]
     #[serde(rename = "sequence")]
     pub sequence: i32,
 }
@@ -24,4 +26,26 @@ impl StreamPosition {
     pub fn new(attempt: i32, sequence: i32) -> StreamPosition {
         StreamPosition { attempt, sequence }
     }
+}
+fn deserialize_bounded_attempt<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<i32, D::Error> {
+    let value = <i32>::deserialize(deserializer)?;
+    if value < 0 {
+        return Err(serde::de::Error::custom(
+            "Integer is below its schema minimum",
+        ));
+    }
+    Ok(value)
+}
+fn deserialize_bounded_sequence<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<i32, D::Error> {
+    let value = <i32>::deserialize(deserializer)?;
+    if value < 0 {
+        return Err(serde::de::Error::custom(
+            "Integer is below its schema minimum",
+        ));
+    }
+    Ok(value)
 }

@@ -16,12 +16,12 @@ previous=$(jq -er .commit contract/source.json)
 git -C "$upstream" merge-base --is-ancestor "$commit" refs/remotes/origin/main || fail 'source commit is not on origin/main'
 git -C "$upstream" merge-base --is-ancestor "$previous" "$commit" || fail 'source would rewind or diverge from the existing pin'
 
-if [[ "$previous" == "$commit" ]]; then
+if [[ "$previous" == "$commit" ]] && contract_input_set_matches "$(cat contract/source.json)"; then
   echo "Contract already pinned to $commit"
   exit 0
 fi
 
-if ! contract_inputs_changed "$upstream" "$previous" "$commit"; then
+if contract_input_set_matches "$(cat contract/source.json)" && ! contract_inputs_changed "$upstream" "$previous" "$commit"; then
   echo "Contract inputs unchanged; keeping source pin $previous"
   exit 0
 fi

@@ -33,6 +33,22 @@ def payload(text: str) -> dict[str, Any]:
     return {"content": [{"type": "text", "text": text}]}
 
 
+def session_snapshot_ready(frames: list[dict[str, Any]], thread: str, run: str) -> bool:
+    """Initial Items follow a current Run, not the last already sealed Run."""
+    if not frames:
+        return False
+    assert frames[0]["type"] == "thread" and frames[0]["data"]["thread"]["id"] == thread
+    state = frames[0]["data"]
+    if state["current_run"] is None:
+        assert state["last_run"] is not None and state["last_run"]["id"] == run
+        return True
+    assert state["current_run"]["id"] == run
+    return any(
+        frame["type"] == "items" and frame["data"]["thread_id"] == thread and frame["data"]["run_id"] == run
+        for frame in frames[1:]
+    )
+
+
 def offline(source: Path) -> None:
     """Exercise the copied executable against a bounded local TCP origin only."""
     import socket
@@ -113,27 +129,8 @@ def offline(source: Path) -> None:
             return "2026-10-06T00:00:00Z" if schema.get("format") == "date-time" else "native"
 
         window = sample(schemas["RunItems"])
-        window.update(
-            {
-                "baseline": True,
-                "complete": True,
-                "position": "1-9",
-                "resume_after": "100-9",
-                "continuation": {
-                    "run_id": "r",
-                    "position": {"attempt": 1, "sequence": 9},
-                    "next_ordinal": 10,
-                    "full_content": False,
-                    "arguments": None,
-                    "observer": {
-                        "run_id": None,
-                        "state": {"children": {"child": {"children": {"nested": {"parts": {}, "threads": {}}}}}},
-                    },
-                },
-            }
-        )
+        window["complete"] = True
         window["run"]["id"] = "r"
-        window["run"]["display_position"] = "1-9"
         window["items"] = []
         for ordinal in range(6, 10):
             item = sample(schemas["Item"])
@@ -154,7 +151,7 @@ def offline(source: Path) -> None:
 
         def serve() -> None:
             try:
-                for _ in range(45):
+                for _ in range(48):
                     connection, _ = listener.accept()
                     with connection:
                         connection.settimeout(5)
@@ -209,9 +206,6 @@ def offline(source: Path) -> None:
                             status = 200
                             response = json.loads(json.dumps(window))
                             if "before" in query or "after" in query:
-                                response.update(
-                                    {"baseline": False, "position": None, "resume_after": None, "continuation": None}
-                                )
                                 response["items"] = response["items"][:2]
                             if "before" in query and "after" in query:
                                 status = 400
@@ -296,6 +290,53 @@ def offline(source: Path) -> None:
                                 )
                                 + "\n\n"
                             )
+                        if path == "/api/v1/sessions/s/stream":
+                            assert b"last-event-id:" not in headers.lower()
+                            state = {
+                                "thread": sample(schemas["ThreadView"]),
+                                "current_run": None,
+                                "last_run": None,
+                                "entries": [],
+                            }
+                            frames = [
+                                ("thread", state),
+                                (
+                                    "items",
+                                    {
+                                        "thread_id": "t",
+                                        "run_id": "r",
+                                        "first": 6,
+                                        "items": [],
+                                        "continuation": None,
+                                        "complete": True,
+                                    },
+                                ),
+                                (
+                                    "delta",
+                                    {
+                                        "thread_id": "t",
+                                        "run_id": "r",
+                                        "attempt": 1,
+                                        "sequence": 2,
+                                        "event": native_event,
+                                        "item": native_item,
+                                    },
+                                ),
+                                ("gap", {"thread_id": "t", "run_id": "r"}),
+                            ]
+                            response = "event: future\ndata: not-json\n\n" + "".join(
+                                f"event: {kind}\ndata: {json.dumps(value)}\n\n" for kind, value in frames
+                            )
+                        if path == "/api/v1/sessions/sealed/stream":
+                            state = {
+                                "thread": sample(schemas["ThreadView"]),
+                                "current_run": None,
+                                "last_run": sample(schemas["RunView"]),
+                                "entries": [],
+                            }
+                            state["thread"]["id"] = "t"
+                            state["last_run"].update({"id": "r", "status": "completed"})
+                            response = f"event: thread\ndata: {json.dumps(state)}\n\n"
                         encoded = (
                             response
                             if isinstance(response, bytes)
@@ -315,7 +356,7 @@ def offline(source: Path) -> None:
         environment = {key: value for key, value in os.environ.items() if not key.startswith("A13N_")}
         environment.update({"HOME": str(directory), "USERPROFILE": str(directory), "XDG_CONFIG_HOME": str(directory)})
 
-        def execute(*arguments: str, stdin: bytes | None = None, code: int = 0) -> Any:
+        def execute(*arguments: str, stdin: bytes | None = None, code: int = 0, jsonl: bool = False) -> Any:
             result = subprocess.run(
                 [str(binary), "--base-url", base, "--timeout", "5", *arguments],
                 cwd=directory,
@@ -325,6 +366,8 @@ def offline(source: Path) -> None:
                 timeout=8,
             )
             assert result.returncode == code, "Copied CLI offline outcome mismatch"
+            if jsonl:
+                return [json.loads(line) for line in result.stdout.splitlines()]
             return json.loads(result.stdout) if result.stdout else None
 
         configurations = [
@@ -425,12 +468,26 @@ def offline(source: Path) -> None:
         assert captured[-1][2]["config"]["characteristics"] == characteristics
         frame = execute("threads", "events", "--thread", "t")
         assert frame["event"] == native_event and frame["item"] == native_item
+        session_frames = execute("sessions", "events", "s", jsonl=True)
+        assert [frame["type"] for frame in session_frames] == ["thread", "items", "delta", "gap"]
+        assert session_frames[2]["data"]["event"] == native_event and session_frames[2]["data"]["item"] == native_item
+        assert all("cursor" not in frame for frame in session_frames)
+        raw = directory / "session.sse"
+        execute("sessions", "stream", "get", "--session", "s", "--output", str(raw))
+        assert raw.read_text().startswith("event: future\ndata: not-json\n\n") and "event: gap" in raw.read_text()
+        sealed_frames = execute("sessions", "events", "sealed", jsonl=True)
+        assert len(sealed_frames) == 1 and session_snapshot_ready(sealed_frames, "t", "r")
+        active_frames = json.loads(json.dumps(sealed_frames))
+        active_frames[0]["data"]["current_run"] = active_frames[0]["data"]["last_run"]
+        assert not session_snapshot_ready(active_frames, "t", "r")
+        assert session_snapshot_ready([*active_frames, session_frames[1]], "t", "r")
+        # A sealed-only fresh snapshot uses explicit historical Run Items readback.
         recent = execute("runs", "items", "get", "--run", "r", "--limit", "2")
         assert recent == window and len(recent["items"]) == 4 and recent["items"][0]["ordinal"] == 6
         for flag, value in (("--before", "8"), ("--after", "0")):
             history = execute("runs", "items", "get", "--run", "r", flag, value, "--limit", "2")
-            assert history["complete"] and not history["baseline"] and len(history["items"]) == 2
-            assert history["position"] is None and history["continuation"] is None and history["resume_after"] is None
+            assert history["complete"] and len(history["items"]) == 2
+            assert set(history) == {"run", "items", "complete"}
             assert captured[-1][1] == f"/api/v1/runs/r/items?{flag[2:]}={value}&limit=2"
         execute("runs", "items", "get", "--run", "r", "--before", "1", "--after", "0", code=2)
         content = execute("runs", "contents", "get", "c", "--run", "r")
@@ -530,11 +587,11 @@ def offline(source: Path) -> None:
         )
         assert captured[-1][2] == {"permission_ceiling": {"operations": []}}
         server.join(timeout=12)
-        assert not server.is_alive() and not failures and len(captured) == 45, (
+        assert not server.is_alive() and not failures and len(captured) == 48, (
             "Copied CLI offline server did not complete"
         )
     print(
-        "Copied CLI local TCP: configuration omission/null/empty/native JSON, typed payload file/stdin, media policy, five OAuth/discovery commands, native child ItemRef/memory provenance, ordered imported history, explicit Run content/Session authors, skill/lazy overrides, ordinal windows, whole tail > limit, recursive continuation and historical null metadata passed",
+        "Copied CLI local TCP: configuration omission/null/empty/native JSON, typed payload file/stdin, media policy, five OAuth/discovery commands, native child ItemRef/memory provenance, ordered imported history, explicit Run content/Session authors, skill/lazy overrides, ordinal windows, whole tail > limit, native Session frames/raw bytes and bounded historical windows passed",
         flush=True,
     )
 
@@ -603,13 +660,17 @@ def main() -> None:
         )
 
         def execute(
-            *arguments: str, stdin: bytes | None = None, success: bool = True, credential: bool = True
+            *arguments: str,
+            stdin: bytes | None = None,
+            success: bool = True,
+            credential: bool = True,
+            timeout: int = 90,
         ) -> subprocess.CompletedProcess[bytes]:
             process_environment = environment.copy()
             if not credential:
                 process_environment.pop("CLI_ACCEPTANCE_TOKEN")
             result = subprocess.run(
-                [str(binary), "--profile", "acceptance", "--timeout", "90", *arguments],
+                [str(binary), "--profile", "acceptance", "--timeout", str(timeout), *arguments],
                 cwd=directory,
                 env=process_environment,
                 input=stdin,
@@ -674,8 +735,9 @@ def main() -> None:
         call("readyz", "get", status=200)
         original = call("agents", "get", agent, status=200)
         initial_etag = read_etag(original)
+        description = f"CLI acceptance {uuid.uuid4()}"
         changed = call(
-            "agents", "update", agent, "--if-match", initial_etag, body={"description": "CLI acceptance"}, status=200
+            "agents", "update", agent, "--if-match", initial_etag, body={"description": description}, status=200
         )
         assert read_etag(changed) != initial_etag
         cleared = call(
@@ -683,7 +745,7 @@ def main() -> None:
         )
         # Agent metadata explicitly treats null as keep-current, not clear-to-null.
         # Wire preservation is covered by local CLI fixtures; live behavior follows Service.
-        assert cleared["data"]["description"] == "CLI acceptance", "Null changed a keep-current metadata field"
+        assert cleared["data"]["description"] == description, "Null changed a keep-current metadata field"
         assert cleared["data"]["name"] == original["data"]["name"], "Omitted field changed"
         conflict = execute(
             "--error-format",
@@ -1005,24 +1067,12 @@ def main() -> None:
         first = call("threads", "create", "--body", f"@{request_file}", "--idempotency-key", request_key, status=201)
         replay = call("threads", "create", "--body", f"@{request_file}", "--idempotency-key", request_key, status=200)
         assert first["data"]["thread"]["id"] == replay["data"]["thread"]["id"]
-        assert first["data"]["thread"]["message_history"] == history
+        assert "message_history" not in first["data"]["thread"]
         run_id = first["data"]["run"]["id"]
         thread_id = first["data"]["thread"]["id"]
-        assert json.dumps(call("threads", "get", thread_id)["data"]["message_history"]) == json.dumps(history)
+        assert "message_history" not in call("threads", "get", thread_id)["data"]
         if os.name != "nt":
-            checkpoint_deadline = time.monotonic() + 80
-            while True:
-                baseline = call("runs", "result", run_id)["data"]
-                assert baseline["run"]["id"] == run_id and baseline["baseline"]
-                if baseline["position"] is not None:
-                    break
-                assert time.monotonic() < checkpoint_deadline, "Run did not publish an Items baseline"
-                time.sleep(0.1)
-            coverage_args = ["--run", baseline["run"]["id"], "--position", baseline["position"]]
-            hint = baseline.get("resume_after")
-            assert hint is None or isinstance(hint, str), "Items seek hint must be absent/null/string"
-            if hint is not None:
-                coverage_args.extend(["--after", hint])
+            session_id = first["data"]["thread"]["session_id"]
             events_file = directory / "events.jsonl"
             errors_file = directory / "events.stderr"
             with events_file.open("wb") as events_output, errors_file.open("wb") as events_errors:
@@ -1031,11 +1081,9 @@ def main() -> None:
                         str(binary),
                         "--profile",
                         "acceptance",
-                        "threads",
+                        "sessions",
                         "events",
-                        "--thread",
-                        thread_id,
-                        *coverage_args,
+                        session_id,
                     ],
                     cwd=directory,
                     env=environment,
@@ -1047,12 +1095,10 @@ def main() -> None:
                     while True:
                         complete_lines = events_file.read_bytes().split(b"\n")[:-1]
                         delivered = [json.loads(line) for line in complete_lines if line]
-                        if any(frame.get("cursor") is not None for frame in delivered):
+                        if session_snapshot_ready(delivered, thread_id, run_id):
                             break
-                        assert observer.poll() is None, "SSE observer exited before delivering a cursor frame"
-                        assert time.monotonic() < deadline, (
-                            "SSE did not flush a covered boundary or tail frame while observing"
-                        )
+                        assert observer.poll() is None, "SSE observer exited before delivering Session snapshots"
+                        assert time.monotonic() < deadline, "Session did not flush initial snapshots while observing"
                         time.sleep(0.05)
                     observer.send_signal(signal.SIGINT)
                     assert observer.wait(timeout=10) == 130, "Local Ctrl-C must use the documented cancellation exit"
@@ -1064,41 +1110,40 @@ def main() -> None:
             assert token.encode() not in observed + errors_file.read_bytes(), "SSE exposed its credential"
             frames = [json.loads(line) for line in observed.splitlines()]
             assert frames and all(isinstance(frame, dict) for frame in frames), "Events must be complete JSONL"
-            items = [frame["item"] for frame in frames if frame.get("item") is not None]
-            cursor_frames = [frame for frame in frames if frame.get("cursor") is not None]
-            assert cursor_frames[0]["applied_position"] == baseline["position"]
-            for frame in frames:
-                if frame["type"] == "gap":
-                    assert frame["position"] is None or isinstance(frame["position"], str)
-            for item in items:
-                assert item["kind"] in {"text_message", "reasoning_message", "tool_call", "observation"}
-                assert item["state"] in {"in_progress", "completed", "interrupted", "failed"}
+            assert session_snapshot_ready(frames, thread_id, run_id)
+            assert all("cursor" not in frame for frame in frames)
+            reopened = execute("sessions", "events", session_id, success=False, timeout=2)
+            assert reopened.returncode == 5
+            fresh = [json.loads(line) for line in reopened.stdout.splitlines()]
+            assert session_snapshot_ready(fresh, thread_id, run_id)
+            for snapshot in (frames, fresh):
+                if snapshot[0]["data"]["current_run"] is None:
+                    saved = call("runs", "items", "get", "--run", run_id)["data"]
+                    assert saved["run"]["id"] == run_id and saved["complete"]
             still_running = call("runs", "get", run_id)["data"]
             assert still_running["status"] != "cancelled", "Stopping observation cancelled the durable Run"
             print(
-                "Copied CLI verified direct HTTPS: Items baseline/optional hint, paired SSE coverage, flushed JSONL and local-only Ctrl-C",
+                "Copied CLI verified direct HTTPS: native Session snapshots, fresh explicit reopen, flushed JSONL and local-only Ctrl-C/timeout",
                 flush=True,
             )
         waited = call("runs", "wait", run_id)
         assert waited["data"]["id"] == run_id and waited["data"]["status"] == "completed"
         recent = call("runs", "items", "get", "--run", run_id, "--limit", "1")["data"]
-        assert recent["baseline"] and recent["complete"]
+        assert recent["complete"] and set(recent) == {"run", "items", "complete"}
         assert all(
             right["ordinal"] == left["ordinal"] + 1
             for left, right in zip(recent["items"], recent["items"][1:], strict=False)
         )
         historical = call("runs", "items", "get", "--run", run_id, "--after", "0", "--limit", "1")["data"]
-        assert historical["complete"] and not historical["baseline"] and len(historical["items"]) <= 1
-        assert (
-            historical["position"] is None and historical["continuation"] is None and historical["resume_after"] is None
-        )
+        assert historical["complete"] and len(historical["items"]) <= 1
         if historical["items"]:
             assert historical["items"][0]["ordinal"] == 1
         before = call("runs", "items", "get", "--run", run_id, "--before", "1", "--limit", "1")["data"]
-        assert not before["baseline"] and not before["items"]
-        print("Copied CLI verified HTTPS: native ordinal windows and historical null coverage metadata", flush=True)
+        assert not before["items"]
+        print("Copied CLI verified HTTPS: native ordinal windows without stream progress", flush=True)
         print(
-            "Copied CLI verified HTTPS: native imported history/readback, 201/200 replay and exact Run wait", flush=True
+            "Copied CLI verified HTTPS: native imported history input and current Thread metadata, 201/200 replay and exact Run wait",
+            flush=True,
         )
         native_options = {
             "configuration": {

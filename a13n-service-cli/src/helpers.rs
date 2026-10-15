@@ -2,7 +2,7 @@ use crate::{CliError, config::Effective, input, output, required};
 use a13n::{
     Client, SendOptions, StartOptions,
     generated::models,
-    streaming::{StreamOptions, ThreadFrame, ThreadStream},
+    streaming::{SessionStream, SessionStreamOptions, StreamOptions, ThreadFrame, ThreadStream},
 };
 use clap::{Arg, ArgAction, ArgMatches, Command, value_parser};
 use serde_json::json;
@@ -37,6 +37,11 @@ pub fn commands(mut api: Command) -> Command {
         .subcommand(Command::new("result")
             .about("Read authoritative committed items of one Run")
             .arg(Arg::new("id").required(true))));
+    api = api.mut_subcommand("sessions", |sessions| sessions.subcommand(
+        Command::new("events")
+            .about("Observe native Session frames as JSONL; every connection starts from a fresh snapshot")
+            .arg(Arg::new("id").required(true).help("Session ID"))
+    ));
     api.mut_subcommand("threads", |threads| {
         threads.subcommand(Command::new("events")
             .about("Observe Thread frames as JSONL; changed/gap/reset are readback hints, not reconstructed state")
@@ -159,6 +164,30 @@ pub async fn run(
             }
             _ => Err(CliError::input("unknown Run command")),
         },
+        Some(("sessions", sessions)) => {
+            let (_, leaf) = sessions
+                .subcommand()
+                .ok_or_else(|| CliError::input("missing Session helper"))?;
+            let mut stream = SessionStream::open(
+                resources.sessions().at(required(leaf, "id")?),
+                SessionStreamOptions::default(),
+            )
+            .await?;
+            let mut stdout = tokio::io::stdout();
+            while let Some(frame) = stream.next().await? {
+                let line = serde_json::to_string(&frame)
+                    .map_err(|_| CliError::input("cannot encode Session frame"))?;
+                stdout
+                    .write_all(format!("{line}\n").as_bytes())
+                    .await
+                    .map_err(|_| CliError::input("cannot write Session stream"))?;
+                stdout
+                    .flush()
+                    .await
+                    .map_err(|_| CliError::input("cannot flush Session stream"))?;
+            }
+            Ok(())
+        }
         Some(("threads", threads)) => match threads.subcommand() {
             Some(("inbox", inbox)) => {
                 let (_, leaf) = inbox

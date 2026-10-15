@@ -4,6 +4,7 @@ Generation does not import, check out, or execute the Service.
 """
 
 import json
+import math
 import shutil
 import subprocess
 import tempfile
@@ -75,7 +76,7 @@ def prepare(document: dict) -> dict:
     # Imported native history is immutable ordered JSON, including each message
     # object. HashMap would reorder the model-visible context at the wire boundary.
     for name, schema in schemas.items():
-        if name in {"NewThread", "ThreadView"}:
+        if name == "NewThread":
             schema["properties"]["message_history"]["x-rust-type"] = "Vec<serde_json::Map<String, serde_json::Value>>"
         if name == "RunView":
             # FrozenMemoryMount contains every legacy MemoryMount field with the
@@ -87,6 +88,57 @@ def prepare(document: dict) -> dict:
             schema["properties"]["roots"]["x-rust-non-null"] = True
     visit(document)
     schemas["RunStatus"]["x-rust-unknown-enum"] = True
+    return document
+
+
+def with_session_models(document: dict, stream: dict) -> dict:
+    """Share HTTP output models; import display-only types from their owning export."""
+    document = json.loads(json.dumps(document))
+    schemas = document["components"]["schemas"]
+    names = {
+        name: name if name in schemas else f"{name}-Output" if f"{name}-Output" in schemas else name
+        for name in stream["$defs"]
+    }
+
+    def convert(value: object) -> object:
+        if isinstance(value, dict):
+            return {key: convert(child) for key, child in value.items()}
+        if isinstance(value, list):
+            return [convert(child) for child in value]
+        if isinstance(value, str) and value.startswith("#/$defs/"):
+            return f"#/components/schemas/{names[value.split('/')[-1]]}"
+        return value
+
+    def comparable(value: object) -> object:
+        # Pydantic's standalone export retains default:null, OpenAPI omits it.
+        if isinstance(value, dict):
+            return {key: comparable(child) for key, child in value.items() if key != "default" or child is not None}
+        if isinstance(value, list):
+            return [comparable(child) for child in value]
+        return value
+
+    for name, definition in stream["$defs"].items():
+        target = names[name]
+        converted = convert(definition)
+        if target in schemas:
+            if comparable(schemas[target]) != comparable(converted):
+                raise ValueError(f"Session and HTTP models disagree: {name}")
+        else:
+            schemas[target] = converted
+    # Preserve integer lower bounds on the Session snapshot's canonical models.
+    # Frame coordinates with no declared minimum remain unrestricted.
+    for target in names.values():
+        schema = schemas[target]
+        for name, prop in schema.get("properties", {}).items():
+            nullable = prop.get("type") == "null" or any(
+                branch.get("type") == "null" for branch in prop.get("anyOf", []) + prop.get("oneOf", [])
+            )
+            if name not in schema.get("required", []) and not nullable:
+                prop["x-rust-non-null"] = True
+            if prop.get("type") == "integer" and "minimum" in prop and name in schema.get("required", []):
+                prop["x-rust-bounded-integer"] = True
+                prop["x-rust-minimum"] = math.ceil(prop["minimum"])
+    schemas["Delta"]["properties"]["event"]["x-rust-type"] = "serde_json::Map<String, serde_json::Value>"
     return document
 
 
@@ -137,7 +189,8 @@ def install(output: Path, target: Path) -> None:
 def main() -> None:
     document = json.loads((ROOT / "contract/openapi.json").read_text())
     with tempfile.TemporaryDirectory(prefix="a13n-codegen-") as temp:
-        output = generate(document, Path(temp))
+        stream = json.loads((ROOT / "contract/session-stream.schema.json").read_text())
+        output = generate(with_session_models(document, stream), Path(temp))
         nodes, tests = generate_resources(document, output)
         cli = Path(temp) / "cli/generated.rs"
         generate_cli(document, nodes, tests, cli)

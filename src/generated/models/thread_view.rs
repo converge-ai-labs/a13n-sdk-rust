@@ -33,10 +33,6 @@ pub struct ThreadView {
 
     #[serde(rename = "mcp_headers")]
     pub mcp_headers: std::collections::HashMap<String, std::collections::HashMap<String, String>>,
-    /// Pydantic AI ModelMessage JSON objects, validated by the Service. Imports completed user text, model text and closed tool-call/JSON-result exchanges; no instructions, media or suspended execution. At most 256 messages and 256 KiB of normalized JSON.
-
-    #[serde(rename = "message_history")]
-    pub message_history: Vec<serde_json::Map<String, serde_json::Value>>,
 
     #[serde(rename = "origin")]
     pub origin: Origin,
@@ -53,6 +49,7 @@ pub struct ThreadView {
     )]
     pub origin_tool_call_id: Option<String>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_purpose")]
     #[serde(rename = "purpose", skip_serializing_if = "Option::is_none")]
     pub purpose: Option<Purpose>,
 
@@ -81,7 +78,6 @@ impl ThreadView {
         labels: std::collections::HashMap<String, String>,
         last_run_id: Option<String>,
         mcp_headers: std::collections::HashMap<String, std::collections::HashMap<String, String>>,
-        message_history: Vec<serde_json::Map<String, serde_json::Value>>,
         origin: Origin,
         origin_run_id: Option<String>,
         origin_thread_id: Option<String>,
@@ -100,7 +96,6 @@ impl ThreadView {
             labels,
             last_run_id,
             mcp_headers,
-            message_history,
             origin,
             origin_run_id,
             origin_thread_id,
@@ -143,4 +138,9 @@ impl Default for Purpose {
     fn default() -> Purpose {
         Self::Conversation
     }
+}
+fn deserialize_non_null_purpose<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

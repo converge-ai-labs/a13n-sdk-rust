@@ -13,12 +13,15 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ToolsetSelection {
+    #[serde(default, deserialize_with = "deserialize_non_null_config")]
     #[serde(rename = "config", skip_serializing_if = "Option::is_none")]
     pub config: Option<std::collections::HashMap<String, serde_json::Value>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_enabled")]
     #[serde(rename = "enabled", skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_tools")]
     #[serde(rename = "tools", skip_serializing_if = "Option::is_none")]
     pub tools: Option<serde_json::Value>,
 }
@@ -31,4 +34,19 @@ impl ToolsetSelection {
             tools: None,
         }
     }
+}
+fn deserialize_non_null_config<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_enabled<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_tools<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

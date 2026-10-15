@@ -80,13 +80,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
         },
     ).await?;
     let thread = interaction.thread.as_ref().ok_or("Missing Thread")?.resource().get(Default::default()).await?;
-    assert_eq!(serde_json::to_string(&thread.data.message_history)?, serde_json::to_string(&history)?);
     println!("Thread {}, exact Run status: {:?}", thread.data.id, interaction.result().await?.status);
     Ok(())
 }
 ```
 
-This is native Pydantic AI history, **not** UI Items, OpenAI chat messages, a Harness checkpoint or authorization to execute historical tools. Service validates completed tool/result pairing, at most 256 messages and 262144 normalized UTF-8 bytes; it rejects media, system instructions and unresolved calls before creating a Thread. Follow-up sends never repeat message_history. Messages use ordered `serde_json::Map<String, Value>`, and nested `Value` objects preserve insertion order. Service retains submitted key order, including tool arguments/results; persist that same order for immutable history and recovery. The accepted import remains immutable in Thread readback; an initial failed Run can still start a later root Run from it, while a fork inherits checkpoint context.
+This is native Pydantic AI history, **not** UI Items, OpenAI chat messages, a Harness checkpoint or authorization to execute historical tools. Service validates completed tool/result pairing, at most 256 messages and 262144 normalized UTF-8 bytes; it rejects media, system instructions and unresolved calls before creating a Thread. Follow-up sends never repeat message_history. Messages use ordered `serde_json::Map<String, Value>`, and nested `Value` objects preserve insertion order. Service retains submitted key order, including tool arguments/results; persist that same order for immutable history and recovery. Thread readback exposes current metadata, not imported `message_history`. The accepted import remains immutable execution context; an initial failed Run can still start a later root Run from it, while a fork inherits checkpoint context.
 
 ## Advanced setup: create an Agent
 

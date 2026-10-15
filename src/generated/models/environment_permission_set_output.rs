@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct EnvironmentPermissionSetOutput {
+    #[serde(default, deserialize_with = "deserialize_non_null_operations")]
     #[serde(rename = "operations", skip_serializing_if = "Option::is_none")]
     pub operations: Option<Vec<models::EnvironmentAction>>,
 }
@@ -21,4 +22,9 @@ impl EnvironmentPermissionSetOutput {
     pub fn new() -> EnvironmentPermissionSetOutput {
         EnvironmentPermissionSetOutput { operations: None }
     }
+}
+fn deserialize_non_null_operations<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

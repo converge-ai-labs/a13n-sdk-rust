@@ -23,6 +23,7 @@ pub struct MemoryMount {
     #[serde(rename = "name")]
     pub name: String,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_recall")]
     #[serde(rename = "recall", skip_serializing_if = "Option::is_none")]
     pub recall: Option<bool>,
 }
@@ -37,4 +38,9 @@ impl MemoryMount {
             recall: None,
         }
     }
+}
+fn deserialize_non_null_recall<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

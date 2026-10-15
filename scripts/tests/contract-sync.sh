@@ -28,7 +28,7 @@ sync() { bash "$sdk/scripts/sync-contract.sh" "$upstream" "$1"; }
 mkdir -p "$upstream/proto/a13n-service/fixtures" "$upstream/spec/a13n-service" "$sdk/contract/semantics"
 printf '{"openapi":"3.1.0","paths":{}}\n' > "$upstream/proto/a13n-service/openapi.json"
 printf '{"examples":[]}\n' > "$upstream/proto/a13n-service/fixtures/wire.json"
-for name in notification-client run-stream-event thread-stream; do
+for name in notification-client run-stream-event thread-stream session-stream; do
   printf '{"type":"object"}\n' > "$upstream/proto/a13n-service/$name.schema.json"
 done
 printf '# API conventions\n' > "$upstream/spec/api-conventions.md"
@@ -57,13 +57,36 @@ FILES
 printf '# SDK guidance\n' > "$sdk/contract/README.md"
 printf 'local fixture\n' > "$sdk/contract/fixtures/local.txt"
 printf 'local semantic note\n' > "$sdk/contract/semantics/local.md"
+cp -R "$sdk/contract" "$work/historical"
 cp -R "$sdk/contract" "$work/initial"
 reject sync main
 reject sync "${initial:0:12}"
 reject sync '$(touch unsafe)'
 reject sync 0000000000000000000000000000000000000000
+# Same SHA still migrates a historical input set; selected inputs are not blob changes.
+sync "$initial"
+[[ $(jq '.files | length' "$sdk/contract/source.json") == 7 ]]
+[[ -f "$sdk/contract/session-stream.schema.json" && -f "$sdk/contract/thread-stream.schema.json" ]]
+rm -rf "$work/initial"
+cp -R "$sdk/contract" "$work/initial"
+# Once the selected set matches, a same-SHA retry remains byte-identical.
 sync "$initial"
 diff -r "$sdk/contract" "$work/initial"
+# The immediately previous six-input layout migrates at the exact same pin.
+rm "$sdk/contract/session-stream.schema.json"
+jq 'del(.files["session-stream.schema.json"])' "$sdk/contract/source.json" > "$work/six.json"
+cp "$work/six.json" "$sdk/contract/source.json"
+sync "$initial"
+diff -r "$sdk/contract" "$work/initial"
+# A newer SHA with identical selected blobs must migrate that layout too.
+rm "$sdk/contract/session-stream.schema.json"
+cp "$work/six.json" "$sdk/contract/source.json"
+printf 'runtime only\n' > "$upstream/runtime.txt"
+identical=$(commit_source 'Unchanged selected blobs with six-input SDK')
+sync "$identical"
+[[ $(jq -r .commit "$sdk/contract/source.json") == "$identical" ]]
+[[ $(jq '.files | length' "$sdk/contract/source.json") == 7 ]]
+cp "$sdk/contract/source.json" "$work/initial/source.json"
 
 rm "$upstream/spec/a13n-service/07-facts-and-delivery.md"
 missing=$(commit_source 'Incomplete authority')
@@ -74,7 +97,7 @@ complete=$(commit_source 'Complete authority')
 # The working tree is deliberately dirty: only committed bytes may be imported.
 printf 'uncommitted and invalid JSON' > "$upstream/proto/a13n-service/openapi.json"
 sync "$complete"
-[[ $(jq '.files | length' "$sdk/contract/source.json") == 6 ]]
+[[ $(jq '.files | length' "$sdk/contract/source.json") == 7 ]]
 for retired in notification-client.schema.json run-stream-event.schema.json fixtures/wire.json \
   semantics/native-streaming-and-notifications.md semantics/queued-submissions.md; do
   [[ ! -e "$sdk/contract/$retired" ]]
@@ -82,7 +105,7 @@ done
 for owned in README.md fixtures/local.txt semantics/local.md; do
   cmp "$sdk/contract/$owned" "$work/initial/$owned"
 done
-[[ -f "$sdk/contract/thread-stream.schema.json" ]]
+[[ -f "$sdk/contract/thread-stream.schema.json" && -f "$sdk/contract/session-stream.schema.json" ]]
 for name in runs facts-and-delivery api; do [[ -f "$sdk/contract/semantics/$name.md" ]]; done
 cmp "$sdk/contract/openapi.json" "$work/initial/openapi.json"
 [[ $(jq -r .commit "$sdk/contract/source.json") == "$complete" ]]
@@ -102,6 +125,15 @@ unchanged=$(commit_source 'Unconsumed source changes')
 sync "$unchanged"
 diff -r "$sdk/contract" "$work/complete"
 
+# A change to the newly selected input alone must advance provenance.
+printf '{"frames":{"thread":{"type":"object"}}}\n' > "$upstream/proto/a13n-service/session-stream.schema.json"
+session_only=$(commit_source 'Session schema only')
+sync "$session_only"
+[[ $(jq -r .commit "$sdk/contract/source.json") == "$session_only" ]]
+cmp "$sdk/contract/openapi.json" "$work/complete/openapi.json"
+cmp "$sdk/contract/thread-stream.schema.json" "$work/complete/thread-stream.schema.json"
+cmp "$sdk/contract/session-stream.schema.json" "$upstream/proto/a13n-service/session-stream.schema.json"
+
 printf '# API conventions changed without changing HTTP schemas\n' > "$upstream/spec/api-conventions.md"
 semantic=$(commit_source 'Semantic-only update')
 sync "$semantic"
@@ -120,6 +152,17 @@ git -C "$upstream" commit -qam Unmerged
 unmerged=$(git -C "$upstream" rev-parse HEAD)
 reject sync "$unmerged"
 git -C "$upstream" switch -q main
+# Missing or malformed seventh input fails before any snapshot write.
+cp "$upstream/proto/a13n-service/session-stream.schema.json" "$work/session-valid.json"
+rm "$upstream/proto/a13n-service/session-stream.schema.json"
+missing_session=$(commit_source 'Missing Session schema')
+reject sync "$missing_session"
+diff -r "$sdk/contract" "$work/current"
+printf 'invalid' > "$upstream/proto/a13n-service/session-stream.schema.json"
+malformed_session=$(commit_source 'Malformed Session schema')
+reject sync "$malformed_session"
+diff -r "$sdk/contract" "$work/current"
+cp "$work/session-valid.json" "$upstream/proto/a13n-service/session-stream.schema.json"
 printf 'invalid' > "$upstream/proto/a13n-service/thread-stream.schema.json"
 invalid=$(commit_source 'Malformed thread schema')
 reject sync "$invalid"
@@ -348,12 +391,6 @@ printf 'reviewer adaptation\n' > "$sdk/$TEST_GENERATED"
 printf 'reviewer handwritten adaptation\n' > "$sdk/handwritten.txt"
 printf 'updated generator dependency\n' > "$sdk/generator-dependency.txt"
 printf '\nReviewer snapshot note\n' >> "$sdk/contract/semantics/api-conventions.md"
-# Simulate a pending proposal still carrying an old manifest-owned input.
-# A newer update must stage its deletion, not just remove it locally.
-cp "$work/initial/notification-client.schema.json" "$sdk/contract/notification-client.schema.json"
-jq '.files["notification-client.schema.json"] = {source_path:"proto/a13n-service/notification-client.schema.json"}' \
-  "$sdk/contract/source.json" > "$work/old-source.json"
-cp "$work/old-source.json" "$sdk/contract/source.json"
 git -C "$sdk" add -- "$TEST_GENERATED" handwritten.txt generator-dependency.txt contract
 git -C "$sdk" commit -qm 'Reviewer adaptation'
 git -C "$sdk" push -q origin "HEAD:refs/heads/$branch"
@@ -384,6 +421,31 @@ propose "$no_change"
 grep -q 'Reviewer snapshot note' "$sdk/contract/semantics/api-conventions.md"
 ! git -C "$sdk" cat-file -e HEAD:sdk-fix.txt 2>/dev/null
 [[ $(jq -r .commit "$sdk/contract/source.json") == "$http" ]]
+# A pending six-input proposal must stage the newly selected file, even at
+# the same source SHA, while retaining reviewer notes and ancestry.
+rm "$sdk/contract/session-stream.schema.json"
+jq 'del(.files["session-stream.schema.json"])' "$sdk/contract/source.json" > "$work/six-pending.json"
+cp "$work/six-pending.json" "$sdk/contract/source.json"
+git -C "$sdk" add -A contract
+git -C "$sdk" commit -qm 'Historical six-input proposal'
+git -C "$sdk" push -q origin "HEAD:refs/heads/$branch"
+six_head=$(head)
+fresh
+export TEST_GENERATE_FAIL=false
+propose "$http"
+git -C "$sdk" merge-base --is-ancestor "$six_head" HEAD
+git -C "$sdk" cat-file -e HEAD:contract/session-stream.schema.json
+[[ $(git -C "$sdk" show HEAD:contract/source.json | jq '.files | length') == 7 ]]
+grep -q 'Maintainer notes' "$TEST_PR_STATE"
+# A newer update also removes manifest-owned retired inputs.
+cp "$work/historical/notification-client.schema.json" "$sdk/contract/notification-client.schema.json"
+jq '.files["notification-client.schema.json"] = {source_path:"proto/a13n-service/notification-client.schema.json"}' \
+  "$sdk/contract/source.json" > "$work/old-source.json"
+cp "$work/old-source.json" "$sdk/contract/source.json"
+git -C "$sdk" add contract
+git -C "$sdk" commit -qm 'Historical retired input'
+git -C "$sdk" push -q origin "HEAD:refs/heads/$branch"
+fresh
 newer=$(next_source 'Newer contract')
 export TEST_GENERATE_FAIL=false TEST_PR_RACE=notes
 propose "$newer"

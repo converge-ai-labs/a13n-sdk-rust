@@ -33,15 +33,19 @@ pub struct AgentReviewer {
     )]
     pub model_settings: Option<Option<std::collections::HashMap<String, serde_json::Value>>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_on_error")]
     #[serde(rename = "on_error", skip_serializing_if = "Option::is_none")]
     pub on_error: Option<OnError>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_on_flagged")]
     #[serde(rename = "on_flagged", skip_serializing_if = "Option::is_none")]
     pub on_flagged: Option<OnFlagged>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_risk_threshold")]
     #[serde(rename = "risk_threshold", skip_serializing_if = "Option::is_none")]
     pub risk_threshold: Option<models::ToolRiskLevel>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_rules")]
     #[serde(rename = "rules", skip_serializing_if = "Option::is_none")]
     pub rules: Option<std::collections::HashMap<String, models::ToolReviewRule>>,
 
@@ -53,6 +57,7 @@ pub struct AgentReviewer {
     )]
     pub shell_instruction: Option<Option<String>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_timeout_seconds")]
     #[serde(rename = "timeout_seconds", skip_serializing_if = "Option::is_none")]
     pub timeout_seconds: Option<f64>,
 }
@@ -89,6 +94,11 @@ impl Default for OnError {
         Self::Deny
     }
 }
+fn deserialize_non_null_on_error<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum OnFlagged {
@@ -102,4 +112,24 @@ impl Default for OnFlagged {
     fn default() -> OnFlagged {
         Self::Deny
     }
+}
+fn deserialize_non_null_on_flagged<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_risk_threshold<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_rules<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_timeout_seconds<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

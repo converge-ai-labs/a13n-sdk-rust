@@ -44,11 +44,11 @@ Run Items are authoritative for the returned **committed display window**, not t
 
 ## Read recent or historical ordinal windows
 
-`run.items().get(RunItemsGetOptions { limit: Some(2), ..Default::default() })` returns the newest limit plus the **entire mutable tail**, which can exceed the limit. With no `before` or `after`, `baseline=true`; its nullable `position`, optional nullable `continuation` and `resume_after` describe committed display coverage. The default limit is 200 and maximum is 500. The SDK preserves the Service response without truncating the tail or fetching earlier history automatically.
+`run.items().get(RunItemsGetOptions { limit: Some(2), ..Default::default() })` returns the newest limit plus the **entire mutable tail**, which can exceed the limit. The response contains only `run`, `items` and `complete`; it carries no stream progress. The default limit is 200 and maximum is 500. The SDK preserves the Service response without truncating the tail or fetching earlier history automatically.
 
-For explicit history, use `a13n::resources::RunItemsGetOptions { before: Some(first_ordinal), limit: Some(200), ..Default::default() }` or `after: Some(last_ordinal)`. `before >= 1` and `after >= 0` are mutually exclusive. These bounded windows have `baseline=false` and null continuation/position/resume hint even when `complete=true`. Do not install them as live baselines, advance stream coverage, heal a gap or seal a live consumer with them. Paging is by Item ordinal, not a collection cursor; there is no `pages()` or `--all` full-history loader for Run Items.
+For explicit history, use `a13n::resources::RunItemsGetOptions { before: Some(first_ordinal), limit: Some(200), ..Default::default() }` or `after: Some(last_ordinal)`. `before >= 1` and `after >= 0` are mutually exclusive. These bounded windows are committed readback even when `complete=true`; they do not establish stream coverage or heal a gap. Paging is by Item ordinal, not a collection cursor; there is no `pages()` or `--all` full-history loader for Run Items.
 
-Generated `DisplayContinuation`, `FragmentState`, `ObserverContinuation` and `StreamPosition` preserve recursive presentation state, including child cursors and native JSON. They are not execution checkpoints or SDK-owned reducer state. Preserve them when your application applies a baseline; the SDK neither normalizes events nor implements a Console reducer.
+Generated `DisplayContinuation`, `FragmentState`, `ObserverContinuation` and `StreamPosition` preserve recursive presentation state, including child cursors and native JSON. They are not execution checkpoints or SDK-owned reducer state. They are carried by Session `items` frames; the SDK neither normalizes events nor implements a Console reducer.
 
 ## Native AG-UI events and inline-child attribution
 
@@ -58,54 +58,38 @@ Preserve `TOOL_CALL_RESULT.content` as either a string or an ordered list of str
 
 **When a stream stops early:** dropping the interaction or calling `close()` releases local observation; it does **not** interrupt the remote Run. After explicit close, `result()` works only if it was already cached. To deliberately stop remote work, use `outcome.run.interrupt().await?` (or bind its Run ID through `client.run(id)` and interrupt explicitly). If a read errors, keep the Thread/Entry IDs from the Interaction identity and follow [recovery](errors-and-recovery.md); do not resend the POST blindly.
 
-## Advanced Thread-wide events
+## Advanced native Session events
 
-`ThreadStream::open` is a separate **advanced protocol reader**, not the ordinary finite Agent interaction. It can yield unrelated Runs. If you hold an applied Run Items snapshot with `baseline=true` and a committed position, supply its paired Run ID and display `position`. Historical windows cannot establish this coverage. Its optional `resume_after` is only a Redis seek hint (`after`), not proof of display coverage. With coverage supplied, an absent, expired or incompatible hint falls back to retained replay filtered by position; hint absence alone does not imply a gap. Without a display baseline, omit both `run` and `position` for cursor-only observation; do not invent coverage from a Redis ID.
+`SessionStream::open(session_resource, SessionStreamOptions)` observes one connection to the native Session stream. Every connection begins with a fresh `thread` snapshot for each Thread and an `items` snapshot only for its current Run, followed by native `delta`, replacement `items`, metadata `thread` and `gap` frames. A Thread with no current Run can produce only its `thread` frame until later changes; its last sealed Run's Items require explicit Run readback. Session frames carry no SSE IDs, Last-Event-ID or cursor options. Unknown event names are ignored; malformed known frames fail the reader. `response()` retains HTTP status/headers, and `close()` releases only local observation. Session snapshots have no protocol size bound, so the default adds no frame-size limit; applications may set `SessionStreamOptions.max_frame_bytes = Some(bytes)` to enforce their own budget.
 
-This standalone example reads an existing Run and prints its committed Items before observing its tail. Set `A13N_THREAD_ID` and `A13N_RUN_ID` as well as the URL/token. Printing is the example's application step, not durable business processing:
+This complete example reads the first Thread snapshot of an existing Session within ten seconds, then closes local observation. It works when that Thread has an active Run or only a last sealed Run. An empty Session reaches the timeout. Supply `A13N_SESSION_ID` as well as URL/token:
 
 ```rust
-use a13n::{Client, Secret, streaming::{StreamOptions, ThreadFrame, ThreadStream}};
-use std::{env, error::Error};
+use a13n::{Client, Secret, streaming::{SessionFrame, SessionStream}};
+use std::{env, error::Error, time::Duration};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::new(&env::var("A13N_SERVICE_URL")?, Secret::new(env::var("A13N_API_TOKEN")?))?;
-    let thread_id = env::var("A13N_THREAD_ID")?;
-    let run = client.run(env::var("A13N_RUN_ID")?);
-    let snapshot = run.items().get(Default::default()).await?.data;
-    if !snapshot.baseline { return Err("Historical window cannot seed a live reader".into()); }
-    println!("Committed Items: {:#?}", snapshot.items);
-    let position = snapshot.position.ok_or("No committed display yet; wait for a checkpoint")?;
-    let mut reader = ThreadStream::open(client.api().threads().at(thread_id), StreamOptions {
-        run: Some(snapshot.run.id),
-        position: Some(position),
-        after: snapshot.resume_after.flatten(), // Omitted and explicit null both mean no hint.
-        max_reconnects: 3,
-        ..Default::default()
-    }).await?;
-    while let Some(frame) = reader.next().await? {
-        match frame {
-            ThreadFrame::Delta { data, .. } => println!("Provisional: {:?}", data.event),
-            ThreadFrame::Boundary { data, .. } => println!("Readback now covers {}-{}", data.attempt, data.sequence),
-            ThreadFrame::Gap(data) => {
-                println!("Read Items for {} through {:?}; no automatic healing", data.run_id, data.position);
-                break;
-            }
-            ThreadFrame::Reset(data) => {
-                println!("Discard superseded provisional output and read Items for {}", data.run_id);
-                break;
-            }
-            ThreadFrame::Changed(_) => println!("Re-read Thread metadata"),
+    let session_id = env::var("A13N_SESSION_ID")?;
+    tokio::time::timeout(Duration::from_secs(10), async {
+        let mut reader = SessionStream::open(client.api().sessions().at(session_id), Default::default()).await?;
+        if let Some(SessionFrame::Thread(state)) = reader.next().await? {
+            println!("Thread: {:?}", state);
         }
-    }
-    reader.close();
+        reader.close();
+        Ok::<_, Box<dyn Error>>(())
+    }).await??;
     Ok(())
 }
 ```
 
+A Session `items` frame replaces the receiver's suffix from `first` onward; earlier Items are final. Its required nullable `continuation` carries presentation state. `complete` seals only that Run's display, not the Session connection. A `gap` requires authoritative readback and reassessing continuity. The SDK returns typed frames without maintaining display state or assembling fragments. After EOF/error, explicitly open a new reader for a fresh snapshot; that snapshot can omit already sealed Runs, whose historical Items remain available through Run readback.
+
+## Advanced Thread-wide events
+
+`ThreadStream::open` remains a separate reader for `delta`, `boundary`, `changed`, `reset` and `gap`. It may yield unrelated Runs. Applications that already hold applied progress may provide paired `StreamOptions.run` and `position`, plus optional `after` as a Redis seek hint. Run Items no longer supplies any of those coordinates. Omit both progress fields for cursor-only observation; never derive a position from an Item ordinal or Redis ID.
+
+A cursor-bearing frame is acknowledged when the next `next()` poll starts after application processing. `applied_cursor()` and `applied_position()` describe prior applied progress; close/drop do not acknowledge the last received frame. Coverage advances only through contiguous deltas of the claimed Run/attempt. Gaps, resets, attempt changes or missing sequences freeze it; other Runs and boundaries cannot bridge holes. Reopen only with application-established coverage, or choose a fresh Session snapshot. A gap's optional `position` is a recovery target, not a resume cursor. The raw generated `thread.stream().get(...)` retains the same explicit query/header controls.
+
 Saved Items may carry `content_refs` for large fields: each reference preserves its preview, original byte size, media type and truncation. Read one explicitly with `client.api().runs().at(run_id).contents().at(content_id).get(Default::default()).await?`; `RunContent.value` is native JSON. A truncated JSON value can be a text prefix rather than a parseable JSON object. Neither Items reads nor `next_text` automatically expand references, and final Run output remains separate. Live `ItemRef.memory_sources` and saved item content preserve automatic Memory delivery evidence; these sources do not establish model citations or enumerate every explicit Memory tool read.
-
-A cursor-bearing frame is acknowledged only when the next `next()` poll starts **after your application applied it**. `applied_cursor()` is the prior applied Redis cursor; `applied_position()` advances only for contiguous deltas of the claimed Run and attempt. Other Runs do not advance that position. Gap/reset, attempt change or a missing sequence freezes coverage until you explicitly reopen from covering Run Items. Boundaries remain visible even at covered positions, but cannot bridge holes. Drop or `close()` never acknowledges the last received frame.
-
-A gap's optional `position` identifies the output a snapshot must cover, not a new cursor to resume from. Missing/null means the target is unknown; a snapshot read alone does not prove recovery. Stop applying tail output across the hole, read default Items with `baseline=true`, apply its continuation, check coverage against the target, and explicitly open a new reader from the new applied snapshot. If the snapshot is still behind, wait for a newer boundary or terminal progress rather than repeatedly reading the same snapshot. Reset means a new attempt superseded provisional output; discard that suffix and read authoritative Items. The SDK supplies no Console reducer or automatic gap healing. Persist your own applied state and coverage together; receiving a frame is not a durable checkpoint. The generated `thread.stream().get(...)` also exposes raw SSE with the same query/header options for custom decoders.

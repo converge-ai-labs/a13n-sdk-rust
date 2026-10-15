@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UsageLimit {
+    #[serde(deserialize_with = "deserialize_bounded_requests")]
     #[serde(rename = "requests")]
     pub requests: i32,
 }
@@ -21,4 +22,15 @@ impl UsageLimit {
     pub fn new(requests: i32) -> UsageLimit {
         UsageLimit { requests }
     }
+}
+fn deserialize_bounded_requests<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<i32, D::Error> {
+    let value = <i32>::deserialize(deserializer)?;
+    if value < 1 {
+        return Err(serde::de::Error::custom(
+            "Integer is below its schema minimum",
+        ));
+    }
+    Ok(value)
 }

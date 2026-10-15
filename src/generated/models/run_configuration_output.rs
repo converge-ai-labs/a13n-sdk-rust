@@ -24,6 +24,7 @@ pub struct RunConfigurationOutput {
     )]
     pub allowed_hosts: Option<Option<Vec<String>>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_extensions")]
     #[serde(rename = "extensions", skip_serializing_if = "Option::is_none")]
     pub extensions: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
@@ -36,4 +37,9 @@ impl RunConfigurationOutput {
             extensions: None,
         }
     }
+}
+fn deserialize_non_null_extensions<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

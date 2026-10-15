@@ -14,12 +14,15 @@ use serde::{Deserialize, Serialize};
 /// SharedSkillSync : Publish mutable conventional names; the last completed publication wins.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SharedSkillSync {
+    #[serde(default, deserialize_with = "deserialize_non_null_cleanup")]
     #[serde(rename = "cleanup", skip_serializing_if = "Option::is_none")]
     pub cleanup: Option<bool>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_mode")]
     #[serde(rename = "mode", skip_serializing_if = "Option::is_none")]
     pub mode: Option<Mode>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_overwrite")]
     #[serde(rename = "overwrite", skip_serializing_if = "Option::is_none")]
     pub overwrite: Option<bool>,
 }
@@ -34,6 +37,11 @@ impl SharedSkillSync {
         }
     }
 }
+fn deserialize_non_null_cleanup<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum Mode {
@@ -45,4 +53,14 @@ impl Default for Mode {
     fn default() -> Mode {
         Self::Shared
     }
+}
+fn deserialize_non_null_mode<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_overwrite<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

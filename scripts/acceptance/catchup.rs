@@ -17,7 +17,6 @@ pub async fn offline() -> Result<()> {
     let mut receipt = m::Submitted::default();
     receipt.thread.id = "t".into();
     receipt.thread.workspace_id = "w".into();
-    receipt.thread.message_history = history.clone();
     receipt.entry.thread_id = "t".into();
     receipt.entry.id = "e".into();
     receipt.run = None;
@@ -89,16 +88,8 @@ pub async fn offline() -> Result<()> {
         )
         .await?;
     ensure(
-        serde_json::to_string(
-            &interaction
-                .evidence
-                .submission()
-                .unwrap()
-                .data
-                .thread
-                .message_history,
-        )? == HISTORY,
-        "Installed receipt history order",
+        interaction.evidence.submission().unwrap().data.thread.id == "t",
+        "Installed imported Thread receipt",
     )?;
     let readback = client
         .api()
@@ -107,8 +98,10 @@ pub async fn offline() -> Result<()> {
         .get(Default::default())
         .await?;
     ensure(
-        serde_json::to_string(&readback.data.message_history)? == HISTORY,
-        "Installed readback history order",
+        serde_json::to_value(readback.data)?
+            .get("message_history")
+            .is_none(),
+        "Thread does not expose imported history",
     )?;
     let content = client
         .api()
@@ -159,7 +152,7 @@ pub async fn offline() -> Result<()> {
     client.close();
     server.await?;
     println!(
-        "Installed crate local TCP: ordered authored/native history and readback, explicit content/authors, typed memory evidence and skill policies passed"
+        "Installed crate local TCP: ordered authored/native history input, explicit content/authors, typed memory evidence and skill policies passed"
     );
     Ok(())
 }
@@ -253,8 +246,10 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
         .get(Default::default())
         .await?;
     ensure(
-        serde_json::to_string(&readback.data.message_history)? == HISTORY,
-        "Service immutable history order",
+        serde_json::to_value(readback.data)?
+            .get("message_history")
+            .is_none(),
+        "Thread does not expose imported history",
     )?;
     println!(
         "Verified HTTPS: 48KB Unicode ContentRef/read/no-store, exact Session authors, lazy/isolated policy and ordered imported history"

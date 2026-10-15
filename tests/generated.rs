@@ -161,15 +161,19 @@ async fn lowlevel_sse_does_not_buffer_and_shares_shutdown_inside_execute() {
 }
 
 #[test]
-fn display_resume_hint_and_native_model_settings_preserve_wire_values() {
-    for hint in [None, Some(Value::Null), Some(json!("100-2"))] {
-        let mut value = sample("RunItems");
-        value["position"] = json!("1-2");
-        if let Some(hint) = hint {
-            value["resume_after"] = hint;
-        }
-        roundtrip::<RunItems>(value);
-    }
+fn run_items_and_native_model_settings_preserve_wire_values() {
+    let value = sample("RunItems");
+    let keys: std::collections::BTreeSet<_> = value
+        .as_object()
+        .unwrap()
+        .keys()
+        .map(String::as_str)
+        .collect();
+    assert_eq!(
+        keys,
+        std::collections::BTreeSet::from(["run", "items", "complete"])
+    );
+    roundtrip::<RunItems>(value);
     for settings in [
         json!({}),
         json!({"provider_specific":{"enabled":true,"levels":[1,null,"auto"]},"timeout":2.5,"empty":null}),

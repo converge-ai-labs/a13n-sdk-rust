@@ -11,57 +11,25 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// RunItems : Items of a run's committed display, in ordinal order, with the run they describe. Ordinals are dense from 1, so the first item's ordinal tells whether earlier ones exist. Live output continues after `position`.
+/// RunItems : Items of a run's committed display, in ordinal order, with the run they describe. Ordinals are dense from 1, so the first item's ordinal tells whether earlier ones exist.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RunItems {
-    #[serde(rename = "baseline")]
-    pub baseline: bool,
-
     #[serde(rename = "complete")]
     pub complete: bool,
 
-    #[serde(
-        rename = "continuation",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub continuation: Option<Option<Box<models::DisplayContinuation>>>,
-
     #[serde(rename = "items")]
     pub items: Vec<models::Item>,
-
-    #[serde(rename = "position", deserialize_with = "Option::deserialize")]
-    pub position: Option<String>,
-
-    #[serde(
-        rename = "resume_after",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub resume_after: Option<Option<String>>,
 
     #[serde(rename = "run")]
     pub run: Box<models::RunView>,
 }
 
 impl RunItems {
-    /// Items of a run's committed display, in ordinal order, with the run they describe. Ordinals are dense from 1, so the first item's ordinal tells whether earlier ones exist. Live output continues after `position`.
-    pub fn new(
-        baseline: bool,
-        complete: bool,
-        items: Vec<models::Item>,
-        position: Option<String>,
-        run: models::RunView,
-    ) -> RunItems {
+    /// Items of a run's committed display, in ordinal order, with the run they describe. Ordinals are dense from 1, so the first item's ordinal tells whether earlier ones exist.
+    pub fn new(complete: bool, items: Vec<models::Item>, run: models::RunView) -> RunItems {
         RunItems {
-            baseline,
             complete,
-            continuation: None,
             items,
-            position,
-            resume_after: None,
             run: Box::new(run),
         }
     }

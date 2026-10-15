@@ -13,12 +13,15 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct DelegationContextPolicy {
+    #[serde(default, deserialize_with = "deserialize_non_null_history")]
     #[serde(rename = "history", skip_serializing_if = "Option::is_none")]
     pub history: Option<History>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_include_task")]
     #[serde(rename = "include_task", skip_serializing_if = "Option::is_none")]
     pub include_task: Option<bool>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_task_state")]
     #[serde(rename = "task_state", skip_serializing_if = "Option::is_none")]
     pub task_state: Option<TaskState>,
 }
@@ -48,6 +51,16 @@ impl Default for History {
         Self::None
     }
 }
+fn deserialize_non_null_history<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_include_task<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum TaskState {
@@ -61,4 +74,9 @@ impl Default for TaskState {
     fn default() -> TaskState {
         Self::Shared
     }
+}
+fn deserialize_non_null_task_state<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }
