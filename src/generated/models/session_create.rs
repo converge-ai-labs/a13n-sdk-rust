@@ -15,10 +15,21 @@ use serde::{Deserialize, Serialize};
 pub struct SessionCreate {
     #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
     pub labels: Option<std::collections::HashMap<String, String>>,
+
+    #[serde(
+        rename = "memory",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub memory: Option<Option<Box<models::SessionMemorySettings>>>,
 }
 
 impl SessionCreate {
     pub fn new() -> SessionCreate {
-        SessionCreate { labels: None }
+        SessionCreate {
+            labels: None,
+            memory: None,
+        }
     }
 }

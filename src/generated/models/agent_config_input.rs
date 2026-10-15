@@ -42,6 +42,9 @@ pub struct AgentConfigInput {
     )]
     pub media_understanding: Option<Box<models::MediaUnderstandingSelection>>,
 
+    #[serde(rename = "memory", skip_serializing_if = "Option::is_none")]
+    pub memory: Option<Box<models::SessionMemorySettings>>,
+
     #[serde(rename = "memory_mounts", skip_serializing_if = "Option::is_none")]
     pub memory_mounts: Option<Vec<models::MemoryMount>>,
 
@@ -116,6 +119,7 @@ impl AgentConfigInput {
             instructions: None,
             lazy_environment: None,
             media_understanding: None,
+            memory: None,
             memory_mounts: None,
             model,
             model_characteristics: None,

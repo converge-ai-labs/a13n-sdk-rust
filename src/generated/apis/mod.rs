@@ -132,6 +132,7 @@ pub mod default_api;
 pub mod environments_api;
 pub mod findings_api;
 pub mod memories_api;
+pub mod memory_spaces_api;
 pub mod models_api;
 pub mod providers_api;
 pub mod runs_api;

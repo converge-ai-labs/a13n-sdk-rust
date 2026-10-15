@@ -13,12 +13,28 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SessionUpdate {
-    #[serde(rename = "labels")]
-    pub labels: std::collections::HashMap<String, String>,
+    #[serde(
+        rename = "labels",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub labels: Option<Option<std::collections::HashMap<String, String>>>,
+
+    #[serde(
+        rename = "memory",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub memory: Option<Option<Box<models::SessionMemorySettings>>>,
 }
 
 impl SessionUpdate {
-    pub fn new(labels: std::collections::HashMap<String, String>) -> SessionUpdate {
-        SessionUpdate { labels }
+    pub fn new() -> SessionUpdate {
+        SessionUpdate {
+            labels: None,
+            memory: None,
+        }
     }
 }

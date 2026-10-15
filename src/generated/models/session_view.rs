@@ -28,6 +28,9 @@ pub struct SessionView {
     #[serde(rename = "last_run_id", deserialize_with = "Option::deserialize")]
     pub last_run_id: Option<String>,
 
+    #[serde(rename = "memory", skip_serializing_if = "Option::is_none")]
+    pub memory: Option<Box<models::SessionMemorySettings>>,
+
     #[serde(
         rename = "preview",
         default,
@@ -35,6 +38,9 @@ pub struct SessionView {
         skip_serializing_if = "Option::is_none"
     )]
     pub preview: Option<Option<Box<models::SessionPreview>>>,
+
+    #[serde(rename = "purpose", skip_serializing_if = "Option::is_none")]
+    pub purpose: Option<Purpose>,
 
     #[serde(rename = "run_count", skip_serializing_if = "Option::is_none")]
     pub run_count: Option<i32>,
@@ -66,11 +72,27 @@ impl SessionView {
             id,
             labels,
             last_run_id,
+            memory: None,
             preview: None,
+            purpose: None,
             run_count: None,
             updated_at,
             version,
             workspace_id,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Purpose {
+    #[serde(rename = "conversation")]
+    Conversation,
+    #[serde(rename = "memory_organization")]
+    MemoryOrganization,
+}
+
+impl Default for Purpose {
+    fn default() -> Purpose {
+        Self::Conversation
     }
 }
