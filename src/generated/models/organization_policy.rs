@@ -13,6 +13,15 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationPolicy {
+    #[serde(
+        rename = "check_interval_seconds",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub check_interval_seconds: Option<i32>,
+
+    #[serde(rename = "cooldown_seconds", skip_serializing_if = "Option::is_none")]
+    pub cooldown_seconds: Option<i32>,
+
     #[serde(rename = "enabled", skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
 
@@ -23,13 +32,19 @@ pub struct OrganizationPolicy {
         skip_serializing_if = "Option::is_none"
     )]
     pub model: Option<Option<String>>,
+
+    #[serde(rename = "trigger", skip_serializing_if = "Option::is_none")]
+    pub trigger: Option<Box<models::Trigger1>>,
 }
 
 impl OrganizationPolicy {
     pub fn new() -> OrganizationPolicy {
         OrganizationPolicy {
+            check_interval_seconds: None,
+            cooldown_seconds: None,
             enabled: None,
             model: None,
+            trigger: None,
         }
     }
 }
