@@ -19,6 +19,7 @@ pub struct EnvironmentMount {
     #[serde(rename = "name")]
     pub name: String,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_permission_ceiling")]
     #[serde(rename = "permission_ceiling", skip_serializing_if = "Option::is_none")]
     pub permission_ceiling: Option<Box<models::EnvironmentPermissionSetOutput>>,
 
@@ -40,4 +41,13 @@ impl EnvironmentMount {
             working_directory: None,
         }
     }
+}
+fn deserialize_non_null_permission_ceiling<
+    'de,
+    D: serde::Deserializer<'de>,
+    T: Deserialize<'de>,
+>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

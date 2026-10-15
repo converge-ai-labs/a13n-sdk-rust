@@ -14,6 +14,7 @@ use serde::{Deserialize, Serialize};
 /// AgentModelCharacteristics : The agent's context policy, layered over what the model declares.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AgentModelCharacteristics {
+    #[serde(default, deserialize_with = "deserialize_non_null_compact_threshold")]
     #[serde(rename = "compact_threshold", skip_serializing_if = "Option::is_none")]
     pub compact_threshold: Option<f64>,
 
@@ -43,4 +44,9 @@ impl AgentModelCharacteristics {
             proactive_context_management_threshold: None,
         }
     }
+}
+fn deserialize_non_null_compact_threshold<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

@@ -23,9 +23,11 @@ pub struct ContentRef {
     #[serde(rename = "preview")]
     pub preview: String,
 
+    #[serde(deserialize_with = "deserialize_bounded_size_bytes")]
     #[serde(rename = "size_bytes")]
     pub size_bytes: i32,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_truncated")]
     #[serde(rename = "truncated", skip_serializing_if = "Option::is_none")]
     pub truncated: Option<bool>,
 }
@@ -55,4 +57,20 @@ impl Default for MediaType {
     fn default() -> MediaType {
         Self::TextSlashPlain
     }
+}
+fn deserialize_bounded_size_bytes<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<i32, D::Error> {
+    let value = <i32>::deserialize(deserializer)?;
+    if value < 0 {
+        return Err(serde::de::Error::custom(
+            "Integer is below its schema minimum",
+        ));
+    }
+    Ok(value)
+}
+fn deserialize_non_null_truncated<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

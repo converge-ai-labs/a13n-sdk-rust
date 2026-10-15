@@ -231,9 +231,13 @@ pub fn sample(name: &str) -> Value {
         }
     }
     let document: Value = serde_json::from_str(include_str!("../contract/openapi.json")).unwrap();
-    value(
-        &document["components"]["schemas"][name],
-        &document["components"]["schemas"],
-        0,
-    )
+    let session: Value =
+        serde_json::from_str(include_str!("../contract/session-stream.schema.json")).unwrap();
+    let defs = if document["components"]["schemas"].get(name).is_some() {
+        &document["components"]["schemas"]
+    } else {
+        &session["$defs"]
+    };
+    assert!(defs.get(name).is_some(), "Unknown fixture schema: {name}");
+    value(&defs[name], defs, 0)
 }

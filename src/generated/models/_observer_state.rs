@@ -13,15 +13,19 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ObserverState {
+    #[serde(default, deserialize_with = "deserialize_non_null_children")]
     #[serde(rename = "children", skip_serializing_if = "Option::is_none")]
     pub children: Option<std::collections::HashMap<String, models::ObserverState>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_parts")]
     #[serde(rename = "parts", skip_serializing_if = "Option::is_none")]
     pub parts: Option<std::collections::HashMap<String, models::PartCursor>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_request_index")]
     #[serde(rename = "request_index", skip_serializing_if = "Option::is_none")]
     pub request_index: Option<i32>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_threads")]
     #[serde(rename = "threads", skip_serializing_if = "Option::is_none")]
     pub threads: Option<std::collections::HashMap<String, String>>,
 }
@@ -35,4 +39,24 @@ impl ObserverState {
             threads: None,
         }
     }
+}
+fn deserialize_non_null_children<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_parts<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_request_index<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_threads<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

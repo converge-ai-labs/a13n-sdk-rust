@@ -1188,20 +1188,11 @@ fn five_oauth_commands_use_generated_dispatch_and_preserve_nullable_disconnectio
 }
 
 #[test]
-fn ordinal_items_flags_dispatch_json_not_binary_and_preserve_window_metadata() {
-    use a13n::generated::models::{DisplayContinuation, Item, RunItems, StreamPosition};
+fn ordinal_items_flags_dispatch_json_not_binary_and_preserve_windows() {
+    use a13n::generated::models::{Item, RunItems};
     let mut snapshot = RunItems::default();
     snapshot.run.id = "r".into();
-    snapshot.run.display_position = Some(Some("1-9".into()));
     snapshot.complete = true;
-    snapshot.baseline = true;
-    snapshot.position = Some("1-9".into());
-    snapshot.continuation = Some(Some(Box::new(DisplayContinuation::new(
-        10,
-        StreamPosition::new(1, 9),
-        "r".into(),
-    ))));
-    snapshot.resume_after = Some(Some("100-9".into()));
     snapshot.items = (6..=9)
         .map(|ordinal| Item {
             ordinal,
@@ -1239,10 +1230,6 @@ fn ordinal_items_flags_dispatch_json_not_binary_and_preserve_window_metadata() {
     assert_eq!(result["data"], expected);
     assert_eq!(result["request_id"], "items-request");
     assert!(origin.join().unwrap()[0].starts_with("GET /api/v1/runs/r/items?limit=2 "));
-    snapshot.baseline = false;
-    snapshot.position = None;
-    snapshot.continuation = Some(None);
-    snapshot.resume_after = Some(None);
     snapshot.items.truncate(2);
     for (flag, value) in [("--before", "8"), ("--after", "0")] {
         let (base, origin) = serve(vec![(
@@ -1327,4 +1314,86 @@ fn events_jsonl_preserves_optional_null_and_populated_item_metadata() {
         assert!(frame["applied_cursor"].is_null());
         assert_eq!(origin.join().unwrap().len(), 1);
     }
+}
+
+#[test]
+fn session_events_emit_typed_jsonl_and_raw_stream_keeps_exact_bytes_without_cursors() {
+    use serde_json::json;
+    let mut thread = a13n::generated::models::ThreadState::default();
+    thread.thread.id = "t".into();
+    let values = [
+        ("thread", serde_json::to_value(thread).unwrap()),
+        (
+            "items",
+            json!({"thread_id":"t","run_id":"r","first":6,"items":[],"continuation":null,"complete":true}),
+        ),
+        (
+            "delta",
+            json!({"thread_id":"t","run_id":"r","attempt":1,"sequence":2,"event":{"future":[false,0,null]},"item":null}),
+        ),
+        ("gap", json!({"thread_id":"t","run_id":"r"})),
+    ];
+    let body = format!(
+        "event: future\ndata: not-json\n\n{}",
+        values
+            .iter()
+            .map(|(name, value)| format!("event: {name}\ndata: {value}\n\n"))
+            .collect::<String>()
+    );
+    let (base, origin) = serve(vec![(
+        200,
+        vec![("Content-Type", "text/event-stream")],
+        body.as_bytes().to_vec(),
+    )]);
+    let output = binary(&["--base-url", &base, "sessions", "events", "s"]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let frames: Vec<serde_json::Value> = String::from_utf8(output.stdout)
+        .unwrap()
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(frames.len(), 4);
+    for (frame, (name, value)) in frames.iter().zip(&values) {
+        assert_eq!(frame["type"], *name);
+        assert_eq!(frame["data"], *value);
+        assert!(frame.get("cursor").is_none());
+    }
+    let request = &origin.join().unwrap()[0];
+    assert!(request.starts_with("GET /api/v1/sessions/s/stream "));
+    assert!(!request.to_ascii_lowercase().contains("last-event-id"));
+    let path = std::env::temp_dir().join(format!("a13n-session-stream-{}.sse", std::process::id()));
+    let (base, origin) = serve(vec![(
+        200,
+        vec![("Content-Type", "text/event-stream")],
+        body.as_bytes().to_vec(),
+    )]);
+    let output = binary(&[
+        "--base-url",
+        &base,
+        "sessions",
+        "stream",
+        "get",
+        "--session",
+        "s",
+        "--output",
+        path.to_str().unwrap(),
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), body.as_bytes());
+    std::fs::remove_file(path).unwrap();
+    assert!(
+        !origin.join().unwrap()[0]
+            .to_ascii_lowercase()
+            .contains("last-event-id")
+    );
+    let output = binary(&["sessions", "events", "s", "--after", "1-0"]);
+    assert_eq!(output.status.code(), Some(2));
 }

@@ -65,9 +65,7 @@ async fn wait(run: &a13n::Run, expected: m::RunStatus) -> Result<()> {
     )?;
     let items = run.items().get(Default::default()).await?;
     ensure(
-        items.data.run.id == result.http_response.data.id
-            && items.data.complete
-            && items.data.baseline,
+        items.data.run.id == result.http_response.data.id && items.data.complete,
         "Run Items mismatch",
     )
 }
@@ -569,6 +567,7 @@ async fn live() -> Result<()> {
         &service,
         &ca,
         &token,
+        &submitted.receipt.data.thread.session_id,
         &submitted.receipt.data.thread.id,
         &accepted(&submitted)?.id,
     )
@@ -596,7 +595,9 @@ async fn live() -> Result<()> {
         )
         .await?;
     ensure(
-        imported.data.thread.message_history == imported_history,
+        serde_json::to_value(&imported.data.thread)?
+            .get("message_history")
+            .is_none(),
         "Low-level imported history receipt",
     )?;
     let imported_readback = key_ws
@@ -605,7 +606,9 @@ async fn live() -> Result<()> {
         .get(Default::default())
         .await?;
     ensure(
-        imported_readback.data.message_history == imported_history,
+        serde_json::to_value(&imported_readback.data)?
+            .get("message_history")
+            .is_none(),
         "Low-level imported history readback",
     )?;
     let mut high = client
@@ -620,13 +623,7 @@ async fn live() -> Result<()> {
         )
         .await?;
     ensure(
-        high.evidence
-            .submission()
-            .unwrap()
-            .data
-            .thread
-            .message_history
-            == imported_history,
+        high.identity.thread_id.is_some(),
         "High-level imported history receipt",
     )?;
     ensure(
@@ -656,11 +653,13 @@ async fn live() -> Result<()> {
         .get(Default::default())
         .await?;
     ensure(
-        after_followup.data.message_history == imported_history,
+        serde_json::to_value(&after_followup.data)?
+            .get("message_history")
+            .is_none(),
         "Follow-up must not reseed imported history",
     )?;
     println!(
-        "Verified HTTPS: low/high imported model context, Thread readback, no follow-up reseed"
+        "Verified HTTPS: low/high imported model context, history input, current Thread metadata and no follow-up reseed"
     );
 
     // The ordinary installed-crate journey uses the finite authored Interaction,
@@ -693,11 +692,11 @@ async fn live() -> Result<()> {
     )?;
     let items = outcome.run.items().get(Default::default()).await?;
     ensure(
-        items.data.run.id == outcome.run.id && items.data.complete && items.data.baseline,
+        items.data.run.id == outcome.run.id && items.data.complete,
         "Finite Interaction committed Run Items",
     )?;
     display::live_window(&outcome.run).await?;
-    println!("Verified HTTPS: recent ordinal baseline and bounded historical null metadata");
+    println!("Verified HTTPS: recent ordinal and bounded historical windows");
 
     if let Ok(prompt) = env::var("A13N_FAILURE_PROMPT") {
         ensure(!prompt.is_empty(), "A13N_FAILURE_PROMPT must not be empty")?;

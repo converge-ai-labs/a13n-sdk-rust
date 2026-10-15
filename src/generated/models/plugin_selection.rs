@@ -14,6 +14,7 @@ use serde::{Deserialize, Serialize};
 /// PluginSelection : One instance of a Harness plugin factory the deployment installed.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PluginSelection {
+    #[serde(default, deserialize_with = "deserialize_non_null_config")]
     #[serde(rename = "config", skip_serializing_if = "Option::is_none")]
     pub config: Option<std::collections::HashMap<String, serde_json::Value>>,
 
@@ -33,4 +34,9 @@ impl PluginSelection {
             plugin_key,
         }
     }
+}
+fn deserialize_non_null_config<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

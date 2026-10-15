@@ -14,15 +14,19 @@ use serde::{Deserialize, Serialize};
 /// FragmentState : Incomplete custom payloads, not a journal of completed events.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FragmentState {
+    #[serde(default, deserialize_with = "deserialize_non_null_gap")]
     #[serde(rename = "gap", skip_serializing_if = "Option::is_none")]
     pub gap: Option<bool>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_max_bytes")]
     #[serde(rename = "max_bytes", skip_serializing_if = "Option::is_none")]
     pub max_bytes: Option<i32>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_max_pending")]
     #[serde(rename = "max_pending", skip_serializing_if = "Option::is_none")]
     pub max_pending: Option<i32>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_pending")]
     #[serde(rename = "pending", skip_serializing_if = "Option::is_none")]
     pub pending: Option<std::collections::HashMap<String, models::Assembly>>,
 }
@@ -37,4 +41,24 @@ impl FragmentState {
             pending: None,
         }
     }
+}
+fn deserialize_non_null_gap<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_max_bytes<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_max_pending<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_pending<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

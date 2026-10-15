@@ -13,9 +13,11 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PartCursor {
+    #[serde(default, deserialize_with = "deserialize_non_null_emitted_content")]
     #[serde(rename = "emitted_content", skip_serializing_if = "Option::is_none")]
     pub emitted_content: Option<bool>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_emitted_signature")]
     #[serde(rename = "emitted_signature", skip_serializing_if = "Option::is_none")]
     pub emitted_signature: Option<bool>,
 
@@ -44,6 +46,16 @@ impl PartCursor {
             tool_name: None,
         }
     }
+}
+fn deserialize_non_null_emitted_content<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_emitted_signature<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]

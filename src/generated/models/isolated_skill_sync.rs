@@ -14,9 +14,11 @@ use serde::{Deserialize, Serialize};
 /// IsolatedSkillSync : Reuse immutable package directories, with a soft count budget.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct IsolatedSkillSync {
+    #[serde(default, deserialize_with = "deserialize_non_null_cache_count")]
     #[serde(rename = "cache_count", skip_serializing_if = "Option::is_none")]
     pub cache_count: Option<i32>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_mode")]
     #[serde(rename = "mode", skip_serializing_if = "Option::is_none")]
     pub mode: Option<Mode>,
 }
@@ -30,6 +32,11 @@ impl IsolatedSkillSync {
         }
     }
 }
+fn deserialize_non_null_cache_count<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum Mode {
@@ -41,4 +48,9 @@ impl Default for Mode {
     fn default() -> Mode {
         Self::Isolated
     }
+}
+fn deserialize_non_null_mode<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

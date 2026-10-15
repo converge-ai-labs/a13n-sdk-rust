@@ -24,6 +24,7 @@ pub struct OutputVariant {
     #[serde(rename = "name")]
     pub name: String,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_resources")]
     #[serde(rename = "resources", skip_serializing_if = "Option::is_none")]
     pub resources: Option<serde_json::Value>,
 
@@ -43,4 +44,9 @@ impl OutputVariant {
             schema,
         }
     }
+}
+fn deserialize_non_null_resources<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

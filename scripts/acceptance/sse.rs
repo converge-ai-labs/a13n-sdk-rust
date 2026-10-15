@@ -1,120 +1,22 @@
-//! Deterministic disconnect over a verified HTTPS upstream Thread event stream.
-//! The isolated SDK client connects to a local one-route TCP bridge, which in
-//! turn verifies the disposable Service's CA. Other acceptance calls use HTTPS
-//! directly. The first upstream stream is truncated after one cursor frame;
-//! the second must replay with precisely that applied Last-Event-ID.
+//! Independent native Session snapshots and caller-owned Thread progress.
 use a13n::{
     Client, Secret,
-    streaming::{StreamOptions, ThreadFrame, ThreadStream},
+    streaming::{SessionFrame, SessionStream, StreamOptions, ThreadFrame, ThreadStream},
 };
 use reqwest::Certificate;
 use std::{error::Error as StdError, time::Duration};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-
 type Result<T> = std::result::Result<T, Box<dyn StdError>>;
-fn frame_end(bytes: &[u8]) -> Option<usize> {
-    bytes
-        .windows(2)
-        .position(|x| x == b"\n\n")
-        .map(|i| i + 2)
-        .or_else(|| {
-            bytes
-                .windows(4)
-                .position(|x| x == b"\r\n\r\n")
-                .map(|i| i + 4)
-        })
-}
-async fn bridge(
-    listener: tokio::net::TcpListener,
-    http: reqwest::Client,
-    upstream: String,
-    token: String,
-) -> Result<Vec<(String, Option<String>)>> {
-    let mut received = Vec::new();
-    for attempt in 0..2 {
-        let (mut socket, _) = listener.accept().await?;
-        let mut request = Vec::new();
-        loop {
-            let mut chunk = [0; 2048];
-            let n = socket.read(&mut chunk).await?;
-            if n == 0 || request.len() > 16_384 {
-                return Err("Incomplete SSE request".into());
-            }
-            request.extend_from_slice(&chunk[..n]);
-            if request.windows(4).any(|item| item == b"\r\n\r\n") {
-                break;
-            }
-        }
-        let text = std::str::from_utf8(&request)?;
-        let target = text
-            .split_whitespace()
-            .nth(1)
-            .ok_or("Missing request target")?;
-        if !target
-            .split('?')
-            .next()
-            .is_some_and(|path| path.ends_with("/stream"))
-        {
-            return Err("SSE proxy received non-stream route".into());
-        }
-        let cursor = text
-            .lines()
-            .filter_map(|line| line.split_once(':'))
-            .find(|(name, _)| name.eq_ignore_ascii_case("last-event-id"))
-            .map(|(_, value)| value.trim().to_owned());
-        received.push((target.to_owned(), cursor.clone()));
-        let mut outgoing = http
-            .get(format!("{}{target}", upstream.trim_end_matches('/')))
-            .bearer_auth(&token);
-        if let Some(value) = cursor {
-            outgoing = outgoing.header("Last-Event-ID", value);
-        }
-        let mut response = outgoing.send().await?;
-        if response.status().as_u16() != 200 {
-            return Err(format!("Upstream SSE status {}", response.status()).into());
-        }
-        socket.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n").await?;
-        let mut buffered = Vec::new();
-        'stream: loop {
-            let chunk = response
-                .chunk()
-                .await?
-                .ok_or("Upstream SSE ended before cursor frame")?;
-            buffered.extend_from_slice(&chunk);
-            if buffered.len() > 2_000_000 {
-                return Err("SSE fixture produced excessive data".into());
-            }
-            while let Some(end) = frame_end(&buffered) {
-                let frame: Vec<u8> = buffered.drain(..end).collect();
-                socket
-                    .write_all(format!("{:X}\r\n", frame.len()).as_bytes())
-                    .await?;
-                socket.write_all(&frame).await?;
-                socket.write_all(b"\r\n").await?;
-                if std::str::from_utf8(&frame)?
-                    .lines()
-                    .any(|line| line.starts_with("id:"))
-                {
-                    if attempt == 1 {
-                        socket.write_all(b"0\r\n\r\n").await?;
-                    }
-                    // First close omits the chunk terminator to inject a transport failure.
-                    break 'stream;
-                }
-            }
-        }
-    }
-    Ok(received)
-}
 
 pub async fn verify(
     service: &str,
     ca_pem: &[u8],
     token: &str,
+    session: &str,
     thread: &str,
     run: &str,
 ) -> Result<()> {
-    let direct = Client::builder(service)
+    let client = Client::builder(service)
         .bearer(Secret::new(token))
         .http_builder(
             reqwest::Client::builder()
@@ -122,93 +24,218 @@ pub async fn verify(
                 .add_root_certificate(Certificate::from_pem(ca_pem)?),
         )
         .build()?;
-    let snapshot = tokio::time::timeout(Duration::from_secs(80), async {
-        loop {
-            let items = direct.run(run).items().get(Default::default()).await?.data;
-            if items.position.is_some() {
-                return Ok::<_, a13n::Error>(items);
+    tokio::time::timeout(Duration::from_secs(30), async {
+        for _ in 0..2 {
+            let mut reader =
+                SessionStream::open(client.api().sessions().at(session), Default::default())
+                    .await?;
+            let (status, headers) = reader.response().ok_or("Missing Session HTTP metadata")?;
+            if status != 200 || !headers.contains_key("content-type") {
+                return Err("Session HTTP metadata".into());
             }
-            tokio::time::sleep(Duration::from_millis(100)).await;
+            verify_snapshot(&mut reader, &client, thread, run).await?;
+            if reader.next().await?.is_some() {
+                return Err("Session local close".into());
+            }
         }
+        Ok::<_, Box<dyn StdError>>(())
     })
     .await??;
-    if !snapshot.baseline {
-        return Err("Historical Items cannot seed SSE coverage".into());
-    }
-    let position = snapshot.position.ok_or("Missing snapshot position")?;
-    let hint = snapshot.resume_after.flatten();
-    direct.close();
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
-    let url = format!("http://{}", listener.local_addr()?);
-    let http = reqwest::Client::builder()
-        .no_proxy()
-        .add_root_certificate(Certificate::from_pem(ca_pem)?)
-        .build()?;
-    let forwarding = bridge(listener, http, service.to_owned(), token.to_owned());
-    let observing = async {
-        let client = Client::new(&url, Secret::new(token))?;
-        let handle = client.api().threads().at(thread);
-        let mut stream = ThreadStream::open(
-            handle,
-            StreamOptions {
-                run: Some(snapshot.run.id),
-                position: Some(position.clone()),
-                after: hint.clone(),
-                max_reconnects: 3,
-                reconnect_delay: Duration::from_millis(10),
-                ..Default::default()
-            },
-        )
-        .await?;
-        let mut cursors = Vec::new();
-        while cursors.len() < 2 {
-            let frame = stream
-                .next()
-                .await?
-                .ok_or("Thread SSE ended before recovery")?;
-            if let ThreadFrame::Delta { cursor, .. } | ThreadFrame::Boundary { cursor, .. } = frame
-            {
-                cursors.push(cursor);
-            }
-        }
-        let applied_position = stream
-            .applied_position()
-            .map(str::to_owned)
-            .ok_or("Lost applied position")?;
-        stream.close();
-        client.close();
-        Ok::<_, Box<dyn StdError>>((cursors, applied_position))
-    };
-    let (received, (cursors, applied_position)) =
-        tokio::time::timeout(Duration::from_secs(90), async {
-            tokio::try_join!(forwarding, observing)
-        })
-        .await??;
-    if received.len() != 2
-        || received[0].1 != hint
-        || !received[0]
-            .0
-            .contains(&format!("run={run}&position={position}"))
-        || !received[1]
-            .0
-            .contains(&format!("run={run}&position={applied_position}"))
-        || received[1].1.as_deref() != Some(&cursors[0])
-        || cursors[0] == cursors[1]
-    {
-        return Err("SSE reconnect did not use the first applied cursor".into());
-    }
+    client.close();
     println!(
-        "Verified HTTPS upstream: Items baseline, injected SSE disconnect and paired applied coverage/cursor reconnect"
+        "Verified HTTPS: authored Session/Thread/Run native snapshots, metadata, bounded close and explicit fresh reopen"
     );
     Ok(())
 }
 
-/// Prove snapshot query/header wiring from the independently extracted crate.
+async fn verify_snapshot(
+    reader: &mut SessionStream,
+    client: &Client,
+    thread: &str,
+    run: &str,
+) -> Result<()> {
+    let Some(SessionFrame::Thread(state)) = reader.next().await? else {
+        return Err("Session must start with Thread snapshot".into());
+    };
+    if state.thread.id != thread {
+        return Err("Session Thread identity".into());
+    }
+    if let Some(current) = state.current_run {
+        if current.id != run {
+            return Err("Session current Run identity".into());
+        }
+        let Some(SessionFrame::Items(snapshot)) = reader.next().await? else {
+            return Err("Session current Run must start with Items".into());
+        };
+        if snapshot.thread_id != thread || snapshot.run_id != run || snapshot.first < 1 {
+            return Err("Session Items identity".into());
+        }
+        reader.close();
+    } else {
+        if state.last_run.as_ref().is_none_or(|last| last.id != run) {
+            return Err("Session snapshot lost authored sealed Run".into());
+        }
+        // A fresh connection does not replay Items of an already sealed Run.
+        reader.close();
+        let saved = client.run(run).items().get(Default::default()).await?;
+        if saved.data.run.id != run || !saved.data.complete {
+            return Err("Sealed Run Items readback".into());
+        }
+    }
+    Ok(())
+}
+
 pub async fn offline() -> Result<()> {
+    thread_offline().await?;
+    fresh_snapshot_offline().await?;
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
+    let client = Client::new(
+        &format!("http://{}", listener.local_addr()?),
+        Secret::new("offline-token"),
+    )?;
+    let mut thread = a13n::generated::models::ThreadState::default();
+    thread.thread.id = "t".into();
+    let frames = format!(
+        "event: future\ndata: not-json\n\nevent: thread\ndata: {}\n\nevent: items\ndata: {{\"thread_id\":\"t\",\"run_id\":\"r\",\"first\":6,\"items\":[],\"continuation\":null,\"complete\":true}}\n\nevent: delta\ndata: {{\"thread_id\":\"t\",\"run_id\":\"r\",\"attempt\":1,\"sequence\":2,\"event\":{{\"future\":[false,0,null]}},\"item\":null}}\n\nevent: gap\ndata: {{\"thread_id\":\"t\",\"run_id\":\"r\"}}\n\n",
+        serde_json::to_string(&thread)?
+    );
+    let server = tokio::spawn(async move {
+        for _ in 0..2 {
+            let (mut socket, _) = listener.accept().await.unwrap();
+            let mut request = Vec::new();
+            loop {
+                let mut bytes = [0; 4096];
+                let n = socket.read(&mut bytes).await.unwrap();
+                assert!(n > 0);
+                request.extend_from_slice(&bytes[..n]);
+                if request.windows(4).any(|p| p == b"\r\n\r\n") {
+                    break;
+                }
+            }
+            let request = String::from_utf8(request).unwrap();
+            assert!(request.starts_with("GET /api/v1/sessions/s/stream "));
+            assert!(!request.to_ascii_lowercase().contains("last-event-id"));
+            socket.write_all(format!("HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nX-Request-ID: session-test\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",frames.len(),frames).as_bytes()).await.unwrap();
+        }
+    });
+    for _ in 0..2 {
+        let mut stream =
+            SessionStream::open(client.api().sessions().at("s"), Default::default()).await?;
+        assert_eq!(stream.response().unwrap().1["x-request-id"], "session-test");
+        assert!(
+            matches!(stream.next().await?,Some(SessionFrame::Thread(value)) if value.thread.id=="t")
+        );
+        assert!(
+            matches!(stream.next().await?,Some(SessionFrame::Items(value)) if value.complete && value.first==6)
+        );
+        assert!(
+            matches!(stream.next().await?,Some(SessionFrame::Delta(value)) if value.event["future"]==serde_json::json!([false,0,null]) && value.item.is_none())
+        );
+        assert!(matches!(stream.next().await?,Some(SessionFrame::Gap(value)) if value.run_id=="r"));
+        assert!(stream.next().await?.is_none());
+        stream.close();
+    }
+    client.close();
+    server.await?;
+    println!(
+        "Installed crate local TCP: four typed Session frames, unknown event, native nulls, EOF, close and fresh explicit reopen passed"
+    );
+    Ok(())
+}
+
+/// Reopening after seal yields only Thread state; historical Items need a GET.
+async fn fresh_snapshot_offline() -> Result<()> {
+    use a13n::generated::models::{RunItems, RunStatus, RunView, ThreadState};
+    async fn request(socket: &mut tokio::net::TcpStream) -> String {
+        let mut data = Vec::new();
+        loop {
+            let mut bytes = [0; 4096];
+            let count = socket.read(&mut bytes).await.unwrap();
+            assert!(count > 0);
+            data.extend_from_slice(&bytes[..count]);
+            if data.windows(4).any(|part| part == b"\r\n\r\n") {
+                return String::from_utf8(data).unwrap();
+            }
+        }
+    }
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
+    let client = Client::new(
+        &format!("http://{}", listener.local_addr()?),
+        Secret::new("offline-token"),
+    )?;
+    let server = tokio::spawn(async move {
+        for sealed in [false, true] {
+            let (mut socket, _) = listener.accept().await.unwrap();
+            assert!(
+                request(&mut socket)
+                    .await
+                    .starts_with("GET /api/v1/sessions/s/stream ")
+            );
+            let mut state = ThreadState::default();
+            state.thread.id = "t".into();
+            let run = RunView {
+                id: "r".into(),
+                status: if sealed {
+                    RunStatus::Completed
+                } else {
+                    RunStatus::Running
+                },
+                ..Default::default()
+            };
+            if sealed {
+                state.last_run = Some(Box::new(run));
+            } else {
+                state.current_run = Some(Box::new(run));
+            }
+            let mut body = format!(
+                "event: thread\ndata: {}\n\n",
+                serde_json::to_string(&state).unwrap()
+            );
+            if !sealed {
+                body.push_str("event: items\ndata: {\"thread_id\":\"t\",\"run_id\":\"r\",\"first\":1,\"items\":[],\"continuation\":null,\"complete\":false}\n\n");
+            }
+            socket.write_all(format!("HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nConnection: close\r\n\r\n{body}").as_bytes()).await.unwrap();
+            // Keep the stream open: waiting for another frame would time out.
+            assert_eq!(socket.read(&mut [0; 1]).await.unwrap(), 0);
+            if sealed {
+                let (mut socket, _) = listener.accept().await.unwrap();
+                assert!(
+                    request(&mut socket)
+                        .await
+                        .starts_with("GET /api/v1/runs/r/items ")
+                );
+                let mut saved = RunItems::default();
+                saved.run.id = "r".into();
+                saved.complete = true;
+                let body = serde_json::to_string(&saved).unwrap();
+                socket.write_all(format!("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}", body.len()).as_bytes()).await.unwrap();
+            }
+        }
+    });
+    tokio::time::timeout(Duration::from_secs(3), async {
+        for _ in 0..2 {
+            let mut reader =
+                SessionStream::open(client.api().sessions().at("s"), Default::default()).await?;
+            verify_snapshot(&mut reader, &client, "t", "r").await?;
+            assert!(reader.next().await?.is_none());
+        }
+        server.await?;
+        Ok::<_, Box<dyn StdError>>(())
+    })
+    .await??;
+    client.close();
+    println!(
+        "Installed crate local TCP: active Session Items then fresh sealed Thread-only reopen with explicit Run Items readback passed"
+    );
+    Ok(())
+}
+
+/// Prove caller-owned progress query/header wiring from the independently extracted crate.
+async fn thread_offline() -> Result<()> {
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
     let base = format!("http://{}", listener.local_addr()?);
     let serving = tokio::spawn(async move {
-        for index in 0..3 {
+        for index in 0..2 {
             let (mut socket, _) = listener.accept().await.unwrap();
             let mut request = Vec::new();
             loop {
@@ -221,20 +248,8 @@ pub async fn offline() -> Result<()> {
                 }
             }
             let text = String::from_utf8(request).unwrap();
-            let (content_type, body) = match index {
+            let (content_type, body): (&str, String) = match index {
                 0 => {
-                    assert!(text.starts_with("GET /api/v1/runs/r/items "));
-                    let mut snapshot = a13n::generated::models::RunItems::default();
-                    snapshot.run.id = "r".into();
-                    snapshot.baseline = true;
-                    snapshot.position = Some("1-2".into());
-                    snapshot.resume_after = Some(Some("100-2".into()));
-                    (
-                        "application/json",
-                        serde_json::to_string(&snapshot).unwrap(),
-                    )
-                }
-                1 => {
                     assert!(text.starts_with("GET /api/v1/threads/t/stream?run=r&position=1-2 "));
                     assert!(text.to_ascii_lowercase().contains("last-event-id: 100-2"));
                     ("text/event-stream", "event: delta\nid: 100-3\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":3,\"event\":{\"type\":\"TOOL_CALL_RESULT\",\"subagentRunId\":\"child\",\"content\":[{\"type\":\"text\",\"text\":\"child\"},{\"type\":\"binary\",\"mimeType\":\"video/mp4\",\"url\":\"https://media.example/clip.mp4\",\"source\":{\"kind\":\"file\",\"path\":\"clip.mp4\"}},{\"type\":\"binary\",\"mimeType\":\"image/png\",\"metadata\":{\"payload_omitted\":true},\"data\":null}],\"future\":null},\"item\":null}\n\n".into())
@@ -252,13 +267,12 @@ pub async fn offline() -> Result<()> {
         }
     });
     let client = Client::new(&base, Secret::new("offline-token"))?;
-    let items = client.run("r").items().get(Default::default()).await?.data;
     let mut reader = ThreadStream::open(
         client.api().threads().at("t"),
         StreamOptions {
-            run: Some(items.run.id),
-            position: items.position,
-            after: items.resume_after.flatten(),
+            run: Some("r".into()),
+            position: Some("1-2".into()),
+            after: Some("100-2".into()),
             max_reconnects: 1,
             reconnect_delay: Duration::from_millis(1),
             ..Default::default()
@@ -284,7 +298,7 @@ pub async fn offline() -> Result<()> {
     client.close();
     serving.await?;
     println!(
-        "Installed crate local TCP: native child/media/null event map, Items baseline/hint, paired applied reconnect and optional gap target passed"
+        "Installed crate local TCP: native child/media/null event map, caller-supplied progress/hint, paired applied reconnect and optional gap target passed"
     );
     Ok(())
 }

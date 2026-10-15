@@ -9,21 +9,12 @@ use a13n::{
 use serde_json::json;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-fn snapshot(baseline: bool) -> m::RunItems {
+fn snapshot(recent: bool) -> m::RunItems {
     let mut value = m::RunItems::default();
     value.run.id = "r".into();
     value.run.status = m::RunStatus::Completed;
-    value.run.display_position = Some(Some("1-9".into()));
-    value.baseline = baseline;
     value.complete = true;
-    value.position = baseline.then(|| "1-9".into());
-    value.resume_after = Some(baseline.then(|| "100-9".into()));
-    value.continuation = Some(if baseline {
-        Some(Box::new(serde_json::from_value(json!({"run_id":"r","position":{"attempt":1,"sequence":9},"next_ordinal":10,"full_content":false,"arguments":null,"fragments":{"gap":false,"pending":{"native":{"count":1,"parts":["{}"],"size":2}}},"observer":{"run_id":null,"state":{"children":{"child":{"children":{"nested":{"parts":{},"threads":{},"request_index":0}}}}}}})).unwrap()))
-    } else {
-        None
-    });
-    value.items = (6..=if baseline { 9 } else { 7 })
+    value.items = (6..=if recent { 9 } else { 7 })
         .map(|ordinal| m::Item {
             ordinal,
             id: format!("i{ordinal}"),
@@ -97,12 +88,12 @@ pub async fn offline() -> Result<()> {
         .await?
         .data;
     ensure(
-        tail.baseline && tail.complete && tail.items.len() == 4 && tail.items[0].ordinal == 6,
+        tail.complete && tail.items.len() == 4 && tail.items[0].ordinal == 6,
         "Installed whole tail/recent sealed distinction",
     )?;
     ensure(
         serde_json::to_value(&tail)? == serde_json::to_value(snapshot(true))?,
-        "Installed recursive continuation roundtrip",
+        "Installed committed window roundtrip",
     )?;
     for options in [
         RunItemsGetOptions {
@@ -118,11 +109,7 @@ pub async fn offline() -> Result<()> {
     ] {
         let page = run.items().get(options).await?.data;
         ensure(
-            !page.baseline
-                && page.complete
-                && page.position.is_none()
-                && page.continuation == Some(None)
-                && page.resume_after == Some(None),
+            page.complete && page.items.len() == 2,
             "Historical window not live coverage",
         )?;
     }
@@ -156,7 +143,7 @@ pub async fn offline() -> Result<()> {
     reader.close();
     serving.await?;
     println!(
-        "Installed crate local TCP: ordinal before/after/limit, whole tail > limit, sealed recent/historical distinction, recursive continuation, ItemRef metadata, required nullable item passed"
+        "Installed crate local TCP: ordinal before/after/limit, whole tail > limit, sealed recent/historical windows, ItemRef metadata, required nullable item passed"
     );
     Ok(())
 }
@@ -205,10 +192,7 @@ pub async fn live_window(run: &a13n::Run) -> Result<()> {
         })
         .await?
         .data;
-    ensure(
-        recent.baseline && recent.complete,
-        "Live recent sealed baseline",
-    )?;
+    ensure(recent.complete, "Live recent sealed window")?;
     for pair in recent.items.windows(2) {
         ensure(
             pair[1].ordinal == pair[0].ordinal + 1,
@@ -225,13 +209,8 @@ pub async fn live_window(run: &a13n::Run) -> Result<()> {
         .await?
         .data;
     ensure(
-        !historical.baseline
-            && historical.complete
-            && historical.position.is_none()
-            && historical.continuation == Some(None)
-            && historical.resume_after == Some(None)
-            && historical.items.len() <= 1,
-        "Live historical null metadata",
+        historical.complete && historical.items.len() <= 1,
+        "Live bounded historical window",
     )?;
     if let Some(first) = historical.items.first() {
         ensure(first.ordinal == 1, "History starts at ordinal one")?;
@@ -245,9 +224,6 @@ pub async fn live_window(run: &a13n::Run) -> Result<()> {
         })
         .await?
         .data;
-    ensure(
-        !before.baseline && before.items.is_empty(),
-        "Before first ordinal is empty",
-    )?;
+    ensure(before.items.is_empty(), "Before first ordinal is empty")?;
     Ok(())
 }

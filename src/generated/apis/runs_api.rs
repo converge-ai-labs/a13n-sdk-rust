@@ -283,6 +283,15 @@ pub enum RunLineageApiV1RunsRunIdLineageGetError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`session_stream_api_v1_sessions_session_id_stream_get`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum SessionStreamApiV1SessionsSessionIdStreamGetError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`submit_message_api_v1_threads_thread_id_inbox_post`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -2919,6 +2928,54 @@ pub async fn run_lineage_api_v1_runs_run_id_lineage_get(
     }
 }
 
+/// The session's threads and the live output of their runs over SSE: `thread`, `items`, `delta` and `gap` frames. Every connection starts from a snapshot.
+pub async fn session_stream_api_v1_sessions_session_id_stream_get(
+    configuration: &configuration::Configuration,
+    session_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<reqwest::Response, Error<SessionStreamApiV1SessionsSessionIdStreamGetError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_session_id = session_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/sessions/{session_id}/stream",
+        configuration.base_path,
+        session_id = crate::generated::apis::urlencode(p_path_session_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+
+    if !status.is_client_error() && !status.is_server_error() {
+        Ok(resp)
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<SessionStreamApiV1SessionsSessionIdStreamGetError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
 /// Append a message; it starts a run at once when the thread can accept it, or steers the active run.
 pub async fn submit_message_api_v1_threads_thread_id_inbox_post(
     configuration: &configuration::Configuration,
@@ -3008,7 +3065,7 @@ pub async fn submit_message_api_v1_threads_thread_id_inbox_post(
     }
 }
 
-/// Live output of the thread's runs over SSE: `delta` and `boundary` frames with `changed`, `reset`, `gap`.
+/// Live output of one thread's runs over SSE: `delta` and `boundary` frames with `changed`, `reset`, `gap`. Resumes from `Last-Event-ID` or a run's `position`; the session stream suits clients that do not track them.
 pub async fn thread_stream_api_v1_threads_thread_id_stream_get(
     configuration: &configuration::Configuration,
     thread_id: &str,

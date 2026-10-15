@@ -22,24 +22,30 @@ pub struct DisplayContinuation {
     )]
     pub arguments: Option<Option<Box<models::Arguments>>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_fragments")]
     #[serde(rename = "fragments", skip_serializing_if = "Option::is_none")]
     pub fragments: Option<Box<models::FragmentState>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_full_content")]
     #[serde(rename = "full_content", skip_serializing_if = "Option::is_none")]
     pub full_content: Option<bool>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_memory_sources")]
     #[serde(rename = "memory_sources", skip_serializing_if = "Option::is_none")]
     pub memory_sources: Option<std::collections::HashMap<String, Vec<models::MemorySource>>>,
 
+    #[serde(deserialize_with = "deserialize_bounded_next_ordinal")]
     #[serde(rename = "next_ordinal")]
     pub next_ordinal: i32,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_observer")]
     #[serde(rename = "observer", skip_serializing_if = "Option::is_none")]
     pub observer: Option<Box<models::ObserverContinuation>>,
 
     #[serde(rename = "position")]
     pub position: Box<models::StreamPosition>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_response_groups")]
     #[serde(rename = "response_groups", skip_serializing_if = "Option::is_none")]
     pub response_groups: Option<std::collections::HashMap<String, String>>,
 
@@ -66,4 +72,40 @@ impl DisplayContinuation {
             run_id,
         }
     }
+}
+fn deserialize_non_null_fragments<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_full_content<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_memory_sources<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_bounded_next_ordinal<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<i32, D::Error> {
+    let value = <i32>::deserialize(deserializer)?;
+    if value < 1 {
+        return Err(serde::de::Error::custom(
+            "Integer is below its schema minimum",
+        ));
+    }
+    Ok(value)
+}
+fn deserialize_non_null_observer<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_response_groups<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

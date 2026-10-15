@@ -14,12 +14,15 @@ use serde::{Deserialize, Serialize};
 /// PlatformSelection : Platform MCP groups selected independently of local operating instructions.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PlatformSelection {
+    #[serde(default, deserialize_with = "deserialize_non_null_groups")]
     #[serde(rename = "groups", skip_serializing_if = "Option::is_none")]
     pub groups: Option<Vec<models::PlatformGroup>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_read_permission")]
     #[serde(rename = "read_permission", skip_serializing_if = "Option::is_none")]
     pub read_permission: Option<ReadPermission>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_write_permission")]
     #[serde(rename = "write_permission", skip_serializing_if = "Option::is_none")]
     pub write_permission: Option<WritePermission>,
 }
@@ -33,6 +36,11 @@ impl PlatformSelection {
             write_permission: None,
         }
     }
+}
+fn deserialize_non_null_groups<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
@@ -50,6 +58,11 @@ impl Default for ReadPermission {
         Self::Allow
     }
 }
+fn deserialize_non_null_read_permission<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum WritePermission {
@@ -65,4 +78,9 @@ impl Default for WritePermission {
     fn default() -> WritePermission {
         Self::Allow
     }
+}
+fn deserialize_non_null_write_permission<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

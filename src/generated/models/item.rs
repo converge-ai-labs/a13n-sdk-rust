@@ -16,6 +16,7 @@ pub struct Item {
     #[serde(rename = "content")]
     pub content: std::collections::HashMap<String, serde_json::Value>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_content_refs")]
     #[serde(rename = "content_refs", skip_serializing_if = "Option::is_none")]
     pub content_refs: Option<std::collections::HashMap<String, models::ContentRef>>,
 
@@ -39,6 +40,7 @@ pub struct Item {
     #[serde(rename = "last_stream_id")]
     pub last_stream_id: String,
 
+    #[serde(deserialize_with = "deserialize_bounded_ordinal")]
     #[serde(rename = "ordinal")]
     pub ordinal: i32,
 
@@ -73,4 +75,20 @@ impl Item {
             state,
         }
     }
+}
+fn deserialize_non_null_content_refs<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_bounded_ordinal<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<i32, D::Error> {
+    let value = <i32>::deserialize(deserializer)?;
+    if value < 1 {
+        return Err(serde::de::Error::custom(
+            "Integer is below its schema minimum",
+        ));
+    }
+    Ok(value)
 }

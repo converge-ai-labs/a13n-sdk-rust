@@ -1,4 +1,4 @@
-//! Cancellation-safe Thread SSE observation; no background tasks or Run mutations.
+//! Cancellation-safe native Thread and Session SSE readers; no reducers or Run mutations.
 use crate::{
     BinaryResponse, Client, Error, ProtocolError, ProtocolKind, TransportError, TransportKind,
     TransportStage,
@@ -186,9 +186,9 @@ impl ThreadStream {
     pub fn applied_cursor(&self) -> Option<&str> {
         self.applied.as_deref()
     }
-    /// Last contiguous applied coverage for the claimed Run. A gap/reset stops advancement;
-    /// reopen from applied Run Items with `baseline=true` and covering position.
-    /// Historical ordinal windows (`baseline=false`) cannot establish live coverage.
+    /// Last contiguous applied coverage for the caller's claimed Run. A gap/reset stops
+    /// advancement. Items reads provide no position; use a fresh Session stream snapshot
+    /// when the application cannot establish its own contiguous coverage.
     pub fn applied_position(&self) -> Option<&str> {
         self.applied_position.as_deref()
     }
@@ -236,7 +236,8 @@ impl ThreadStream {
             if self.response.is_none() {
                 self.connect().await?;
             }
-            if let Some(frame) = self.parser.next()? {
+            if let Some(raw) = self.parser.next()? {
+                let frame = decode(&raw.event, raw.cursor, &raw.data)?;
                 self.check_parent()?;
                 self.track_coverage(&frame);
                 if let Some(cursor) = frame.cursor() {
@@ -449,6 +450,11 @@ fn decode(event: &str, cursor: Option<String>, data: &str) -> Result<ThreadFrame
         _ => Err(ProtocolError::local(ProtocolKind::InvalidFrame)),
     }
 }
+struct SseFrame {
+    event: String,
+    cursor: Option<String>,
+    data: String,
+}
 struct Parser {
     chunk: Bytes,
     line: Vec<u8>,
@@ -474,7 +480,7 @@ impl Parser {
             first: true,
         }
     }
-    fn next(&mut self) -> Result<Option<ThreadFrame>, Error> {
+    fn next(&mut self) -> Result<Option<SseFrame>, Error> {
         while self.chunk.has_remaining() {
             let byte = self.chunk.get_u8();
             if self.skip_lf {
@@ -507,7 +513,11 @@ impl Parser {
                 let cursor = self.cursor.take();
                 let data = std::mem::take(&mut self.data);
                 if !data.is_empty() {
-                    return decode(&event, cursor, &data.join("\n")).map(Some);
+                    return Ok(Some(SseFrame {
+                        event,
+                        cursor,
+                        data: data.join("\n"),
+                    }));
                 }
             } else if !line.starts_with(':') {
                 let (field, value) = line.split_once(':').unwrap_or((line, ""));
@@ -533,4 +543,122 @@ impl Parser {
             Ok(())
         }
     }
+}
+
+/// Native Session-wide frames. Their models come from session-stream.schema.json,
+/// sharing canonical HTTP output types. No frame carries a resumable SSE cursor.
+#[derive(Clone, Debug, PartialEq, Serialize)]
+#[serde(tag = "type", content = "data", rename_all = "snake_case")]
+pub enum SessionFrame {
+    Thread(Box<crate::generated::models::ThreadState>),
+    Items(Box<crate::generated::models::RunSnapshot>),
+    Delta(Box<crate::generated::models::Delta>),
+    Gap(crate::generated::models::Gap),
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct SessionStreamOptions {
+    /// Optional maximum bytes of one wire frame (including unknown events).
+    /// No extra limit by default: Session snapshots have no protocol size bound.
+    pub max_frame_bytes: Option<usize>,
+}
+
+/// One cancellable Session reader. Every explicit `open` starts from a fresh
+/// Service snapshot. EOF/errors close it; callers choose when to open again.
+/// There is no implicit reconnect, cursor, transcript or display reducer.
+pub struct SessionStream {
+    client: Client,
+    response: Option<BinaryResponse>,
+    parser: Parser,
+    closed: bool,
+}
+impl SessionStream {
+    pub async fn open(
+        session: crate::resources::SessionResource<'_>,
+        options: SessionStreamOptions,
+    ) -> Result<Self, Error> {
+        if options.max_frame_bytes == Some(0) {
+            return Err(Error::InvalidInput);
+        }
+        let response = session.stream().get(Default::default()).await?;
+        let content_type = response
+            .headers
+            .get(reqwest::header::CONTENT_TYPE)
+            .and_then(|value| value.to_str().ok())
+            .and_then(|value| value.split(';').next());
+        if !content_type.is_some_and(|value| value.trim().eq_ignore_ascii_case("text/event-stream"))
+        {
+            return Err(ProtocolError::response(
+                ProtocolKind::UnexpectedContentType,
+                response.status.as_u16(),
+                &response.headers,
+            ));
+        }
+        Ok(Self {
+            client: session.0.client.clone(),
+            response: Some(response),
+            parser: Parser::new(options.max_frame_bytes.unwrap_or(usize::MAX)),
+            closed: false,
+        })
+    }
+    pub fn response(&self) -> Option<(reqwest::StatusCode, &reqwest::header::HeaderMap)> {
+        self.response
+            .as_ref()
+            .map(|response| (response.status, &response.headers))
+    }
+    /// Stop local observation only; the remote Session and Runs are unchanged.
+    pub fn close(&mut self) {
+        self.closed = true;
+        self.response = None;
+        self.parser = Parser::new(self.parser.limit);
+    }
+    pub async fn next(&mut self) -> Result<Option<SessionFrame>, Error> {
+        let result = self.read().await;
+        if result.is_err() {
+            self.close();
+        }
+        result
+    }
+    async fn read(&mut self) -> Result<Option<SessionFrame>, Error> {
+        loop {
+            if self.client.shutdown().is_cancelled() {
+                return Err(Error::Closed);
+            }
+            if self.closed {
+                return Ok(None);
+            }
+            if let Some(raw) = self.parser.next()? {
+                if let Some(frame) = decode_session(raw)? {
+                    return Ok(Some(frame));
+                }
+                continue;
+            }
+            match self.response.as_mut().ok_or(Error::Closed)?.chunk().await? {
+                Some(chunk) => self.parser.chunk = chunk,
+                None => {
+                    self.parser.finish()?;
+                    self.close();
+                    return Ok(None);
+                }
+            }
+        }
+    }
+}
+fn decode_session(raw: SseFrame) -> Result<Option<SessionFrame>, Error> {
+    fn parse<T: serde::de::DeserializeOwned>(data: &str) -> Result<T, Error> {
+        serde_json::from_str(data).map_err(|_| ProtocolError::local(ProtocolKind::InvalidFrame))
+    }
+    if !matches!(raw.event.as_str(), "thread" | "items" | "delta" | "gap") {
+        return Ok(None);
+    }
+    if raw.cursor.is_some() {
+        return Err(ProtocolError::local(ProtocolKind::InvalidFrame));
+    }
+    Ok(Some(match raw.event.as_str() {
+        "thread" => SessionFrame::Thread(parse(&raw.data)?),
+        "items" => SessionFrame::Items(parse(&raw.data)?),
+        "delta" => SessionFrame::Delta(parse(&raw.data)?),
+        "gap" => SessionFrame::Gap(parse(&raw.data)?),
+        _ => unreachable!(),
+    }))
 }

@@ -22,6 +22,7 @@ pub struct RunOptionsOutput {
     )]
     pub configuration: Option<Option<Box<models::RunConfigurationOutput>>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_labels")]
     #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
     pub labels: Option<std::collections::HashMap<String, String>>,
 
@@ -52,4 +53,9 @@ impl RunOptionsOutput {
             overrides: None,
         }
     }
+}
+fn deserialize_non_null_labels<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

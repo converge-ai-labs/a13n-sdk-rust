@@ -376,14 +376,14 @@ async fn streaming_download_and_owned_uploads_preserve_mime_and_shutdown() {
     assert!(matches!(response.chunk().await, Err(Error::Closed)));
 }
 #[tokio::test]
-async fn low_level_thread_create_roundtrips_imported_native_message_objects() {
+async fn low_level_thread_create_preserves_imported_native_message_order_without_readback_history()
+{
     let history = json!([
         {"kind":"request", "parts":[{"part_kind":"user-prompt", "content":"First"}],
          "metadata":{"imported_from":"other-app"}},
         {"kind":"response", "parts":[{"part_kind":"text", "content":"Second"}]}
     ]);
-    let mut receipt = sample("Submitted");
-    receipt["thread"]["message_history"] = history.clone();
+    let receipt = sample("Submitted");
     let mut server = server(move |_| Reply::json(201, receipt.clone())).await;
     let client = client(&server);
     let mut body = models::NewThread::new("agent".into(), text_payload("Continue"));
@@ -401,9 +401,11 @@ async fn low_level_thread_create_roundtrips_imported_native_message_objects() {
         .await
         .unwrap();
     assert_eq!(response.status.as_u16(), 201);
-    assert_eq!(
-        serde_json::to_value(response.data.thread.message_history).unwrap(),
-        history
+    assert!(
+        serde_json::to_value(&response.data.thread)
+            .unwrap()
+            .get("message_history")
+            .is_none()
     );
     let sent = server.requests.recv().await.unwrap();
     assert_eq!(sent.json()["message_history"], history);

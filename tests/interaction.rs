@@ -96,14 +96,12 @@ async fn result_only_waits_for_consumed_entry_not_provisional_assignment() {
 }
 
 #[tokio::test]
-async fn start_imports_native_history_once_and_thread_readback_preserves_json() {
+async fn start_imports_ordered_native_history_once_without_exposing_it_in_thread_readback() {
     let history_json = r#"[{"parts":[{"content":"Earlier question","part_kind":"user-prompt"}],"kind":"request","metadata":{"z":false,"a":null}},{"parts":[{"args":{"z":0,"a":{"second":2,"first":1}},"tool_call_id":"call","tool_name":"lookup","part_kind":"tool-call"}],"kind":"response"},{"parts":[{"content":{"z":[],"a":{}},"tool_call_id":"call","tool_name":"lookup","part_kind":"tool-return"}],"kind":"request"}]"#;
     let history: Value = serde_json::from_str(history_json).unwrap();
-    let mut accepted = receipt();
-    accepted["thread"]["message_history"] = history.clone();
+    let accepted = receipt();
     let mut thread = sample("ThreadView");
     thread["id"] = json!("t");
-    thread["message_history"] = history.clone();
     let mut fixture = server(move |request| {
         if request.method == "POST" {
             Reply::json(201, accepted.clone())
@@ -127,19 +125,7 @@ async fn start_imports_native_history_once_and_thread_readback_preserves_json() 
         )
         .await
         .unwrap();
-    assert_eq!(
-        serde_json::to_value(
-            &interaction
-                .evidence
-                .submission()
-                .unwrap()
-                .data
-                .thread
-                .message_history
-        )
-        .unwrap(),
-        history
-    );
+    assert_eq!(interaction.identity.thread_id.as_deref(), Some("t"));
     let readback = interaction
         .thread
         .as_ref()
@@ -148,9 +134,11 @@ async fn start_imports_native_history_once_and_thread_readback_preserves_json() 
         .get(Default::default())
         .await
         .unwrap();
-    assert_eq!(
-        serde_json::to_value(&readback.data.message_history).unwrap(),
-        history
+    assert!(
+        serde_json::to_value(&readback.data)
+            .unwrap()
+            .get("message_history")
+            .is_none()
     );
     sdk.agent("agent_id")
         .send_with(
@@ -163,10 +151,7 @@ async fn start_imports_native_history_once_and_thread_readback_preserves_json() 
         )
         .await
         .unwrap();
-    assert_eq!(
-        serde_json::to_string(&readback.data.message_history).unwrap(),
-        history_json
-    );
+
     let first = fixture.requests.recv().await.unwrap();
     assert_eq!(first.json()["message_history"], history);
     assert!(

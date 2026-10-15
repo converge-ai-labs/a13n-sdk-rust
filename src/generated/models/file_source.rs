@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FileSource {
+    #[serde(deserialize_with = "deserialize_bounded_bytes")]
     #[serde(rename = "bytes")]
     pub bytes: i32,
 
@@ -22,6 +23,7 @@ pub struct FileSource {
     #[serde(rename = "sha256")]
     pub sha256: String,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_truncated")]
     #[serde(rename = "truncated", skip_serializing_if = "Option::is_none")]
     pub truncated: Option<bool>,
 }
@@ -35,4 +37,20 @@ impl FileSource {
             truncated: None,
         }
     }
+}
+fn deserialize_bounded_bytes<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<i32, D::Error> {
+    let value = <i32>::deserialize(deserializer)?;
+    if value < 0 {
+        return Err(serde::de::Error::custom(
+            "Integer is below its schema minimum",
+        ));
+    }
+    Ok(value)
+}
+fn deserialize_non_null_truncated<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

@@ -16,9 +16,11 @@ pub struct Assembly {
     #[serde(rename = "count")]
     pub count: i32,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_parts")]
     #[serde(rename = "parts", skip_serializing_if = "Option::is_none")]
     pub parts: Option<Vec<String>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_size")]
     #[serde(rename = "size", skip_serializing_if = "Option::is_none")]
     pub size: Option<i32>,
 }
@@ -31,4 +33,14 @@ impl Assembly {
             size: None,
         }
     }
+}
+fn deserialize_non_null_parts<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_size<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

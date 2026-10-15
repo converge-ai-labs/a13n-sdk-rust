@@ -14,6 +14,7 @@ use serde::{Deserialize, Serialize};
 /// ChildEnvironmentPolicy : What a child run mounts: no environment, the parent's, or a new one from `template_id`.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ChildEnvironmentPolicy {
+    #[serde(default, deserialize_with = "deserialize_non_null_mode")]
     #[serde(rename = "mode", skip_serializing_if = "Option::is_none")]
     pub mode: Option<Mode>,
 
@@ -50,4 +51,9 @@ impl Default for Mode {
     fn default() -> Mode {
         Self::None
     }
+}
+fn deserialize_non_null_mode<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

@@ -22,6 +22,7 @@ pub struct MemorySource {
     )]
     pub cursor: Option<Option<String>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_files")]
     #[serde(rename = "files", skip_serializing_if = "Option::is_none")]
     pub files: Option<Vec<models::FileSource>>,
 
@@ -39,9 +40,11 @@ pub struct MemorySource {
     )]
     pub memory_id: Option<Option<String>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_records")]
     #[serde(rename = "records", skip_serializing_if = "Option::is_none")]
     pub records: Option<Vec<models::RecordSource>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_sources_truncated")]
     #[serde(rename = "sources_truncated", skip_serializing_if = "Option::is_none")]
     pub sources_truncated: Option<bool>,
 
@@ -64,6 +67,11 @@ impl MemorySource {
         }
     }
 }
+fn deserialize_non_null_files<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum Kind {
@@ -77,6 +85,16 @@ impl Default for Kind {
     fn default() -> Kind {
         Self::Record
     }
+}
+fn deserialize_non_null_records<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_sources_truncated<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]

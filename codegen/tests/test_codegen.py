@@ -23,7 +23,7 @@ def test_adapter_keeps_typed_unions_and_contract_unchanged() -> None:
         assert schemas[name] == document["components"]["schemas"][name]
     assert schemas["RunStatus"]["x-rust-unknown-enum"]
     assert "x-rust-unknown-enum" not in schemas["ItemKind"]
-    for name in ("NewThread", "ThreadView"):
+    for name in ("NewThread",):
         assert schemas[name]["properties"]["message_history"]["x-rust-type"] == (
             "Vec<serde_json::Map<String, serde_json::Value>>"
         )
@@ -188,7 +188,7 @@ def test_streaming_and_multimime_adapters_preserve_pinned_contract() -> None:
                 assert parameter["in"] == "header"
                 assert parameter["required"] is True
                 assert parameter["schema"]["enum"] == list(content)
-    assert streaming == 1
+    assert streaming == 2
     assert multimime == 4
     assert document == json.loads((ROOT / "contract/openapi.json").read_text())
 
@@ -202,8 +202,11 @@ def test_snapshot_stream_and_native_settings_contract_is_preserved() -> None:
             "$ref": "#/components/schemas/JsonValue"
         }
         assert adapted[name]["properties"]["settings"] == schemas[name]["properties"]["settings"]
-    assert "resume_after" not in schemas["RunItems"]["required"]
-    assert schemas["RunItems"]["properties"]["resume_after"]["anyOf"] == [{"type": "string"}, {"type": "null"}]
+    assert set(schemas["RunItems"]["properties"]) == {"run", "items", "complete"}
+    assert "display_position" not in schemas["RunView"]["properties"]
+    assert "message_history" not in schemas["ThreadView"]["properties"]
+    session = document["paths"]["/api/v1/sessions/{session_id}/stream"]["get"]
+    assert not any(p["name"] in {"run", "position", "Last-Event-ID"} for p in session["parameters"])
     for name in ["AssetCreate", "UploadSource"]:
         assert schemas[name]["properties"]["upload_id"]["pattern"] == r"^upl_[a-f0-9]{32}$"
     for name in ["BootstrapInput", "PasswordChange", "PasswordResetConfirm"]:
@@ -216,3 +219,47 @@ def test_snapshot_stream_and_native_settings_contract_is_preserved() -> None:
         ("position", "query"),
         ("Last-Event-ID", "header"),
     ]
+
+
+def test_session_export_extends_models_without_reintroducing_http_readback_fields() -> None:
+    import pytest
+
+    document = json.loads((ROOT / "contract/openapi.json").read_text())
+    stream = json.loads((ROOT / "contract/session-stream.schema.json").read_text())
+    original = json.dumps([document, stream])
+    merged = codegen.with_session_models(document, stream)
+    schemas = merged["components"]["schemas"]
+    assert json.dumps([document, stream]) == original
+    assert set(stream["frames"]) == {"thread", "items", "delta", "gap"}
+    assert schemas["ThreadState"]["properties"]["thread"] == {"$ref": "#/components/schemas/ThreadView"}
+    assert schemas["RunSnapshot"]["properties"]["continuation"]["anyOf"][0] == {
+        "$ref": "#/components/schemas/DisplayContinuation"
+    }
+    assert (
+        json.loads(
+            json.dumps(schemas["RunView"]),
+            object_hook=lambda value: {key: child for key, child in value.items() if not key.startswith("x-rust-")},
+        )
+        == document["components"]["schemas"]["RunView"]
+    )
+    assert set(schemas["RunItems"]["properties"]) == {"run", "items", "complete"}
+    assert "message_history" not in schemas["ThreadView"]["properties"]
+    assert schemas["Delta"]["properties"]["event"]["x-rust-type"] == "serde_json::Map<String, serde_json::Value>"
+    stream["$defs"]["RunView"]["properties"]["id"]["type"] = "boolean"
+    with pytest.raises(ValueError, match="Session and HTTP models disagree: RunView"):
+        codegen.with_session_models(document, stream)
+
+
+def test_session_model_constraints_keep_omission_null_and_owned_integer_bounds_distinct() -> None:
+    document = json.loads((ROOT / "contract/openapi.json").read_text())
+    stream = json.loads((ROOT / "contract/session-stream.schema.json").read_text())
+    schemas = codegen.with_session_models(document, stream)["components"]["schemas"]
+    continuation = schemas["DisplayContinuation"]["properties"]
+    for name in ("full_content", "fragments", "memory_sources", "observer", "response_groups"):
+        assert continuation[name]["x-rust-non-null"] is True
+    assert "x-rust-non-null" not in continuation["arguments"]
+    assert continuation["next_ordinal"]["x-rust-minimum"] == 1
+    assert schemas["StreamPosition"]["properties"]["attempt"]["x-rust-minimum"] == 0
+    assert schemas["StreamPosition"]["properties"]["sequence"]["x-rust-minimum"] == 0
+    for model, field in (("RunSnapshot", "first"), ("Delta", "attempt"), ("Delta", "sequence")):
+        assert "x-rust-bounded-integer" not in schemas[model]["properties"][field]

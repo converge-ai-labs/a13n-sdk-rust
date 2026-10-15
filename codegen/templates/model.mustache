@@ -155,6 +155,7 @@ pub struct {{{classname}}} {
     {{/isByteArray}}
     {{#vendorExtensions.x-rust-null-only}}#[serde(default, deserialize_with = "deserialize_optional_null")]{{/vendorExtensions.x-rust-null-only}}
     {{#vendorExtensions.x-rust-non-null}}#[serde(default, deserialize_with = "deserialize_non_null_{{{name}}}")]{{/vendorExtensions.x-rust-non-null}}
+    {{#vendorExtensions.x-rust-bounded-integer}}#[serde(deserialize_with = "deserialize_bounded_{{{name}}}")]{{/vendorExtensions.x-rust-bounded-integer}}
     #[serde(rename = "{{{baseName}}}"{{^required}}{{#isNullable}}, default{{^isByteArray}}, with = "::serde_with::rust::double_option"{{/isByteArray}}{{/isNullable}}{{/required}}{{^required}}, skip_serializing_if = "Option::is_none"{{/required}}{{#required}}{{#isNullable}}, deserialize_with = "Option::deserialize"{{/isNullable}}{{/required}})]
     pub {{{name}}}: {{!
     ### Option Start
@@ -314,10 +315,21 @@ fn deserialize_optional_null<'de, D: serde::Deserializer<'de>>(deserializer: D) 
 }
 {{/vendorExtensions.x-rust-null-only}}
 {{#vendorExtensions.x-rust-non-null}}
-fn deserialize_non_null_{{{name}}}<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Option<{{{dataType}}}>, D::Error> {
-    <{{{dataType}}}>::deserialize(deserializer).map(Some)
+{{^discriminator}}
+fn deserialize_non_null_{{{name}}}<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(deserializer: D) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }
+{{/discriminator}}
 {{/vendorExtensions.x-rust-non-null}}
+{{#vendorExtensions.x-rust-bounded-integer}}
+fn deserialize_bounded_{{{name}}}<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<{{{dataType}}}, D::Error> {
+    let value = <{{{dataType}}}>::deserialize(deserializer)?;
+    if value < {{vendorExtensions.x-rust-minimum}} {
+        return Err(serde::de::Error::custom("Integer is below its schema minimum"));
+    }
+    Ok(value)
+}
+{{/vendorExtensions.x-rust-bounded-integer}}
 {{/vars}}
 
 {{/model}}

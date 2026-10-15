@@ -45,44 +45,32 @@ RUN=$(jq -er '.data.assigned_run_id' entry.json)
 a13n-service-cli --include-meta runs wait "$RUN" --timeout 90 > run.json
 jq '.data.status' run.json
 a13n-service-cli runs result "$RUN" > items.json
-jq '{complete: .complete, baseline: .baseline, items: .items}' items.json
+jq '{complete: .complete, items: .items}' items.json
 ```
 
-A `runs wait` exit of zero may still mean waiting, failed or cancelled; check `.data.status` before treating Items as a completed answer. `complete` means the Run is sealed, not all display history loaded. Default reads return the newest limit (default 200, max 500) plus the entire mutable tail, possibly exceeding the limit. Dense 1-based Item ordinals reveal earlier history when the first ordinal is greater than 1. Explicit `runs items get --run "$RUN" --before 20 --limit 10` or `--after 0` reads bounded historical windows; before >=1 and after >=0 exclude each other. Historical windows have `baseline=false` and null continuation/position/resume hint. They cannot seed a live consumer, heal gaps or seal its state; there is no `--all` cursor pager for Run Items. If the Entry was failed or withdrawn, stop and inspect it instead of reading an unrelated Run. Saving only transient text risks missing committed output. `runs interrupt "$RUN"` is a separate **explicit remote mutation**, unlike Ctrl-C or a local timeout.
+A `runs wait` exit of zero may still mean waiting, failed or cancelled; check `.data.status` before treating Items as a completed answer. `complete` means the Run is sealed, not all display history loaded. Default reads return the newest limit (default 200, max 500) plus the entire mutable tail, possibly exceeding the limit. Dense 1-based Item ordinals reveal earlier history when the first ordinal is greater than 1. Explicit `runs items get --run "$RUN" --before 20 --limit 10` or `--after 0` reads bounded historical windows; before >=1 and after >=0 exclude each other. Items responses contain only `run`, `items` and `complete`, without stream positions or continuation. They cannot establish stream coverage or heal gaps; there is no `--all` cursor pager for Run Items. If the Entry was failed or withdrawn, stop and inspect it instead of reading an unrelated Run. Saving only transient text risks missing committed output. `runs interrupt "$RUN"` is a separate **explicit remote mutation**, unlike Ctrl-C or a local timeout.
 
-## Resume from applied display coverage
+## Native Session snapshots and events
 
-For advanced snapshot-plus-tail consumers, read default Items (`baseline=true`) for the exact known Run, apply that display and recursive presentation continuation (not execution state), then open a **new** reader with its paired `run.id` and `position`. In the example above `RUN` is bound from the consumed Entry; to observe a still-running tail, you can read Items before `runs wait` once a checkpoint exists:
+Use the Session ID from your own submitted Thread for snapshot-based observation:
 
 ```bash
-set -eu
-a13n-service-cli runs result "$RUN" > baseline.json
-jq -e '.baseline == true' baseline.json > /dev/null
-jq '{items: .items, continuation: .continuation}' baseline.json # Apply display and recursive presentation state.
-BASELINE_RUN=$(jq -er '.run.id' baseline.json)
-POSITION=$(jq -er '.position' baseline.json) # Null: no checkpoint yet; wait before claiming coverage.
-HINT=$(jq -r '.resume_after // empty' baseline.json)
-if [ -n "$HINT" ]; then
-  a13n-service-cli threads events --thread "$THREAD" --run "$BASELINE_RUN" \
-    --position "$POSITION" --after "$HINT" --max-reconnects 3 > covered-events.jsonl
-else
-  a13n-service-cli threads events --thread "$THREAD" --run "$BASELINE_RUN" \
-    --position "$POSITION" --max-reconnects 3 > covered-events.jsonl
-fi
-# Press Ctrl-C when done; a sealed Run does not make this Thread-wide command finite.
+SESSION=$(jq -er '.data.thread.session_id' submitted.json)
+a13n-service-cli sessions events "$SESSION" --timeout 30 > session-events.jsonl
+# Timeout exits 5 and closes local observation; Ctrl-C exits 130.
 ```
 
-`--run` and `--position` must be supplied together. Position is canonical nonnegative `attempt-sequence`, not a Redis cursor. Service validates that the Run belongs to the authorized Thread and that the attempt is not newer than its latest attempt. Optional `resume_after`/`--after` is a confirmed Redis seek hint covered by the snapshot. A missing, trimmed or incompatible hint falls back to retained replay filtered by coverage; hint absence alone does not imply a gap. Omitting both coverage flags retains cursor-only semantics, including a gap for a removed cursor.
+The command emits typed `thread`, `items`, `delta` and `gap` JSONL and flushes every line. A `thread` frame carries current metadata, nullable current/last Runs and pending Entries. An `items` frame replaces the suffix from `first` onward and carries required nullable display `continuation`; `complete` seals that Run's display, not the Session. Native `delta.event` and required nullable `delta.item` retain native JSON. A `gap` calls for committed Run readback and reassessing continuity. The CLI does not reconstruct display state.
 
-Delta/boundary JSONL includes the **prior** `applied_cursor` and `applied_position`: this line itself is only acknowledged after stdout flush, at the next read. Coverage advances only for contiguous deltas of the claimed Run and attempt. A gap, reset, attempt change or missing sequence freezes it until an explicit snapshot-based reopen; other Runs cannot advance it. Covered boundaries remain visible. A `gap` line has nullable `position` identifying the output readback must cover, not a resume hint. Do not apply later tail output across that hole or assume any snapshot read healed it. If readback is still behind the target, wait for a newer boundary or terminal progress before checking again. Unknown/null targets require reassessing continuity. Reset requires discarding superseded provisional output and reading Items for the new attempt. This command reports frames; it does not reconstruct or heal display state automatically.
+Every connection begins with fresh snapshots. Session frames have no SSE ID, Last-Event-ID or resume flags. EOF/error ends this reader; run the command again explicitly to obtain fresh snapshots. Already sealed Runs may be absent from a new snapshot; use `runs items get` for their history. Unknown event names are ignored and malformed known frames fail.
 
-For custom decoders, the generated raw command exposes the same queries and header, and saves SSE bytes instead of JSONL:
+For a custom decoder, save native bytes:
 
 ```bash
-a13n-service-cli threads stream get --thread "$THREAD" --run "$BASELINE_RUN" \
-  --position "$POSITION" --output raw-events.sse
-# Add --last-event-id "$HINT" only when a hint exists; Ctrl-C remains local cancellation.
+a13n-service-cli sessions stream get --session "$SESSION" --output session.sse --timeout 30
 ```
+
+Thread events remain available separately. If your application has established applied display progress itself, `threads events --thread "$THREAD" --run "$RUN" --position "$APPLIED_POSITION"` supplies the paired claim; optional `--after "$APPLIED_CURSOR"` is a Redis seek hint. Run Items no longer yields progress. Omit both claim flags for cursor-only observation. Delta/boundary lines report prior `applied_cursor`/`applied_position` and acknowledge this line only after stdout flush at the next poll. Gaps/resets/missing sequences freeze coverage; no automatic readback heals it. The raw `threads stream get` command retains explicit `--run`, `--position` and `--last-event-id` controls.
 
 ## Read execution configuration, Attempts, metrics and screenshots
 

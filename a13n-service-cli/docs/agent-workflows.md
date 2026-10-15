@@ -57,10 +57,10 @@ a13n-service-cli --include-meta threads create --body @imported-thread.json \
   --idempotency-key 'unique-import-key' > imported.json
 THREAD=$(jq -er '.data.thread.id' imported.json)
 a13n-service-cli --include-meta threads get "$THREAD" > thread.json
-jq '.data.message_history' thread.json
+jq '.data.id' thread.json
 ```
 
-The readback is the submitted native JSON, not historical Runs or UI Items. The Service validates completed user text, model text and closed tool-call/result exchanges (at most 256 messages and 262144 UTF-8 bytes); instructions, media and unresolved calls are rejected. Use `threads inbox create` or `agents send` for a later message **without** `message_history`. Imports are immutable; forks inherit their checkpoint instead of accepting a second import. `threads create --schema` exposes the `message_history` property, while a local dry-run cannot prove the Service will accept its content.
+Thread readback contains current metadata and omits imported `message_history`. The Service validates completed user text, model text and closed tool-call/result exchanges (at most 256 messages and 262144 UTF-8 bytes); instructions, media and unresolved calls are rejected. Use `threads inbox create` or `agents send` for a later message **without** `message_history`. Imports are immutable; forks inherit their checkpoint instead of accepting a second import. `threads create --schema` exposes the `message_history` property, while a local dry-run cannot prove the Service will accept its content.
 
 ## A message queued behind another Run
 

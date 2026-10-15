@@ -15,24 +15,11 @@ fn continuation() -> Value {
         "fragments":{"gap":false,"max_bytes":0,"max_pending":0,"pending":{"custom":{"count":2,"parts":["{","}"],"size":2}}},
         "observer":{"run_id":null,"thread_id":"t","state":{"request_index":0,"threads":{"child":"ct"},"parts":{"p":{"kind":"tool_call","part_id":"p","emitted_content":false,"tool_name":null}},"children":{"child":{"children":{"grandchild":{"parts":{},"threads":{},"request_index":1}}}}}}})
 }
-fn window(baseline: bool, complete: bool, ordinals: &[i32]) -> Value {
+fn window(complete: bool, ordinals: &[i32]) -> Value {
     let mut value = sample("RunItems");
     value["run"]["id"] = json!("r");
     value["run"]["status"] = json!(if complete { "completed" } else { "running" });
-    value["run"]["display_position"] = json!("1-9");
-    value["baseline"] = json!(baseline);
     value["complete"] = json!(complete);
-    value["position"] = if baseline { json!("1-9") } else { Value::Null };
-    value["resume_after"] = if baseline {
-        json!("100-9")
-    } else {
-        Value::Null
-    };
-    value["continuation"] = if baseline {
-        continuation()
-    } else {
-        Value::Null
-    };
     value["items"] = Value::Array(
         ordinals
             .iter()
@@ -50,15 +37,15 @@ fn window(baseline: bool, complete: bool, ordinals: &[i32]) -> Value {
 #[test]
 fn recursive_display_state_and_required_window_fields_roundtrip() {
     for value in [
-        window(true, false, &[6, 7, 8, 9]),
-        window(true, true, &[8, 9]),
-        window(false, true, &[4, 5]),
+        window(false, &[6, 7, 8, 9]),
+        window(true, &[8, 9]),
+        window(true, &[4, 5]),
     ] {
         let parsed: models::RunItems = serde_json::from_value(value.clone()).unwrap();
         assert_eq!(serde_json::to_value(parsed).unwrap(), value);
     }
-    for key in ["baseline", "complete", "position", "items"] {
-        let mut value = window(true, true, &[8, 9]);
+    for key in ["complete", "run", "items"] {
+        let mut value = window(true, &[8, 9]);
         value.as_object_mut().unwrap().remove(key);
         assert!(
             serde_json::from_value::<models::RunItems>(value).is_err(),
@@ -68,25 +55,25 @@ fn recursive_display_state_and_required_window_fields_roundtrip() {
     let mut item = sample("Item");
     item.as_object_mut().unwrap().remove("ordinal");
     assert!(serde_json::from_value::<models::Item>(item).is_err());
-    for state in [None, Some(Value::Null), Some(continuation())] {
-        let mut value = window(true, false, &[]);
-        value.as_object_mut().unwrap().remove("continuation");
-        if let Some(state) = state {
-            value["continuation"] = state;
-        }
-        let parsed: models::RunItems = serde_json::from_value(value.clone()).unwrap();
-        assert_eq!(serde_json::to_value(parsed).unwrap(), value);
-    }
+    let state = continuation();
+    let parsed: models::DisplayContinuation = serde_json::from_value(state.clone()).unwrap();
+    assert_eq!(serde_json::to_value(parsed).unwrap(), state);
+    let serialized = serde_json::to_value(
+        serde_json::from_value::<models::RunItems>(window(true, &[])).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(serialized.as_object().unwrap().keys().count(), 3);
+    assert!(serialized.get("position").is_none());
 }
 #[tokio::test]
 async fn ordinal_windows_preserve_whole_tail_and_do_not_autoload_history_or_claim_live_coverage() {
     let mut fixture = server(|request| {
         let body = if request.target.ends_with("?limit=2") {
-            window(true, false, &[6, 7, 8, 9])
+            window(false, &[6, 7, 8, 9])
         } else if request.target.ends_with("?before=6&limit=2") {
-            window(false, true, &[4, 5])
+            window(true, &[4, 5])
         } else if request.target.ends_with("?after=7&limit=2") {
-            window(false, true, &[8, 9])
+            window(true, &[8, 9])
         } else if request.target.ends_with("/stream") {
             return Reply::sse("event: gap\ndata: {\"run_id\":\"r\",\"position\":\"1-10\"}\n\n");
         } else {
@@ -105,7 +92,7 @@ async fn ordinal_windows_preserve_whole_tail_and_do_not_autoload_history_or_clai
         })
         .await
         .unwrap();
-    assert!(tail.data.baseline && !tail.data.complete);
+    assert!(!tail.data.complete);
     assert_eq!(tail.data.items.len(), 4); // The SDK must not truncate the entire mutable tail to limit.
     assert_eq!(tail.data.items[0].ordinal, 6);
     for options in [
@@ -121,13 +108,8 @@ async fn ordinal_windows_preserve_whole_tail_and_do_not_autoload_history_or_clai
         },
     ] {
         let page = run.items().get(options).await.unwrap().data;
-        assert!(page.complete && !page.baseline); // Sealed is not all-history loaded.
+        assert!(page.complete); // Sealed is not all-history loaded.
         assert!(page.items[0].ordinal > 1);
-        assert!(
-            page.position.is_none()
-                && page.continuation == Some(None)
-                && page.resume_after == Some(None)
-        );
     }
     let mut reader = ThreadStream::open(sdk.api().threads().at("t"), StreamOptions::default())
         .await
@@ -206,7 +188,7 @@ async fn ordinal_query_bounds_and_exclusion_are_service_errors_not_sdk_paging_po
 async fn sealed_historical_readback_cannot_heal_or_seal_an_existing_gapped_reader() {
     let mut fixture = server(|request| {
         if request.target.ends_with("/items?after=0&limit=2") {
-            Reply::json(200, window(false, true, &[1,2]))
+            Reply::json(200, window(true, &[1,2]))
         } else {
             assert!(request.target.ends_with("/stream?run=r&position=1-9"));
             Reply::sse("event: gap\ndata: {\"run_id\":\"r\",\"position\":\"1-10\"}\n\nevent: delta\nid: 100-10\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":10,\"event\":{},\"item\":null}\n\nevent: boundary\nid: 100-10\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":10}\n\n")
@@ -238,7 +220,7 @@ async fn sealed_historical_readback_cannot_heal_or_seal_an_existing_gapped_reade
         .await
         .unwrap()
         .data;
-    assert!(history.complete && !history.baseline && history.position.is_none());
+    assert!(history.complete);
     assert!(matches!(
         reader.next().await.unwrap(),
         Some(ThreadFrame::Delta { .. })

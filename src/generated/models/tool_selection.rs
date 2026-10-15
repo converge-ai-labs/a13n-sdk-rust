@@ -13,12 +13,15 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ToolSelection {
+    #[serde(default, deserialize_with = "deserialize_non_null_config")]
     #[serde(rename = "config", skip_serializing_if = "Option::is_none")]
     pub config: Option<std::collections::HashMap<String, serde_json::Value>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_enabled")]
     #[serde(rename = "enabled", skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_permission")]
     #[serde(rename = "permission", skip_serializing_if = "Option::is_none")]
     pub permission: Option<models::ToolPermissionSetting>,
 }
@@ -31,4 +34,19 @@ impl ToolSelection {
             permission: None,
         }
     }
+}
+fn deserialize_non_null_config<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_enabled<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_permission<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

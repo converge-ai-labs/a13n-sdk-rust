@@ -7326,6 +7326,10 @@ impl<'a> SessionResource<'a> {
     pub fn message_authors(&self) -> SessionMessageAuthorsResource<'a> {
         SessionMessageAuthorsResource(self.0.clone())
     }
+    /// Access `stream` locally, sharing the client and explicit scope.
+    pub fn stream(&self) -> SessionStreamResource<'a> {
+        SessionStreamResource(self.0.clone())
+    }
     /// Get Session.
     ///
     /// `GET /api/v1/sessions/{session_id}`.
@@ -7418,6 +7422,38 @@ impl<'a> SessionMessageAuthorsResource<'a> {
             .scoped_request(request, options.x_workspace_id.as_deref());
         request = query(request, "entry_id", &options.entry_id)?;
         let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct SessionStreamResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`SessionStreamResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct SessionStreamGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> SessionStreamResource<'a> {
+    /// Session Stream.
+    ///
+    /// `GET /api/v1/sessions/{session_id}/stream`.
+    ///
+    /// Returns an unbuffered body. Read chunks or drop/close it; reads share parent shutdown.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(&self, options: SessionStreamGetOptions) -> Result<BinaryResponse, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/sessions/{session_id}/stream",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.send(request, &[200]).await?;
         Ok(response)
     }
 }
@@ -12639,6 +12675,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/sessions/{session_id}/message-authors",
         "SessionMessageAuthorsResource",
         "list",
+    ),
+    (
+        "GET",
+        "/api/v1/sessions/{session_id}/stream",
+        "SessionStreamResource",
+        "get",
     ),
     ("GET", "/api/v1/skills", "SkillsResource", "list"),
     ("POST", "/api/v1/skills", "SkillsResource", "create"),
