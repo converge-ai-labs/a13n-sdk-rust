@@ -154,6 +154,8 @@ pub mod connector_config;
 pub use self::connector_config::ConnectorConfig;
 pub mod content_ref;
 pub use self::content_ref::ContentRef;
+pub mod context_usage;
+pub use self::context_usage::ContextUsage;
 pub mod cost_limit;
 pub use self::cost_limit::CostLimit;
 pub mod created_subscription;
