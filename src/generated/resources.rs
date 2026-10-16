@@ -9711,6 +9711,10 @@ impl<'a> UsageResource<'a> {
     pub fn agents(&self) -> UsageAgentsResource<'a> {
         UsageAgentsResource(self.0.clone())
     }
+    /// Access `context` locally, sharing the client and explicit scope.
+    pub fn context(&self) -> UsageContextResource<'a> {
+        UsageContextResource(self.0.clone())
+    }
     /// Access `models` locally, sharing the client and explicit scope.
     pub fn models(&self) -> UsageModelsResource<'a> {
         UsageModelsResource(self.0.clone())
@@ -9836,6 +9840,55 @@ impl<'a> UsageAgentsResource<'a> {
             },
             cursor,
         )
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct UsageContextResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`UsageContextResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct UsageContextGetOptions {
+    /// Query parameter `thread_id`. `None` omits this parameter.
+    pub thread_id: Option<String>,
+    /// Query parameter `run_id`. `None` omits this parameter.
+    pub run_id: Option<String>,
+    /// Query parameter `record_id`. `None` omits this parameter.
+    pub record_id: Option<String>,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> UsageContextResource<'a> {
+    /// Context Usage.
+    ///
+    /// `GET /api/v1/usage/context`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: UsageContextGetOptions,
+    ) -> Result<Response<models::ContextUsage>, Error> {
+        let mut request =
+            self.0
+                .client
+                .request(reqwest::Method::GET, "/api/v1/usage/context", &self.0.ids)?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        if let Some(value) = &options.thread_id {
+            request = query(request, "thread_id", value)?;
+        }
+        if let Some(value) = &options.run_id {
+            request = query(request, "run_id", value)?;
+        }
+        if let Some(value) = &options.record_id {
+            request = query(request, "record_id", value)?;
+        }
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
     }
 }
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
@@ -12921,6 +12974,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
     ("POST", "/api/v1/uploads", "UploadsResource", "create"),
     ("GET", "/api/v1/usage", "UsageResource", "get"),
     ("GET", "/api/v1/usage/agents", "UsageAgentsResource", "list"),
+    (
+        "GET",
+        "/api/v1/usage/context",
+        "UsageContextResource",
+        "get",
+    ),
     ("GET", "/api/v1/usage/models", "UsageModelsResource", "list"),
     (
         "GET",
