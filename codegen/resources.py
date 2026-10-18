@@ -14,6 +14,9 @@ CORE = {
     "threads/{thread_id}/inbox": "InboxResource",
     "threads/{thread_id}/inbox/{entry_id}": "EntryResource",
     "runs/{run_id}": "RunResource",
+    # Assistance is uncountable: collection and selected resource need distinct names.
+    "desktop-assistance": "DesktopAssistanceCollectionResource",
+    "runs/{run_id}/desktop-assistance": "RunDesktopAssistanceCollectionResource",
 }
 OPTIONAL_MATCH = "/api/v1/memories/{memory_id}/revisions/{seq}/restore"
 DOMAIN_ENUMS = {

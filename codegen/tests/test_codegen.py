@@ -34,6 +34,13 @@ def test_adapter_keeps_typed_unions_and_contract_unchanged() -> None:
     assert legacy["required"] == frozen["required"]
     assert all(value == frozen["properties"][name] for name, value in legacy["properties"].items())
     assert frozen["properties"]["roots"]["x-rust-non-null"]
+    for name in ["ToolSearch", "ToolSearchGroup", "ProxyToolSearchConfig", "NativeToolSearchConfig"]:
+        assert schemas[name]["x-rust-deny-unknown-fields"]
+    assert schemas["ToolSearch"]["properties"]["config"]["x-rust-non-null"]
+    assert "x-rust-non-null" not in schemas["NativeToolSearchConfig"]["properties"]["strategy"]
+    for path in ["/api/v1/usage/context", "/api/v1/runs/{run_id}/desktop-control"]:
+        assert adapted["paths"][path]["get"]["x-rust-nullable-response"]
+    assert "x-rust-nullable-response" not in adapted["paths"]["/api/v1/runs/{run_id}"]["get"]
 
 
 def test_schema_adapters_preserve_presence_constants_binary_and_sensitive_data() -> None:
@@ -119,6 +126,21 @@ def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
             }
         },
     }
+    # Uncountable resource names must distinguish collections from selected items.
+    for path, method, operation_id, selectors in [
+        ("/api/v1/desktop-assistance/{assistance_id}/view", "post", "desktop_view", ["assistance_id"]),
+        ("/api/v1/runs/{run_id}/desktop-assistance/{call_id}", "get", "run_desktop", ["run_id", "call_id"]),
+    ]:
+        document["paths"][path] = {
+            method: {
+                "operationId": operation_id,
+                "parameters": [
+                    {"name": selector, "in": "path", "required": True, "schema": {"type": "string"}}
+                    for selector in selectors
+                ],
+                "responses": {"204": {"description": "No content"}},
+            }
+        }
     document["paths"]["/api/v1/autogen-probe"]["get"]["parameters"] = [
         {"name": "autogen_probe_value", "in": "query", "schema": {"type": "string"}},
         {
@@ -134,6 +156,21 @@ def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
         },
     ]
     document["paths"]["/api/v1/autogen-probe"]["get"]["summary"] = "Read a future probe"
+    document["paths"]["/api/v1/nullable-probe"] = {
+        "get": {
+            "operationId": "nullable_probe",
+            "responses": {
+                "200": {
+                    "description": "Nullable",
+                    "content": {
+                        "application/json": {
+                            "schema": {"anyOf": [{"$ref": "#/components/schemas/RunStatus"}, {"type": "null"}]}
+                        }
+                    },
+                }
+            },
+        }
+    }
     output = codegen.generate(document, tmp_path)
     target = tmp_path / "installed"
     target.mkdir()
@@ -152,12 +189,20 @@ def test_changed_http_contract_regenerates_bindings(tmp_path: Path) -> None:
     ordinary = (target / "resources.rs").read_text()
     assert "pub autogen_probe_value:Option<String>" in ordinary
     assert "pub fn autogen_probe(" in ordinary
+    assert "Response<Option<models::RunStatus>>" in (target / "apis/default_api.rs").read_text()
+    assert "Response<Option<models::RunStatus>>" in ordinary
     assert "pub async fn get(" in ordinary
     assert "/// Read a future probe." in ordinary
     assert "GET /api/v1/autogen-probe" in ordinary
     assert "pub flavor:Option<AutogenProbeFlavor>" in ordinary
     assert '#[serde(rename = "ice_cold")] IceCold' in ordinary
     assert "A local resource reference borrowing" in ordinary
+    assert "pub struct DesktopAssistanceCollectionResource" in ordinary
+    assert "pub struct DesktopAssistanceResource" in ordinary
+    assert "pub struct RunDesktopAssistanceCollectionResource" in ordinary
+    assert "pub struct RunDesktopAssistanceResource" in ordinary
+    assert "client.api().desktop_assistance().at(" in cli
+    assert "client.api().runs().at(" in cli
     assert "`None` omits this parameter" in ordinary
     assert "client.api().autogen_probe().get(" in (target / "resource_tests.rs").read_text()
 

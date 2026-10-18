@@ -159,6 +159,11 @@ impl Overrides {
     boxed_override_field!(skill_sync, models::AgentOverrideInputSkillSync);
     override_field!(skills, Vec<models::SkillSelection>);
     override_field!(subagents, Value);
+    /// Replaces the whole tool-search block; `None` retains the Agent revision.
+    pub fn tool_search(mut self, value: Option<models::ToolSearch>) -> Self {
+        self.0.tool_search = Some(value.map(Box::new));
+        self
+    }
     override_field!(toolsets, HashMap<String, models::ToolsetSelection>);
 }
 

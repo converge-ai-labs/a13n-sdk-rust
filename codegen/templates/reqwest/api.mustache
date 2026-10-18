@@ -115,7 +115,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
 ### Multi response support
 }}{{#supportMultipleResponses}}ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{!
 ### Regular return type
-}}{{^supportMultipleResponses}}Response<{{^returnType}}(){{/returnType}}{{{returnType}}}>{{/supportMultipleResponses}}{{/isResponseFile}}{{!
+}}{{^supportMultipleResponses}}Response<{{#vendorExtensions.x-rust-nullable-response}}Option<{{/vendorExtensions.x-rust-nullable-response}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{#vendorExtensions.x-rust-nullable-response}}>{{/vendorExtensions.x-rust-nullable-response}}>{{/supportMultipleResponses}}{{/isResponseFile}}{{!
 ### Error Type
 }}, Error<{{{operationIdCamelCase}}}Error>> {
 {{/vendorExtensions.x-group-parameters}}
@@ -142,7 +142,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
 ### Multi response support
 }}{{#supportMultipleResponses}}ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{!
 ### Regular return type
-}}{{^supportMultipleResponses}}Response<{{^returnType}}(){{/returnType}}{{{returnType}}}>{{/supportMultipleResponses}}{{/isResponseFile}}{{!
+}}{{^supportMultipleResponses}}Response<{{#vendorExtensions.x-rust-nullable-response}}Option<{{/vendorExtensions.x-rust-nullable-response}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{#vendorExtensions.x-rust-nullable-response}}>{{/vendorExtensions.x-rust-nullable-response}}>{{/supportMultipleResponses}}{{/isResponseFile}}{{!
 ### Error Type
 }}, Error<{{{operationIdCamelCase}}}Error>> {
     {{#allParams.0}}

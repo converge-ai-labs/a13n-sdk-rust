@@ -19,11 +19,23 @@ pub struct Pending {
 
     #[serde(rename = "calls")]
     pub calls: Vec<models::PendingCall>,
+
+    #[serde(
+        rename = "desktop_control_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub desktop_control_id: Option<Option<String>>,
 }
 
 impl Pending {
     /// Public projection; complete native requests and private metadata stay in the checkpoint.
     pub fn new(approvals: Vec<models::PendingCall>, calls: Vec<models::PendingCall>) -> Pending {
-        Pending { approvals, calls }
+        Pending {
+            approvals,
+            calls,
+            desktop_control_id: None,
+        }
     }
 }

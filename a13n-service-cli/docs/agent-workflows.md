@@ -170,3 +170,23 @@ jq '.data.status' successor.json
 ```
 
 For an intentional unanswered question or a failed client tool, use `{ "status": "failed", "message": "No response was given" }` under its call ID. The Service requires **exact complete coverage** across the approval and call maps: missing, extra or miscategorized IDs reject the entire request; there are no omission defaults and no partial batches. Optional `input` adds user content to the **same immutable intent**, after the deferred results in model context. It cannot answer a question, authorize an approval or fill a missing tool result. The successor has its own Run ID; `runs wait "$RUN"` still observes the original waiting Run. Check the successor status and [committed Items](events-and-readback.md) before claiming completion. Preserve the original key and receipt after an uncertain POST; see [scripting and errors](scripting-and-errors.md).
+
+## Desktop-control waits and explicit operations
+
+`wait_reason: "desktop_control"` is a normal waiting outcome for `agents run`, exact `runs wait` and Session snapshots. Inspect `pending.desktop_control_id` even when calls/approvals are both empty. Closing event observation or disconnecting viewer access is local/access lifecycle, not completion or Run resume. Metadata can be absent with successful JSON `null`:
+
+```bash
+: "${RUN:?Set the exact Run ID}"
+a13n-service-cli --include-meta runs desktop-control get --run "$RUN"
+a13n-service-cli usage context get --run-id "$RUN"
+```
+
+The explicit commands are `runs desktop-control create --run ID`, `runs desktop-assistance get CALL_ID --run ID`, and `desktop-assistance view/control/request_control/disconnect/complete ASSISTANCE_ID`. Use each command's `--schema`/`--help` before sending. Opening/viewing, requesting control and obtaining an input grant are separate steps. `preparing` grants no input authority. The CLI launches no browser and never renews/reclaims a lease automatically.
+
+After real authorized desktop work, `desktop-assistance complete ID --body @completion.json` persists the outcome and releases access. Supply the actual browser-session token (20–72 characters, not a Service Session ID) and nonnegative epoch. Disconnect only releases this browser's access; neither operation resumes the Run. For user desktop-only waiting with no other pending answers, an explicitly completed stored context permits `runs resume "$RUN" --body '{"calls":{},"approvals":{}}' --idempotency-key "$RESUME_KEY"`. Service validates checkpoint eligibility. Agent-origin assistance still requires its exact persisted outcome plus every other pending answer. Capture the returned successor ID and explicitly wait on it.
+
+## Tool discovery and context usage
+
+Agent create/revision bodies and Run overrides use `tool_search` with `config.mode` equal to `proxy` or `native`. Native strategy may be omitted, null, `bm25` or `regex`; native/proxy mixed fields are rejected. For example, a full Agent configuration can include `"tool_search":{"config":{"mode":"native","strategy":null},"groups":{}}`. Run overrides replace the whole block; omitted/null retains revision, while `groups:{}` disables grouping. The CLI executes no tool discovery itself.
+
+`usage context get` requires exactly one `--thread-id`, `--run-id` or `--record-id`; Service owns selector validation. It reports one eligible completed generation, not pending prompt estimates or an aggregate. A successful null body prints `null` (or metadata envelope `data:null`); nullable input/output/window fields stay null independently of actual zero values. Missing resources remain errors. No ratio or synthetic capacity is calculated.

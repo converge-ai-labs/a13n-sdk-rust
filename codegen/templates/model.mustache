@@ -145,7 +145,8 @@ impl<'de> Deserialize<'de> for {{classname}} {
 {{#anyOf.isEmpty}}
 {{#vendorExtensions.x-rust-has-byte-array}}#[serde_as]
 {{/vendorExtensions.x-rust-has-byte-array}}{{#oneOf.isEmpty}}#[derive(Clone, Default, {{^vendorExtensions.x-rust-sensitive}}Debug, {{/vendorExtensions.x-rust-sensitive}}PartialEq, Serialize, Deserialize)]
-pub struct {{{classname}}} {
+{{#vendorExtensions.x-rust-deny-unknown-fields}}#[serde(deny_unknown_fields)]
+{{/vendorExtensions.x-rust-deny-unknown-fields}}pub struct {{{classname}}} {
 {{#vars}}
     {{#description}}
     /// {{{.}}}

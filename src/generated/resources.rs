@@ -146,6 +146,10 @@ impl<'a> ServiceResources<'a> {
     pub fn connector_providers(&self) -> ConnectorProvidersResource<'a> {
         ConnectorProvidersResource(self.0.clone())
     }
+    /// Access `desktop-assistance` locally, sharing the client and explicit scope.
+    pub fn desktop_assistance(&self) -> DesktopAssistanceCollectionResource<'a> {
+        DesktopAssistanceCollectionResource(self.0.clone())
+    }
     /// Access `environment-providers` locally, sharing the client and explicit scope.
     pub fn environment_providers(&self) -> EnvironmentProvidersResource<'a> {
         EnvironmentProvidersResource(self.0.clone())
@@ -2182,6 +2186,193 @@ impl<'a> ConnectorProviderAppActionsResource<'a> {
             .0
             .client
             .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct DesktopAssistanceCollectionResource<'a>(pub(crate) Binding<'a>);
+impl<'a> DesktopAssistanceCollectionResource<'a> {
+    /// Bind `assistance_id` locally without an HTTP request. The returned reference borrows the client, not this collection.
+    pub fn at(&self, id: impl Into<String>) -> DesktopAssistanceResource<'a> {
+        DesktopAssistanceResource(self.0.select(id.into()))
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct DesktopAssistanceResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`DesktopAssistanceResource::complete`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct DesktopAssistanceCompleteOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`DesktopAssistanceResource::control`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct DesktopAssistanceControlOptions {
+    /// Query parameter `renew`. `None` omits this parameter.
+    pub renew: Option<bool>,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`DesktopAssistanceResource::disconnect`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct DesktopAssistanceDisconnectOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`DesktopAssistanceResource::request_control`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct DesktopAssistanceRequestControlOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`DesktopAssistanceResource::view`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct DesktopAssistanceViewOptions {
+    /// Query parameter `renew`. `None` omits this parameter.
+    pub renew: Option<bool>,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> DesktopAssistanceResource<'a> {
+    /// Complete Assistance.
+    ///
+    /// `POST /api/v1/desktop-assistance/{assistance_id}/complete`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn complete(
+        &self,
+        body: &models::Completion,
+        options: DesktopAssistanceCompleteOptions,
+    ) -> Result<Response<models::View>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/desktop-assistance/{assistance_id}/complete",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Control Desktop.
+    ///
+    /// `POST /api/v1/desktop-assistance/{assistance_id}/control`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn control(
+        &self,
+        body: &models::Control,
+        options: DesktopAssistanceControlOptions,
+    ) -> Result<Response<models::Access>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/desktop-assistance/{assistance_id}/control",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        if let Some(value) = &options.renew {
+            request = query(request, "renew", value)?;
+        }
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Disconnect Desktop.
+    ///
+    /// `POST /api/v1/desktop-assistance/{assistance_id}/disconnect`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn disconnect(
+        &self,
+        body: &models::Control,
+        options: DesktopAssistanceDisconnectOptions,
+    ) -> Result<Response<models::View>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/desktop-assistance/{assistance_id}/disconnect",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Request Control.
+    ///
+    /// `POST /api/v1/desktop-assistance/{assistance_id}/request-control`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn request_control(
+        &self,
+        options: DesktopAssistanceRequestControlOptions,
+    ) -> Result<Response<models::View>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/desktop-assistance/{assistance_id}/request-control",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// View Desktop.
+    ///
+    /// `POST /api/v1/desktop-assistance/{assistance_id}/view`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn view(
+        &self,
+        body: &models::Control,
+        options: DesktopAssistanceViewOptions,
+    ) -> Result<Response<models::Access>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/desktop-assistance/{assistance_id}/view",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        if let Some(value) = &options.renew {
+            request = query(request, "renew", value)?;
+        }
+        request = request.json(body);
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
@@ -6621,6 +6812,14 @@ impl<'a> RunResource<'a> {
     pub fn contents(&self) -> RunContentsResource<'a> {
         RunContentsResource(self.0.clone())
     }
+    /// Access `desktop-assistance` locally, sharing the client and explicit scope.
+    pub fn desktop_assistance(&self) -> RunDesktopAssistanceCollectionResource<'a> {
+        RunDesktopAssistanceCollectionResource(self.0.clone())
+    }
+    /// Access `desktop-control` locally, sharing the client and explicit scope.
+    pub fn desktop_control(&self) -> RunDesktopControlResource<'a> {
+        RunDesktopControlResource(self.0.clone())
+    }
     /// Access `images` locally, sharing the client and explicit scope.
     pub fn images(&self) -> RunImagesResource<'a> {
         RunImagesResource(self.0.clone())
@@ -6998,6 +7197,119 @@ impl<'a> RunContentResource<'a> {
             .0
             .client
             .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct RunDesktopAssistanceCollectionResource<'a>(pub(crate) Binding<'a>);
+impl<'a> RunDesktopAssistanceCollectionResource<'a> {
+    /// Bind `call_id` locally without an HTTP request. The returned reference borrows the client, not this collection.
+    pub fn at(&self, id: impl Into<String>) -> RunDesktopAssistanceResource<'a> {
+        RunDesktopAssistanceResource(self.0.select(id.into()))
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct RunDesktopAssistanceResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`RunDesktopAssistanceResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct RunDesktopAssistanceGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> RunDesktopAssistanceResource<'a> {
+    /// Get Assistance.
+    ///
+    /// `GET /api/v1/runs/{run_id}/desktop-assistance/{call_id}`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: RunDesktopAssistanceGetOptions,
+    ) -> Result<Response<models::View>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/runs/{run_id}/desktop-assistance/{call_id}",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct RunDesktopControlResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`RunDesktopControlResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct RunDesktopControlGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`RunDesktopControlResource::create`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct RunDesktopControlCreateOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> RunDesktopControlResource<'a> {
+    /// Get Control.
+    ///
+    /// `GET /api/v1/runs/{run_id}/desktop-control`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: RunDesktopControlGetOptions,
+    ) -> Result<Response<Option<models::View>>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/runs/{run_id}/desktop-control",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Open Control.
+    ///
+    /// `POST /api/v1/runs/{run_id}/desktop-control`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn create(
+        &self,
+        body: &models::Request,
+        options: RunDesktopControlCreateOptions,
+    ) -> Result<Response<models::View>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/runs/{run_id}/desktop-control",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
@@ -9711,6 +10023,10 @@ impl<'a> UsageResource<'a> {
     pub fn agents(&self) -> UsageAgentsResource<'a> {
         UsageAgentsResource(self.0.clone())
     }
+    /// Access `context` locally, sharing the client and explicit scope.
+    pub fn context(&self) -> UsageContextResource<'a> {
+        UsageContextResource(self.0.clone())
+    }
     /// Access `models` locally, sharing the client and explicit scope.
     pub fn models(&self) -> UsageModelsResource<'a> {
         UsageModelsResource(self.0.clone())
@@ -9836,6 +10152,55 @@ impl<'a> UsageAgentsResource<'a> {
             },
             cursor,
         )
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct UsageContextResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`UsageContextResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct UsageContextGetOptions {
+    /// Query parameter `thread_id`. `None` omits this parameter.
+    pub thread_id: Option<String>,
+    /// Query parameter `run_id`. `None` omits this parameter.
+    pub run_id: Option<String>,
+    /// Query parameter `record_id`. `None` omits this parameter.
+    pub record_id: Option<String>,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> UsageContextResource<'a> {
+    /// Context Usage.
+    ///
+    /// `GET /api/v1/usage/context`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: UsageContextGetOptions,
+    ) -> Result<Response<Option<models::ContextUsage>>, Error> {
+        let mut request =
+            self.0
+                .client
+                .request(reqwest::Method::GET, "/api/v1/usage/context", &self.0.ids)?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        if let Some(value) = &options.thread_id {
+            request = query(request, "thread_id", value)?;
+        }
+        if let Some(value) = &options.run_id {
+            request = query(request, "run_id", value)?;
+        }
+        if let Some(value) = &options.record_id {
+            request = query(request, "record_id", value)?;
+        }
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
     }
 }
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
@@ -12062,6 +12427,36 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "list",
     ),
     (
+        "POST",
+        "/api/v1/desktop-assistance/{assistance_id}/complete",
+        "DesktopAssistanceResource",
+        "complete",
+    ),
+    (
+        "POST",
+        "/api/v1/desktop-assistance/{assistance_id}/control",
+        "DesktopAssistanceResource",
+        "control",
+    ),
+    (
+        "POST",
+        "/api/v1/desktop-assistance/{assistance_id}/disconnect",
+        "DesktopAssistanceResource",
+        "disconnect",
+    ),
+    (
+        "POST",
+        "/api/v1/desktop-assistance/{assistance_id}/request-control",
+        "DesktopAssistanceResource",
+        "request_control",
+    ),
+    (
+        "POST",
+        "/api/v1/desktop-assistance/{assistance_id}/view",
+        "DesktopAssistanceResource",
+        "view",
+    ),
+    (
         "GET",
         "/api/v1/environment-providers",
         "EnvironmentProvidersResource",
@@ -12640,6 +13035,24 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
     ),
     (
         "GET",
+        "/api/v1/runs/{run_id}/desktop-assistance/{call_id}",
+        "RunDesktopAssistanceResource",
+        "get",
+    ),
+    (
+        "GET",
+        "/api/v1/runs/{run_id}/desktop-control",
+        "RunDesktopControlResource",
+        "get",
+    ),
+    (
+        "POST",
+        "/api/v1/runs/{run_id}/desktop-control",
+        "RunDesktopControlResource",
+        "create",
+    ),
+    (
+        "GET",
         "/api/v1/runs/{run_id}/images/{image_id}",
         "RunImageResource",
         "get",
@@ -12921,6 +13334,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
     ("POST", "/api/v1/uploads", "UploadsResource", "create"),
     ("GET", "/api/v1/usage", "UsageResource", "get"),
     ("GET", "/api/v1/usage/agents", "UsageAgentsResource", "list"),
+    (
+        "GET",
+        "/api/v1/usage/context",
+        "UsageContextResource",
+        "get",
+    ),
     ("GET", "/api/v1/usage/models", "UsageModelsResource", "list"),
     (
         "GET",

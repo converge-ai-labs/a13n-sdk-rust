@@ -51,6 +51,9 @@ def prepare(document: dict) -> dict:
             for status, response in value.get("responses", {}).items():
                 if status.startswith("2"):
                     for media_type, media in response.get("content", {}).items():
+                        response_schema = media.get("schema", {})
+                        if any(branch.get("type") == "null" for branch in response_schema.get("anyOf", [])):
+                            value["x-rust-nullable-response"] = True
                         if media_type == "text/event-stream":
                             media["schema"] = {"type": "string", "format": "binary"}
             branches = value.get("anyOf", [])
@@ -76,6 +79,14 @@ def prepare(document: dict) -> dict:
     # Imported native history is immutable ordered JSON, including each message
     # object. HashMap would reorder the model-visible context at the wire boundary.
     for name, schema in schemas.items():
+        if name in {"ToolSearch", "ToolSearchGroup", "ProxyToolSearchConfig", "NativeToolSearchConfig"}:
+            # These new configuration objects are closed, including both union
+            # branches. Do not silently accept a hybrid proxy/native payload.
+            schema["x-rust-deny-unknown-fields"] = schema.get("additionalProperties") is False
+            for field, prop in schema.get("properties", {}).items():
+                nullable = any(branch.get("type") == "null" for branch in prop.get("anyOf", []))
+                if field not in schema.get("required", []) and not nullable:
+                    prop["x-rust-non-null"] = True
         if name == "NewThread":
             schema["properties"]["message_history"]["x-rust-type"] = "Vec<serde_json::Map<String, serde_json::Value>>"
         if name == "RunView":

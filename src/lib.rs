@@ -31,10 +31,11 @@ pub use generated::models::{
     AgentModelCharacteristics, AgentReviewer, ClientToolDefinition, ConnectionSelection, Delivery,
     EntryStatus, EnvironmentAction, EnvironmentPermissionSetInput, Failure, FrozenMemoryMount,
     IsolatedSkillSync, MediaUnderstandingSelection, MemoryAccess, MemoryMount, MountCreate,
-    OutputSpec, OutputVariant, PendingCall, PlatformGroup, PlatformSelection, PluginSelection,
-    RetryOverride, RunStatus, SessionMemorySettings, SharedSkillSync, SkillSelection, SkillSync,
-    SpaceBinding, ToolPermissionSetting, ToolReviewRule, ToolRiskLevel, ToolsetSelection,
-    UsageLimit,
+    NativeToolSearchConfig, OutputSpec, OutputVariant, PendingCall, PlatformGroup,
+    PlatformSelection, PluginSelection, ProxyToolSearchConfig, RetryOverride, RunStatus,
+    SessionMemorySettings, SharedSkillSync, SkillSelection, SkillSync, SpaceBinding,
+    ToolPermissionSetting, ToolReviewRule, ToolRiskLevel, ToolSearch, ToolSearchConfig,
+    ToolSearchGroup, ToolsetSelection, UsageLimit,
 };
 pub use generated::models::{
     AgentOverrideInputSkillSync as OverrideSkillSync,
