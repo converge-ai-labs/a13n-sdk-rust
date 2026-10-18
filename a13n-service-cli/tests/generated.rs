@@ -1397,3 +1397,85 @@ fn session_events_emit_typed_jsonl_and_raw_stream_keeps_exact_bytes_without_curs
     let output = binary(&["sessions", "events", "s", "--after", "1-0"]);
     assert_eq!(output.status.code(), Some(2));
 }
+
+#[test]
+fn nullable_context_and_desktop_metadata_print_json_null() {
+    for command in [
+        vec!["usage", "context", "get", "--record-id", "record"],
+        vec!["runs", "desktop-control", "get", "--run", "r"],
+    ] {
+        let (base, server) = serve(vec![(
+            200,
+            vec![
+                ("Content-Type", "application/json"),
+                ("X-Request-ID", "nullable"),
+            ],
+            b"null".to_vec(),
+        )]);
+        let mut args = vec!["--base-url", &base];
+        args.extend(command);
+        let output = binary(&args);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&output.stdout).unwrap(),
+            serde_json::Value::Null
+        );
+        assert_eq!(server.join().unwrap().len(), 1);
+    }
+}
+
+#[test]
+fn desktop_empty_resume_and_tool_search_strict_shapes_are_explicit() {
+    let output = binary(&[
+        "runs",
+        "resume",
+        "r",
+        "--idempotency-key",
+        "key",
+        "--body",
+        r#"{"calls":{},"approvals":{}}"#,
+        "--dry-run",
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    for config in [
+        r#"{"mode":"native","max_results":7}"#,
+        r#"{"mode":"proxy","strategy":"regex"}"#,
+        r#"{"strategy":null}"#,
+    ] {
+        let body = format!(
+            r#"{{"name":"Invalid","config":{{"model":"m","tool_search":{{"config":{config}}}}}}}"#
+        );
+        let output = binary(&[
+            "--base-url",
+            "http://127.0.0.1:1",
+            "agents",
+            "create",
+            "--body",
+            &body,
+        ]);
+        assert_eq!(output.status.code(), Some(2));
+    }
+    for config in [
+        r#"{"mode":"native"}"#,
+        r#"{"mode":"native","strategy":null}"#,
+        r#"{"mode":"proxy","max_results":7}"#,
+    ] {
+        let body = format!(
+            r#"{{"name":"Valid","config":{{"model":"m","tool_search":{{"config":{config},"groups":{{}}}}}}}}"#
+        );
+        let output = binary(&["agents", "create", "--body", &body, "--dry-run"]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+}

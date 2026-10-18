@@ -129,6 +129,7 @@ pub mod assets_api;
 pub mod auth_api;
 pub mod connections_api;
 pub mod default_api;
+pub mod desktop_assistance_api;
 pub mod environments_api;
 pub mod findings_api;
 pub mod memories_api;

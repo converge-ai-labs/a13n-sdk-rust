@@ -151,6 +151,14 @@ pub struct AgentOverrideOutput {
     pub subagents: Option<Option<serde_json::Value>>,
 
     #[serde(
+        rename = "tool_search",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub tool_search: Option<Option<Box<models::ToolSearch>>>,
+
+    #[serde(
         rename = "toolsets",
         default,
         with = "::serde_with::rust::double_option",
@@ -180,6 +188,7 @@ impl AgentOverrideOutput {
             skill_sync: None,
             skills: None,
             subagents: None,
+            tool_search: None,
             toolsets: None,
         }
     }

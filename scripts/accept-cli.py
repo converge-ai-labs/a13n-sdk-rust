@@ -151,7 +151,7 @@ def offline(source: Path) -> None:
 
         def serve() -> None:
             try:
-                for _ in range(48):
+                for _ in range(50):
                     connection, _ = listener.accept()
                     with connection:
                         connection.settimeout(5)
@@ -185,6 +185,8 @@ def offline(source: Path) -> None:
                                 "request_id": None,
                             }
                         }
+                        if path in {"/api/v1/usage/context?record_id=record", "/api/v1/runs/r/desktop-control"}:
+                            status, response = 200, None
                         if path.startswith("/api/v1/model-providers/"):
                             status = 200
                             response = {"provider_id": "p", "state": "disconnected"}
@@ -586,8 +588,10 @@ def offline(source: Path) -> None:
             '{"permission_ceiling":{"operations":[]}}',
         )
         assert captured[-1][2] == {"permission_ceiling": {"operations": []}}
+        assert execute("usage", "context", "get", "--record-id", "record") is None
+        assert execute("runs", "desktop-control", "get", "--run", "r") is None
         server.join(timeout=12)
-        assert not server.is_alive() and not failures and len(captured) == 48, (
+        assert not server.is_alive() and not failures and len(captured) == 50, (
             "Copied CLI offline server did not complete"
         )
     print(
@@ -734,6 +738,48 @@ def main() -> None:
         assert json.loads(no_auth.stderr)["error"]["status"] == 401
         call("readyz", "get", status=200)
         original = call("agents", "get", agent, status=200)
+        model_key = required("A13N_MODEL_KEY")
+        for branch in [
+            {
+                "mode": "proxy",
+                "search_name": "find_grouped_tools",
+                "call_name": "invoke_grouped_tool",
+                "max_results": 7,
+            },
+            {"mode": "native"},
+            {"mode": "native", "strategy": None},
+            {"mode": "native", "strategy": "regex"},
+        ]:
+            configured = call(
+                "agents",
+                "create",
+                body={
+                    "name": "CLI ToolSearch",
+                    "config": {"model": model_key, "tool_search": {"config": branch, "groups": {}}},
+                },
+            )["data"]
+            revision = call(
+                "agents", "revisions", "get", configured["default_revision_id"], "--agent", configured["id"]
+            )["data"]
+            saved = revision["config"]["tool_search"]
+            assert saved["groups"] == {} and all(saved["config"][key] == value for key, value in branch.items())
+        record = os.environ.get("A13N_MODEL_RECORD")
+        if record:
+            context = call("usage", "context", "get", "--record-id", record, status=200)["data"]
+            assert context["input_tokens"] is not None and context["output_tokens"] is not None
+            assert context["context_window_tokens"] is None
+            run = call("runs", "get", context["run_id"])["data"]
+            for selector, value in [("--run-id", run["id"]), ("--thread-id", run["thread_id"])]:
+                assert call("usage", "context", "get", selector, value, status=200)["data"] == context
+            assert call("runs", "desktop-control", "get", "--run", run["id"], status=200)["data"] is None
+            for arguments, status in [
+                ([], 400),
+                (["--run-id", run["id"], "--record-id", record], 400),
+                (["--run-id", "run_" + "0" * 24], 404),
+            ]:
+                error = execute("--error-format", "json", "usage", "context", "get", *arguments, success=False)
+                assert json.loads(error.stderr)["error"]["status"] == status
+        print("Copied CLI HTTPS ToolSearch revisions, context selectors and absent desktop metadata passed", flush=True)
         initial_etag = read_etag(original)
         description = f"CLI acceptance {uuid.uuid4()}"
         changed = call(
@@ -1369,6 +1415,7 @@ def main() -> None:
                 body={"agent_id": agent, "payload": payload(failure_prompt)},
             )["data"]
             assert call("runs", "wait", failed["run"]["id"])["data"]["status"] == "failed"
+            assert call("usage", "context", "get", "--run-id", failed["run"]["id"], status=200)["data"] is None
             history_followup(failed["thread"]["id"], failed["run"]["id"])
             print("Copied CLI verified HTTPS: failed last sealed history with normal message successor", flush=True)
         else:

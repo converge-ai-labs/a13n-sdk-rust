@@ -102,6 +102,14 @@ pub struct AgentConfigInput {
     #[serde(rename = "subagents", skip_serializing_if = "Option::is_none")]
     pub subagents: Option<serde_json::Value>,
 
+    #[serde(
+        rename = "tool_search",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub tool_search: Option<Option<Box<models::ToolSearch>>>,
+
     #[serde(rename = "toolsets", skip_serializing_if = "Option::is_none")]
     pub toolsets: Option<std::collections::HashMap<String, models::ToolsetSelection>>,
 
@@ -133,6 +141,7 @@ impl AgentConfigInput {
             skills: None,
             subagent_mode: None,
             subagents: None,
+            tool_search: None,
             toolsets: None,
             user_questions: None,
         }

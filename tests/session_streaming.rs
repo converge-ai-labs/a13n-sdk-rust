@@ -315,3 +315,35 @@ async fn session_default_accepts_large_native_snapshots_and_callers_can_bound_fr
     );
     assert!(bounded.next().await.unwrap().is_none());
 }
+
+#[tokio::test]
+async fn session_desktop_wait_preserves_pending_snapshot_without_control() {
+    let mut run = sample("RunView");
+    run["status"] = json!("waiting");
+    run["wait_reason"] = json!("desktop_control");
+    run["pending"] = json!({"approvals":[],"calls":[],"desktop_control_id":"desktop"});
+    let mut snapshot = thread();
+    snapshot["current_run"] = run;
+    let body = frame("thread", snapshot.clone());
+    let mut fixture = server(move |_| Reply::sse(&body)).await;
+    let sdk = client(&fixture);
+    let mut reader = SessionStream::open(sdk.api().sessions().at("s"), Default::default())
+        .await
+        .unwrap();
+    let Some(SessionFrame::Thread(value)) = reader.next().await.unwrap() else {
+        panic!("thread")
+    };
+    assert_eq!(serde_json::to_value(&value).unwrap(), snapshot);
+    let run = value.current_run.unwrap();
+    assert_eq!(
+        run.wait_reason,
+        Some(a13n::generated::models::WaitReason::DesktopControl)
+    );
+    assert_eq!(
+        run.pending.unwrap().desktop_control_id,
+        Some(Some("desktop".into()))
+    );
+    reader.close();
+    assert_eq!(fixture.requests.recv().await.unwrap().method, "GET");
+    assert!(fixture.requests.try_recv().is_err());
+}

@@ -73,7 +73,7 @@ pub async fn context_usage_api_v1_usage_context_get(
     run_id: Option<&str>,
     record_id: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ContextUsage>, Error<ContextUsageApiV1UsageContextGetError>> {
+) -> Result<Response<Option<models::ContextUsage>>, Error<ContextUsageApiV1UsageContextGetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_thread_id = thread_id;
     let p_query_run_id = run_id;

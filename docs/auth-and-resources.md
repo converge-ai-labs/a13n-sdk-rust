@@ -107,3 +107,40 @@ Only after the user completes a manual flow, submit `models::AuthorizationCallba
 `runs().at(run).attempts().at(attempt).get(...)` reads one authorized Attempt; the Attempt list is not paginated. Charged `RunView.attempts` may differ from the number of Attempt records. Required nullable fields remain present even when no start, finish or failure exists.
 
 `client.api().usage().get(...)` includes per-Run model aggregates in `runs`. `usage().records().at(record).metrics().get(...)` reads one known model request's nullable TTFC, complete request duration and output tokens/sec. Zero is a measured zero; null means no eligible timing. Service computes speed over full request time, including first-chunk wait and non-streaming calls, and owns aggregation and late usage. There is no SDK-side metrics calculation or native record-list discovery operation.
+
+## Configure tool discovery and read context usage
+
+Tool search presents already-selected sources. `ToolSearchConfig::Proxy` selects named proxy tools; `Native` selects provider-native discovery. Native `strategy` preserves omission, explicit null and `bm25`/`regex`. The closed branch types reject hybrid proxy/native fields when decoding. Service validates numeric bounds and source selections; the SDK executes no discovery itself. In a Run override, `tool_search` replaces the whole block: omitted/null retains the Agent revision; `groups: {}` disables grouping.
+
+This complete example constructs an explicit native override and reads one existing Run's context contribution. Set `A13N_RUN_ID` in addition to the usual URL/token. The override is serialized locally for inspection; the read is the only remote operation.
+
+```rust
+use a13n::{Client, Secret, Overrides, ToolSearch, ToolSearchConfig, NativeToolSearchConfig};
+use a13n::resources::UsageContextGetOptions;
+use std::{env, error::Error};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    let search = ToolSearch {
+        config: Some(Box::new(ToolSearchConfig::Native(Box::new(NativeToolSearchConfig {
+            strategy: Some(None), ..Default::default()
+        })))),
+        groups: Some(Default::default()),
+    };
+    let overrides = Overrides::new().tool_search(Some(search));
+    assert_eq!(serde_json::to_value(overrides)?["tool_search"]["groups"], serde_json::json!({}));
+    let client = Client::new(&env::var("A13N_SERVICE_URL")?, Secret::new(env::var("A13N_API_TOKEN")?))?;
+    let response = client.api().usage().context().get(UsageContextGetOptions {
+        run_id: Some(env::var("A13N_RUN_ID")?), ..Default::default()
+    }).await?;
+    println!("HTTP {}, request {:?}", response.status, response.request_id());
+    match response.data {
+        None => println!("No completed model contribution"),
+        Some(usage) => println!("Run {} record {}: input {:?}, output {:?}, window {:?}",
+            usage.run_id, usage.record_id, usage.input_tokens, usage.output_tokens, usage.context_window_tokens),
+    }
+    Ok(())
+}
+```
+
+Add `serde_json = "1"` to the source-installed application. Supply exactly one of `thread_id`, `run_id` or `record_id`; Service rejects missing/multiple selectors. Thread/Run selects the latest eligible completed root-agent generation, not a pending prompt estimate or aggregate. A successful JSON null means no matching contribution; object token/window fields remain independently nullable and zero stays zero. Unknown/missing resources remain API errors. The SDK derives no ratio, billing total or synthetic context capacity.

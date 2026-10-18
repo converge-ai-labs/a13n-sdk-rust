@@ -20,6 +20,8 @@ pub enum WaitReason {
     Call,
     #[serde(rename = "multiple")]
     Multiple,
+    #[serde(rename = "desktop_control")]
+    DesktopControl,
 }
 
 impl std::fmt::Display for WaitReason {
@@ -28,6 +30,7 @@ impl std::fmt::Display for WaitReason {
             Self::Approval => write!(f, "approval"),
             Self::Call => write!(f, "call"),
             Self::Multiple => write!(f, "multiple"),
+            Self::DesktopControl => write!(f, "desktop_control"),
         }
     }
 }

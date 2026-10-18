@@ -81,6 +81,8 @@ pub enum EnvironmentAction {
     EnvironmentComputerDescribe,
     #[serde(rename = "environment.computer.observe")]
     EnvironmentComputerObserve,
+    #[serde(rename = "environment.computer.zoom")]
+    EnvironmentComputerZoom,
     #[serde(rename = "environment.computer.click")]
     EnvironmentComputerClick,
     #[serde(rename = "environment.computer.move")]
@@ -131,6 +133,7 @@ impl std::fmt::Display for EnvironmentAction {
             Self::EnvironmentStateRestore => write!(f, "environment.state.restore"),
             Self::EnvironmentComputerDescribe => write!(f, "environment.computer.describe"),
             Self::EnvironmentComputerObserve => write!(f, "environment.computer.observe"),
+            Self::EnvironmentComputerZoom => write!(f, "environment.computer.zoom"),
             Self::EnvironmentComputerClick => write!(f, "environment.computer.click"),
             Self::EnvironmentComputerMove => write!(f, "environment.computer.move"),
             Self::EnvironmentComputerDrag => write!(f, "environment.computer.drag"),
