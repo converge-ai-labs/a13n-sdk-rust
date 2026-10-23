@@ -728,6 +728,10 @@ impl<'a> ServiceResources<'a> {
     pub fn devices(&self) -> DevicesResource<'a> {
         DevicesResource(self.0.clone())
     }
+    /// Access `environment-provider-options` locally, sharing the client and explicit scope.
+    pub fn environment_provider_options(&self) -> EnvironmentProviderOptionsResource<'a> {
+        EnvironmentProviderOptionsResource(self.0.clone())
+    }
     /// Access `environment-providers` locally, sharing the client and explicit scope.
     pub fn environment_providers(&self) -> EnvironmentProvidersResource<'a> {
         EnvironmentProvidersResource(self.0.clone())
@@ -3650,6 +3654,45 @@ impl<'a> DeviceMetricsResource<'a> {
         let mut request = self.0.client.request(
             reqwest::Method::POST,
             "/api/v1/devices/{device_id}/metrics/query",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct EnvironmentProviderOptionsResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`EnvironmentProviderOptionsResource::vercel`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct EnvironmentProviderOptionsVercelOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> EnvironmentProviderOptionsResource<'a> {
+    /// Vercel Provider Options.
+    ///
+    /// `POST /api/v1/environment-provider-options/vercel`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn vercel(
+        &self,
+        body: &models::VercelOptionsRequest,
+        options: EnvironmentProviderOptionsVercelOptions,
+    ) -> Result<Response<models::VercelOptions>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/environment-provider-options/vercel",
             &self.0.ids,
         )?;
         request = self
@@ -16357,6 +16400,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/devices/{device_id}/metrics/query",
         "DeviceMetricsResource",
         "query",
+    ),
+    (
+        "POST",
+        "/api/v1/environment-provider-options/vercel",
+        "EnvironmentProviderOptionsResource",
+        "vercel",
     ),
     (
         "GET",
