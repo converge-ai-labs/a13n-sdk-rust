@@ -14,6 +14,16 @@ use serde::{Deserialize, Serialize};
 /// ExecutionOverride : Sparse choices: null inherits; Thread PATCH distinguishes omission from null.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ExecutionOverride {
+    /// Default variables for Agent commands. Ordinary readable configuration, not secret storage. Command variables override these defaults.
+
+    #[serde(
+        rename = "environment",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub environment: Option<Option<std::collections::HashMap<String, String>>>,
+
     #[serde(
         rename = "steering",
         default,
@@ -35,6 +45,7 @@ impl ExecutionOverride {
     /// Sparse choices: null inherits; Thread PATCH distinguishes omission from null.
     pub fn new() -> ExecutionOverride {
         ExecutionOverride {
+            environment: None,
             steering: None,
             tools: None,
         }

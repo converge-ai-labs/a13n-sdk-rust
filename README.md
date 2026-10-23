@@ -87,3 +87,5 @@ Before 0.1, migrate `client.resources()` calls to `client.api()`; the old access
 ## Develop this checkout
 
 Use Rust 1.97.0, Python 3.13, uv and Make. `make generate` reads the locally pinned contract and regenerates SDK/CLI-owned code; `make check-all` checks code, tests, packaging, the independent extracted-crate consumer and CLI. Local checks do not publish anything or prove live Service compatibility. Licensed under Apache-2.0.
+
+See [Execution options and migration](docs/execution-and-migration.md) for scoped command variables and compatibility notes.

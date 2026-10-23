@@ -3615,13 +3615,12 @@ pub async fn read_run_item_content(
     }
 }
 
-/// Locate a span in bounded backend pages. Follow next_cursor when empty. Once found, retain that request's cursor while continuing fragments with version and next_offset.
+/// Read a fragment of one span's content. The backend is queried for that span alone; items is empty when the trace has no such span. Continue fragments with version and next_offset.
 pub async fn read_span_content(
     configuration: &configuration::Configuration,
     trace_id: &str,
     span_id: &str,
     section: Option<&str>,
-    cursor: Option<&str>,
     offset: Option<i32>,
     limit: Option<i32>,
     version: Option<&str>,
@@ -3632,7 +3631,6 @@ pub async fn read_span_content(
     let p_path_trace_id = trace_id;
     let p_path_span_id = span_id;
     let p_query_section = section;
-    let p_query_cursor = cursor;
     let p_query_offset = offset;
     let p_query_limit = limit;
     let p_query_version = version;
@@ -3649,9 +3647,6 @@ pub async fn read_span_content(
 
     if let Some(ref param_value) = p_query_section {
         req_builder = req_builder.query(&[("section", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_cursor {
-        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
     }
     if let Some(ref param_value) = p_query_offset {
         req_builder = req_builder.query(&[("offset", &param_value.to_string())]);

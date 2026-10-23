@@ -516,7 +516,7 @@ async fn waits_use_exact_identity_and_cancel_requests_and_sleeps() {
                 .await
                 .unwrap()
                 .target
-                .ends_with("/runs/exact")
+                .ends_with("/runs/exact?view=detailed")
         );
     }
     for _ in 0..2 {
@@ -527,7 +527,7 @@ async fn waits_use_exact_identity_and_cancel_requests_and_sleeps() {
                 .await
                 .unwrap()
                 .target
-                .ends_with("/inbox/e")
+                .ends_with("/inbox/e?view=detailed")
         );
     }
     let mut hung = common::server(|_| {

@@ -3441,7 +3441,7 @@ fn group_383() -> Command {
     node
 }
 fn operation_274() -> Command {
-    Command::new("list").about("Read Span Content").long_about("Locate a span in bounded backend pages. Follow next_cursor when empty. Once found, retain that request's\ncursor while continuing fragments with version and next_offset. (GET /api/v1/traces/{trace_id}/spans/{span_id}/content). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli traces spans content list --trace TRACE_ID --span SPAN_ID").arg(Arg::new("trace_id").long("trace").required_unless_present_any(["schema", "example"])).arg(Arg::new("span_id").long("span").required_unless_present_any(["schema", "example"])).arg(Arg::new("section").long("section").value_parser(["all", "input", "output", "attributes", "resource_attributes", "events", "links", "usage"])).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("offset").long("offset").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 0) { Ok(s.to_owned()) } else { Err("expected integer >= 0".into()) } }))).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("version").long("version")).arg(Arg::new("query").long("query")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("Read Span Content").long_about("Read a fragment of one span's content. The backend is queried for that span alone; items is empty when the\ntrace has no such span. Continue fragments with version and next_offset. (GET /api/v1/traces/{trace_id}/spans/{span_id}/content). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli traces spans content list --trace TRACE_ID --span SPAN_ID").arg(Arg::new("trace_id").long("trace").required_unless_present_any(["schema", "example"])).arg(Arg::new("span_id").long("span").required_unless_present_any(["schema", "example"])).arg(Arg::new("section").long("section").value_parser(["all", "input", "output", "attributes", "resource_attributes", "events", "links", "usage"])).arg(Arg::new("offset").long("offset").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 0) { Ok(s.to_owned()) } else { Err("expected integer >= 0".into()) } }))).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("version").long("version")).arg(Arg::new("query").long("query")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_385() -> Command {
     let mut node = Command::new("uploads")
@@ -8100,38 +8100,22 @@ pub async fn dispatch(
         274 => {
             let options = TraceSpanContentListOptions {
                 section: input::optional(matches, "section")?,
-                cursor: input::optional(matches, "cursor")?,
                 offset: input::optional(matches, "offset")?,
                 limit: input::optional(matches, "limit")?,
                 version: input::optional(matches, "version")?,
                 query: input::optional(matches, "query")?,
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
-            if matches.get_flag("all") {
-                output::pages(
-                    client
-                        .api()
-                        .traces()
-                        .at(required(matches, "trace_id")?)
-                        .spans()
-                        .at(required(matches, "span_id")?)
-                        .content()
-                        .pages(options),
-                    config,
-                )
-                .await
-            } else {
-                let response = client
-                    .api()
-                    .traces()
-                    .at(required(matches, "trace_id")?)
-                    .spans()
-                    .at(required(matches, "span_id")?)
-                    .content()
-                    .list(options)
-                    .await?;
-                output::response(response, config).await
-            }
+            let response = client
+                .api()
+                .traces()
+                .at(required(matches, "trace_id")?)
+                .spans()
+                .at(required(matches, "span_id")?)
+                .content()
+                .list(options)
+                .await?;
+            output::response(response, config).await
         }
         275 => {
             let file = input::upload(matches).await?;

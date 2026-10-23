@@ -86,7 +86,13 @@ impl Entry {
     }
     /// Read the complete entry, retaining the HTTP response evidence.
     pub async fn get(&self) -> Result<Response<models::EntryView>, Error> {
-        let response = self.resource().get(EntryGetOptions::default()).await?;
+        let response = self
+            .resource()
+            .get(EntryGetOptions {
+                view: Some("detailed".into()),
+                ..Default::default()
+            })
+            .await?;
         let models::ResponseGetInboxEntry::AnyOf0(data) = response.data else {
             return Err(invalid(&response));
         };
@@ -136,7 +142,13 @@ impl Run {
     }
     /// Read the complete run; list metadata cannot satisfy an exact run observation.
     pub async fn get(&self) -> Result<Response<models::RunView>, Error> {
-        let response = self.resource().get(RunGetOptions::default()).await?;
+        let response = self
+            .resource()
+            .get(RunGetOptions {
+                view: Some("detailed".into()),
+                ..Default::default()
+            })
+            .await?;
         let models::ResponseGetRun::AnyOf0(data) = response.data else {
             return Err(invalid(&response));
         };

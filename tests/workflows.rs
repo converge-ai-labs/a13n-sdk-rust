@@ -199,10 +199,23 @@ async fn native_api_and_authored_workflow_share_client_auth_and_shutdown() {
     let mut fixture = server(|request| {
         if request.method == "POST" {
             Reply::json(201, receipt())
-        } else if request.target.ends_with("/inbox/e") {
+        } else if request
+            .target
+            .split('?')
+            .next()
+            .unwrap()
+            .ends_with("/inbox/e")
+        {
             Reply::json(200, entry("consumed", Some("r")))
         } else {
-            assert!(request.target.ends_with("/runs/r"));
+            assert!(
+                request
+                    .target
+                    .split('?')
+                    .next()
+                    .unwrap()
+                    .ends_with("/runs/r")
+            );
             Reply::json(200, run("r", "completed", json!("same client")))
         }
     })
@@ -258,7 +271,14 @@ async fn direct_output_preserves_all_json_values_and_never_reads_items() {
     ] {
         let expected = output.clone();
         let mut fixture = server(move |request| {
-            assert!(request.target.ends_with("/runs/r"));
+            assert!(
+                request
+                    .target
+                    .split('?')
+                    .next()
+                    .unwrap()
+                    .ends_with("/runs/r")
+            );
             Reply::json(200, run("r", "completed", output.clone()))
         })
         .await;
@@ -282,7 +302,13 @@ async fn identity_recovery_is_local_and_only_consumption_binds_authority() {
     let count = Arc::new(AtomicUsize::new(0));
     let calls = count.clone();
     let mut fixture = server(move |request| {
-        if request.target.ends_with("/inbox/e") {
+        if request
+            .target
+            .split('?')
+            .next()
+            .unwrap()
+            .ends_with("/inbox/e")
+        {
             return Reply::json(
                 200,
                 match calls.fetch_add(1, Ordering::SeqCst) {
@@ -292,7 +318,14 @@ async fn identity_recovery_is_local_and_only_consumption_binds_authority() {
                 },
             );
         }
-        assert!(request.target.ends_with("/runs/r"));
+        assert!(
+            request
+                .target
+                .split('?')
+                .next()
+                .unwrap()
+                .ends_with("/runs/r")
+        );
         Reply::json(200, run("r", "waiting", Value::Null))
     })
     .await;
@@ -328,7 +361,13 @@ async fn identity_recovery_is_local_and_only_consumption_binds_authority() {
 #[tokio::test]
 async fn one_deadline_covers_queue_run_and_repeated_result_without_reset() {
     let fixture = server(|request| {
-        let mut reply = if request.target.ends_with("/inbox/e") {
+        let mut reply = if request
+            .target
+            .split('?')
+            .next()
+            .unwrap()
+            .ends_with("/inbox/e")
+        {
             Reply::json(200, entry("consumed", Some("r")))
         } else {
             Reply::json(200, run("r", "completed", json!("done")))
@@ -630,7 +669,13 @@ async fn owned_handles_survive_clone_drop_and_explicit_close_is_shared_and_task_
         if request.method == "POST" {
             return Reply::json(201, receipt());
         }
-        if request.target.ends_with("/inbox/e") {
+        if request
+            .target
+            .split('?')
+            .next()
+            .unwrap()
+            .ends_with("/inbox/e")
+        {
             return Reply::json(200, entry("consumed", Some("r")));
         }
         Reply::json(200, run("r", "running", Value::Null))
@@ -661,7 +706,13 @@ async fn fork_exposes_public_input_options_and_normal_entry_incorporation() {
         if request.method == "POST" {
             return Reply::json(201, receipt());
         }
-        if request.target.ends_with("/inbox/e") {
+        if request
+            .target
+            .split('?')
+            .next()
+            .unwrap()
+            .ends_with("/inbox/e")
+        {
             return Reply::json(200, entry("consumed", Some("r")));
         }
         Reply::json(200, run("r", "completed", json!("forked")))
@@ -713,7 +764,13 @@ async fn preview_filters_child_hidden_foreign_and_unrelated_custom_without_false
     }
     wire.insert_str(0, &format!("event: delta\nid: 0-0\ndata: {}\n\n",json!({"run_id":"foreign","attempt":90,"sequence":1000,"event":text_content("missing","foreign"),"item":null})));
     let fixture = server(move |request| {
-        if request.target.ends_with("/inbox/e") {
+        if request
+            .target
+            .split('?')
+            .next()
+            .unwrap()
+            .ends_with("/inbox/e")
+        {
             return Reply::json(200, entry("consumed", Some("r")));
         }
         if request.target.ends_with("/stream") {
@@ -777,7 +834,13 @@ async fn preview_interruptions_are_typed_sticky_and_keep_result_and_sequential_r
                 json!({"type":"CUSTOM","name":"raw-after-interruption","value":false}),
             );
         let fixture = server(move |request| {
-            if request.target.ends_with("/inbox/e") {
+            if request
+                .target
+                .split('?')
+                .next()
+                .unwrap()
+                .ends_with("/inbox/e")
+            {
                 return Reply::json(200, entry("consumed", Some("r")));
             }
             if request.target.ends_with("/stream") {
@@ -811,7 +874,13 @@ async fn late_covered_checkpoint_does_not_regress_dense_preview_coordinate() {
         + "event: boundary\nid: 20-0\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":1}\n\n"
         + &delta(3, text_content("m", "B"));
     let fixture = server(move |request| {
-        if request.target.ends_with("/inbox/e") {
+        if request
+            .target
+            .split('?')
+            .next()
+            .unwrap()
+            .ends_with("/inbox/e")
+        {
             return Reply::json(200, entry("consumed", Some("r")));
         }
         if request.target.ends_with("/stream") {
@@ -891,7 +960,13 @@ async fn boundary_at_high_water_continues_but_ahead_boundary_cannot_heal_missing
             )
             + &delta(3, text_content("m", "B"));
         let fixture = server(move |request| {
-            if request.target.ends_with("/inbox/e") {
+            if request
+                .target
+                .split('?')
+                .next()
+                .unwrap()
+                .ends_with("/inbox/e")
+            {
                 return Reply::json(200, entry("consumed", Some("r")));
             }
             if request.target.ends_with("/stream") {

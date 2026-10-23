@@ -99,6 +99,7 @@ impl RunOptions {
         self.0.configuration = Some(value.map(|v| Box::new(v.0)));
         self
     }
+    /// Omission inherits; `None` transmits an explicit null.
     pub fn execution(mut self, value: Option<models::ExecutionOverride>) -> Self {
         self.0.execution = Some(value.map(Box::new));
         self
