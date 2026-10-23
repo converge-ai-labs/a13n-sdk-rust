@@ -11,14 +11,10 @@ fn roundtrip<T: DeserializeOwned + Serialize>(value: Value) {
 }
 
 #[test]
-fn tool_search_native_proxy_and_override_presence_are_lossless() {
+fn tool_search_proxy_and_override_presence_are_lossless() {
     for config in [
         json!({"mode":"proxy"}),
         json!({"mode":"proxy","search_name":"find","call_name":"call","max_results":7,"max_search_bytes":2048}),
-        json!({"mode":"native"}),
-        json!({"mode":"native","strategy":null}),
-        json!({"mode":"native","strategy":"bm25"}),
-        json!({"mode":"native","strategy":"regex"}),
     ] {
         roundtrip::<m::ToolSearchConfig>(config.clone());
         let tool_search = json!({"config":config,"groups":{}});
@@ -40,12 +36,12 @@ fn tool_search_native_proxy_and_override_presence_are_lossless() {
         json!({"tool_search":null})
     );
     let selected = m::ToolSearch {
-        config: Some(Box::new(m::ToolSearchConfig::Native(Box::default()))),
+        config: Some(Box::default()),
         groups: Some(Default::default()),
     };
     assert_eq!(
         serde_json::to_value(Overrides::new().tool_search(Some(selected))).unwrap(),
-        json!({"tool_search":{"config":{"mode":"native"},"groups":{}}})
+        json!({"tool_search":{"config":{},"groups":{}}})
     );
     roundtrip::<m::ToolSearch>(
         json!({"groups":{"work":{"description":"Selected sources","connections":[],"plugins":[],"platform":false}}}),
@@ -55,7 +51,7 @@ fn tool_search_native_proxy_and_override_presence_are_lossless() {
 #[test]
 fn invalid_tool_search_union_is_rejected_at_typed_boundary() {
     for config in [
-        json!({}),
+        json!({"mode":"native"}),
         json!({"strategy":"regex"}),
         json!({"mode":null}),
         json!({"mode":"future"}),
@@ -209,24 +205,17 @@ async fn generated_native_nullable_responses_still_reject_invalid_json_and_nonnu
         base_path: fixture.url.clone(),
         ..Default::default()
     };
-    let response =
-        usage_api::context_usage_api_v1_usage_context_get(&config, None, None, Some("none"), None)
-            .await
-            .unwrap();
+    let response = usage_api::context_usage(&config, None, None, Some("none"), None)
+        .await
+        .unwrap();
     assert_eq!(response.status, 200);
     assert_eq!(response.headers["x-request-id"], "req_test");
     assert!(response.data.is_none());
     for record in ["empty", "bad"] {
         assert!(
-            usage_api::context_usage_api_v1_usage_context_get(
-                &config,
-                None,
-                None,
-                Some(record),
-                None
-            )
-            .await
-            .is_err()
+            usage_api::context_usage(&config, None, None, Some(record), None)
+                .await
+                .is_err()
         );
     }
     let sdk = client(&fixture);

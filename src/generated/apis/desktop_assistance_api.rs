@@ -13,87 +13,93 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`complete_assistance_api_v1_desktop_assistance_assistance_id_complete_post`]
+/// struct for typed errors of method [`complete_assistance`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CompleteAssistanceApiV1DesktopAssistanceAssistanceIdCompletePostError {
+pub enum CompleteAssistanceError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`control_desktop_api_v1_desktop_assistance_assistance_id_control_post`]
+/// struct for typed errors of method [`control_desktop`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ControlDesktopApiV1DesktopAssistanceAssistanceIdControlPostError {
+pub enum ControlDesktopError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`disconnect_desktop_api_v1_desktop_assistance_assistance_id_disconnect_post`]
+/// struct for typed errors of method [`disconnect_desktop`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DisconnectDesktopApiV1DesktopAssistanceAssistanceIdDisconnectPostError {
+pub enum DisconnectDesktopError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_assistance_api_v1_runs_run_id_desktop_assistance_call_id_get`]
+/// struct for typed errors of method [`get_assistance`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAssistanceApiV1RunsRunIdDesktopAssistanceCallIdGetError {
+pub enum GetAssistanceError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_control_api_v1_runs_run_id_desktop_control_get`]
+/// struct for typed errors of method [`get_control`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetControlApiV1RunsRunIdDesktopControlGetError {
+pub enum GetControlError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`open_control_api_v1_runs_run_id_desktop_control_post`]
+/// struct for typed errors of method [`open_control`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum OpenControlApiV1RunsRunIdDesktopControlPostError {
+pub enum OpenControlError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`request_control_api_v1_desktop_assistance_assistance_id_request_control_post`]
+/// struct for typed errors of method [`open_view`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RequestControlApiV1DesktopAssistanceAssistanceIdRequestControlPostError {
+pub enum OpenViewError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`view_desktop_api_v1_desktop_assistance_assistance_id_view_post`]
+/// struct for typed errors of method [`request_control`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ViewDesktopApiV1DesktopAssistanceAssistanceIdViewPostError {
+pub enum RequestControlError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn complete_assistance_api_v1_desktop_assistance_assistance_id_complete_post(
+/// struct for typed errors of method [`view_desktop`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ViewDesktopError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+pub async fn complete_assistance(
     configuration: &configuration::Configuration,
     assistance_id: &str,
     completion: models::Completion,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::View>,
-    Error<CompleteAssistanceApiV1DesktopAssistanceAssistanceIdCompletePostError>,
-> {
+) -> Result<Response<models::View>, Error<CompleteAssistanceError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_assistance_id = assistance_id;
     let p_body_completion = completion;
@@ -162,8 +168,7 @@ pub async fn complete_assistance_api_v1_desktop_assistance_assistance_id_complet
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CompleteAssistanceApiV1DesktopAssistanceAssistanceIdCompletePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CompleteAssistanceError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -173,16 +178,13 @@ pub async fn complete_assistance_api_v1_desktop_assistance_assistance_id_complet
     }
 }
 
-pub async fn control_desktop_api_v1_desktop_assistance_assistance_id_control_post(
+pub async fn control_desktop(
     configuration: &configuration::Configuration,
     assistance_id: &str,
     control: models::Control,
     renew: Option<bool>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::Access>,
-    Error<ControlDesktopApiV1DesktopAssistanceAssistanceIdControlPostError>,
-> {
+) -> Result<Response<models::Access>, Error<ControlDesktopError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_assistance_id = assistance_id;
     let p_body_control = control;
@@ -255,8 +257,7 @@ pub async fn control_desktop_api_v1_desktop_assistance_assistance_id_control_pos
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ControlDesktopApiV1DesktopAssistanceAssistanceIdControlPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ControlDesktopError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -266,15 +267,12 @@ pub async fn control_desktop_api_v1_desktop_assistance_assistance_id_control_pos
     }
 }
 
-pub async fn disconnect_desktop_api_v1_desktop_assistance_assistance_id_disconnect_post(
+pub async fn disconnect_desktop(
     configuration: &configuration::Configuration,
     assistance_id: &str,
     control: models::Control,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::View>,
-    Error<DisconnectDesktopApiV1DesktopAssistanceAssistanceIdDisconnectPostError>,
-> {
+) -> Result<Response<models::View>, Error<DisconnectDesktopError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_assistance_id = assistance_id;
     let p_body_control = control;
@@ -343,8 +341,7 @@ pub async fn disconnect_desktop_api_v1_desktop_assistance_assistance_id_disconne
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<DisconnectDesktopApiV1DesktopAssistanceAssistanceIdDisconnectPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DisconnectDesktopError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -354,13 +351,12 @@ pub async fn disconnect_desktop_api_v1_desktop_assistance_assistance_id_disconne
     }
 }
 
-pub async fn get_assistance_api_v1_runs_run_id_desktop_assistance_call_id_get(
+pub async fn get_assistance(
     configuration: &configuration::Configuration,
     run_id: &str,
     call_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::View>, Error<GetAssistanceApiV1RunsRunIdDesktopAssistanceCallIdGetError>>
-{
+) -> Result<Response<models::View>, Error<GetAssistanceError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_run_id = run_id;
     let p_path_call_id = call_id;
@@ -419,8 +415,7 @@ pub async fn get_assistance_api_v1_runs_run_id_desktop_assistance_call_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetAssistanceApiV1RunsRunIdDesktopAssistanceCallIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetAssistanceError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -430,11 +425,11 @@ pub async fn get_assistance_api_v1_runs_run_id_desktop_assistance_call_id_get(
     }
 }
 
-pub async fn get_control_api_v1_runs_run_id_desktop_control_get(
+pub async fn get_control(
     configuration: &configuration::Configuration,
     run_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<Option<models::View>>, Error<GetControlApiV1RunsRunIdDesktopControlGetError>> {
+) -> Result<Response<Option<models::View>>, Error<GetControlError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_run_id = run_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -491,8 +486,7 @@ pub async fn get_control_api_v1_runs_run_id_desktop_control_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetControlApiV1RunsRunIdDesktopControlGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetControlError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -502,12 +496,12 @@ pub async fn get_control_api_v1_runs_run_id_desktop_control_get(
     }
 }
 
-pub async fn open_control_api_v1_runs_run_id_desktop_control_post(
+pub async fn open_control(
     configuration: &configuration::Configuration,
     run_id: &str,
     request: models::Request,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::View>, Error<OpenControlApiV1RunsRunIdDesktopControlPostError>> {
+) -> Result<Response<models::View>, Error<OpenControlError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_run_id = run_id;
     let p_body_request = request;
@@ -576,8 +570,7 @@ pub async fn open_control_api_v1_runs_run_id_desktop_control_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<OpenControlApiV1RunsRunIdDesktopControlPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<OpenControlError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -587,14 +580,95 @@ pub async fn open_control_api_v1_runs_run_id_desktop_control_post(
     }
 }
 
-pub async fn request_control_api_v1_desktop_assistance_assistance_id_request_control_post(
+pub async fn open_view(
+    configuration: &configuration::Configuration,
+    run_id: &str,
+    open_view: models::OpenView,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Access>, Error<OpenViewError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_run_id = run_id;
+    let p_body_open_view = open_view;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/runs/{run_id}/desktop-control/view",
+        configuration.base_path,
+        run_id = crate::generated::apis::urlencode(p_path_run_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+    req_builder = req_builder.json(&p_body_open_view);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Access`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Access`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<OpenViewError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn request_control(
     configuration: &configuration::Configuration,
     assistance_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::View>,
-    Error<RequestControlApiV1DesktopAssistanceAssistanceIdRequestControlPostError>,
-> {
+) -> Result<Response<models::View>, Error<RequestControlError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_assistance_id = assistance_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -661,9 +735,7 @@ pub async fn request_control_api_v1_desktop_assistance_assistance_id_request_con
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            RequestControlApiV1DesktopAssistanceAssistanceIdRequestControlPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<RequestControlError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -673,16 +745,13 @@ pub async fn request_control_api_v1_desktop_assistance_assistance_id_request_con
     }
 }
 
-pub async fn view_desktop_api_v1_desktop_assistance_assistance_id_view_post(
+pub async fn view_desktop(
     configuration: &configuration::Configuration,
     assistance_id: &str,
     control: models::Control,
     renew: Option<bool>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::Access>,
-    Error<ViewDesktopApiV1DesktopAssistanceAssistanceIdViewPostError>,
-> {
+) -> Result<Response<models::Access>, Error<ViewDesktopError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_assistance_id = assistance_id;
     let p_body_control = control;
@@ -755,8 +824,7 @@ pub async fn view_desktop_api_v1_desktop_assistance_assistance_id_view_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ViewDesktopApiV1DesktopAssistanceAssistanceIdViewPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ViewDesktopError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

@@ -36,14 +36,17 @@ pub async fn run(
                 .map_err(|_| CliError::input("--set must be a JSON string-to-string map"))
         })
         .transpose()?;
-    macro_rules! read {($name:ident) => {{
-        let result = resources.$name().at(id).get(Default::default()).await?;
+    macro_rules! render {($result:expr) => {{
+        let result = $result;
         let etag = result.etag().map(str::to_owned);
         let value = serde_json::json!({"labels":result.data.labels});
         if config.include_meta {println!("{}",serde_json::json!({"data":value,"status":result.status.as_u16(),"etag":etag,"request_id":result.headers.get("x-request-id").and_then(|value|value.to_str().ok())}));}
         else {println!("{value}");if let Some(etag)=etag{eprintln!("ETag: {etag}");}}
         Ok(())
     }};}
+    macro_rules! read {
+        ($name:ident) => {{ render!(resources.$name().at(id).get(Default::default()).await?) }};
+    }
     macro_rules! update {($name:ident, $body:expr, $options:ident) => {{
         let result: Response<_> = resources.$name().at(id).update(&$body, $options {if_match:required(matches,"if_match")?.to_owned(), ..Default::default()}).await?;
         let etag = result.etag().map(str::to_owned);
@@ -97,7 +100,7 @@ pub async fn run(
         ("agent", None) => read!(agents),
         ("session", None) => read!(sessions),
         ("thread", None) => read!(threads),
-        ("run", None) => read!(runs),
+        ("run", None) => render!(client.run(id).get().await?),
         ("skill", None) => read!(skills),
         ("environment-template", None) => read!(environment_templates),
         _ => Err(CliError::input("invalid labels resource")),

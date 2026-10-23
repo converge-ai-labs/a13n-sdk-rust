@@ -13,312 +13,309 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`authorize_model_api_v1_model_providers_provider_id_authorize_post`]
+/// struct for typed errors of method [`authorize_model`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum AuthorizeModelApiV1ModelProvidersProviderIdAuthorizePostError {
+pub enum AuthorizeModelError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`complete_model_authorization_api_v1_model_providers_provider_id_authorization_callback_post`]
+/// struct for typed errors of method [`complete_model_authorization`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CompleteModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationCallbackPostError {
+pub enum CompleteModelAuthorizationError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_provider_api_v1_connector_providers_post`]
+/// struct for typed errors of method [`create_connector_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateProviderApiV1ConnectorProvidersPostError {
+pub enum CreateConnectorProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_provider_api_v1_environment_providers_post`]
+/// struct for typed errors of method [`create_environment_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateProviderApiV1EnvironmentProvidersPostError {
+pub enum CreateEnvironmentProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_provider_api_v1_memory_providers_post`]
+/// struct for typed errors of method [`create_memory_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateProviderApiV1MemoryProvidersPostError {
+pub enum CreateMemoryProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_provider_api_v1_model_providers_post`]
+/// struct for typed errors of method [`create_model_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateProviderApiV1ModelProvidersPostError {
+pub enum CreateModelProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_provider_api_v1_web_providers_post`]
+/// struct for typed errors of method [`create_web_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateProviderApiV1WebProvidersPostError {
+pub enum CreateWebProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_environment_provider_api_v1_environment_providers_provider_id_delete`]
+/// struct for typed errors of method [`delete_environment_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteEnvironmentProviderApiV1EnvironmentProvidersProviderIdDeleteError {
+pub enum DeleteEnvironmentProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`disconnect_model_authorization_api_v1_model_providers_provider_id_authorization_delete`]
+/// struct for typed errors of method [`disconnect_model_authorization`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DisconnectModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationDeleteError {
+pub enum DisconnectModelAuthorizationError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`discover_model_provider_models_api_v1_model_providers_provider_id_models_get`]
+/// struct for typed errors of method [`discover_model_provider_models`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DiscoverModelProviderModelsApiV1ModelProvidersProviderIdModelsGetError {
+pub enum DiscoverModelProviderModelsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`environment_provider_references_api_v1_environment_providers_provider_id_references_get`]
+/// struct for typed errors of method [`environment_provider_references`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum EnvironmentProviderReferencesApiV1EnvironmentProvidersProviderIdReferencesGetError {
+pub enum EnvironmentProviderReferencesError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_provider_api_v1_connector_providers_provider_id_get`]
+/// struct for typed errors of method [`get_connector_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetProviderApiV1ConnectorProvidersProviderIdGetError {
+pub enum GetConnectorProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_provider_api_v1_environment_providers_provider_id_get`]
+/// struct for typed errors of method [`get_environment_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetProviderApiV1EnvironmentProvidersProviderIdGetError {
+pub enum GetEnvironmentProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_provider_api_v1_memory_providers_provider_id_get`]
+/// struct for typed errors of method [`get_memory_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetProviderApiV1MemoryProvidersProviderIdGetError {
+pub enum GetMemoryProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_provider_api_v1_model_providers_provider_id_get`]
+/// struct for typed errors of method [`get_model_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetProviderApiV1ModelProvidersProviderIdGetError {
+pub enum GetModelProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_provider_api_v1_web_providers_provider_id_get`]
+/// struct for typed errors of method [`get_web_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetProviderApiV1WebProvidersProviderIdGetError {
+pub enum GetWebProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_provider_types_api_v1_provider_types_kind_get`]
+/// struct for typed errors of method [`list_connector_providers`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListProviderTypesApiV1ProviderTypesKindGetError {
+pub enum ListConnectorProvidersError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_providers_api_v1_connector_providers_get`]
+/// struct for typed errors of method [`list_environment_providers`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListProvidersApiV1ConnectorProvidersGetError {
+pub enum ListEnvironmentProvidersError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_providers_api_v1_environment_providers_get`]
+/// struct for typed errors of method [`list_memory_providers`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListProvidersApiV1EnvironmentProvidersGetError {
+pub enum ListMemoryProvidersError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_providers_api_v1_memory_providers_get`]
+/// struct for typed errors of method [`list_model_providers`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListProvidersApiV1MemoryProvidersGetError {
+pub enum ListModelProvidersError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_providers_api_v1_model_providers_get`]
+/// struct for typed errors of method [`list_provider_types`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListProvidersApiV1ModelProvidersGetError {
+pub enum ListProviderTypesError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_providers_api_v1_web_providers_get`]
+/// struct for typed errors of method [`list_web_providers`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListProvidersApiV1WebProvidersGetError {
+pub enum ListWebProvidersError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`model_authorization_api_v1_model_providers_provider_id_authorization_get`]
+/// struct for typed errors of method [`model_authorization`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationGetError {
+pub enum ModelAuthorizationError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`test_provider_api_v1_connector_providers_provider_id_test_post`]
+/// struct for typed errors of method [`test_connector_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum TestProviderApiV1ConnectorProvidersProviderIdTestPostError {
+pub enum TestConnectorProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`test_provider_api_v1_environment_providers_provider_id_test_post`]
+/// struct for typed errors of method [`test_environment_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum TestProviderApiV1EnvironmentProvidersProviderIdTestPostError {
+pub enum TestEnvironmentProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`test_provider_api_v1_memory_providers_provider_id_test_post`]
+/// struct for typed errors of method [`test_memory_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum TestProviderApiV1MemoryProvidersProviderIdTestPostError {
+pub enum TestMemoryProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`test_provider_api_v1_model_providers_provider_id_test_post`]
+/// struct for typed errors of method [`test_model_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum TestProviderApiV1ModelProvidersProviderIdTestPostError {
+pub enum TestModelProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`test_provider_api_v1_web_providers_provider_id_test_post`]
+/// struct for typed errors of method [`test_web_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum TestProviderApiV1WebProvidersProviderIdTestPostError {
+pub enum TestWebProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_provider_api_v1_connector_providers_provider_id_patch`]
+/// struct for typed errors of method [`update_connector_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateProviderApiV1ConnectorProvidersProviderIdPatchError {
+pub enum UpdateConnectorProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_provider_api_v1_environment_providers_provider_id_patch`]
+/// struct for typed errors of method [`update_environment_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateProviderApiV1EnvironmentProvidersProviderIdPatchError {
+pub enum UpdateEnvironmentProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_provider_api_v1_memory_providers_provider_id_patch`]
+/// struct for typed errors of method [`update_memory_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateProviderApiV1MemoryProvidersProviderIdPatchError {
+pub enum UpdateMemoryProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_provider_api_v1_model_providers_provider_id_patch`]
+/// struct for typed errors of method [`update_model_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateProviderApiV1ModelProvidersProviderIdPatchError {
+pub enum UpdateModelProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_provider_api_v1_web_providers_provider_id_patch`]
+/// struct for typed errors of method [`update_web_provider`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateProviderApiV1WebProvidersProviderIdPatchError {
+pub enum UpdateWebProviderError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn authorize_model_api_v1_model_providers_provider_id_authorize_post(
+pub async fn authorize_model(
     configuration: &configuration::Configuration,
     provider_id: &str,
     provider_authorization_request: models::ProviderAuthorizationRequest,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::AuthorizationStart>,
-    Error<AuthorizeModelApiV1ModelProvidersProviderIdAuthorizePostError>,
-> {
+) -> Result<Response<models::AuthorizationStart>, Error<AuthorizeModelError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_body_provider_authorization_request = provider_authorization_request;
@@ -387,8 +384,7 @@ pub async fn authorize_model_api_v1_model_providers_provider_id_authorize_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AuthorizeModelApiV1ModelProvidersProviderIdAuthorizePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<AuthorizeModelError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -398,15 +394,12 @@ pub async fn authorize_model_api_v1_model_providers_provider_id_authorize_post(
     }
 }
 
-pub async fn complete_model_authorization_api_v1_model_providers_provider_id_authorization_callback_post(
+pub async fn complete_model_authorization(
     configuration: &configuration::Configuration,
     provider_id: &str,
     authorization_callback: models::AuthorizationCallback,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::AuthorizationStatus>,
-    Error<CompleteModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationCallbackPostError>,
-> {
+) -> Result<Response<models::AuthorizationStatus>, Error<CompleteModelAuthorizationError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_body_authorization_callback = authorization_callback;
@@ -475,9 +468,7 @@ pub async fn complete_model_authorization_api_v1_model_providers_provider_id_aut
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            CompleteModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationCallbackPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<CompleteModelAuthorizationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -487,11 +478,11 @@ pub async fn complete_model_authorization_api_v1_model_providers_provider_id_aut
     }
 }
 
-pub async fn create_provider_api_v1_connector_providers_post(
+pub async fn create_connector_provider(
     configuration: &configuration::Configuration,
     provider_create: models::ProviderCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Provider>, Error<CreateProviderApiV1ConnectorProvidersPostError>> {
+) -> Result<Response<models::Provider>, Error<CreateConnectorProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_provider_create = provider_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -555,8 +546,7 @@ pub async fn create_provider_api_v1_connector_providers_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateProviderApiV1ConnectorProvidersPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateConnectorProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -566,11 +556,11 @@ pub async fn create_provider_api_v1_connector_providers_post(
     }
 }
 
-pub async fn create_provider_api_v1_environment_providers_post(
+pub async fn create_environment_provider(
     configuration: &configuration::Configuration,
     provider_create: models::ProviderCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Provider>, Error<CreateProviderApiV1EnvironmentProvidersPostError>> {
+) -> Result<Response<models::Provider>, Error<CreateEnvironmentProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_provider_create = provider_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -634,8 +624,7 @@ pub async fn create_provider_api_v1_environment_providers_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateProviderApiV1EnvironmentProvidersPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateEnvironmentProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -645,11 +634,11 @@ pub async fn create_provider_api_v1_environment_providers_post(
     }
 }
 
-pub async fn create_provider_api_v1_memory_providers_post(
+pub async fn create_memory_provider(
     configuration: &configuration::Configuration,
     provider_create: models::ProviderCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Provider>, Error<CreateProviderApiV1MemoryProvidersPostError>> {
+) -> Result<Response<models::Provider>, Error<CreateMemoryProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_provider_create = provider_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -713,8 +702,7 @@ pub async fn create_provider_api_v1_memory_providers_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateProviderApiV1MemoryProvidersPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateMemoryProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -724,11 +712,11 @@ pub async fn create_provider_api_v1_memory_providers_post(
     }
 }
 
-pub async fn create_provider_api_v1_model_providers_post(
+pub async fn create_model_provider(
     configuration: &configuration::Configuration,
     provider_create: models::ProviderCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Provider>, Error<CreateProviderApiV1ModelProvidersPostError>> {
+) -> Result<Response<models::Provider>, Error<CreateModelProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_provider_create = provider_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -792,8 +780,7 @@ pub async fn create_provider_api_v1_model_providers_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateProviderApiV1ModelProvidersPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateModelProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -803,11 +790,11 @@ pub async fn create_provider_api_v1_model_providers_post(
     }
 }
 
-pub async fn create_provider_api_v1_web_providers_post(
+pub async fn create_web_provider(
     configuration: &configuration::Configuration,
     provider_create: models::ProviderCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Provider>, Error<CreateProviderApiV1WebProvidersPostError>> {
+) -> Result<Response<models::Provider>, Error<CreateWebProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_provider_create = provider_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -871,8 +858,7 @@ pub async fn create_provider_api_v1_web_providers_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateProviderApiV1WebProvidersPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateWebProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -882,15 +868,12 @@ pub async fn create_provider_api_v1_web_providers_post(
     }
 }
 
-pub async fn delete_environment_provider_api_v1_environment_providers_provider_id_delete(
+pub async fn delete_environment_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<()>,
-    Error<DeleteEnvironmentProviderApiV1EnvironmentProvidersProviderIdDeleteError>,
-> {
+) -> Result<Response<()>, Error<DeleteEnvironmentProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_if_match = if_match;
@@ -940,9 +923,7 @@ pub async fn delete_environment_provider_api_v1_environment_providers_provider_i
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            DeleteEnvironmentProviderApiV1EnvironmentProvidersProviderIdDeleteError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<DeleteEnvironmentProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -952,14 +933,11 @@ pub async fn delete_environment_provider_api_v1_environment_providers_provider_i
     }
 }
 
-pub async fn disconnect_model_authorization_api_v1_model_providers_provider_id_authorization_delete(
+pub async fn disconnect_model_authorization(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::AuthorizationDisconnect>,
-    Error<DisconnectModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationDeleteError>,
-> {
+) -> Result<Response<models::AuthorizationDisconnect>, Error<DisconnectModelAuthorizationError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1026,9 +1004,7 @@ pub async fn disconnect_model_authorization_api_v1_model_providers_provider_id_a
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            DisconnectModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationDeleteError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<DisconnectModelAuthorizationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1038,14 +1014,11 @@ pub async fn disconnect_model_authorization_api_v1_model_providers_provider_id_a
     }
 }
 
-pub async fn discover_model_provider_models_api_v1_model_providers_provider_id_models_get(
+pub async fn discover_model_provider_models(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<Vec<models::ProviderModel>>,
-    Error<DiscoverModelProviderModelsApiV1ModelProvidersProviderIdModelsGetError>,
-> {
+) -> Result<Response<Vec<models::ProviderModel>>, Error<DiscoverModelProviderModelsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1102,8 +1075,7 @@ pub async fn discover_model_provider_models_api_v1_model_providers_provider_id_m
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<DiscoverModelProviderModelsApiV1ModelProvidersProviderIdModelsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DiscoverModelProviderModelsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1113,13 +1085,13 @@ pub async fn discover_model_provider_models_api_v1_model_providers_provider_id_m
     }
 }
 
-pub async fn environment_provider_references_api_v1_environment_providers_provider_id_references_get(
+pub async fn environment_provider_references(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
 ) -> Result<
     Response<models::EnvironmentProviderReferences>,
-    Error<EnvironmentProviderReferencesApiV1EnvironmentProvidersProviderIdReferencesGetError>,
+    Error<EnvironmentProviderReferencesError>,
 > {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
@@ -1177,9 +1149,8 @@ pub async fn environment_provider_references_api_v1_environment_providers_provid
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            EnvironmentProviderReferencesApiV1EnvironmentProvidersProviderIdReferencesGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<EnvironmentProviderReferencesError> =
+            serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1189,12 +1160,11 @@ pub async fn environment_provider_references_api_v1_environment_providers_provid
     }
 }
 
-pub async fn get_provider_api_v1_connector_providers_provider_id_get(
+pub async fn get_connector_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Provider>, Error<GetProviderApiV1ConnectorProvidersProviderIdGetError>>
-{
+) -> Result<Response<models::Provider>, Error<GetConnectorProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1251,8 +1221,7 @@ pub async fn get_provider_api_v1_connector_providers_provider_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetProviderApiV1ConnectorProvidersProviderIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetConnectorProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1262,12 +1231,11 @@ pub async fn get_provider_api_v1_connector_providers_provider_id_get(
     }
 }
 
-pub async fn get_provider_api_v1_environment_providers_provider_id_get(
+pub async fn get_environment_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Provider>, Error<GetProviderApiV1EnvironmentProvidersProviderIdGetError>>
-{
+) -> Result<Response<models::Provider>, Error<GetEnvironmentProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1324,8 +1292,7 @@ pub async fn get_provider_api_v1_environment_providers_provider_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetProviderApiV1EnvironmentProvidersProviderIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetEnvironmentProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1335,11 +1302,11 @@ pub async fn get_provider_api_v1_environment_providers_provider_id_get(
     }
 }
 
-pub async fn get_provider_api_v1_memory_providers_provider_id_get(
+pub async fn get_memory_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Provider>, Error<GetProviderApiV1MemoryProvidersProviderIdGetError>> {
+) -> Result<Response<models::Provider>, Error<GetMemoryProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1396,8 +1363,7 @@ pub async fn get_provider_api_v1_memory_providers_provider_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetProviderApiV1MemoryProvidersProviderIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetMemoryProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1407,11 +1373,11 @@ pub async fn get_provider_api_v1_memory_providers_provider_id_get(
     }
 }
 
-pub async fn get_provider_api_v1_model_providers_provider_id_get(
+pub async fn get_model_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Provider>, Error<GetProviderApiV1ModelProvidersProviderIdGetError>> {
+) -> Result<Response<models::Provider>, Error<GetModelProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1468,8 +1434,7 @@ pub async fn get_provider_api_v1_model_providers_provider_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetProviderApiV1ModelProvidersProviderIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetModelProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1479,11 +1444,11 @@ pub async fn get_provider_api_v1_model_providers_provider_id_get(
     }
 }
 
-pub async fn get_provider_api_v1_web_providers_provider_id_get(
+pub async fn get_web_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Provider>, Error<GetProviderApiV1WebProvidersProviderIdGetError>> {
+) -> Result<Response<models::Provider>, Error<GetWebProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1540,8 +1505,7 @@ pub async fn get_provider_api_v1_web_providers_provider_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetProviderApiV1WebProvidersProviderIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetWebProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1551,82 +1515,12 @@ pub async fn get_provider_api_v1_web_providers_provider_id_get(
     }
 }
 
-pub async fn list_provider_types_api_v1_provider_types_kind_get(
-    configuration: &configuration::Configuration,
-    kind: &str,
-) -> Result<
-    Response<models::ProviderTypePage>,
-    Error<ListProviderTypesApiV1ProviderTypesKindGetError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_kind = kind;
-
-    let uri_str = format!(
-        "{}/api/v1/provider-types/{kind}",
-        configuration.base_path,
-        kind = crate::generated::apis::urlencode(p_path_kind)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ProviderTypePage`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ProviderTypePage`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<ListProviderTypesApiV1ProviderTypesKindGetError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn list_providers_api_v1_connector_providers_get(
+pub async fn list_connector_providers(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ProviderPage>, Error<ListProvidersApiV1ConnectorProvidersGetError>> {
+) -> Result<Response<models::ProviderPage>, Error<ListConnectorProvidersError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -1686,8 +1580,7 @@ pub async fn list_providers_api_v1_connector_providers_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListProvidersApiV1ConnectorProvidersGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListConnectorProvidersError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1697,12 +1590,12 @@ pub async fn list_providers_api_v1_connector_providers_get(
     }
 }
 
-pub async fn list_providers_api_v1_environment_providers_get(
+pub async fn list_environment_providers(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ProviderPage>, Error<ListProvidersApiV1EnvironmentProvidersGetError>> {
+) -> Result<Response<models::ProviderPage>, Error<ListEnvironmentProvidersError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -1762,8 +1655,7 @@ pub async fn list_providers_api_v1_environment_providers_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListProvidersApiV1EnvironmentProvidersGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListEnvironmentProvidersError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1773,12 +1665,12 @@ pub async fn list_providers_api_v1_environment_providers_get(
     }
 }
 
-pub async fn list_providers_api_v1_memory_providers_get(
+pub async fn list_memory_providers(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ProviderPage>, Error<ListProvidersApiV1MemoryProvidersGetError>> {
+) -> Result<Response<models::ProviderPage>, Error<ListMemoryProvidersError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -1838,8 +1730,7 @@ pub async fn list_providers_api_v1_memory_providers_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListProvidersApiV1MemoryProvidersGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListMemoryProvidersError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1849,12 +1740,12 @@ pub async fn list_providers_api_v1_memory_providers_get(
     }
 }
 
-pub async fn list_providers_api_v1_model_providers_get(
+pub async fn list_model_providers(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ProviderPage>, Error<ListProvidersApiV1ModelProvidersGetError>> {
+) -> Result<Response<models::ProviderPage>, Error<ListModelProvidersError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -1914,8 +1805,7 @@ pub async fn list_providers_api_v1_model_providers_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListProvidersApiV1ModelProvidersGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListModelProvidersError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1925,12 +1815,78 @@ pub async fn list_providers_api_v1_model_providers_get(
     }
 }
 
-pub async fn list_providers_api_v1_web_providers_get(
+pub async fn list_provider_types(
+    configuration: &configuration::Configuration,
+    kind: &str,
+) -> Result<Response<models::ProviderTypePage>, Error<ListProviderTypesError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_kind = kind;
+
+    let uri_str = format!(
+        "{}/api/v1/provider-types/{kind}",
+        configuration.base_path,
+        kind = crate::generated::apis::urlencode(p_path_kind)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ProviderTypePage`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ProviderTypePage`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ListProviderTypesError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn list_web_providers(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ProviderPage>, Error<ListProvidersApiV1WebProvidersGetError>> {
+) -> Result<Response<models::ProviderPage>, Error<ListWebProvidersError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -1990,8 +1946,7 @@ pub async fn list_providers_api_v1_web_providers_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListProvidersApiV1WebProvidersGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListWebProvidersError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2001,14 +1956,11 @@ pub async fn list_providers_api_v1_web_providers_get(
     }
 }
 
-pub async fn model_authorization_api_v1_model_providers_provider_id_authorization_get(
+pub async fn model_authorization(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::AuthorizationStatus>,
-    Error<ModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationGetError>,
-> {
+) -> Result<Response<models::AuthorizationStatus>, Error<ModelAuthorizationError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -2065,8 +2017,7 @@ pub async fn model_authorization_api_v1_model_providers_provider_id_authorizatio
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ModelAuthorizationApiV1ModelProvidersProviderIdAuthorizationGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ModelAuthorizationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2076,14 +2027,11 @@ pub async fn model_authorization_api_v1_model_providers_provider_id_authorizatio
     }
 }
 
-pub async fn test_provider_api_v1_connector_providers_provider_id_test_post(
+pub async fn test_connector_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::ProviderTest>,
-    Error<TestProviderApiV1ConnectorProvidersProviderIdTestPostError>,
-> {
+) -> Result<Response<models::ProviderTest>, Error<TestConnectorProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -2150,8 +2098,7 @@ pub async fn test_provider_api_v1_connector_providers_provider_id_test_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<TestProviderApiV1ConnectorProvidersProviderIdTestPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<TestConnectorProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2161,14 +2108,11 @@ pub async fn test_provider_api_v1_connector_providers_provider_id_test_post(
     }
 }
 
-pub async fn test_provider_api_v1_environment_providers_provider_id_test_post(
+pub async fn test_environment_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::ProviderTest>,
-    Error<TestProviderApiV1EnvironmentProvidersProviderIdTestPostError>,
-> {
+) -> Result<Response<models::ProviderTest>, Error<TestEnvironmentProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -2235,8 +2179,7 @@ pub async fn test_provider_api_v1_environment_providers_provider_id_test_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<TestProviderApiV1EnvironmentProvidersProviderIdTestPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<TestEnvironmentProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2246,14 +2189,11 @@ pub async fn test_provider_api_v1_environment_providers_provider_id_test_post(
     }
 }
 
-pub async fn test_provider_api_v1_memory_providers_provider_id_test_post(
+pub async fn test_memory_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::ProviderTest>,
-    Error<TestProviderApiV1MemoryProvidersProviderIdTestPostError>,
-> {
+) -> Result<Response<models::ProviderTest>, Error<TestMemoryProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -2320,8 +2260,7 @@ pub async fn test_provider_api_v1_memory_providers_provider_id_test_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<TestProviderApiV1MemoryProvidersProviderIdTestPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<TestMemoryProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2331,14 +2270,11 @@ pub async fn test_provider_api_v1_memory_providers_provider_id_test_post(
     }
 }
 
-pub async fn test_provider_api_v1_model_providers_provider_id_test_post(
+pub async fn test_model_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::ProviderTest>,
-    Error<TestProviderApiV1ModelProvidersProviderIdTestPostError>,
-> {
+) -> Result<Response<models::ProviderTest>, Error<TestModelProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -2405,8 +2341,7 @@ pub async fn test_provider_api_v1_model_providers_provider_id_test_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<TestProviderApiV1ModelProvidersProviderIdTestPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<TestModelProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2416,14 +2351,11 @@ pub async fn test_provider_api_v1_model_providers_provider_id_test_post(
     }
 }
 
-pub async fn test_provider_api_v1_web_providers_provider_id_test_post(
+pub async fn test_web_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::ProviderTest>,
-    Error<TestProviderApiV1WebProvidersProviderIdTestPostError>,
-> {
+) -> Result<Response<models::ProviderTest>, Error<TestWebProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -2490,8 +2422,7 @@ pub async fn test_provider_api_v1_web_providers_provider_id_test_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<TestProviderApiV1WebProvidersProviderIdTestPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<TestWebProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2502,16 +2433,13 @@ pub async fn test_provider_api_v1_web_providers_provider_id_test_post(
 }
 
 /// Omitted credentials and extra headers keep their saved values, including when `config` changes.
-pub async fn update_provider_api_v1_connector_providers_provider_id_patch(
+pub async fn update_connector_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     provider_update: models::ProviderUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::Provider>,
-    Error<UpdateProviderApiV1ConnectorProvidersProviderIdPatchError>,
-> {
+) -> Result<Response<models::Provider>, Error<UpdateConnectorProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_body_provider_update = provider_update;
@@ -2584,8 +2512,7 @@ pub async fn update_provider_api_v1_connector_providers_provider_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateProviderApiV1ConnectorProvidersProviderIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateConnectorProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2596,16 +2523,13 @@ pub async fn update_provider_api_v1_connector_providers_provider_id_patch(
 }
 
 /// Omitted credentials and extra headers keep their saved values, including when `config` changes.
-pub async fn update_provider_api_v1_environment_providers_provider_id_patch(
+pub async fn update_environment_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     provider_update: models::ProviderUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::Provider>,
-    Error<UpdateProviderApiV1EnvironmentProvidersProviderIdPatchError>,
-> {
+) -> Result<Response<models::Provider>, Error<UpdateEnvironmentProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_body_provider_update = provider_update;
@@ -2678,8 +2602,7 @@ pub async fn update_provider_api_v1_environment_providers_provider_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateProviderApiV1EnvironmentProvidersProviderIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateEnvironmentProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2690,14 +2613,13 @@ pub async fn update_provider_api_v1_environment_providers_provider_id_patch(
 }
 
 /// Omitted credentials and extra headers keep their saved values, including when `config` changes.
-pub async fn update_provider_api_v1_memory_providers_provider_id_patch(
+pub async fn update_memory_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     provider_update: models::ProviderUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Provider>, Error<UpdateProviderApiV1MemoryProvidersProviderIdPatchError>>
-{
+) -> Result<Response<models::Provider>, Error<UpdateMemoryProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_body_provider_update = provider_update;
@@ -2770,8 +2692,7 @@ pub async fn update_provider_api_v1_memory_providers_provider_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateProviderApiV1MemoryProvidersProviderIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateMemoryProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2782,14 +2703,13 @@ pub async fn update_provider_api_v1_memory_providers_provider_id_patch(
 }
 
 /// Omitted credentials and extra headers keep their saved values, including when `config` changes.
-pub async fn update_provider_api_v1_model_providers_provider_id_patch(
+pub async fn update_model_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     provider_update: models::ProviderUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Provider>, Error<UpdateProviderApiV1ModelProvidersProviderIdPatchError>>
-{
+) -> Result<Response<models::Provider>, Error<UpdateModelProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_body_provider_update = provider_update;
@@ -2862,8 +2782,7 @@ pub async fn update_provider_api_v1_model_providers_provider_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateProviderApiV1ModelProvidersProviderIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateModelProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2874,14 +2793,13 @@ pub async fn update_provider_api_v1_model_providers_provider_id_patch(
 }
 
 /// Omitted credentials and extra headers keep their saved values, including when `config` changes.
-pub async fn update_provider_api_v1_web_providers_provider_id_patch(
+pub async fn update_web_provider(
     configuration: &configuration::Configuration,
     provider_id: &str,
     provider_update: models::ProviderUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Provider>, Error<UpdateProviderApiV1WebProvidersProviderIdPatchError>>
-{
+) -> Result<Response<models::Provider>, Error<UpdateWebProviderError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_body_provider_update = provider_update;
@@ -2954,8 +2872,7 @@ pub async fn update_provider_api_v1_web_providers_provider_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateProviderApiV1WebProvidersProviderIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateWebProviderError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

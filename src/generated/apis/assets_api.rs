@@ -15,65 +15,65 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use tokio::fs::File as TokioFile;
 use tokio_util::codec::{BytesCodec, FramedRead};
 
-/// struct for typed errors of method [`create_asset_api_v1_assets_post`]
+/// struct for typed errors of method [`create_asset`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateAssetApiV1AssetsPostError {
+pub enum CreateAssetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_upload_api_v1_uploads_post`]
+/// struct for typed errors of method [`create_upload`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateUploadApiV1UploadsPostError {
+pub enum CreateUploadError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_asset_api_v1_assets_asset_id_get`]
+/// struct for typed errors of method [`get_asset`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAssetApiV1AssetsAssetIdGetError {
+pub enum GetAssetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_assets_api_v1_assets_get`]
+/// struct for typed errors of method [`list_assets`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListAssetsApiV1AssetsGetError {
+pub enum ListAssetsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`read_asset_content_api_v1_assets_asset_id_content_get`]
+/// struct for typed errors of method [`read_asset_content`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReadAssetContentApiV1AssetsAssetIdContentGetError {
+pub enum ReadAssetContentError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`retire_asset_api_v1_assets_asset_id_delete`]
+/// struct for typed errors of method [`retire_asset`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetireAssetApiV1AssetsAssetIdDeleteError {
+pub enum RetireAssetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn create_asset_api_v1_assets_post(
+pub async fn create_asset(
     configuration: &configuration::Configuration,
     asset_create: models::AssetCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Asset>, Error<CreateAssetApiV1AssetsPostError>> {
+) -> Result<Response<models::Asset>, Error<CreateAssetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_asset_create = asset_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -137,7 +137,7 @@ pub async fn create_asset_api_v1_assets_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateAssetApiV1AssetsPostError> = serde_json::from_str(&content).ok();
+        let entity: Option<CreateAssetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -148,12 +148,12 @@ pub async fn create_asset_api_v1_assets_post(
 }
 
 /// Repeating a request with the same `Idempotency-Key` and bytes returns the same upload.
-pub async fn create_upload_api_v1_uploads_post(
+pub async fn create_upload(
     configuration: &configuration::Configuration,
     idempotency_key: &str,
     file: std::path::PathBuf,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Upload>, Error<CreateUploadApiV1UploadsPostError>> {
+) -> Result<Response<models::Upload>, Error<CreateUploadError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_header_idempotency_key = idempotency_key;
     let p_form_file = file;
@@ -229,7 +229,7 @@ pub async fn create_upload_api_v1_uploads_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateUploadApiV1UploadsPostError> = serde_json::from_str(&content).ok();
+        let entity: Option<CreateUploadError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -239,11 +239,11 @@ pub async fn create_upload_api_v1_uploads_post(
     }
 }
 
-pub async fn get_asset_api_v1_assets_asset_id_get(
+pub async fn get_asset(
     configuration: &configuration::Configuration,
     asset_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Asset>, Error<GetAssetApiV1AssetsAssetIdGetError>> {
+) -> Result<Response<models::Asset>, Error<GetAssetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_asset_id = asset_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -300,8 +300,7 @@ pub async fn get_asset_api_v1_assets_asset_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetAssetApiV1AssetsAssetIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetAssetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -311,12 +310,12 @@ pub async fn get_asset_api_v1_assets_asset_id_get(
     }
 }
 
-pub async fn list_assets_api_v1_assets_get(
+pub async fn list_assets(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::AssetPage>, Error<ListAssetsApiV1AssetsGetError>> {
+) -> Result<Response<models::AssetPage>, Error<ListAssetsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -376,7 +375,7 @@ pub async fn list_assets_api_v1_assets_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListAssetsApiV1AssetsGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<ListAssetsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -386,11 +385,11 @@ pub async fn list_assets_api_v1_assets_get(
     }
 }
 
-pub async fn read_asset_content_api_v1_assets_asset_id_content_get(
+pub async fn read_asset_content(
     configuration: &configuration::Configuration,
     asset_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<reqwest::Response, Error<ReadAssetContentApiV1AssetsAssetIdContentGetError>> {
+) -> Result<reqwest::Response, Error<ReadAssetContentError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_asset_id = asset_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -422,8 +421,7 @@ pub async fn read_asset_content_api_v1_assets_asset_id_content_get(
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<ReadAssetContentApiV1AssetsAssetIdContentGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ReadAssetContentError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -433,12 +431,12 @@ pub async fn read_asset_content_api_v1_assets_asset_id_content_get(
     }
 }
 
-pub async fn retire_asset_api_v1_assets_asset_id_delete(
+pub async fn retire_asset(
     configuration: &configuration::Configuration,
     asset_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Asset>, Error<RetireAssetApiV1AssetsAssetIdDeleteError>> {
+) -> Result<Response<models::Asset>, Error<RetireAssetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_asset_id = asset_id;
     let p_header_if_match = if_match;
@@ -509,8 +507,7 @@ pub async fn retire_asset_api_v1_assets_asset_id_delete(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RetireAssetApiV1AssetsAssetIdDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<RetireAssetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

@@ -13,130 +13,130 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`archive_skill_api_v1_skills_skill_id_archive_post`]
+/// struct for typed errors of method [`archive_skill`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ArchiveSkillApiV1SkillsSkillIdArchivePostError {
+pub enum ArchiveSkillError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_revision_api_v1_skills_skill_id_revisions_post`]
+/// struct for typed errors of method [`create_skill`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateRevisionApiV1SkillsSkillIdRevisionsPostError {
+pub enum CreateSkillError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_skill_api_v1_skills_post`]
+/// struct for typed errors of method [`create_skill_revision`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateSkillApiV1SkillsPostError {
+pub enum CreateSkillRevisionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_revision_api_v1_skills_skill_id_revisions_revision_id_get`]
+/// struct for typed errors of method [`get_skill`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetRevisionApiV1SkillsSkillIdRevisionsRevisionIdGetError {
+pub enum GetSkillError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_skill_api_v1_skills_skill_id_get`]
+/// struct for typed errors of method [`get_skill_revision`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetSkillApiV1SkillsSkillIdGetError {
+pub enum GetSkillRevisionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_revisions_api_v1_skills_skill_id_revisions_get`]
+/// struct for typed errors of method [`list_skill_revisions`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListRevisionsApiV1SkillsSkillIdRevisionsGetError {
+pub enum ListSkillRevisionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_skills_api_v1_skills_get`]
+/// struct for typed errors of method [`list_skills`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListSkillsApiV1SkillsGetError {
+pub enum ListSkillsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`read_archive_api_v1_skills_skill_id_revisions_revision_id_content_get`]
+/// struct for typed errors of method [`read_skill_archive`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReadArchiveApiV1SkillsSkillIdRevisionsRevisionIdContentGetError {
+pub enum ReadSkillArchiveError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`read_file_api_v1_skills_skill_id_revisions_revision_id_files_path_get`]
+/// struct for typed errors of method [`read_skill_file`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReadFileApiV1SkillsSkillIdRevisionsRevisionIdFilesPathGetError {
+pub enum ReadSkillFileError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`set_default_revision_api_v1_skills_skill_id_revisions_revision_id_set_default_post`]
+/// struct for typed errors of method [`set_default_skill_revision`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum SetDefaultRevisionApiV1SkillsSkillIdRevisionsRevisionIdSetDefaultPostError {
+pub enum SetDefaultSkillRevisionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`unarchive_skill_api_v1_skills_skill_id_unarchive_post`]
+/// struct for typed errors of method [`unarchive_skill`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UnarchiveSkillApiV1SkillsSkillIdUnarchivePostError {
+pub enum UnarchiveSkillError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_skill_api_v1_skills_skill_id_patch`]
+/// struct for typed errors of method [`update_skill`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateSkillApiV1SkillsSkillIdPatchError {
+pub enum UpdateSkillError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`validate_package_api_v1_skills_validate_post`]
+/// struct for typed errors of method [`validate_skill`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ValidatePackageApiV1SkillsValidatePostError {
+pub enum ValidateSkillError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
 /// Archived skills keep their revisions readable and pinned; they refuse new revisions and new pins.
-pub async fn archive_skill_api_v1_skills_skill_id_archive_post(
+pub async fn archive_skill(
     configuration: &configuration::Configuration,
     skill_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Skill>, Error<ArchiveSkillApiV1SkillsSkillIdArchivePostError>> {
+) -> Result<Response<models::Skill>, Error<ArchiveSkillError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_skill_id = skill_id;
     let p_header_if_match = if_match;
@@ -207,8 +207,85 @@ pub async fn archive_skill_api_v1_skills_skill_id_archive_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ArchiveSkillApiV1SkillsSkillIdArchivePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ArchiveSkillError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn create_skill(
+    configuration: &configuration::Configuration,
+    skill_create: models::SkillCreate,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Skill>, Error<CreateSkillError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_body_skill_create = skill_create;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!("{}/api/v1/skills", configuration.base_path);
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+    req_builder = req_builder.json(&p_body_skill_create);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Skill`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Skill`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<CreateSkillError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -219,16 +296,13 @@ pub async fn archive_skill_api_v1_skills_skill_id_archive_post(
 }
 
 /// A package whose manifest equals the default revision's creates nothing and returns that revision.
-pub async fn create_revision_api_v1_skills_skill_id_revisions_post(
+pub async fn create_skill_revision(
     configuration: &configuration::Configuration,
     skill_id: &str,
     skill_revision_create: models::SkillRevisionCreate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::SkillRevision>,
-    Error<CreateRevisionApiV1SkillsSkillIdRevisionsPostError>,
-> {
+) -> Result<Response<models::SkillRevision>, Error<CreateSkillRevisionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_skill_id = skill_id;
     let p_body_skill_revision_create = skill_revision_create;
@@ -301,8 +375,7 @@ pub async fn create_revision_api_v1_skills_skill_id_revisions_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateRevisionApiV1SkillsSkillIdRevisionsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateSkillRevisionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -312,19 +385,21 @@ pub async fn create_revision_api_v1_skills_skill_id_revisions_post(
     }
 }
 
-pub async fn create_skill_api_v1_skills_post(
+pub async fn get_skill(
     configuration: &configuration::Configuration,
-    skill_create: models::SkillCreate,
+    skill_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Skill>, Error<CreateSkillApiV1SkillsPostError>> {
+) -> Result<Response<models::Skill>, Error<GetSkillError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_body_skill_create = skill_create;
+    let p_path_skill_id = skill_id;
     let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!("{}/api/v1/skills", configuration.base_path);
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
+    let uri_str = format!(
+        "{}/api/v1/skills/{skill_id}",
+        configuration.base_path,
+        skill_id = crate::generated::apis::urlencode(p_path_skill_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
@@ -335,15 +410,6 @@ pub async fn create_skill_api_v1_skills_post(
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
-    if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
-        let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
-        };
-        req_builder = req_builder.header("X-CSRF-Token", value);
-    };
-    req_builder = req_builder.json(&p_body_skill_create);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -380,7 +446,7 @@ pub async fn create_skill_api_v1_skills_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateSkillApiV1SkillsPostError> = serde_json::from_str(&content).ok();
+        let entity: Option<GetSkillError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -390,15 +456,12 @@ pub async fn create_skill_api_v1_skills_post(
     }
 }
 
-pub async fn get_revision_api_v1_skills_skill_id_revisions_revision_id_get(
+pub async fn get_skill_revision(
     configuration: &configuration::Configuration,
     skill_id: &str,
     revision_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::SkillRevision>,
-    Error<GetRevisionApiV1SkillsSkillIdRevisionsRevisionIdGetError>,
-> {
+) -> Result<Response<models::SkillRevision>, Error<GetSkillRevisionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_skill_id = skill_id;
     let p_path_revision_id = revision_id;
@@ -457,8 +520,7 @@ pub async fn get_revision_api_v1_skills_skill_id_revisions_revision_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetRevisionApiV1SkillsSkillIdRevisionsRevisionIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetSkillRevisionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -468,88 +530,13 @@ pub async fn get_revision_api_v1_skills_skill_id_revisions_revision_id_get(
     }
 }
 
-pub async fn get_skill_api_v1_skills_skill_id_get(
-    configuration: &configuration::Configuration,
-    skill_id: &str,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::Skill>, Error<GetSkillApiV1SkillsSkillIdGetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_skill_id = skill_id;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/skills/{skill_id}",
-        configuration.base_path,
-        skill_id = crate::generated::apis::urlencode(p_path_skill_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Skill`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Skill`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<GetSkillApiV1SkillsSkillIdGetError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn list_revisions_api_v1_skills_skill_id_revisions_get(
+pub async fn list_skill_revisions(
     configuration: &configuration::Configuration,
     skill_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::SkillRevisionPage>,
-    Error<ListRevisionsApiV1SkillsSkillIdRevisionsGetError>,
-> {
+) -> Result<Response<models::SkillRevisionPage>, Error<ListSkillRevisionsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_skill_id = skill_id;
     let p_query_limit = limit;
@@ -614,8 +601,7 @@ pub async fn list_revisions_api_v1_skills_skill_id_revisions_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListRevisionsApiV1SkillsSkillIdRevisionsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListSkillRevisionsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -626,7 +612,7 @@ pub async fn list_revisions_api_v1_skills_skill_id_revisions_get(
 }
 
 /// Skills of the workspace. `q` matches the name or description, ignoring case; `source` the kind of source the default revision was read from; `archived` keeps only archived skills, or only open ones.
-pub async fn list_skills_api_v1_skills_get(
+pub async fn list_skills(
     configuration: &configuration::Configuration,
     label: Option<Vec<String>>,
     q: Option<&str>,
@@ -635,7 +621,7 @@ pub async fn list_skills_api_v1_skills_get(
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::SkillPage>, Error<ListSkillsApiV1SkillsGetError>> {
+) -> Result<Response<models::SkillPage>, Error<ListSkillsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_label = label;
     let p_query_q = q;
@@ -727,7 +713,7 @@ pub async fn list_skills_api_v1_skills_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListSkillsApiV1SkillsGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<ListSkillsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -738,13 +724,12 @@ pub async fn list_skills_api_v1_skills_get(
 }
 
 /// The revision's package as a zip archive.
-pub async fn read_archive_api_v1_skills_skill_id_revisions_revision_id_content_get(
+pub async fn read_skill_archive(
     configuration: &configuration::Configuration,
     skill_id: &str,
     revision_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<reqwest::Response, Error<ReadArchiveApiV1SkillsSkillIdRevisionsRevisionIdContentGetError>>
-{
+) -> Result<reqwest::Response, Error<ReadSkillArchiveError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_skill_id = skill_id;
     let p_path_revision_id = revision_id;
@@ -778,8 +763,7 @@ pub async fn read_archive_api_v1_skills_skill_id_revisions_revision_id_content_g
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<ReadArchiveApiV1SkillsSkillIdRevisionsRevisionIdContentGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ReadSkillArchiveError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -790,14 +774,13 @@ pub async fn read_archive_api_v1_skills_skill_id_revisions_revision_id_content_g
 }
 
 /// One package file, by the path the revision's manifest lists.
-pub async fn read_file_api_v1_skills_skill_id_revisions_revision_id_files_path_get(
+pub async fn read_skill_file(
     configuration: &configuration::Configuration,
     skill_id: &str,
     revision_id: &str,
     path: &str,
     x_workspace_id: Option<&str>,
-) -> Result<reqwest::Response, Error<ReadFileApiV1SkillsSkillIdRevisionsRevisionIdFilesPathGetError>>
-{
+) -> Result<reqwest::Response, Error<ReadSkillFileError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_skill_id = skill_id;
     let p_path_revision_id = revision_id;
@@ -833,8 +816,7 @@ pub async fn read_file_api_v1_skills_skill_id_revisions_revision_id_files_path_g
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<ReadFileApiV1SkillsSkillIdRevisionsRevisionIdFilesPathGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ReadSkillFileError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -844,16 +826,13 @@ pub async fn read_file_api_v1_skills_skill_id_revisions_revision_id_files_path_g
     }
 }
 
-pub async fn set_default_revision_api_v1_skills_skill_id_revisions_revision_id_set_default_post(
+pub async fn set_default_skill_revision(
     configuration: &configuration::Configuration,
     skill_id: &str,
     revision_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::Skill>,
-    Error<SetDefaultRevisionApiV1SkillsSkillIdRevisionsRevisionIdSetDefaultPostError>,
-> {
+) -> Result<Response<models::Skill>, Error<SetDefaultSkillRevisionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_skill_id = skill_id;
     let p_path_revision_id = revision_id;
@@ -926,9 +905,7 @@ pub async fn set_default_revision_api_v1_skills_skill_id_revisions_revision_id_s
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            SetDefaultRevisionApiV1SkillsSkillIdRevisionsRevisionIdSetDefaultPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<SetDefaultSkillRevisionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -938,12 +915,12 @@ pub async fn set_default_revision_api_v1_skills_skill_id_revisions_revision_id_s
     }
 }
 
-pub async fn unarchive_skill_api_v1_skills_skill_id_unarchive_post(
+pub async fn unarchive_skill(
     configuration: &configuration::Configuration,
     skill_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Skill>, Error<UnarchiveSkillApiV1SkillsSkillIdUnarchivePostError>> {
+) -> Result<Response<models::Skill>, Error<UnarchiveSkillError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_skill_id = skill_id;
     let p_header_if_match = if_match;
@@ -1014,8 +991,7 @@ pub async fn unarchive_skill_api_v1_skills_skill_id_unarchive_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UnarchiveSkillApiV1SkillsSkillIdUnarchivePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UnarchiveSkillError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1026,13 +1002,13 @@ pub async fn unarchive_skill_api_v1_skills_skill_id_unarchive_post(
 }
 
 /// Name, description and labels; an archived skill changes only by unarchiving.
-pub async fn update_skill_api_v1_skills_skill_id_patch(
+pub async fn update_skill(
     configuration: &configuration::Configuration,
     skill_id: &str,
     skill_update: models::SkillUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Skill>, Error<UpdateSkillApiV1SkillsSkillIdPatchError>> {
+) -> Result<Response<models::Skill>, Error<UpdateSkillError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_skill_id = skill_id;
     let p_body_skill_update = skill_update;
@@ -1105,8 +1081,7 @@ pub async fn update_skill_api_v1_skills_skill_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateSkillApiV1SkillsSkillIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateSkillError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1117,11 +1092,11 @@ pub async fn update_skill_api_v1_skills_skill_id_patch(
 }
 
 /// The manifest the package would give a new skill or revision, checked as creation checks it; nothing is stored.
-pub async fn validate_package_api_v1_skills_validate_post(
+pub async fn validate_skill(
     configuration: &configuration::Configuration,
     skill_validate: models::SkillValidate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::SkillManifest>, Error<ValidatePackageApiV1SkillsValidatePostError>> {
+) -> Result<Response<models::SkillManifest>, Error<ValidateSkillError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_skill_validate = skill_validate;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1185,8 +1160,7 @@ pub async fn validate_package_api_v1_skills_validate_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ValidatePackageApiV1SkillsValidatePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ValidateSkillError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

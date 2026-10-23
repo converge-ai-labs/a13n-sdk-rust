@@ -83,7 +83,7 @@ async fn lowlevel_uses_owner_pool_prefix_path_encoding_and_metadata() {
     let mut server = server(|_| Reply::json(200, sample("Workspace"))).await;
     let client = client(&server);
     let result = client
-        .execute(async |api| get_workspace_api_v1_workspaces_workspace_id_get(api, "id /+中").await)
+        .execute(async |api| get_workspace(api, "id /+中").await)
         .await
         .unwrap();
     assert_eq!(result.status, 200);
@@ -98,7 +98,7 @@ async fn lowlevel_uses_owner_pool_prefix_path_encoding_and_metadata() {
     client.close();
     assert!(matches!(
         client
-            .execute(async |api| get_workspace_api_v1_workspaces_workspace_id_get(api, "w").await)
+            .execute(async |api| get_workspace(api, "w").await)
             .await,
         Err(CallError::Closed)
     ));
@@ -112,14 +112,7 @@ async fn lowlevel_image_mime_and_typed_error_remain_available() {
     let client = client(&server);
     let result = client
         .execute(async |api| {
-            put_workspace_icon_api_v1_workspaces_workspace_id_icon_put(
-                api,
-                "w",
-                "image/png",
-                path.clone(),
-                Some("\"v1\""),
-            )
-            .await
+            put_workspace_icon(api, "w", "image/png", path.clone(), Some("\"v1\"")).await
         })
         .await;
     let Err(CallError::Operation(apis::Error::ResponseError(response))) = result else {
@@ -129,7 +122,7 @@ async fn lowlevel_image_mime_and_typed_error_remain_available() {
     assert_eq!(response.headers["x-request-id"], "req_test");
     assert!(matches!(
         response.entity,
-        Some(PutWorkspaceIconApiV1WorkspacesWorkspaceIdIconPutError::Status400(_))
+        Some(PutWorkspaceIconError::Status400(_))
     ));
     let request = server.requests.recv().await.unwrap();
     assert!(request.headers.contains("content-type: image/png"));
@@ -149,7 +142,16 @@ async fn lowlevel_sse_does_not_buffer_and_shares_shutdown_inside_execute() {
     let client = std::sync::Arc::new(client(&server));
     let caller = client.clone();
     let task = tokio::spawn(async move {
-        caller.execute(async |api| {let mut response=apis::runs_api::thread_stream_api_v1_threads_thread_id_stream_get(api,"t",Some("r"),Some("1-0"),None,None).await?;assert_eq!(response.status(),200);while response.chunk().await.map_err(apis::Error::from)?.is_some() {} Ok::<_,apis::Error<apis::runs_api::ThreadStreamApiV1ThreadsThreadIdStreamGetError>>(())}).await
+        caller
+            .execute(async |api| {
+                let mut response =
+                    apis::runs_api::thread_stream(api, "t", Some("r"), Some("1-0"), None, None)
+                        .await?;
+                assert_eq!(response.status(), 200);
+                while response.chunk().await.map_err(apis::Error::from)?.is_some() {}
+                Ok::<_, apis::Error<apis::runs_api::ThreadStreamError>>(())
+            })
+            .await
     });
     let request = server.requests.recv().await.unwrap();
     assert_eq!(

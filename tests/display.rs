@@ -92,9 +92,12 @@ async fn ordinal_windows_preserve_whole_tail_and_do_not_autoload_history_or_clai
         })
         .await
         .unwrap();
-    assert!(!tail.data.complete);
-    assert_eq!(tail.data.items.len(), 4); // The SDK must not truncate the entire mutable tail to limit.
-    assert_eq!(tail.data.items[0].ordinal, 6);
+    let models::ResponseListRunItems::AnyOf0(tail) = tail.data else {
+        panic!("expected detailed items")
+    };
+    assert!(!tail.complete);
+    assert_eq!(tail.items.len(), 4); // The SDK must not truncate the entire mutable tail to limit.
+    assert_eq!(tail.items[0].ordinal, 6);
     for options in [
         RunItemsGetOptions {
             before: Some(6),
@@ -108,6 +111,9 @@ async fn ordinal_windows_preserve_whole_tail_and_do_not_autoload_history_or_clai
         },
     ] {
         let page = run.items().get(options).await.unwrap().data;
+        let models::ResponseListRunItems::AnyOf0(page) = page else {
+            panic!("expected detailed items")
+        };
         assert!(page.complete); // Sealed is not all-history loaded.
         assert!(page.items[0].ordinal > 1);
     }
@@ -164,6 +170,7 @@ async fn ordinal_query_bounds_and_exclusion_are_service_errors_not_sdk_paging_po
                 after: Some(0),
                 limit: Some(0),
                 x_workspace_id: Some("w".into()),
+                ..Default::default()
             },
             "before=1&after=0&limit=0",
         ),
@@ -220,6 +227,9 @@ async fn sealed_historical_readback_cannot_heal_or_seal_an_existing_gapped_reade
         .await
         .unwrap()
         .data;
+    let models::ResponseListRunItems::AnyOf0(history) = history else {
+        panic!("expected detailed items")
+    };
     assert!(history.complete);
     assert!(matches!(
         reader.next().await.unwrap(),

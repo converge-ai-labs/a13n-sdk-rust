@@ -57,11 +57,6 @@ impl ClientToolDefinition {
         }
     }
 }
-fn deserialize_non_null_metadata<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
-    deserializer: D,
-) -> Result<Option<T>, D::Error> {
-    T::deserialize(deserializer).map(Some)
-}
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum Permission {
@@ -77,6 +72,11 @@ impl Default for Permission {
     fn default() -> Permission {
         Self::Inherit
     }
+}
+fn deserialize_non_null_metadata<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }
 fn deserialize_non_null_permission<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
     deserializer: D,

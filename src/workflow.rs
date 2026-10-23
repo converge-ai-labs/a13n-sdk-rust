@@ -99,6 +99,10 @@ impl RunOptions {
         self.0.configuration = Some(value.map(|v| Box::new(v.0)));
         self
     }
+    pub fn execution(mut self, value: Option<models::ExecutionOverride>) -> Self {
+        self.0.execution = Some(value.map(Box::new));
+        self
+    }
     pub fn overrides(mut self, value: Option<Overrides>) -> Self {
         self.0.overrides = Some(value.map(|v| Box::new(v.0)));
         self
@@ -152,7 +156,6 @@ impl Overrides {
     boxed_override_field!(model_characteristics, models::AgentModelCharacteristics);
     override_field!(model_settings, HashMap<String, Value>);
     boxed_override_field!(output_spec, models::OutputSpec);
-    boxed_override_field!(platform_tools, models::PlatformSelection);
     override_field!(plugins, Vec<models::PluginSelection>);
     boxed_override_field!(retries, models::RetryOverride);
     boxed_override_field!(reviewer, models::AgentReviewer);

@@ -1,9 +1,6 @@
 //! Semantic regressions for Service 74affc9f beyond generated operation coverage.
 mod common;
-use a13n::{
-    BuiltinSkill, Overrides, PlatformGroup, PlatformReadPermission, PlatformSelection,
-    PlatformWritePermission, generated::models as m, resources::*,
-};
+use a13n::{BuiltinSkill, Overrides, generated::models as m, resources::*};
 use common::{Reply, client, sample, server};
 use serde::{Serialize, de::DeserializeOwned};
 use serde_json::{Value, json};
@@ -27,7 +24,7 @@ fn added_native_schemas_preserve_their_wire_shapes() {
         MemorySpaceCreate => "MemorySpaceCreate", MemorySpacePage => "MemorySpacePage",
         MemorySpaceUpdate => "MemorySpaceUpdate", ModelRequestMetrics => "ModelRequestMetrics",
         MountUpdate => "MountUpdate", OrganizationPolicy => "OrganizationPolicy",
-        PlatformGroup => "PlatformGroup", PlatformSelection => "PlatformSelection",
+        PlatformGroup => "PlatformGroup",
         PresetKind => "PresetKind", ProviderReference => "ProviderReference",
         RunAgent => "RunAgent", RunUsage => "RunUsage",
         SessionMemorySettings => "SessionMemorySettings", SpaceBinding => "SpaceBinding",
@@ -67,32 +64,21 @@ fn added_native_schemas_preserve_their_wire_shapes() {
 }
 
 #[test]
-fn authored_platform_and_session_memory_keep_omitted_null_empty_and_false() {
+fn authored_builtin_skills_and_session_memory_keep_omitted_null_empty_and_false() {
     assert_eq!(serde_json::to_value(Overrides::new()).unwrap(), json!({}));
     assert_eq!(
-        serde_json::to_value(Overrides::new().builtin_skills(None).platform_tools(None)).unwrap(),
-        json!({"builtin_skills":null,"platform_tools":null})
+        serde_json::to_value(Overrides::new().builtin_skills(None)).unwrap(),
+        json!({"builtin_skills":null})
     );
-    let empty = Overrides::new()
-        .builtin_skills(Some(HashSet::new()))
-        .platform_tools(Some(PlatformSelection {
-            groups: Some(vec![]),
-            read_permission: Some(PlatformReadPermission::Deny),
-            write_permission: Some(PlatformWritePermission::Ask),
-        }));
     assert_eq!(
-        serde_json::to_value(empty).unwrap(),
-        json!({"builtin_skills":[],"platform_tools":{"groups":[],"read_permission":"deny","write_permission":"ask"}})
+        serde_json::to_value(Overrides::new().builtin_skills(Some(HashSet::new()))).unwrap(),
+        json!({"builtin_skills":[]})
     );
-    let selected = Overrides::new()
-        .builtin_skills(Some(HashSet::from([BuiltinSkill::PlatformOperations])))
-        .platform_tools(Some(PlatformSelection {
-            groups: Some(vec![PlatformGroup::Execution]),
-            ..Default::default()
-        }));
+    let selected =
+        Overrides::new().builtin_skills(Some(HashSet::from([BuiltinSkill::PlatformOperations])));
     assert_eq!(
         serde_json::to_value(selected).unwrap(),
-        json!({"builtin_skills":["platform-operations"],"platform_tools":{"groups":["execution"]}})
+        json!({"builtin_skills":["platform-operations"]})
     );
     for wire in [
         json!({}),

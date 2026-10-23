@@ -259,9 +259,13 @@ def generate_resources(document: dict, output: Path) -> tuple[dict, list[dict]]:
             )
             if "$ref" in schema:
                 schema = document["components"]["schemas"][schema["$ref"].split("/")[-1]]
+            variants = schema.get("anyOf", [schema])
+            variants = [
+                document["components"]["schemas"][v["$ref"].split("/")[-1]] if "$ref" in v else v for v in variants
+            ]
             if (
                 op["verb"] == "get"
-                and "items" in schema.get("properties", {})
+                and any("items" in variant.get("properties", {}) for variant in variants)
                 and not op["path"].endswith("/runs/{run_id}/items")
             ):
                 method = "list"
@@ -351,15 +355,39 @@ def generate_resources(document: dict, output: Path) -> tuple[dict, list[dict]]:
                 + "}"
             )
             inventory.append((op["verb"].upper(), op["path"], name, method))
-            tests.append(
-                dict(op=op, owner=key, method=identifier(method), args=args, fields=fields, options=option_name)
-            )
-            if (
+            paged = (
                 method == "list"
                 and any(p["name"] == "cursor" for p in parameters)
-                and "next_cursor" in schema.get("properties", {})
-            ):
+                and all("next_cursor" in variant.get("properties", {}) for variant in variants)
+            )
+            tests.append(
+                dict(
+                    op=op,
+                    owner=key,
+                    method=identifier(method),
+                    args=args,
+                    fields=fields,
+                    options=option_name,
+                    paged=paged,
+                )
+            )
+            if paged:
                 pager = name.removesuffix("Resource") + "Pages"
+                cursors = [
+                    "page.next_cursor.clone()" + ("" if "next_cursor" in variant.get("required", []) else ".flatten()")
+                    for variant in variants
+                ]
+                cursor_value = cursors[0]
+                if "anyOf" in schema:
+                    arms = ",".join(
+                        f"{result_type}::AnyOf{index}(page)=>{cursor}" for index, cursor in enumerate(cursors)
+                    )
+                    cursor_value = f"match page {{{arms}}}"
+                clear_anchor = (
+                    "if cursor.is_some() { options.anchor=None; }"
+                    if any(p["name"] == "anchor" for p in parameters)
+                    else ""
+                )
                 methods.append(
                     rustdoc(
                         "Iterate cursor pages lazily with owned options. Each page retains status and headers; no prefetch occurs. Drop the pager to stop reads."
@@ -371,7 +399,7 @@ def generate_resources(document: dict, output: Path) -> tuple[dict, list[dict]]:
                     + f"pub struct {pager}<'a> {{resource:{name}<'a>,options:{option_name}}}"
                 )
                 source.append(
-                    f"impl PageSource for {pager}<'_> {{type Page={result_type}; async fn fetch(&self,cursor:Option<String>)->Result<Response<Self::Page>,Error>{{let mut options=self.options.clone();options.cursor=cursor;self.resource.list(options).await}} fn cursor(page:&Self::Page)->Option<String>{{page.next_cursor.clone()}}}}"
+                    f"impl PageSource for {pager}<'_> {{type Page={result_type}; async fn fetch(&self,cursor:Option<String>)->Result<Response<Self::Page>,Error>{{let mut options=self.options.clone();{clear_anchor}options.cursor=cursor;self.resource.list(options).await}} fn cursor(page:&Self::Page)->Option<String>{{{cursor_value}}}}}"
                 )
         source.append(f"impl<'a> {name}<'a> {{" + "\n".join(methods) + "}")
     source.append(

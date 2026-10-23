@@ -11,15 +11,11 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// ConnectionSelection : An agent's use of one connection: all the tools it exposes, or a subset, and their permissions.
+/// ConnectionSelection : An agent's selected tools and permissions.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ConnectionSelection {
     #[serde(rename = "connection_id")]
     pub connection_id: String,
-
-    #[serde(default, deserialize_with = "deserialize_non_null_defer_loading")]
-    #[serde(rename = "defer_loading", skip_serializing_if = "Option::is_none")]
-    pub defer_loading: Option<bool>,
 
     #[serde(default, deserialize_with = "deserialize_non_null_permission")]
     #[serde(rename = "permission", skip_serializing_if = "Option::is_none")]
@@ -39,21 +35,15 @@ pub struct ConnectionSelection {
 }
 
 impl ConnectionSelection {
-    /// An agent's use of one connection: all the tools it exposes, or a subset, and their permissions.
+    /// An agent's selected tools and permissions.
     pub fn new(connection_id: String) -> ConnectionSelection {
         ConnectionSelection {
             connection_id,
-            defer_loading: None,
             permission: None,
             permissions: None,
             tools: None,
         }
     }
-}
-fn deserialize_non_null_defer_loading<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
-    deserializer: D,
-) -> Result<Option<T>, D::Error> {
-    T::deserialize(deserializer).map(Some)
 }
 fn deserialize_non_null_permission<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
     deserializer: D,

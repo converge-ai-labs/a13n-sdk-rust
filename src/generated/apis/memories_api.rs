@@ -13,229 +13,229 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`add_mount_api_v1_threads_thread_id_memories_post`]
+/// struct for typed errors of method [`add_memory_mount`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum AddMountApiV1ThreadsThreadIdMemoriesPostError {
+pub enum AddMemoryMountError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`add_record_api_v1_memories_memory_id_records_post`]
+/// struct for typed errors of method [`add_record`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum AddRecordApiV1MemoriesMemoryIdRecordsPostError {
+pub enum AddRecordError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_file_api_v1_memories_memory_id_files_post`]
+/// struct for typed errors of method [`create_file`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateFileApiV1MemoriesMemoryIdFilesPostError {
+pub enum CreateFileError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_memory_api_v1_memories_post`]
+/// struct for typed errors of method [`create_memory`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateMemoryApiV1MemoriesPostError {
+pub enum CreateMemoryError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_file_api_v1_memories_memory_id_files_path_delete`]
+/// struct for typed errors of method [`delete_file`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteFileApiV1MemoriesMemoryIdFilesPathDeleteError {
+pub enum DeleteFileError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_memory_api_v1_memories_memory_id_delete`]
+/// struct for typed errors of method [`delete_memory`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteMemoryApiV1MemoriesMemoryIdDeleteError {
+pub enum DeleteMemoryError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_record_api_v1_memories_memory_id_records_record_id_delete`]
+/// struct for typed errors of method [`delete_record`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteRecordApiV1MemoriesMemoryIdRecordsRecordIdDeleteError {
+pub enum DeleteRecordError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_memory_api_v1_memories_memory_id_get`]
+/// struct for typed errors of method [`get_memory`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetMemoryApiV1MemoriesMemoryIdGetError {
+pub enum GetMemoryError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_revision_api_v1_memories_memory_id_revisions_seq_get`]
+/// struct for typed errors of method [`get_memory_revision`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetRevisionApiV1MemoriesMemoryIdRevisionsSeqGetError {
+pub enum GetMemoryRevisionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_files_api_v1_memories_memory_id_files_get`]
+/// struct for typed errors of method [`list_files`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListFilesApiV1MemoriesMemoryIdFilesGetError {
+pub enum ListFilesError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_memories_api_v1_memories_get`]
+/// struct for typed errors of method [`list_memories`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListMemoriesApiV1MemoriesGetError {
+pub enum ListMemoriesError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_mounts_api_v1_threads_thread_id_memories_get`]
+/// struct for typed errors of method [`list_memory_mounts`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListMountsApiV1ThreadsThreadIdMemoriesGetError {
+pub enum ListMemoryMountsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_records_api_v1_memories_memory_id_records_get`]
+/// struct for typed errors of method [`list_memory_revisions`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListRecordsApiV1MemoriesMemoryIdRecordsGetError {
+pub enum ListMemoryRevisionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_revisions_api_v1_memories_memory_id_revisions_get`]
+/// struct for typed errors of method [`list_records`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListRevisionsApiV1MemoriesMemoryIdRevisionsGetError {
+pub enum ListRecordsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`move_file_api_v1_memories_memory_id_files_move_post`]
+/// struct for typed errors of method [`move_file`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum MoveFileApiV1MemoriesMemoryIdFilesMovePostError {
+pub enum MoveFileError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`purge_history_api_v1_memories_memory_id_revisions_delete`]
+/// struct for typed errors of method [`purge_history`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PurgeHistoryApiV1MemoriesMemoryIdRevisionsDeleteError {
+pub enum PurgeHistoryError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`read_file_api_v1_memories_memory_id_files_path_get`]
+/// struct for typed errors of method [`read_file`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReadFileApiV1MemoriesMemoryIdFilesPathGetError {
+pub enum ReadFileError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`remove_mount_api_v1_threads_thread_id_memories_name_delete`]
+/// struct for typed errors of method [`remove_memory_mount`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RemoveMountApiV1ThreadsThreadIdMemoriesNameDeleteError {
+pub enum RemoveMemoryMountError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`replace_file_api_v1_memories_memory_id_files_path_put`]
+/// struct for typed errors of method [`replace_file`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReplaceFileApiV1MemoriesMemoryIdFilesPathPutError {
+pub enum ReplaceFileError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`restore_revision_api_v1_memories_memory_id_revisions_seq_restore_post`]
+/// struct for typed errors of method [`restore_memory_revision`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RestoreRevisionApiV1MemoriesMemoryIdRevisionsSeqRestorePostError {
+pub enum RestoreMemoryRevisionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`search_records_api_v1_memories_memory_id_records_search_post`]
+/// struct for typed errors of method [`search_records`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum SearchRecordsApiV1MemoriesMemoryIdRecordsSearchPostError {
+pub enum SearchRecordsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_memory_api_v1_memories_memory_id_patch`]
+/// struct for typed errors of method [`update_memory`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateMemoryApiV1MemoriesMemoryIdPatchError {
+pub enum UpdateMemoryError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_mount_api_v1_threads_thread_id_memories_name_patch`]
+/// struct for typed errors of method [`update_memory_mount`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateMountApiV1ThreadsThreadIdMemoriesNamePatchError {
+pub enum UpdateMemoryMountError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_record_api_v1_memories_memory_id_records_record_id_put`]
+/// struct for typed errors of method [`update_record`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateRecordApiV1MemoriesMemoryIdRecordsRecordIdPutError {
+pub enum UpdateRecordError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn add_mount_api_v1_threads_thread_id_memories_post(
+pub async fn add_memory_mount(
     configuration: &configuration::Configuration,
     thread_id: &str,
     memory_mount: models::MemoryMount,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::MemoryMount>, Error<AddMountApiV1ThreadsThreadIdMemoriesPostError>> {
+) -> Result<Response<models::MemoryMount>, Error<AddMemoryMountError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_body_memory_mount = memory_mount;
@@ -308,8 +308,7 @@ pub async fn add_mount_api_v1_threads_thread_id_memories_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AddMountApiV1ThreadsThreadIdMemoriesPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<AddMemoryMountError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -319,13 +318,12 @@ pub async fn add_mount_api_v1_threads_thread_id_memories_post(
     }
 }
 
-pub async fn add_record_api_v1_memories_memory_id_records_post(
+pub async fn add_record(
     configuration: &configuration::Configuration,
     memory_id: &str,
     memory_record_text: models::MemoryRecordText,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::MemoryRecordView>, Error<AddRecordApiV1MemoriesMemoryIdRecordsPostError>>
-{
+) -> Result<Response<models::MemoryRecordView>, Error<AddRecordError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_body_memory_record_text = memory_record_text;
@@ -394,8 +392,7 @@ pub async fn add_record_api_v1_memories_memory_id_records_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AddRecordApiV1MemoriesMemoryIdRecordsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<AddRecordError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -405,12 +402,12 @@ pub async fn add_record_api_v1_memories_memory_id_records_post(
     }
 }
 
-pub async fn create_file_api_v1_memories_memory_id_files_post(
+pub async fn create_file(
     configuration: &configuration::Configuration,
     memory_id: &str,
     memory_file_create: models::MemoryFileCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::MemoryFile>, Error<CreateFileApiV1MemoriesMemoryIdFilesPostError>> {
+) -> Result<Response<models::MemoryFile>, Error<CreateFileError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_body_memory_file_create = memory_file_create;
@@ -479,8 +476,7 @@ pub async fn create_file_api_v1_memories_memory_id_files_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateFileApiV1MemoriesMemoryIdFilesPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateFileError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -490,11 +486,11 @@ pub async fn create_file_api_v1_memories_memory_id_files_post(
     }
 }
 
-pub async fn create_memory_api_v1_memories_post(
+pub async fn create_memory(
     configuration: &configuration::Configuration,
     memory_create: models::MemoryCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Memory>, Error<CreateMemoryApiV1MemoriesPostError>> {
+) -> Result<Response<models::Memory>, Error<CreateMemoryError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_memory_create = memory_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -558,8 +554,7 @@ pub async fn create_memory_api_v1_memories_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateMemoryApiV1MemoriesPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateMemoryError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -569,13 +564,13 @@ pub async fn create_memory_api_v1_memories_post(
     }
 }
 
-pub async fn delete_file_api_v1_memories_memory_id_files_path_delete(
+pub async fn delete_file(
     configuration: &configuration::Configuration,
     memory_id: &str,
     path: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<()>, Error<DeleteFileApiV1MemoriesMemoryIdFilesPathDeleteError>> {
+) -> Result<Response<()>, Error<DeleteFileError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_path_path = path;
@@ -627,8 +622,7 @@ pub async fn delete_file_api_v1_memories_memory_id_files_path_delete(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteFileApiV1MemoriesMemoryIdFilesPathDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DeleteFileError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -638,12 +632,12 @@ pub async fn delete_file_api_v1_memories_memory_id_files_path_delete(
     }
 }
 
-pub async fn delete_memory_api_v1_memories_memory_id_delete(
+pub async fn delete_memory(
     configuration: &configuration::Configuration,
     memory_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<()>, Error<DeleteMemoryApiV1MemoriesMemoryIdDeleteError>> {
+) -> Result<Response<()>, Error<DeleteMemoryError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_header_if_match = if_match;
@@ -693,8 +687,7 @@ pub async fn delete_memory_api_v1_memories_memory_id_delete(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteMemoryApiV1MemoriesMemoryIdDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DeleteMemoryError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -704,12 +697,12 @@ pub async fn delete_memory_api_v1_memories_memory_id_delete(
     }
 }
 
-pub async fn delete_record_api_v1_memories_memory_id_records_record_id_delete(
+pub async fn delete_record(
     configuration: &configuration::Configuration,
     memory_id: &str,
     record_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<()>, Error<DeleteRecordApiV1MemoriesMemoryIdRecordsRecordIdDeleteError>> {
+) -> Result<Response<()>, Error<DeleteRecordError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_path_record_id = record_id;
@@ -757,8 +750,7 @@ pub async fn delete_record_api_v1_memories_memory_id_records_record_id_delete(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteRecordApiV1MemoriesMemoryIdRecordsRecordIdDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DeleteRecordError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -768,11 +760,11 @@ pub async fn delete_record_api_v1_memories_memory_id_records_record_id_delete(
     }
 }
 
-pub async fn get_memory_api_v1_memories_memory_id_get(
+pub async fn get_memory(
     configuration: &configuration::Configuration,
     memory_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Memory>, Error<GetMemoryApiV1MemoriesMemoryIdGetError>> {
+) -> Result<Response<models::Memory>, Error<GetMemoryError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -829,8 +821,7 @@ pub async fn get_memory_api_v1_memories_memory_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetMemoryApiV1MemoriesMemoryIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetMemoryError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -840,15 +831,12 @@ pub async fn get_memory_api_v1_memories_memory_id_get(
     }
 }
 
-pub async fn get_revision_api_v1_memories_memory_id_revisions_seq_get(
+pub async fn get_memory_revision(
     configuration: &configuration::Configuration,
     memory_id: &str,
     seq: i32,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::MemoryRevisionDetail>,
-    Error<GetRevisionApiV1MemoriesMemoryIdRevisionsSeqGetError>,
-> {
+) -> Result<Response<models::MemoryRevisionDetail>, Error<GetMemoryRevisionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_path_seq = seq;
@@ -907,8 +895,7 @@ pub async fn get_revision_api_v1_memories_memory_id_revisions_seq_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetRevisionApiV1MemoriesMemoryIdRevisionsSeqGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetMemoryRevisionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -918,14 +905,14 @@ pub async fn get_revision_api_v1_memories_memory_id_revisions_seq_get(
     }
 }
 
-pub async fn list_files_api_v1_memories_memory_id_files_get(
+pub async fn list_files(
     configuration: &configuration::Configuration,
     memory_id: &str,
     prefix: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::MemoryFilePage>, Error<ListFilesApiV1MemoriesMemoryIdFilesGetError>> {
+) -> Result<Response<models::MemoryFilePage>, Error<ListFilesError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_query_prefix = prefix;
@@ -994,8 +981,7 @@ pub async fn list_files_api_v1_memories_memory_id_files_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListFilesApiV1MemoriesMemoryIdFilesGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListFilesError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1005,7 +991,7 @@ pub async fn list_files_api_v1_memories_memory_id_files_get(
     }
 }
 
-pub async fn list_memories_api_v1_memories_get(
+pub async fn list_memories(
     configuration: &configuration::Configuration,
     label: Option<Vec<String>>,
     kind: Option<&str>,
@@ -1013,7 +999,7 @@ pub async fn list_memories_api_v1_memories_get(
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::MemoryPage>, Error<ListMemoriesApiV1MemoriesGetError>> {
+) -> Result<Response<models::MemoryPage>, Error<ListMemoriesError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_label = label;
     let p_query_kind = kind;
@@ -1101,7 +1087,7 @@ pub async fn list_memories_api_v1_memories_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListMemoriesApiV1MemoriesGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<ListMemoriesError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1111,12 +1097,11 @@ pub async fn list_memories_api_v1_memories_get(
     }
 }
 
-pub async fn list_mounts_api_v1_threads_thread_id_memories_get(
+pub async fn list_memory_mounts(
     configuration: &configuration::Configuration,
     thread_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::MemoryMountPage>, Error<ListMountsApiV1ThreadsThreadIdMemoriesGetError>>
-{
+) -> Result<Response<models::MemoryMountPage>, Error<ListMemoryMountsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1173,8 +1158,7 @@ pub async fn list_mounts_api_v1_threads_thread_id_memories_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListMountsApiV1ThreadsThreadIdMemoriesGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListMemoryMountsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1184,92 +1168,7 @@ pub async fn list_mounts_api_v1_threads_thread_id_memories_get(
     }
 }
 
-pub async fn list_records_api_v1_memories_memory_id_records_get(
-    configuration: &configuration::Configuration,
-    memory_id: &str,
-    limit: Option<i32>,
-    cursor: Option<&str>,
-    x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::MemoryRecordPage>,
-    Error<ListRecordsApiV1MemoriesMemoryIdRecordsGetError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_memory_id = memory_id;
-    let p_query_limit = limit;
-    let p_query_cursor = cursor;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/memories/{memory_id}/records",
-        configuration.base_path,
-        memory_id = crate::generated::apis::urlencode(p_path_memory_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref param_value) = p_query_limit {
-        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_cursor {
-        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
-    }
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::MemoryRecordPage`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::MemoryRecordPage`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<ListRecordsApiV1MemoriesMemoryIdRecordsGetError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn list_revisions_api_v1_memories_memory_id_revisions_get(
+pub async fn list_memory_revisions(
     configuration: &configuration::Configuration,
     memory_id: &str,
     path: Option<&str>,
@@ -1277,10 +1176,7 @@ pub async fn list_revisions_api_v1_memories_memory_id_revisions_get(
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::MemoryRevisionPage>,
-    Error<ListRevisionsApiV1MemoriesMemoryIdRevisionsGetError>,
-> {
+) -> Result<Response<models::MemoryRevisionPage>, Error<ListMemoryRevisionsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_query_path = path;
@@ -1353,8 +1249,88 @@ pub async fn list_revisions_api_v1_memories_memory_id_revisions_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListRevisionsApiV1MemoriesMemoryIdRevisionsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListMemoryRevisionsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn list_records(
+    configuration: &configuration::Configuration,
+    memory_id: &str,
+    limit: Option<i32>,
+    cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::MemoryRecordPage>, Error<ListRecordsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_memory_id = memory_id;
+    let p_query_limit = limit;
+    let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/memories/{memory_id}/records",
+        configuration.base_path,
+        memory_id = crate::generated::apis::urlencode(p_path_memory_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::MemoryRecordPage`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::MemoryRecordPage`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ListRecordsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1365,13 +1341,13 @@ pub async fn list_revisions_api_v1_memories_memory_id_revisions_get(
 }
 
 /// Move the source file `If-Match` names; the destination must be free.
-pub async fn move_file_api_v1_memories_memory_id_files_move_post(
+pub async fn move_file(
     configuration: &configuration::Configuration,
     memory_id: &str,
     memory_file_move: models::MemoryFileMove,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::MemoryFile>, Error<MoveFileApiV1MemoriesMemoryIdFilesMovePostError>> {
+) -> Result<Response<models::MemoryFile>, Error<MoveFileError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_body_memory_file_move = memory_file_move;
@@ -1444,8 +1420,7 @@ pub async fn move_file_api_v1_memories_memory_id_files_move_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<MoveFileApiV1MemoriesMemoryIdFilesMovePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<MoveFileError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1456,15 +1431,12 @@ pub async fn move_file_api_v1_memories_memory_id_files_move_post(
 }
 
 /// Delete every retained revision of one file path.
-pub async fn purge_history_api_v1_memories_memory_id_revisions_delete(
+pub async fn purge_history(
     configuration: &configuration::Configuration,
     memory_id: &str,
     path: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::HistoryPurge>,
-    Error<PurgeHistoryApiV1MemoriesMemoryIdRevisionsDeleteError>,
-> {
+) -> Result<Response<models::HistoryPurge>, Error<PurgeHistoryError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_query_path = path;
@@ -1533,8 +1505,7 @@ pub async fn purge_history_api_v1_memories_memory_id_revisions_delete(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PurgeHistoryApiV1MemoriesMemoryIdRevisionsDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<PurgeHistoryError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1544,12 +1515,12 @@ pub async fn purge_history_api_v1_memories_memory_id_revisions_delete(
     }
 }
 
-pub async fn read_file_api_v1_memories_memory_id_files_path_get(
+pub async fn read_file(
     configuration: &configuration::Configuration,
     memory_id: &str,
     path: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::MemoryFile>, Error<ReadFileApiV1MemoriesMemoryIdFilesPathGetError>> {
+) -> Result<Response<models::MemoryFile>, Error<ReadFileError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_path_path = path;
@@ -1608,8 +1579,7 @@ pub async fn read_file_api_v1_memories_memory_id_files_path_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ReadFileApiV1MemoriesMemoryIdFilesPathGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ReadFileError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1619,13 +1589,13 @@ pub async fn read_file_api_v1_memories_memory_id_files_path_get(
     }
 }
 
-pub async fn remove_mount_api_v1_threads_thread_id_memories_name_delete(
+pub async fn remove_memory_mount(
     configuration: &configuration::Configuration,
     thread_id: &str,
     name: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<()>, Error<RemoveMountApiV1ThreadsThreadIdMemoriesNameDeleteError>> {
+) -> Result<Response<()>, Error<RemoveMemoryMountError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_path_name = name;
@@ -1677,8 +1647,7 @@ pub async fn remove_mount_api_v1_threads_thread_id_memories_name_delete(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<RemoveMountApiV1ThreadsThreadIdMemoriesNameDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<RemoveMemoryMountError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1688,15 +1657,14 @@ pub async fn remove_mount_api_v1_threads_thread_id_memories_name_delete(
     }
 }
 
-pub async fn replace_file_api_v1_memories_memory_id_files_path_put(
+pub async fn replace_file(
     configuration: &configuration::Configuration,
     memory_id: &str,
     path: &str,
     memory_file_replace: models::MemoryFileReplace,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::MemoryFile>, Error<ReplaceFileApiV1MemoriesMemoryIdFilesPathPutError>>
-{
+) -> Result<Response<models::MemoryFile>, Error<ReplaceFileError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_path_path = path;
@@ -1769,8 +1737,7 @@ pub async fn replace_file_api_v1_memories_memory_id_files_path_put(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ReplaceFileApiV1MemoriesMemoryIdFilesPathPutError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ReplaceFileError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1781,16 +1748,13 @@ pub async fn replace_file_api_v1_memories_memory_id_files_path_put(
 }
 
 /// Set the path back to the content the change replaced; `If-Match` names the file there, if any.
-pub async fn restore_revision_api_v1_memories_memory_id_revisions_seq_restore_post(
+pub async fn restore_memory_revision(
     configuration: &configuration::Configuration,
     memory_id: &str,
     seq: i32,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::MemoryFileState>,
-    Error<RestoreRevisionApiV1MemoriesMemoryIdRevisionsSeqRestorePostError>,
-> {
+) -> Result<Response<models::MemoryFileState>, Error<RestoreMemoryRevisionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_path_seq = seq;
@@ -1863,8 +1827,7 @@ pub async fn restore_revision_api_v1_memories_memory_id_revisions_seq_restore_po
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RestoreRevisionApiV1MemoriesMemoryIdRevisionsSeqRestorePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<RestoreMemoryRevisionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1875,15 +1838,12 @@ pub async fn restore_revision_api_v1_memories_memory_id_revisions_seq_restore_po
 }
 
 /// The records most similar to the query; the query travels in the body, never the URL.
-pub async fn search_records_api_v1_memories_memory_id_records_search_post(
+pub async fn search_records(
     configuration: &configuration::Configuration,
     memory_id: &str,
     memory_record_search: models::MemoryRecordSearch,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::MemoryRecordPage>,
-    Error<SearchRecordsApiV1MemoriesMemoryIdRecordsSearchPostError>,
-> {
+) -> Result<Response<models::MemoryRecordPage>, Error<SearchRecordsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_body_memory_record_search = memory_record_search;
@@ -1952,8 +1912,7 @@ pub async fn search_records_api_v1_memories_memory_id_records_search_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<SearchRecordsApiV1MemoriesMemoryIdRecordsSearchPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<SearchRecordsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1963,13 +1922,13 @@ pub async fn search_records_api_v1_memories_memory_id_records_search_post(
     }
 }
 
-pub async fn update_memory_api_v1_memories_memory_id_patch(
+pub async fn update_memory(
     configuration: &configuration::Configuration,
     memory_id: &str,
     memory_update: models::MemoryUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Memory>, Error<UpdateMemoryApiV1MemoriesMemoryIdPatchError>> {
+) -> Result<Response<models::Memory>, Error<UpdateMemoryError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_body_memory_update = memory_update;
@@ -2042,8 +2001,7 @@ pub async fn update_memory_api_v1_memories_memory_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateMemoryApiV1MemoriesMemoryIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateMemoryError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2053,17 +2011,14 @@ pub async fn update_memory_api_v1_memories_memory_id_patch(
     }
 }
 
-pub async fn update_mount_api_v1_threads_thread_id_memories_name_patch(
+pub async fn update_memory_mount(
     configuration: &configuration::Configuration,
     thread_id: &str,
     name: &str,
     memory_mount_update: models::MemoryMountUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::MemoryMount>,
-    Error<UpdateMountApiV1ThreadsThreadIdMemoriesNamePatchError>,
-> {
+) -> Result<Response<models::MemoryMount>, Error<UpdateMemoryMountError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_path_name = name;
@@ -2138,8 +2093,7 @@ pub async fn update_mount_api_v1_threads_thread_id_memories_name_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateMountApiV1ThreadsThreadIdMemoriesNamePatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateMemoryMountError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2150,16 +2104,13 @@ pub async fn update_mount_api_v1_threads_thread_id_memories_name_patch(
 }
 
 /// Replace the record's text; records carry no version, so the last writer wins.
-pub async fn update_record_api_v1_memories_memory_id_records_record_id_put(
+pub async fn update_record(
     configuration: &configuration::Configuration,
     memory_id: &str,
     record_id: &str,
     memory_record_text: models::MemoryRecordText,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::MemoryRecordView>,
-    Error<UpdateRecordApiV1MemoriesMemoryIdRecordsRecordIdPutError>,
-> {
+) -> Result<Response<models::MemoryRecordView>, Error<UpdateRecordError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_memory_id = memory_id;
     let p_path_record_id = record_id;
@@ -2228,8 +2179,7 @@ pub async fn update_record_api_v1_memories_memory_id_records_record_id_put(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateRecordApiV1MemoriesMemoryIdRecordsRecordIdPutError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateRecordError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

@@ -110,21 +110,21 @@ Only after the user completes a manual flow, submit `models::AuthorizationCallba
 
 ## Configure tool discovery and read context usage
 
-Tool search presents already-selected sources. `ToolSearchConfig::Proxy` selects named proxy tools; `Native` selects provider-native discovery. Native `strategy` preserves omission, explicit null and `bm25`/`regex`. The closed branch types reject hybrid proxy/native fields when decoding. Service validates numeric bounds and source selections; the SDK executes no discovery itself. In a Run override, `tool_search` replaces the whole block: omitted/null retains the Agent revision; `groups: {}` disables grouping.
+Tool search presents already selected sources through `ToolSearchConfig`, a proxy-only configuration object. Omitted mode uses Service defaults; native mode and strategy fields are invalid. Service validates names, bounds and sources. An omitted/null Run override inherits the revision; a non-null block replaces it and empty groups disables grouping.
 
-This complete example constructs an explicit native override and reads one existing Run's context contribution. Set `A13N_RUN_ID` in addition to the usual URL/token. The override is serialized locally for inspection; the read is the only remote operation.
+This complete example constructs an explicit proxy override and reads one existing Run's context contribution. Set `A13N_RUN_ID` in addition to the usual URL/token. The override is serialized locally for inspection; the read is the only remote operation.
 
 ```rust
-use a13n::{Client, Secret, Overrides, ToolSearch, ToolSearchConfig, NativeToolSearchConfig};
+use a13n::{Client, Secret, Overrides, ToolSearch, ToolSearchConfig};
 use a13n::resources::UsageContextGetOptions;
 use std::{env, error::Error};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let search = ToolSearch {
-        config: Some(Box::new(ToolSearchConfig::Native(Box::new(NativeToolSearchConfig {
-            strategy: Some(None), ..Default::default()
-        })))),
+        config: Some(Box::new(ToolSearchConfig {
+            max_results: Some(7), ..Default::default()
+        })),
         groups: Some(Default::default()),
     };
     let overrides = Overrides::new().tool_search(Some(search));
@@ -136,7 +136,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     println!("HTTP {}, request {:?}", response.status, response.request_id());
     match response.data {
         None => println!("No completed model contribution"),
-        Some(usage) => println!("Run {} record {}: input {:?}, output {:?}, window {:?}",
+        Some(usage) => println!("Run {} record {:?}: input {:?}, output {:?}, window {:?}",
             usage.run_id, usage.record_id, usage.input_tokens, usage.output_tokens, usage.context_window_tokens),
     }
     Ok(())
@@ -144,3 +144,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 ```
 
 Add `serde_json = "1"` to the source-installed application. Supply exactly one of `thread_id`, `run_id` or `record_id`; Service rejects missing/multiple selectors. Thread/Run selects the latest eligible completed root-agent generation, not a pending prompt estimate or aggregate. A successful JSON null means no matching contribution; object token/window fields remain independently nullable and zero stays zero. Unknown/missing resources remain API errors. The SDK derives no ratio, billing total or synthetic context capacity.
+
+## Browse bounded run history
+
+Run lists return `RunListItem` metadata with `input_preview.text` (at most 200 Unicode code points) and `input_preview.truncated`. Fetch an individual Run for full input, output, options or memory mounts. List `view` selection is removed.
+
+Thread runs are newest first. `ThreadRunPage` exposes `total`, `first_number`, `previous_cursor` (newer) and `next_cursor` (older). Use `anchor` for the first page around an exact Run; subsequent requests send the returned cursor without the anchor. Reads and page iterators are lazy. Session streams also expose native schedule and occurrence frames.

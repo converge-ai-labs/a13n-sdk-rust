@@ -95,14 +95,6 @@ pub struct AgentOverrideInput {
     pub output_spec: Option<Option<Box<models::OutputSpec>>>,
 
     #[serde(
-        rename = "platform_tools",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub platform_tools: Option<Option<Box<models::PlatformSelection>>>,
-
-    #[serde(
         rename = "plugins",
         default,
         with = "::serde_with::rust::double_option",
@@ -181,7 +173,6 @@ impl AgentOverrideInput {
             model_characteristics: None,
             model_settings: None,
             output_spec: None,
-            platform_tools: None,
             plugins: None,
             retries: None,
             reviewer: None,

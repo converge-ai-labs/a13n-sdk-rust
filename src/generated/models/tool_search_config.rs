@@ -11,48 +11,107 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, Serialize)]
-#[serde(untagged)]
-pub enum ToolSearchConfig {
-    #[serde(rename = "proxy")]
-    Proxy(Box<models::ProxyToolSearchConfig>),
-    #[serde(rename = "native")]
-    Native(Box<models::NativeToolSearchConfig>),
+/// ToolSearchConfig : Names and bounded discovery settings for one Agent's proxy surface.
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ToolSearchConfig {
+    #[serde(default, deserialize_with = "deserialize_non_null_call_name")]
+    #[serde(rename = "call_name", skip_serializing_if = "Option::is_none")]
+    pub call_name: Option<String>,
+
+    #[serde(default, deserialize_with = "deserialize_non_null_describe_name")]
+    #[serde(rename = "describe_name", skip_serializing_if = "Option::is_none")]
+    pub describe_name: Option<String>,
+
+    #[serde(default, deserialize_with = "deserialize_non_null_groups_name")]
+    #[serde(rename = "groups_name", skip_serializing_if = "Option::is_none")]
+    pub groups_name: Option<String>,
+
+    #[serde(default, deserialize_with = "deserialize_non_null_list_name")]
+    #[serde(rename = "list_name", skip_serializing_if = "Option::is_none")]
+    pub list_name: Option<String>,
+
+    #[serde(default, deserialize_with = "deserialize_non_null_max_results")]
+    #[serde(rename = "max_results", skip_serializing_if = "Option::is_none")]
+    pub max_results: Option<i32>,
+
+    #[serde(default, deserialize_with = "deserialize_non_null_max_search_bytes")]
+    #[serde(rename = "max_search_bytes", skip_serializing_if = "Option::is_none")]
+    pub max_search_bytes: Option<i32>,
+
+    #[serde(default, deserialize_with = "deserialize_non_null_mode")]
+    #[serde(rename = "mode", skip_serializing_if = "Option::is_none")]
+    pub mode: Option<Mode>,
+
+    #[serde(default, deserialize_with = "deserialize_non_null_search_name")]
+    #[serde(rename = "search_name", skip_serializing_if = "Option::is_none")]
+    pub search_name: Option<String>,
 }
 
-impl Default for ToolSearchConfig {
-    fn default() -> Self {
-        Self::Proxy(Default::default())
-    }
-}
-
-// Keep the discriminator in the branch payload. Serde's internally tagged
-// newtype representation otherwise removes it before the required field parses.
-impl<'de> Deserialize<'de> for ToolSearchConfig {
-    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let value = serde_json::Value::deserialize(deserializer)?;
-        match value.get("mode").and_then(serde_json::Value::as_str) {
-            Some("proxy") => serde_json::from_value(value)
-                .map(Self::Proxy)
-                .map_err(serde::de::Error::custom),
-            Some("native") => serde_json::from_value(value)
-                .map(Self::Native)
-                .map_err(serde::de::Error::custom),
-            _ => Err(serde::de::Error::custom("Missing or unknown discriminator")),
+impl ToolSearchConfig {
+    /// Names and bounded discovery settings for one Agent's proxy surface.
+    pub fn new() -> ToolSearchConfig {
+        ToolSearchConfig {
+            call_name: None,
+            describe_name: None,
+            groups_name: None,
+            list_name: None,
+            max_results: None,
+            max_search_bytes: None,
+            mode: None,
+            search_name: None,
         }
     }
 }
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Strategy {
-    #[serde(rename = "bm25")]
-    Bm25,
-    #[serde(rename = "regex")]
-    Regex,
+pub enum Mode {
+    #[serde(rename = "proxy")]
+    Proxy,
 }
 
-impl Default for Strategy {
-    fn default() -> Strategy {
-        Self::Bm25
+impl Default for Mode {
+    fn default() -> Mode {
+        Self::Proxy
     }
+}
+fn deserialize_non_null_call_name<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_describe_name<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_groups_name<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_list_name<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_max_results<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_max_search_bytes<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_mode<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_search_name<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

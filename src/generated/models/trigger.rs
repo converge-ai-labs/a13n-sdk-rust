@@ -22,6 +22,8 @@ pub enum Trigger {
     Resume,
     #[serde(rename = "child_result")]
     ChildResult,
+    #[serde(rename = "tool_result")]
+    ToolResult,
     #[serde(rename = "spawned")]
     Spawned,
 }
@@ -33,6 +35,7 @@ impl std::fmt::Display for Trigger {
             Self::Queued => write!(f, "queued"),
             Self::Resume => write!(f, "resume"),
             Self::ChildResult => write!(f, "child_result"),
+            Self::ToolResult => write!(f, "tool_result"),
             Self::Spawned => write!(f, "spawned"),
         }
     }

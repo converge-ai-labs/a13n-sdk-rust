@@ -22,6 +22,14 @@ pub struct RunOptionsOutput {
     )]
     pub configuration: Option<Option<Box<models::RunConfigurationOutput>>>,
 
+    #[serde(
+        rename = "execution",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub execution: Option<Option<Box<models::ExecutionOverride>>>,
+
     #[serde(default, deserialize_with = "deserialize_non_null_labels")]
     #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
     pub labels: Option<std::collections::HashMap<String, String>>,
@@ -48,6 +56,7 @@ impl RunOptionsOutput {
     pub fn new() -> RunOptionsOutput {
         RunOptionsOutput {
             configuration: None,
+            execution: None,
             labels: None,
             max_usage: None,
             overrides: None,

@@ -1,4 +1,5 @@
 mod common;
+use a13n::generated::models;
 use a13n::{
     Answer, Error, ForkOptions, Input, InputPart, ObservationOptions, Overrides,
     PreviewInterruptedKind, ReceiptEvidence, ResumeOptions, RunConfiguration, RunOptions,
@@ -68,7 +69,6 @@ fn public_input_and_every_options_builder_preserve_wire_presence() {
     assert_eq!(serde_json::to_value(RunOptions::new()).unwrap(), json!({}));
     let overrides = Overrides::new()
         .builtin_skills(None)
-        .platform_tools(None)
         .client_tools(None)
         .connection_tools(None)
         .instructions(Some(String::new()))
@@ -102,7 +102,7 @@ fn public_input_and_every_options_builder_preserve_wire_presence() {
         .max_usage(None);
     assert_eq!(
         serde_json::to_value(options).unwrap(),
-        json!({"configuration":{"allowed_hosts":[],"extensions":{"org.test":{"empty":"","flag":false}}},"labels":{},"max_usage":null,"overrides":{"builtin_skills":null,"platform_tools":null,"client_tools":null,"connection_tools":null,"instructions":"","lazy_environment":false,"media_understanding":null,"model":null,"model_characteristics":null,"model_settings":{"enabled":false,"zero":0},"output_spec":null,"plugins":null,"retries":null,"reviewer":null,"skill_sync":null,"skills":null,"subagents":{"nested":[null,{},[]]},"toolsets":{}}})
+        json!({"configuration":{"allowed_hosts":[],"extensions":{"org.test":{"empty":"","flag":false}}},"labels":{},"max_usage":null,"overrides":{"builtin_skills":null,"client_tools":null,"connection_tools":null,"instructions":"","lazy_environment":false,"media_understanding":null,"model":null,"model_characteristics":null,"model_settings":{"enabled":false,"zero":0},"output_spec":null,"plugins":null,"retries":null,"reviewer":null,"skill_sync":null,"skills":null,"subagents":{"nested":[null,{},[]]},"toolsets":{}}})
     );
     assert_eq!(
         serde_json::to_value(RunOptions::new().configuration(None).overrides(None)).unwrap(),
@@ -210,13 +210,16 @@ async fn native_api_and_authored_workflow_share_client_auth_and_shutdown() {
     let sdk = client(&fixture);
     let api_run = sdk.api().runs().at("r");
     let native = api_run.get(Default::default()).await.unwrap();
+    let models::ResponseGetRun::AnyOf0(native) = native.data else {
+        panic!("expected detailed run")
+    };
     let clone = sdk.clone();
     let agent = clone.agent("a");
     drop(clone);
     let mut authored = agent.start("same client").await.unwrap();
     let outcome = authored.result().await.unwrap();
-    assert_eq!(native.data.id, outcome.run_id);
-    assert_eq!(native.data.output.as_deref(), Some(&outcome.output));
+    assert_eq!(native.id, outcome.run_id);
+    assert_eq!(native.output.as_deref(), Some(&outcome.output));
     let mut auth = None;
     for _ in 0..4 {
         let request = fixture.requests.recv().await.unwrap();

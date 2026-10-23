@@ -79,14 +79,15 @@ pub async fn offline() -> Result<()> {
     });
     let client = Client::new(&base, a13n::Secret::new("offline-token"))?;
     let run = client.run("r");
-    let tail = run
-        .items()
-        .get(RunItemsGetOptions {
-            limit: Some(2),
-            ..Default::default()
-        })
-        .await?
-        .data;
+    let tail = crate::detailed_items(
+        run.items()
+            .get(RunItemsGetOptions {
+                limit: Some(2),
+                ..Default::default()
+            })
+            .await?
+            .data,
+    )?;
     ensure(
         tail.complete && tail.items.len() == 4 && tail.items[0].ordinal == 6,
         "Installed whole tail/recent sealed distinction",
@@ -107,7 +108,7 @@ pub async fn offline() -> Result<()> {
             ..Default::default()
         },
     ] {
-        let page = run.items().get(options).await?.data;
+        let page = crate::detailed_items(run.items().get(options).await?.data)?;
         ensure(
             page.complete && page.items.len() == 2,
             "Historical window not live coverage",
@@ -184,14 +185,15 @@ pub async fn history_followup(
     Ok(())
 }
 pub async fn live_window(run: &a13n::Run) -> Result<()> {
-    let recent = run
-        .items()
-        .get(RunItemsGetOptions {
-            limit: Some(1),
-            ..Default::default()
-        })
-        .await?
-        .data;
+    let recent = crate::detailed_items(
+        run.items()
+            .get(RunItemsGetOptions {
+                limit: Some(1),
+                ..Default::default()
+            })
+            .await?
+            .data,
+    )?;
     ensure(recent.complete, "Live recent sealed window")?;
     for pair in recent.items.windows(2) {
         ensure(
@@ -199,15 +201,16 @@ pub async fn live_window(run: &a13n::Run) -> Result<()> {
             "Dense display ordinals",
         )?;
     }
-    let historical = run
-        .items()
-        .get(RunItemsGetOptions {
-            after: Some(0),
-            limit: Some(1),
-            ..Default::default()
-        })
-        .await?
-        .data;
+    let historical = crate::detailed_items(
+        run.items()
+            .get(RunItemsGetOptions {
+                after: Some(0),
+                limit: Some(1),
+                ..Default::default()
+            })
+            .await?
+            .data,
+    )?;
     ensure(
         historical.complete && historical.items.len() <= 1,
         "Live bounded historical window",
@@ -215,15 +218,16 @@ pub async fn live_window(run: &a13n::Run) -> Result<()> {
     if let Some(first) = historical.items.first() {
         ensure(first.ordinal == 1, "History starts at ordinal one")?;
     }
-    let before = run
-        .items()
-        .get(RunItemsGetOptions {
-            before: Some(1),
-            limit: Some(1),
-            ..Default::default()
-        })
-        .await?
-        .data;
+    let before = crate::detailed_items(
+        run.items()
+            .get(RunItemsGetOptions {
+                before: Some(1),
+                limit: Some(1),
+                ..Default::default()
+            })
+            .await?
+            .data,
+    )?;
     ensure(before.items.is_empty(), "Before first ordinal is empty")?;
     Ok(())
 }

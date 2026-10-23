@@ -94,11 +94,6 @@ impl Default for OnError {
         Self::Deny
     }
 }
-fn deserialize_non_null_on_error<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
-    deserializer: D,
-) -> Result<Option<T>, D::Error> {
-    T::deserialize(deserializer).map(Some)
-}
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum OnFlagged {
@@ -112,6 +107,11 @@ impl Default for OnFlagged {
     fn default() -> OnFlagged {
         Self::Deny
     }
+}
+fn deserialize_non_null_on_error<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }
 fn deserialize_non_null_on_flagged<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
     deserializer: D,

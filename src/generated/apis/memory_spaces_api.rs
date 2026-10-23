@@ -13,92 +13,92 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`create_space_api_v1_memory_spaces_post`]
+/// struct for typed errors of method [`create_space`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateSpaceApiV1MemorySpacesPostError {
+pub enum CreateSpaceError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_space_api_v1_memory_spaces_space_id_delete`]
+/// struct for typed errors of method [`delete_space`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteSpaceApiV1MemorySpacesSpaceIdDeleteError {
+pub enum DeleteSpaceError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_space_api_v1_memory_spaces_space_id_get`]
+/// struct for typed errors of method [`get_space`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetSpaceApiV1MemorySpacesSpaceIdGetError {
+pub enum GetSpaceError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_space_organization_api_v1_memory_spaces_space_id_organization_get`]
+/// struct for typed errors of method [`get_space_organization`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetSpaceOrganizationApiV1MemorySpacesSpaceIdOrganizationGetError {
+pub enum GetSpaceOrganizationError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_space_organizations_api_v1_memory_spaces_space_id_organizations_get`]
+/// struct for typed errors of method [`list_space_organizations`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListSpaceOrganizationsApiV1MemorySpacesSpaceIdOrganizationsGetError {
+pub enum ListSpaceOrganizationsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_space_sessions_api_v1_memory_spaces_space_id_sessions_get`]
+/// struct for typed errors of method [`list_space_sessions`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListSpaceSessionsApiV1MemorySpacesSpaceIdSessionsGetError {
+pub enum ListSpaceSessionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_spaces_api_v1_memory_spaces_get`]
+/// struct for typed errors of method [`list_spaces`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListSpacesApiV1MemorySpacesGetError {
+pub enum ListSpacesError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`organize_space_api_v1_memory_spaces_space_id_organizations_post`]
+/// struct for typed errors of method [`organize_space`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum OrganizeSpaceApiV1MemorySpacesSpaceIdOrganizationsPostError {
+pub enum OrganizeSpaceError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_space_api_v1_memory_spaces_space_id_patch`]
+/// struct for typed errors of method [`update_space`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateSpaceApiV1MemorySpacesSpaceIdPatchError {
+pub enum UpdateSpaceError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn create_space_api_v1_memory_spaces_post(
+pub async fn create_space(
     configuration: &configuration::Configuration,
     memory_space_create: models::MemorySpaceCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::MemorySpace>, Error<CreateSpaceApiV1MemorySpacesPostError>> {
+) -> Result<Response<models::MemorySpace>, Error<CreateSpaceError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_memory_space_create = memory_space_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -162,8 +162,7 @@ pub async fn create_space_api_v1_memory_spaces_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateSpaceApiV1MemorySpacesPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateSpaceError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -173,12 +172,12 @@ pub async fn create_space_api_v1_memory_spaces_post(
     }
 }
 
-pub async fn delete_space_api_v1_memory_spaces_space_id_delete(
+pub async fn delete_space(
     configuration: &configuration::Configuration,
     space_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<()>, Error<DeleteSpaceApiV1MemorySpacesSpaceIdDeleteError>> {
+) -> Result<Response<()>, Error<DeleteSpaceError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_space_id = space_id;
     let p_header_if_match = if_match;
@@ -228,8 +227,7 @@ pub async fn delete_space_api_v1_memory_spaces_space_id_delete(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteSpaceApiV1MemorySpacesSpaceIdDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DeleteSpaceError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -239,11 +237,11 @@ pub async fn delete_space_api_v1_memory_spaces_space_id_delete(
     }
 }
 
-pub async fn get_space_api_v1_memory_spaces_space_id_get(
+pub async fn get_space(
     configuration: &configuration::Configuration,
     space_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::MemorySpace>, Error<GetSpaceApiV1MemorySpacesSpaceIdGetError>> {
+) -> Result<Response<models::MemorySpace>, Error<GetSpaceError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_space_id = space_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -300,8 +298,7 @@ pub async fn get_space_api_v1_memory_spaces_space_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetSpaceApiV1MemorySpacesSpaceIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetSpaceError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -311,14 +308,11 @@ pub async fn get_space_api_v1_memory_spaces_space_id_get(
     }
 }
 
-pub async fn get_space_organization_api_v1_memory_spaces_space_id_organization_get(
+pub async fn get_space_organization(
     configuration: &configuration::Configuration,
     space_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::SpaceOrganizationStatus>,
-    Error<GetSpaceOrganizationApiV1MemorySpacesSpaceIdOrganizationGetError>,
-> {
+) -> Result<Response<models::SpaceOrganizationStatus>, Error<GetSpaceOrganizationError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_space_id = space_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -375,8 +369,7 @@ pub async fn get_space_organization_api_v1_memory_spaces_space_id_organization_g
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetSpaceOrganizationApiV1MemorySpacesSpaceIdOrganizationGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetSpaceOrganizationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -386,16 +379,13 @@ pub async fn get_space_organization_api_v1_memory_spaces_space_id_organization_g
     }
 }
 
-pub async fn list_space_organizations_api_v1_memory_spaces_space_id_organizations_get(
+pub async fn list_space_organizations(
     configuration: &configuration::Configuration,
     space_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::RunPage>,
-    Error<ListSpaceOrganizationsApiV1MemorySpacesSpaceIdOrganizationsGetError>,
-> {
+) -> Result<Response<models::RunPage>, Error<ListSpaceOrganizationsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_space_id = space_id;
     let p_query_limit = limit;
@@ -460,8 +450,7 @@ pub async fn list_space_organizations_api_v1_memory_spaces_space_id_organization
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListSpaceOrganizationsApiV1MemorySpacesSpaceIdOrganizationsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListSpaceOrganizationsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -471,16 +460,13 @@ pub async fn list_space_organizations_api_v1_memory_spaces_space_id_organization
     }
 }
 
-pub async fn list_space_sessions_api_v1_memory_spaces_space_id_sessions_get(
+pub async fn list_space_sessions(
     configuration: &configuration::Configuration,
     space_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::SessionPage>,
-    Error<ListSpaceSessionsApiV1MemorySpacesSpaceIdSessionsGetError>,
-> {
+) -> Result<Response<models::SessionPage>, Error<ListSpaceSessionsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_space_id = space_id;
     let p_query_limit = limit;
@@ -545,8 +531,7 @@ pub async fn list_space_sessions_api_v1_memory_spaces_space_id_sessions_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListSpaceSessionsApiV1MemorySpacesSpaceIdSessionsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListSpaceSessionsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -556,14 +541,14 @@ pub async fn list_space_sessions_api_v1_memory_spaces_space_id_sessions_get(
     }
 }
 
-pub async fn list_spaces_api_v1_memory_spaces_get(
+pub async fn list_spaces(
     configuration: &configuration::Configuration,
     label: Option<Vec<String>>,
     enabled: Option<bool>,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::MemorySpacePage>, Error<ListSpacesApiV1MemorySpacesGetError>> {
+) -> Result<Response<models::MemorySpacePage>, Error<ListSpacesError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_label = label;
     let p_query_enabled = enabled;
@@ -647,8 +632,7 @@ pub async fn list_spaces_api_v1_memory_spaces_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListSpacesApiV1MemorySpacesGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListSpacesError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -658,14 +642,11 @@ pub async fn list_spaces_api_v1_memory_spaces_get(
     }
 }
 
-pub async fn organize_space_api_v1_memory_spaces_space_id_organizations_post(
+pub async fn organize_space(
     configuration: &configuration::Configuration,
     space_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::SpaceOrganizationStatus>,
-    Error<OrganizeSpaceApiV1MemorySpacesSpaceIdOrganizationsPostError>,
-> {
+) -> Result<Response<models::SpaceOrganizationStatus>, Error<OrganizeSpaceError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_space_id = space_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -732,8 +713,7 @@ pub async fn organize_space_api_v1_memory_spaces_space_id_organizations_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<OrganizeSpaceApiV1MemorySpacesSpaceIdOrganizationsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<OrganizeSpaceError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -743,13 +723,13 @@ pub async fn organize_space_api_v1_memory_spaces_space_id_organizations_post(
     }
 }
 
-pub async fn update_space_api_v1_memory_spaces_space_id_patch(
+pub async fn update_space(
     configuration: &configuration::Configuration,
     space_id: &str,
     memory_space_update: models::MemorySpaceUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::MemorySpace>, Error<UpdateSpaceApiV1MemorySpacesSpaceIdPatchError>> {
+) -> Result<Response<models::MemorySpace>, Error<UpdateSpaceError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_space_id = space_id;
     let p_body_memory_space_update = memory_space_update;
@@ -822,8 +802,7 @@ pub async fn update_space_api_v1_memory_spaces_space_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateSpaceApiV1MemorySpacesSpaceIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateSpaceError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

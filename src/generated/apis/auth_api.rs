@@ -15,207 +15,206 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use tokio::fs::File as TokioFile;
 use tokio_util::codec::{BytesCodec, FramedRead};
 
-/// struct for typed errors of method [`accept_api_v1_invitations_invitation_id_accept_post`]
+/// struct for typed errors of method [`accept`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum AcceptApiV1InvitationsInvitationIdAcceptPostError {
+pub enum AcceptError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`auth_configuration_api_v1_auth_configuration_get`]
+/// struct for typed errors of method [`auth_configuration`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum AuthConfigurationApiV1AuthConfigurationGetError {
+pub enum AuthConfigurationError {
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`bootstrap_administrator_api_v1_auth_bootstrap_post`]
+/// struct for typed errors of method [`bootstrap_administrator`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum BootstrapAdministratorApiV1AuthBootstrapPostError {
+pub enum BootstrapAdministratorError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`change_password_api_v1_users_me_password_post`]
+/// struct for typed errors of method [`change_password`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ChangePasswordApiV1UsersMePasswordPostError {
+pub enum ChangePasswordError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`confirm_email_change_api_v1_auth_email_change_confirm_post`]
+/// struct for typed errors of method [`confirm_email_change`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ConfirmEmailChangeApiV1AuthEmailChangeConfirmPostError {
+pub enum ConfirmEmailChangeError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`confirm_password_reset_api_v1_auth_password_reset_confirm_post`]
+/// struct for typed errors of method [`confirm_password_reset`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ConfirmPasswordResetApiV1AuthPasswordResetConfirmPostError {
+pub enum ConfirmPasswordResetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_user_key_api_v1_users_me_keys_post`]
+/// struct for typed errors of method [`create_user_key`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateUserKeyApiV1UsersMeKeysPostError {
+pub enum CreateUserKeyError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_avatar_api_v1_users_me_avatar_delete`]
+/// struct for typed errors of method [`delete_user_avatar`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteAvatarApiV1UsersMeAvatarDeleteError {
+pub enum DeleteUserAvatarError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`disable_account_api_v1_users_me_disable_post`]
+/// struct for typed errors of method [`disable_account`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DisableAccountApiV1UsersMeDisablePostError {
+pub enum DisableAccountError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_avatar_api_v1_users_user_id_avatar_get`]
+/// struct for typed errors of method [`get_profile`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAvatarApiV1UsersUserIdAvatarGetError {
+pub enum GetProfileError {
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`get_user_avatar`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum GetUserAvatarError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_profile_api_v1_users_me_get`]
+/// struct for typed errors of method [`list_account_audit_events`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetProfileApiV1UsersMeGetError {
-    DefaultResponse(models::ErrorEnvelope),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`list_account_audit_events_api_v1_users_me_audit_events_get`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum ListAccountAuditEventsApiV1UsersMeAuditEventsGetError {
+pub enum ListAccountAuditEventsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_login_sessions_api_v1_users_me_login_sessions_get`]
+/// struct for typed errors of method [`list_login_sessions`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListLoginSessionsApiV1UsersMeLoginSessionsGetError {
+pub enum ListLoginSessionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_user_keys_api_v1_users_me_keys_get`]
+/// struct for typed errors of method [`list_user_keys`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListUserKeysApiV1UsersMeKeysGetError {
+pub enum ListUserKeysError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`logout_api_v1_auth_logout_post`]
+/// struct for typed errors of method [`logout`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum LogoutApiV1AuthLogoutPostError {
+pub enum LogoutError {
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`password_login_api_v1_auth_login_post`]
+/// struct for typed errors of method [`password_login`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PasswordLoginApiV1AuthLoginPostError {
+pub enum PasswordLoginError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`put_avatar_api_v1_users_me_avatar_put`]
+/// struct for typed errors of method [`put_user_avatar`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PutAvatarApiV1UsersMeAvatarPutError {
+pub enum PutUserAvatarError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`request_password_reset_api_v1_auth_password_reset_post`]
+/// struct for typed errors of method [`request_password_reset`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RequestPasswordResetApiV1AuthPasswordResetPostError {
+pub enum RequestPasswordResetError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`revoke_login_session_api_v1_users_me_login_sessions_session_id_delete`]
+/// struct for typed errors of method [`revoke_login_session`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RevokeLoginSessionApiV1UsersMeLoginSessionsSessionIdDeleteError {
+pub enum RevokeLoginSessionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`revoke_user_key_api_v1_users_me_keys_key_id_delete`]
+/// struct for typed errors of method [`revoke_user_key`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RevokeUserKeyApiV1UsersMeKeysKeyIdDeleteError {
+pub enum RevokeUserKeyError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`session_profile_api_v1_auth_session_get`]
+/// struct for typed errors of method [`session_profile`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum SessionProfileApiV1AuthSessionGetError {
+pub enum SessionProfileError {
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_profile_api_v1_users_me_patch`]
+/// struct for typed errors of method [`update_profile`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateProfileApiV1UsersMePatchError {
+pub enum UpdateProfileError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
 /// Public by token: creates or joins the invited account and starts a login session.
-pub async fn accept_api_v1_invitations_invitation_id_accept_post(
+pub async fn accept(
     configuration: &configuration::Configuration,
     invitation_id: &str,
     invitation_accept: models::InvitationAccept,
-) -> Result<Response<models::LoginOutput>, Error<AcceptApiV1InvitationsInvitationIdAcceptPostError>>
-{
+) -> Result<Response<models::LoginOutput>, Error<AcceptError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_invitation_id = invitation_id;
     let p_body_invitation_accept = invitation_accept;
@@ -269,8 +268,7 @@ pub async fn accept_api_v1_invitations_invitation_id_accept_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AcceptApiV1InvitationsInvitationIdAcceptPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<AcceptError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -280,12 +278,9 @@ pub async fn accept_api_v1_invitations_invitation_id_accept_post(
     }
 }
 
-pub async fn auth_configuration_api_v1_auth_configuration_get(
+pub async fn auth_configuration(
     configuration: &configuration::Configuration,
-) -> Result<
-    Response<models::AuthConfiguration>,
-    Error<AuthConfigurationApiV1AuthConfigurationGetError>,
-> {
+) -> Result<Response<models::AuthConfiguration>, Error<AuthConfigurationError>> {
     let uri_str = format!("{}/api/v1/auth/configuration", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -328,8 +323,7 @@ pub async fn auth_configuration_api_v1_auth_configuration_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AuthConfigurationApiV1AuthConfigurationGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<AuthConfigurationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -340,11 +334,10 @@ pub async fn auth_configuration_api_v1_auth_configuration_get(
 }
 
 /// Public only until initialized: creates the first administrator, as the `bootstrap` command does, signed in.
-pub async fn bootstrap_administrator_api_v1_auth_bootstrap_post(
+pub async fn bootstrap_administrator(
     configuration: &configuration::Configuration,
     bootstrap_input: models::BootstrapInput,
-) -> Result<Response<models::LoginOutput>, Error<BootstrapAdministratorApiV1AuthBootstrapPostError>>
-{
+) -> Result<Response<models::LoginOutput>, Error<BootstrapAdministratorError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_bootstrap_input = bootstrap_input;
 
@@ -393,8 +386,7 @@ pub async fn bootstrap_administrator_api_v1_auth_bootstrap_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<BootstrapAdministratorApiV1AuthBootstrapPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<BootstrapAdministratorError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -404,10 +396,10 @@ pub async fn bootstrap_administrator_api_v1_auth_bootstrap_post(
     }
 }
 
-pub async fn change_password_api_v1_users_me_password_post(
+pub async fn change_password(
     configuration: &configuration::Configuration,
     password_change: models::PasswordChange,
-) -> Result<Response<()>, Error<ChangePasswordApiV1UsersMePasswordPostError>> {
+) -> Result<Response<()>, Error<ChangePasswordError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_password_change = password_change;
 
@@ -446,8 +438,7 @@ pub async fn change_password_api_v1_users_me_password_post(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<ChangePasswordApiV1UsersMePasswordPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ChangePasswordError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -457,10 +448,10 @@ pub async fn change_password_api_v1_users_me_password_post(
     }
 }
 
-pub async fn confirm_email_change_api_v1_auth_email_change_confirm_post(
+pub async fn confirm_email_change(
     configuration: &configuration::Configuration,
     email_change_confirm: models::EmailChangeConfirm,
-) -> Result<Response<()>, Error<ConfirmEmailChangeApiV1AuthEmailChangeConfirmPostError>> {
+) -> Result<Response<()>, Error<ConfirmEmailChangeError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_email_change_confirm = email_change_confirm;
 
@@ -491,8 +482,7 @@ pub async fn confirm_email_change_api_v1_auth_email_change_confirm_post(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<ConfirmEmailChangeApiV1AuthEmailChangeConfirmPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ConfirmEmailChangeError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -502,10 +492,10 @@ pub async fn confirm_email_change_api_v1_auth_email_change_confirm_post(
     }
 }
 
-pub async fn confirm_password_reset_api_v1_auth_password_reset_confirm_post(
+pub async fn confirm_password_reset(
     configuration: &configuration::Configuration,
     password_reset_confirm: models::PasswordResetConfirm,
-) -> Result<Response<()>, Error<ConfirmPasswordResetApiV1AuthPasswordResetConfirmPostError>> {
+) -> Result<Response<()>, Error<ConfirmPasswordResetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_password_reset_confirm = password_reset_confirm;
 
@@ -536,8 +526,7 @@ pub async fn confirm_password_reset_api_v1_auth_password_reset_confirm_post(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<ConfirmPasswordResetApiV1AuthPasswordResetConfirmPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ConfirmPasswordResetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -548,10 +537,10 @@ pub async fn confirm_password_reset_api_v1_auth_password_reset_confirm_post(
 }
 
 /// Needs a login session: an API key never issues keys, so a leaked key cannot outlive its revocation.
-pub async fn create_user_key_api_v1_users_me_keys_post(
+pub async fn create_user_key(
     configuration: &configuration::Configuration,
     user_key_create: models::UserKeyCreate,
-) -> Result<Response<models::IssuedKey>, Error<CreateUserKeyApiV1UsersMeKeysPostError>> {
+) -> Result<Response<models::IssuedKey>, Error<CreateUserKeyError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_user_key_create = user_key_create;
 
@@ -611,8 +600,7 @@ pub async fn create_user_key_api_v1_users_me_keys_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateUserKeyApiV1UsersMeKeysPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateUserKeyError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -622,10 +610,10 @@ pub async fn create_user_key_api_v1_users_me_keys_post(
     }
 }
 
-pub async fn delete_avatar_api_v1_users_me_avatar_delete(
+pub async fn delete_user_avatar(
     configuration: &configuration::Configuration,
     if_match: Option<&str>,
-) -> Result<Response<models::Profile>, Error<DeleteAvatarApiV1UsersMeAvatarDeleteError>> {
+) -> Result<Response<models::Profile>, Error<DeleteUserAvatarError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_header_if_match = if_match;
 
@@ -687,8 +675,7 @@ pub async fn delete_avatar_api_v1_users_me_avatar_delete(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteAvatarApiV1UsersMeAvatarDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DeleteUserAvatarError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -699,10 +686,10 @@ pub async fn delete_avatar_api_v1_users_me_avatar_delete(
 }
 
 /// Disable the caller's own account, proven by the current password; no route enables it again.
-pub async fn disable_account_api_v1_users_me_disable_post(
+pub async fn disable_account(
     configuration: &configuration::Configuration,
     account_disable: models::AccountDisable,
-) -> Result<Response<()>, Error<DisableAccountApiV1UsersMeDisablePostError>> {
+) -> Result<Response<()>, Error<DisableAccountError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_account_disable = account_disable;
 
@@ -741,8 +728,7 @@ pub async fn disable_account_api_v1_users_me_disable_post(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<DisableAccountApiV1UsersMeDisablePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DisableAccountError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -752,51 +738,9 @@ pub async fn disable_account_api_v1_users_me_disable_post(
     }
 }
 
-pub async fn get_avatar_api_v1_users_user_id_avatar_get(
+pub async fn get_profile(
     configuration: &configuration::Configuration,
-    user_id: &str,
-) -> Result<reqwest::Response, Error<GetAvatarApiV1UsersUserIdAvatarGetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_user_id = user_id;
-
-    let uri_str = format!(
-        "{}/api/v1/users/{user_id}/avatar",
-        configuration.base_path,
-        user_id = crate::generated::apis::urlencode(p_path_user_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-
-    if !status.is_client_error() && !status.is_server_error() {
-        Ok(resp)
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<GetAvatarApiV1UsersUserIdAvatarGetError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn get_profile_api_v1_users_me_get(
-    configuration: &configuration::Configuration,
-) -> Result<Response<models::Profile>, Error<GetProfileApiV1UsersMeGetError>> {
+) -> Result<Response<models::Profile>, Error<GetProfileError>> {
     let uri_str = format!("{}/api/v1/users/me", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -842,7 +786,48 @@ pub async fn get_profile_api_v1_users_me_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetProfileApiV1UsersMeGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<GetProfileError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn get_user_avatar(
+    configuration: &configuration::Configuration,
+    user_id: &str,
+) -> Result<reqwest::Response, Error<GetUserAvatarError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_user_id = user_id;
+
+    let uri_str = format!(
+        "{}/api/v1/users/{user_id}/avatar",
+        configuration.base_path,
+        user_id = crate::generated::apis::urlencode(p_path_user_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+
+    if !status.is_client_error() && !status.is_server_error() {
+        Ok(resp)
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetUserAvatarError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -853,12 +838,11 @@ pub async fn get_profile_api_v1_users_me_get(
 }
 
 /// The caller's own trail, account-wide events included; requires a login session.
-pub async fn list_account_audit_events_api_v1_users_me_audit_events_get(
+pub async fn list_account_audit_events(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<Response<models::AuditPage>, Error<ListAccountAuditEventsApiV1UsersMeAuditEventsGetError>>
-{
+) -> Result<Response<models::AuditPage>, Error<ListAccountAuditEventsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -914,8 +898,7 @@ pub async fn list_account_audit_events_api_v1_users_me_audit_events_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListAccountAuditEventsApiV1UsersMeAuditEventsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListAccountAuditEventsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -925,14 +908,11 @@ pub async fn list_account_audit_events_api_v1_users_me_audit_events_get(
     }
 }
 
-pub async fn list_login_sessions_api_v1_users_me_login_sessions_get(
+pub async fn list_login_sessions(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::LoginSessionPage>,
-    Error<ListLoginSessionsApiV1UsersMeLoginSessionsGetError>,
-> {
+) -> Result<Response<models::LoginSessionPage>, Error<ListLoginSessionsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -988,8 +968,7 @@ pub async fn list_login_sessions_api_v1_users_me_login_sessions_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListLoginSessionsApiV1UsersMeLoginSessionsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListLoginSessionsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -999,12 +978,12 @@ pub async fn list_login_sessions_api_v1_users_me_login_sessions_get(
     }
 }
 
-pub async fn list_user_keys_api_v1_users_me_keys_get(
+pub async fn list_user_keys(
     configuration: &configuration::Configuration,
     workspace_id: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<Response<models::ApiKeyPage>, Error<ListUserKeysApiV1UsersMeKeysGetError>> {
+) -> Result<Response<models::ApiKeyPage>, Error<ListUserKeysError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_workspace_id = workspace_id;
     let p_query_limit = limit;
@@ -1064,8 +1043,7 @@ pub async fn list_user_keys_api_v1_users_me_keys_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListUserKeysApiV1UsersMeKeysGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListUserKeysError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1075,9 +1053,9 @@ pub async fn list_user_keys_api_v1_users_me_keys_get(
     }
 }
 
-pub async fn logout_api_v1_auth_logout_post(
+pub async fn logout(
     configuration: &configuration::Configuration,
-) -> Result<Response<()>, Error<LogoutApiV1AuthLogoutPostError>> {
+) -> Result<Response<()>, Error<LogoutError>> {
     let uri_str = format!("{}/api/v1/auth/logout", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -1112,7 +1090,7 @@ pub async fn logout_api_v1_auth_logout_post(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<LogoutApiV1AuthLogoutPostError> = serde_json::from_str(&content).ok();
+        let entity: Option<LogoutError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1122,10 +1100,10 @@ pub async fn logout_api_v1_auth_logout_post(
     }
 }
 
-pub async fn password_login_api_v1_auth_login_post(
+pub async fn password_login(
     configuration: &configuration::Configuration,
     login_input: models::LoginInput,
-) -> Result<Response<models::LoginOutput>, Error<PasswordLoginApiV1AuthLoginPostError>> {
+) -> Result<Response<models::LoginOutput>, Error<PasswordLoginError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_login_input = login_input;
 
@@ -1174,8 +1152,7 @@ pub async fn password_login_api_v1_auth_login_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PasswordLoginApiV1AuthLoginPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<PasswordLoginError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1185,12 +1162,12 @@ pub async fn password_login_api_v1_auth_login_post(
     }
 }
 
-pub async fn put_avatar_api_v1_users_me_avatar_put(
+pub async fn put_user_avatar(
     configuration: &configuration::Configuration,
     content_type: &str,
     body: std::path::PathBuf,
     if_match: Option<&str>,
-) -> Result<Response<models::Profile>, Error<PutAvatarApiV1UsersMeAvatarPutError>> {
+) -> Result<Response<models::Profile>, Error<PutUserAvatarError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_header_content_type = content_type;
     let p_body_body = body;
@@ -1256,8 +1233,7 @@ pub async fn put_avatar_api_v1_users_me_avatar_put(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PutAvatarApiV1UsersMeAvatarPutError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<PutUserAvatarError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1267,10 +1243,10 @@ pub async fn put_avatar_api_v1_users_me_avatar_put(
     }
 }
 
-pub async fn request_password_reset_api_v1_auth_password_reset_post(
+pub async fn request_password_reset(
     configuration: &configuration::Configuration,
     password_reset: models::PasswordReset,
-) -> Result<Response<()>, Error<RequestPasswordResetApiV1AuthPasswordResetPostError>> {
+) -> Result<Response<()>, Error<RequestPasswordResetError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_password_reset = password_reset;
 
@@ -1298,8 +1274,7 @@ pub async fn request_password_reset_api_v1_auth_password_reset_post(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<RequestPasswordResetApiV1AuthPasswordResetPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<RequestPasswordResetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1309,10 +1284,10 @@ pub async fn request_password_reset_api_v1_auth_password_reset_post(
     }
 }
 
-pub async fn revoke_login_session_api_v1_users_me_login_sessions_session_id_delete(
+pub async fn revoke_login_session(
     configuration: &configuration::Configuration,
     session_id: &str,
-) -> Result<Response<()>, Error<RevokeLoginSessionApiV1UsersMeLoginSessionsSessionIdDeleteError>> {
+) -> Result<Response<()>, Error<RevokeLoginSessionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_session_id = session_id;
 
@@ -1354,8 +1329,7 @@ pub async fn revoke_login_session_api_v1_users_me_login_sessions_session_id_dele
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<RevokeLoginSessionApiV1UsersMeLoginSessionsSessionIdDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<RevokeLoginSessionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1365,11 +1339,11 @@ pub async fn revoke_login_session_api_v1_users_me_login_sessions_session_id_dele
     }
 }
 
-pub async fn revoke_user_key_api_v1_users_me_keys_key_id_delete(
+pub async fn revoke_user_key(
     configuration: &configuration::Configuration,
     key_id: &str,
     if_match: Option<&str>,
-) -> Result<Response<models::ApiKey>, Error<RevokeUserKeyApiV1UsersMeKeysKeyIdDeleteError>> {
+) -> Result<Response<models::ApiKey>, Error<RevokeUserKeyError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_key_id = key_id;
     let p_header_if_match = if_match;
@@ -1436,8 +1410,7 @@ pub async fn revoke_user_key_api_v1_users_me_keys_key_id_delete(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RevokeUserKeyApiV1UsersMeKeysKeyIdDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<RevokeUserKeyError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1448,9 +1421,9 @@ pub async fn revoke_user_key_api_v1_users_me_keys_key_id_delete(
 }
 
 /// Restores a browser session; the CSRF token is stable for the session's lifetime.
-pub async fn session_profile_api_v1_auth_session_get(
+pub async fn session_profile(
     configuration: &configuration::Configuration,
-) -> Result<Response<models::SessionProfile>, Error<SessionProfileApiV1AuthSessionGetError>> {
+) -> Result<Response<models::SessionProfile>, Error<SessionProfileError>> {
     let uri_str = format!("{}/api/v1/auth/session", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -1496,8 +1469,7 @@ pub async fn session_profile_api_v1_auth_session_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<SessionProfileApiV1AuthSessionGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<SessionProfileError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1507,11 +1479,11 @@ pub async fn session_profile_api_v1_auth_session_get(
     }
 }
 
-pub async fn update_profile_api_v1_users_me_patch(
+pub async fn update_profile(
     configuration: &configuration::Configuration,
     profile_update: models::ProfileUpdate,
     if_match: Option<&str>,
-) -> Result<Response<models::Profile>, Error<UpdateProfileApiV1UsersMePatchError>> {
+) -> Result<Response<models::Profile>, Error<UpdateProfileError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_profile_update = profile_update;
     let p_header_if_match = if_match;
@@ -1575,8 +1547,7 @@ pub async fn update_profile_api_v1_users_me_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateProfileApiV1UsersMePatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateProfileError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

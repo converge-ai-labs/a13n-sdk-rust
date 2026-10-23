@@ -119,6 +119,10 @@ fn every_label_resource_uses_the_sdk_http_contract() {
                     _ => unreachable!(),
                 }
                 .unwrap();
+                body["id"] = serde_json::json!("resource_test");
+                if kind == "run" {
+                    body["thread_id"] = serde_json::json!("thread_test");
+                }
                 body["labels"] = serde_json::json!({"project": "support"});
                 let body = body.to_string();
                 write!(stream, "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nETag: \"result\"\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}", body.len(), body).unwrap();

@@ -107,7 +107,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         },
     ).await?;
     let outcome = interaction.result().await?;
-    let run = client.api().runs().at(&outcome.run_id).get(Default::default()).await?;
+    let run = client.run(&outcome.run_id).get().await?;
     for mount in run.data.memory_mounts {
         println!("{}: space={:?}, roots={:?}", mount.name, mount.space_id, mount.roots);
     }

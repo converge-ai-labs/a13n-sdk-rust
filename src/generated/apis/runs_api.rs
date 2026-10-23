@@ -13,346 +13,426 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`archive_thread_api_v1_threads_thread_id_archive_post`]
+/// struct for typed errors of method [`archive_thread`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ArchiveThreadApiV1ThreadsThreadIdArchivePostError {
+pub enum ArchiveThreadError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_session_api_v1_sessions_post`]
+/// struct for typed errors of method [`cancel_tool_execution`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateSessionApiV1SessionsPostError {
+pub enum CancelToolExecutionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_thread_api_v1_threads_post`]
+/// struct for typed errors of method [`create_session`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateThreadApiV1ThreadsPostError {
+pub enum CreateSessionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`edit_entry_api_v1_threads_thread_id_inbox_entry_id_patch`]
+/// struct for typed errors of method [`create_thread`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum EditEntryApiV1ThreadsThreadIdInboxEntryIdPatchError {
+pub enum CreateThreadError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`fork_run_api_v1_runs_run_id_fork_post`]
+/// struct for typed errors of method [`edit_entry`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ForkRunApiV1RunsRunIdForkPostError {
+pub enum EditEntryError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_attempt_api_v1_runs_run_id_attempts_attempt_id_get`]
+/// struct for typed errors of method [`fork_run`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAttemptApiV1RunsRunIdAttemptsAttemptIdGetError {
+pub enum ForkRunError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_entry_api_v1_threads_thread_id_inbox_entry_id_get`]
+/// struct for typed errors of method [`get_inbox_entry`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetEntryApiV1ThreadsThreadIdInboxEntryIdGetError {
+pub enum GetInboxEntryError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_message_authors_api_v1_sessions_session_id_message_authors_get`]
+/// struct for typed errors of method [`get_message_authors`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetMessageAuthorsApiV1SessionsSessionIdMessageAuthorsGetError {
+pub enum GetMessageAuthorsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_run_api_v1_runs_run_id_get`]
+/// struct for typed errors of method [`get_run`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetRunApiV1RunsRunIdGetError {
+pub enum GetRunError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_session_api_v1_sessions_session_id_get`]
+/// struct for typed errors of method [`get_run_agent`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetSessionApiV1SessionsSessionIdGetError {
+pub enum GetRunAgentError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_thread_api_v1_threads_thread_id_get`]
+/// struct for typed errors of method [`get_run_attempt`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetThreadApiV1ThreadsThreadIdGetError {
+pub enum GetRunAttemptError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_trace_api_v1_traces_trace_id_get`]
+/// struct for typed errors of method [`get_run_content`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetTraceApiV1TracesTraceIdGetError {
+pub enum GetRunContentError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_trace_backend_api_v1_trace_backend_get`]
+/// struct for typed errors of method [`get_run_lineage`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetTraceBackendApiV1TraceBackendGetError {
+pub enum GetRunLineageError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`interrupt_run_api_v1_runs_run_id_interrupt_post`]
+/// struct for typed errors of method [`get_session`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum InterruptRunApiV1RunsRunIdInterruptPostError {
+pub enum GetSessionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_attempt_spans_api_v1_runs_run_id_attempts_attempt_id_trace_get`]
+/// struct for typed errors of method [`get_thread`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListAttemptSpansApiV1RunsRunIdAttemptsAttemptIdTraceGetError {
+pub enum GetThreadError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_inbox_api_v1_threads_thread_id_inbox_get`]
+/// struct for typed errors of method [`get_tool_execution`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListInboxApiV1ThreadsThreadIdInboxGetError {
+pub enum GetToolExecutionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_runs_api_v1_runs_get`]
+/// struct for typed errors of method [`get_tool_execution_result`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListRunsApiV1RunsGetError {
+pub enum GetToolExecutionResultError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_sessions_api_v1_sessions_get`]
+/// struct for typed errors of method [`get_trace`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListSessionsApiV1SessionsGetError {
+pub enum GetTraceError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_thread_runs_api_v1_threads_thread_id_runs_get`]
+/// struct for typed errors of method [`get_trace_backend`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListThreadRunsApiV1ThreadsThreadIdRunsGetError {
+pub enum GetTraceBackendError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_threads_api_v1_threads_get`]
+/// struct for typed errors of method [`get_trace_span`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListThreadsApiV1ThreadsGetError {
+pub enum GetTraceSpanError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_trace_spans_api_v1_traces_trace_id_spans_get`]
+/// struct for typed errors of method [`interrupt_run`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListTraceSpansApiV1TracesTraceIdSpansGetError {
+pub enum InterruptRunError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_traces_api_v1_traces_get`]
+/// struct for typed errors of method [`list_attempt_spans`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListTracesApiV1TracesGetError {
+pub enum ListAttemptSpansError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`reorder_inbox_api_v1_threads_thread_id_inbox_order_put`]
+/// struct for typed errors of method [`list_inbox`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReorderInboxApiV1ThreadsThreadIdInboxOrderPutError {
+pub enum ListInboxError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`resume_run_api_v1_runs_run_id_resume_post`]
+/// struct for typed errors of method [`list_run_attempts`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ResumeRunApiV1RunsRunIdResumePostError {
+pub enum ListRunAttemptsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`run_agent_api_v1_runs_run_id_agent_get`]
+/// struct for typed errors of method [`list_run_items`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RunAgentApiV1RunsRunIdAgentGetError {
+pub enum ListRunItemsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`run_attempts_api_v1_runs_run_id_attempts_get`]
+/// struct for typed errors of method [`list_runs`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RunAttemptsApiV1RunsRunIdAttemptsGetError {
+pub enum ListRunsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`run_content_api_v1_runs_run_id_contents_content_id_get`]
+/// struct for typed errors of method [`list_sessions`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RunContentApiV1RunsRunIdContentsContentIdGetError {
+pub enum ListSessionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`run_image_api_v1_runs_run_id_images_image_id_get`]
+/// struct for typed errors of method [`list_thread_runs`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RunImageApiV1RunsRunIdImagesImageIdGetError {
+pub enum ListThreadRunsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`run_items_api_v1_runs_run_id_items_get`]
+/// struct for typed errors of method [`list_threads`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RunItemsApiV1RunsRunIdItemsGetError {
+pub enum ListThreadsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`run_lineage_api_v1_runs_run_id_lineage_get`]
+/// struct for typed errors of method [`list_tool_executions`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RunLineageApiV1RunsRunIdLineageGetError {
+pub enum ListToolExecutionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`session_stream_api_v1_sessions_session_id_stream_get`]
+/// struct for typed errors of method [`list_trace_spans`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum SessionStreamApiV1SessionsSessionIdStreamGetError {
+pub enum ListTraceSpansError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`submit_message_api_v1_threads_thread_id_inbox_post`]
+/// struct for typed errors of method [`list_traces`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum SubmitMessageApiV1ThreadsThreadIdInboxPostError {
+pub enum ListTracesError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`thread_stream_api_v1_threads_thread_id_stream_get`]
+/// struct for typed errors of method [`observe_tool_execution`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ThreadStreamApiV1ThreadsThreadIdStreamGetError {
+pub enum ObserveToolExecutionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_run_api_v1_runs_run_id_patch`]
+/// struct for typed errors of method [`read_run_item_content`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateRunApiV1RunsRunIdPatchError {
+pub enum ReadRunItemContentError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_session_api_v1_sessions_session_id_patch`]
+/// struct for typed errors of method [`read_span_content`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateSessionApiV1SessionsSessionIdPatchError {
+pub enum ReadSpanContentError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_thread_api_v1_threads_thread_id_patch`]
+/// struct for typed errors of method [`reorder_inbox`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateThreadApiV1ThreadsThreadIdPatchError {
+pub enum ReorderInboxError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`withdraw_entry_api_v1_threads_thread_id_inbox_entry_id_delete`]
+/// struct for typed errors of method [`resume_run`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum WithdrawEntryApiV1ThreadsThreadIdInboxEntryIdDeleteError {
+pub enum ResumeRunError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn archive_thread_api_v1_threads_thread_id_archive_post(
+/// struct for typed errors of method [`run_image`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum RunImageError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`search_traces`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum SearchTracesError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`session_stream`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum SessionStreamError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`submit_message`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum SubmitMessageError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`thread_stream`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ThreadStreamError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`update_run`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum UpdateRunError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`update_session`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum UpdateSessionError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`update_thread`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum UpdateThreadError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`withdraw_entry`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WithdrawEntryError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+pub async fn archive_thread(
     configuration: &configuration::Configuration,
     thread_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ThreadView>, Error<ArchiveThreadApiV1ThreadsThreadIdArchivePostError>>
-{
+) -> Result<Response<models::ThreadView>, Error<ArchiveThreadError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_header_if_match = if_match;
@@ -423,8 +503,7 @@ pub async fn archive_thread_api_v1_threads_thread_id_archive_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ArchiveThreadApiV1ThreadsThreadIdArchivePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ArchiveThreadError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -434,11 +513,95 @@ pub async fn archive_thread_api_v1_threads_thread_id_archive_post(
     }
 }
 
-pub async fn create_session_api_v1_sessions_post(
+pub async fn cancel_tool_execution(
+    configuration: &configuration::Configuration,
+    thread_id: &str,
+    execution_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ExecutionView>, Error<CancelToolExecutionError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_thread_id = thread_id;
+    let p_path_execution_id = execution_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/threads/{thread_id}/tool-executions/{execution_id}/cancel",
+        configuration.base_path,
+        thread_id = crate::generated::apis::urlencode(p_path_thread_id),
+        execution_id = crate::generated::apis::urlencode(p_path_execution_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ExecutionView`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ExecutionView`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<CancelToolExecutionError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn create_session(
     configuration: &configuration::Configuration,
     session_create: models::SessionCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::SessionView>, Error<CreateSessionApiV1SessionsPostError>> {
+) -> Result<Response<models::SessionView>, Error<CreateSessionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_session_create = session_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -502,8 +665,7 @@ pub async fn create_session_api_v1_sessions_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateSessionApiV1SessionsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateSessionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -514,12 +676,12 @@ pub async fn create_session_api_v1_sessions_post(
 }
 
 /// Create a thread (and its session unless one is named) with its first message.
-pub async fn create_thread_api_v1_threads_post(
+pub async fn create_thread(
     configuration: &configuration::Configuration,
     idempotency_key: &str,
     new_thread: models::NewThread,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Submitted>, Error<CreateThreadApiV1ThreadsPostError>> {
+) -> Result<Response<models::Submitted>, Error<CreateThreadError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_header_idempotency_key = idempotency_key;
     let p_body_new_thread = new_thread;
@@ -585,7 +747,7 @@ pub async fn create_thread_api_v1_threads_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateThreadApiV1ThreadsPostError> = serde_json::from_str(&content).ok();
+        let entity: Option<CreateThreadError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -595,15 +757,14 @@ pub async fn create_thread_api_v1_threads_post(
     }
 }
 
-pub async fn edit_entry_api_v1_threads_thread_id_inbox_entry_id_patch(
+pub async fn edit_entry(
     configuration: &configuration::Configuration,
     thread_id: &str,
     entry_id: &str,
     entry_update: models::EntryUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Submitted>, Error<EditEntryApiV1ThreadsThreadIdInboxEntryIdPatchError>>
-{
+) -> Result<Response<models::Submitted>, Error<EditEntryError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_path_entry_id = entry_id;
@@ -678,8 +839,7 @@ pub async fn edit_entry_api_v1_threads_thread_id_inbox_entry_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<EditEntryApiV1ThreadsThreadIdInboxEntryIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<EditEntryError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -690,13 +850,13 @@ pub async fn edit_entry_api_v1_threads_thread_id_inbox_entry_id_patch(
 }
 
 /// A new thread in the run's session that continues from this run's committed history.
-pub async fn fork_run_api_v1_runs_run_id_fork_post(
+pub async fn fork_run(
     configuration: &configuration::Configuration,
     run_id: &str,
     idempotency_key: &str,
     fork: models::Fork,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Submitted>, Error<ForkRunApiV1RunsRunIdForkPostError>> {
+) -> Result<Response<models::Submitted>, Error<ForkRunError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_run_id = run_id;
     let p_header_idempotency_key = idempotency_key;
@@ -767,84 +927,7 @@ pub async fn fork_run_api_v1_runs_run_id_fork_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ForkRunApiV1RunsRunIdForkPostError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn get_attempt_api_v1_runs_run_id_attempts_attempt_id_get(
-    configuration: &configuration::Configuration,
-    run_id: &str,
-    attempt_id: &str,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::AttemptView>, Error<GetAttemptApiV1RunsRunIdAttemptsAttemptIdGetError>>
-{
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_run_id = run_id;
-    let p_path_attempt_id = attempt_id;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/runs/{run_id}/attempts/{attempt_id}",
-        configuration.base_path,
-        run_id = crate::generated::apis::urlencode(p_path_run_id),
-        attempt_id = crate::generated::apis::urlencode(p_path_attempt_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::AttemptView`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::AttemptView`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<GetAttemptApiV1RunsRunIdAttemptsAttemptIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ForkRunError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -855,15 +938,27 @@ pub async fn get_attempt_api_v1_runs_run_id_attempts_attempt_id_get(
 }
 
 /// One entry and its disposition; edits name the thread's ETag.
-pub async fn get_entry_api_v1_threads_thread_id_inbox_entry_id_get(
+pub async fn get_inbox_entry(
     configuration: &configuration::Configuration,
     thread_id: &str,
     entry_id: &str,
+    view: Option<&str>,
+    section: Option<&str>,
+    offset: Option<i32>,
+    limit: Option<i32>,
+    version: Option<&str>,
+    query: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::EntryView>, Error<GetEntryApiV1ThreadsThreadIdInboxEntryIdGetError>> {
+) -> Result<Response<models::ResponseGetInboxEntry>, Error<GetInboxEntryError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_path_entry_id = entry_id;
+    let p_query_view = view;
+    let p_query_section = section;
+    let p_query_offset = offset;
+    let p_query_limit = limit;
+    let p_query_version = version;
+    let p_query_query = query;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
@@ -874,6 +969,24 @@ pub async fn get_entry_api_v1_threads_thread_id_inbox_entry_id_get(
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
+    if let Some(ref param_value) = p_query_view {
+        req_builder = req_builder.query(&[("view", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_section {
+        req_builder = req_builder.query(&[("section", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
@@ -908,19 +1021,18 @@ pub async fn get_entry_api_v1_threads_thread_id_inbox_entry_id_get(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::EntryView`",
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseGetInboxEntry`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::EntryView`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseGetInboxEntry`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetEntryApiV1ThreadsThreadIdInboxEntryIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetInboxEntryError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -930,15 +1042,13 @@ pub async fn get_entry_api_v1_threads_thread_id_inbox_entry_id_get(
     }
 }
 
-pub async fn get_message_authors_api_v1_sessions_session_id_message_authors_get(
+/// Get message senders' current display names, emails, account kinds, status and avatar URLs.  Supply the session ID and 1 to 100 entry IDs from the thread inbox. Requires workspace read permission; only message entries in that session are returned. This is not an arbitrary user or member-directory lookup. Use returned names to identify senders in answers; retain IDs when needed for precise references.
+pub async fn get_message_authors(
     configuration: &configuration::Configuration,
     session_id: &str,
     entry_id: Vec<String>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::MessageAuthors>,
-    Error<GetMessageAuthorsApiV1SessionsSessionIdMessageAuthorsGetError>,
-> {
+) -> Result<Response<models::MessageAuthors>, Error<GetMessageAuthorsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_session_id = session_id;
     let p_query_entry_id = entry_id;
@@ -1013,8 +1123,7 @@ pub async fn get_message_authors_api_v1_sessions_session_id_message_authors_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetMessageAuthorsApiV1SessionsSessionIdMessageAuthorsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetMessageAuthorsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1024,19 +1133,230 @@ pub async fn get_message_authors_api_v1_sessions_session_id_message_authors_get(
     }
 }
 
-pub async fn get_run_api_v1_runs_run_id_get(
+pub async fn get_run(
     configuration: &configuration::Configuration,
     run_id: &str,
+    view: Option<&str>,
+    section: Option<&str>,
+    offset: Option<i32>,
+    limit: Option<i32>,
+    version: Option<&str>,
+    query: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::RunView>, Error<GetRunApiV1RunsRunIdGetError>> {
+) -> Result<Response<models::ResponseGetRun>, Error<GetRunError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_run_id = run_id;
+    let p_query_view = view;
+    let p_query_section = section;
+    let p_query_offset = offset;
+    let p_query_limit = limit;
+    let p_query_version = version;
+    let p_query_query = query;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
         "{}/api/v1/runs/{run_id}",
         configuration.base_path,
         run_id = crate::generated::apis::urlencode(p_path_run_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_view {
+        req_builder = req_builder.query(&[("view", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_section {
+        req_builder = req_builder.query(&[("section", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseGetRun`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseGetRun`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetRunError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// The frozen revision and effective configuration. Section reads are versioned fragments, never writable configs.
+pub async fn get_run_agent(
+    configuration: &configuration::Configuration,
+    run_id: &str,
+    view: Option<&str>,
+    section: Option<&str>,
+    part: Option<&str>,
+    offset: Option<i32>,
+    limit: Option<i32>,
+    version: Option<&str>,
+    query: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ResponseGetRunAgent>, Error<GetRunAgentError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_run_id = run_id;
+    let p_query_view = view;
+    let p_query_section = section;
+    let p_query_part = part;
+    let p_query_offset = offset;
+    let p_query_limit = limit;
+    let p_query_version = version;
+    let p_query_query = query;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/runs/{run_id}/agent",
+        configuration.base_path,
+        run_id = crate::generated::apis::urlencode(p_path_run_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_view {
+        req_builder = req_builder.query(&[("view", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_section {
+        req_builder = req_builder.query(&[("section", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_part {
+        req_builder = req_builder.query(&[("part", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseGetRunAgent`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseGetRunAgent`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetRunAgentError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn get_run_attempt(
+    configuration: &configuration::Configuration,
+    run_id: &str,
+    attempt_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::AttemptView>, Error<GetRunAttemptError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_run_id = run_id;
+    let p_path_attempt_id = attempt_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/runs/{run_id}/attempts/{attempt_id}",
+        configuration.base_path,
+        run_id = crate::generated::apis::urlencode(p_path_run_id),
+        attempt_id = crate::generated::apis::urlencode(p_path_attempt_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -1074,18 +1394,18 @@ pub async fn get_run_api_v1_runs_run_id_get(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::RunView`",
+                    "Received `text/plain` content type response that cannot be converted to `models::AttemptView`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::RunView`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::AttemptView`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetRunApiV1RunsRunIdGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<GetRunAttemptError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1095,11 +1415,193 @@ pub async fn get_run_api_v1_runs_run_id_get(
     }
 }
 
-pub async fn get_session_api_v1_sessions_session_id_get(
+/// The complete value behind a committed display reference.
+pub async fn get_run_content(
+    configuration: &configuration::Configuration,
+    run_id: &str,
+    content_id: &str,
+    view: Option<&str>,
+    offset: Option<i32>,
+    limit: Option<i32>,
+    version: Option<&str>,
+    query: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ResponseGetRunContent>, Error<GetRunContentError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_run_id = run_id;
+    let p_path_content_id = content_id;
+    let p_query_view = view;
+    let p_query_offset = offset;
+    let p_query_limit = limit;
+    let p_query_version = version;
+    let p_query_query = query;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/runs/{run_id}/contents/{content_id}",
+        configuration.base_path,
+        run_id = crate::generated::apis::urlencode(p_path_run_id),
+        content_id = crate::generated::apis::urlencode(p_path_content_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_view {
+        req_builder = req_builder.query(&[("view", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseGetRunContent`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseGetRunContent`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetRunContentError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// The run and its ancestors, nearest first, across fork origins.
+pub async fn get_run_lineage(
+    configuration: &configuration::Configuration,
+    run_id: &str,
+    cursor: Option<&str>,
+    limit: Option<i32>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::RunPage>, Error<GetRunLineageError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_run_id = run_id;
+    let p_query_cursor = cursor;
+    let p_query_limit = limit;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/runs/{run_id}/lineage",
+        configuration.base_path,
+        run_id = crate::generated::apis::urlencode(p_path_run_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::RunPage`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::RunPage`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetRunLineageError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn get_session(
     configuration: &configuration::Configuration,
     session_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::SessionView>, Error<GetSessionApiV1SessionsSessionIdGetError>> {
+) -> Result<Response<models::SessionView>, Error<GetSessionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_session_id = session_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1156,8 +1658,7 @@ pub async fn get_session_api_v1_sessions_session_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetSessionApiV1SessionsSessionIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetSessionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1167,11 +1668,11 @@ pub async fn get_session_api_v1_sessions_session_id_get(
     }
 }
 
-pub async fn get_thread_api_v1_threads_thread_id_get(
+pub async fn get_thread(
     configuration: &configuration::Configuration,
     thread_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ThreadView>, Error<GetThreadApiV1ThreadsThreadIdGetError>> {
+) -> Result<Response<models::ThreadView>, Error<GetThreadError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1228,8 +1729,7 @@ pub async fn get_thread_api_v1_threads_thread_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetThreadApiV1ThreadsThreadIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetThreadError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1239,20 +1739,22 @@ pub async fn get_thread_api_v1_threads_thread_id_get(
     }
 }
 
-/// The trace's root span.
-pub async fn get_trace_api_v1_traces_trace_id_get(
+pub async fn get_tool_execution(
     configuration: &configuration::Configuration,
-    trace_id: &str,
+    thread_id: &str,
+    execution_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Span>, Error<GetTraceApiV1TracesTraceIdGetError>> {
+) -> Result<Response<models::ExecutionView>, Error<GetToolExecutionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_trace_id = trace_id;
+    let p_path_thread_id = thread_id;
+    let p_path_execution_id = execution_id;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/traces/{trace_id}",
+        "{}/api/v1/threads/{thread_id}/tool-executions/{execution_id}",
         configuration.base_path,
-        trace_id = crate::generated::apis::urlencode(p_path_trace_id)
+        thread_id = crate::generated::apis::urlencode(p_path_thread_id),
+        execution_id = crate::generated::apis::urlencode(p_path_execution_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -1290,19 +1792,209 @@ pub async fn get_trace_api_v1_traces_trace_id_get(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Span`",
+                    "Received `text/plain` content type response that cannot be converted to `models::ExecutionView`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Span`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ExecutionView`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetTraceApiV1TracesTraceIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetToolExecutionError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn get_tool_execution_result(
+    configuration: &configuration::Configuration,
+    thread_id: &str,
+    execution_id: &str,
+    offset: Option<i32>,
+    limit: Option<i32>,
+    version: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::TextRead>, Error<GetToolExecutionResultError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_thread_id = thread_id;
+    let p_path_execution_id = execution_id;
+    let p_query_offset = offset;
+    let p_query_limit = limit;
+    let p_query_version = version;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/threads/{thread_id}/tool-executions/{execution_id}/result",
+        configuration.base_path,
+        thread_id = crate::generated::apis::urlencode(p_path_thread_id),
+        execution_id = crate::generated::apis::urlencode(p_path_execution_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::TextRead`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::TextRead`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetToolExecutionResultError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// The trace's root span.
+pub async fn get_trace(
+    configuration: &configuration::Configuration,
+    trace_id: &str,
+    view: Option<&str>,
+    section: Option<&str>,
+    offset: Option<i32>,
+    limit: Option<i32>,
+    version: Option<&str>,
+    query: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ResponseGetTrace>, Error<GetTraceError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_trace_id = trace_id;
+    let p_query_view = view;
+    let p_query_section = section;
+    let p_query_offset = offset;
+    let p_query_limit = limit;
+    let p_query_version = version;
+    let p_query_query = query;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/traces/{trace_id}",
+        configuration.base_path,
+        trace_id = crate::generated::apis::urlencode(p_path_trace_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_view {
+        req_builder = req_builder.query(&[("view", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_section {
+        req_builder = req_builder.query(&[("section", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseGetTrace`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseGetTrace`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetTraceError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1313,10 +2005,10 @@ pub async fn get_trace_api_v1_traces_trace_id_get(
 }
 
 /// The backend trace queries read, and how far back they find a trace.
-pub async fn get_trace_backend_api_v1_trace_backend_get(
+pub async fn get_trace_backend(
     configuration: &configuration::Configuration,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::TraceBackend>, Error<GetTraceBackendApiV1TraceBackendGetError>> {
+) -> Result<Response<models::TraceBackend>, Error<GetTraceBackendError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_header_x_workspace_id = x_workspace_id;
 
@@ -1368,8 +2060,7 @@ pub async fn get_trace_backend_api_v1_trace_backend_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetTraceBackendApiV1TraceBackendGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetTraceBackendError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1379,11 +2070,86 @@ pub async fn get_trace_backend_api_v1_trace_backend_get(
     }
 }
 
-pub async fn interrupt_run_api_v1_runs_run_id_interrupt_post(
+/// One complete observation, including redacted input, output and diagnostic metadata.
+pub async fn get_trace_span(
+    configuration: &configuration::Configuration,
+    trace_id: &str,
+    span_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Span>, Error<GetTraceSpanError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_trace_id = trace_id;
+    let p_path_span_id = span_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/traces/{trace_id}/spans/{span_id}",
+        configuration.base_path,
+        trace_id = crate::generated::apis::urlencode(p_path_trace_id),
+        span_id = crate::generated::apis::urlencode(p_path_span_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Span`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Span`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetTraceSpanError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn interrupt_run(
     configuration: &configuration::Configuration,
     run_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::RunView>, Error<InterruptRunApiV1RunsRunIdInterruptPostError>> {
+) -> Result<Response<models::RunView>, Error<InterruptRunError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_run_id = run_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1450,8 +2216,7 @@ pub async fn interrupt_run_api_v1_runs_run_id_interrupt_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<InterruptRunApiV1RunsRunIdInterruptPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<InterruptRunError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1462,20 +2227,25 @@ pub async fn interrupt_run_api_v1_runs_run_id_interrupt_post(
 }
 
 /// The attempt's spans, including its inline child runs.
-pub async fn list_attempt_spans_api_v1_runs_run_id_attempts_attempt_id_trace_get(
+pub async fn list_attempt_spans(
     configuration: &configuration::Configuration,
     run_id: &str,
     attempt_id: &str,
+    view: Option<&str>,
+    status: Option<&str>,
+    kind: Option<&str>,
+    tool_name: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::SpanPage>,
-    Error<ListAttemptSpansApiV1RunsRunIdAttemptsAttemptIdTraceGetError>,
-> {
+) -> Result<Response<models::ResponseListAttemptSpans>, Error<ListAttemptSpansError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_run_id = run_id;
     let p_path_attempt_id = attempt_id;
+    let p_query_view = view;
+    let p_query_status = status;
+    let p_query_kind = kind;
+    let p_query_tool_name = tool_name;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1488,6 +2258,18 @@ pub async fn list_attempt_spans_api_v1_runs_run_id_attempts_attempt_id_trace_get
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
+    if let Some(ref param_value) = p_query_view {
+        req_builder = req_builder.query(&[("view", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_status {
+        req_builder = req_builder.query(&[("status", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_kind {
+        req_builder = req_builder.query(&[("kind", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_tool_name {
+        req_builder = req_builder.query(&[("tool_name", &param_value.to_string())]);
+    }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
     }
@@ -1528,19 +2310,18 @@ pub async fn list_attempt_spans_api_v1_runs_run_id_attempts_attempt_id_trace_get
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SpanPage`",
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseListAttemptSpans`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SpanPage`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseListAttemptSpans`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListAttemptSpansApiV1RunsRunIdAttemptsAttemptIdTraceGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListAttemptSpansError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1551,17 +2332,21 @@ pub async fn list_attempt_spans_api_v1_runs_run_id_attempts_attempt_id_trace_get
 }
 
 /// In inbox order.
-pub async fn list_inbox_api_v1_threads_thread_id_inbox_get(
+pub async fn list_inbox(
     configuration: &configuration::Configuration,
     thread_id: &str,
     status: Option<Vec<models::EntryStatus>>,
+    view: Option<&str>,
+    kind: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::EntryPage>, Error<ListInboxApiV1ThreadsThreadIdInboxGetError>> {
+) -> Result<Response<models::ResponseListInbox>, Error<ListInboxError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_query_status = status;
+    let p_query_view = view;
+    let p_query_kind = kind;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1592,6 +2377,12 @@ pub async fn list_inbox_api_v1_threads_thread_id_inbox_get(
             )]),
         };
     }
+    if let Some(ref param_value) = p_query_view {
+        req_builder = req_builder.query(&[("view", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_kind {
+        req_builder = req_builder.query(&[("kind", &param_value.to_string())]);
+    }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
     }
@@ -1632,19 +2423,18 @@ pub async fn list_inbox_api_v1_threads_thread_id_inbox_get(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::EntryPage`",
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseListInbox`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::EntryPage`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseListInbox`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListInboxApiV1ThreadsThreadIdInboxGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListInboxError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1654,8 +2444,187 @@ pub async fn list_inbox_api_v1_threads_thread_id_inbox_get(
     }
 }
 
-pub async fn list_runs_api_v1_runs_get(
+pub async fn list_run_attempts(
     configuration: &configuration::Configuration,
+    run_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Attempts>, Error<ListRunAttemptsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_run_id = run_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/runs/{run_id}/attempts",
+        configuration.base_path,
+        run_id = crate::generated::apis::urlencode(p_path_run_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Attempts`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Attempts`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ListRunAttemptsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// A run's committed display items by ordinal. Detailed unfiltered reads default to the newest items and full tail. Compact or filtered reads start at the oldest ordinal and strictly honor limit. Use exclusive before/after positions, then follow next_before/next_after even when a filtered page is empty.
+pub async fn list_run_items(
+    configuration: &configuration::Configuration,
+    run_id: &str,
+    before: Option<i32>,
+    after: Option<i32>,
+    limit: Option<i32>,
+    view: Option<&str>,
+    kind: Option<&str>,
+    state: Option<&str>,
+    tool_name: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ResponseListRunItems>, Error<ListRunItemsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_run_id = run_id;
+    let p_query_before = before;
+    let p_query_after = after;
+    let p_query_limit = limit;
+    let p_query_view = view;
+    let p_query_kind = kind;
+    let p_query_state = state;
+    let p_query_tool_name = tool_name;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/runs/{run_id}/items",
+        configuration.base_path,
+        run_id = crate::generated::apis::urlencode(p_path_run_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_before {
+        req_builder = req_builder.query(&[("before", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_after {
+        req_builder = req_builder.query(&[("after", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_view {
+        req_builder = req_builder.query(&[("view", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_kind {
+        req_builder = req_builder.query(&[("kind", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_state {
+        req_builder = req_builder.query(&[("state", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_tool_name {
+        req_builder = req_builder.query(&[("tool_name", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseListRunItems`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseListRunItems`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ListRunItemsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn list_runs(
+    configuration: &configuration::Configuration,
+    text_query: Option<&str>,
     agent_id: Option<&str>,
     session_id: Option<&str>,
     thread_id: Option<&str>,
@@ -1666,8 +2635,9 @@ pub async fn list_runs_api_v1_runs_get(
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::RunPage>, Error<ListRunsApiV1RunsGetError>> {
+) -> Result<Response<models::RunPage>, Error<ListRunsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
+    let p_query_text_query = text_query;
     let p_query_agent_id = agent_id;
     let p_query_session_id = session_id;
     let p_query_thread_id = thread_id;
@@ -1682,6 +2652,9 @@ pub async fn list_runs_api_v1_runs_get(
     let uri_str = format!("{}/api/v1/runs", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
+    if let Some(ref param_value) = p_query_text_query {
+        req_builder = req_builder.query(&[("text_query", &param_value.to_string())]);
+    }
     if let Some(ref param_value) = p_query_agent_id {
         req_builder = req_builder.query(&[("agent_id", &param_value.to_string())]);
     }
@@ -1754,7 +2727,7 @@ pub async fn list_runs_api_v1_runs_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListRunsApiV1RunsGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<ListRunsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1764,9 +2737,11 @@ pub async fn list_runs_api_v1_runs_get(
     }
 }
 
-pub async fn list_sessions_api_v1_sessions_get(
+pub async fn list_sessions(
     configuration: &configuration::Configuration,
+    text_query: Option<&str>,
     q: Option<&str>,
+    application: Option<&str>,
     agent_id: Option<&str>,
     status: Option<Vec<models::RunStatus>>,
     trigger: Option<Vec<models::Trigger>>,
@@ -1776,9 +2751,11 @@ pub async fn list_sessions_api_v1_sessions_get(
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::SessionPage>, Error<ListSessionsApiV1SessionsGetError>> {
+) -> Result<Response<models::SessionPage>, Error<ListSessionsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
+    let p_query_text_query = text_query;
     let p_query_q = q;
+    let p_query_application = application;
     let p_query_agent_id = agent_id;
     let p_query_status = status;
     let p_query_trigger = trigger;
@@ -1792,8 +2769,14 @@ pub async fn list_sessions_api_v1_sessions_get(
     let uri_str = format!("{}/api/v1/sessions", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
+    if let Some(ref param_value) = p_query_text_query {
+        req_builder = req_builder.query(&[("text_query", &param_value.to_string())]);
+    }
     if let Some(ref param_value) = p_query_q {
         req_builder = req_builder.query(&[("q", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_application {
+        req_builder = req_builder.query(&[("application", &param_value.to_string())]);
     }
     if let Some(ref param_value) = p_query_agent_id {
         req_builder = req_builder.query(&[("agent_id", &param_value.to_string())]);
@@ -1912,7 +2895,7 @@ pub async fn list_sessions_api_v1_sessions_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListSessionsApiV1SessionsGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<ListSessionsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1922,18 +2905,20 @@ pub async fn list_sessions_api_v1_sessions_get(
     }
 }
 
-/// Newest first.
-pub async fn list_thread_runs_api_v1_threads_thread_id_runs_get(
+/// Newest first, optionally starting at an anchor run; cursors page towards older or newer runs.
+pub async fn list_thread_runs(
     configuration: &configuration::Configuration,
     thread_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
+    anchor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::RunPage>, Error<ListThreadRunsApiV1ThreadsThreadIdRunsGetError>> {
+) -> Result<Response<models::ThreadRunPage>, Error<ListThreadRunsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
+    let p_query_anchor = anchor;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
@@ -1948,6 +2933,9 @@ pub async fn list_thread_runs_api_v1_threads_thread_id_runs_get(
     }
     if let Some(ref param_value) = p_query_cursor {
         req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_anchor {
+        req_builder = req_builder.query(&[("anchor", &param_value.to_string())]);
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
@@ -1983,19 +2971,18 @@ pub async fn list_thread_runs_api_v1_threads_thread_id_runs_get(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::RunPage`",
+                    "Received `text/plain` content type response that cannot be converted to `models::ThreadRunPage`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::RunPage`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ThreadRunPage`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListThreadRunsApiV1ThreadsThreadIdRunsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListThreadRunsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2005,16 +2992,20 @@ pub async fn list_thread_runs_api_v1_threads_thread_id_runs_get(
     }
 }
 
-pub async fn list_threads_api_v1_threads_get(
+pub async fn list_threads(
     configuration: &configuration::Configuration,
     session_id: Option<&str>,
+    occurrence_id: Option<&str>,
+    text_query: Option<&str>,
     label: Option<Vec<String>>,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ThreadPage>, Error<ListThreadsApiV1ThreadsGetError>> {
+) -> Result<Response<models::ThreadPage>, Error<ListThreadsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_session_id = session_id;
+    let p_query_occurrence_id = occurrence_id;
+    let p_query_text_query = text_query;
     let p_query_label = label;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -2025,6 +3016,12 @@ pub async fn list_threads_api_v1_threads_get(
 
     if let Some(ref param_value) = p_query_session_id {
         req_builder = req_builder.query(&[("session_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_occurrence_id {
+        req_builder = req_builder.query(&[("occurrence_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_text_query {
+        req_builder = req_builder.query(&[("text_query", &param_value.to_string())]);
     }
     if let Some(ref param_value) = p_query_label {
         req_builder = match "multi" {
@@ -2096,7 +3093,7 @@ pub async fn list_threads_api_v1_threads_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListThreadsApiV1ThreadsGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<ListThreadsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2106,27 +3103,36 @@ pub async fn list_threads_api_v1_threads_get(
     }
 }
 
-/// The trace's spans.
-pub async fn list_trace_spans_api_v1_traces_trace_id_spans_get(
+pub async fn list_tool_executions(
     configuration: &configuration::Configuration,
-    trace_id: &str,
+    thread_id: &str,
+    run_id: Option<&str>,
+    active: Option<bool>,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::SpanPage>, Error<ListTraceSpansApiV1TracesTraceIdSpansGetError>> {
+) -> Result<Response<models::ExecutionPage>, Error<ListToolExecutionsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_trace_id = trace_id;
+    let p_path_thread_id = thread_id;
+    let p_query_run_id = run_id;
+    let p_query_active = active;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/traces/{trace_id}/spans",
+        "{}/api/v1/threads/{thread_id}/tool-executions",
         configuration.base_path,
-        trace_id = crate::generated::apis::urlencode(p_path_trace_id)
+        thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
+    if let Some(ref param_value) = p_query_run_id {
+        req_builder = req_builder.query(&[("run_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_active {
+        req_builder = req_builder.query(&[("active", &param_value.to_string())]);
+    }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
     }
@@ -2167,19 +3173,120 @@ pub async fn list_trace_spans_api_v1_traces_trace_id_spans_get(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SpanPage`",
+                    "Received `text/plain` content type response that cannot be converted to `models::ExecutionPage`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SpanPage`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ExecutionPage`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListTraceSpansApiV1TracesTraceIdSpansGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListToolExecutionsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// The trace's spans.
+pub async fn list_trace_spans(
+    configuration: &configuration::Configuration,
+    trace_id: &str,
+    view: Option<&str>,
+    status: Option<&str>,
+    kind: Option<&str>,
+    tool_name: Option<&str>,
+    limit: Option<i32>,
+    cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ResponseListTraceSpans>, Error<ListTraceSpansError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_trace_id = trace_id;
+    let p_query_view = view;
+    let p_query_status = status;
+    let p_query_kind = kind;
+    let p_query_tool_name = tool_name;
+    let p_query_limit = limit;
+    let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/traces/{trace_id}/spans",
+        configuration.base_path,
+        trace_id = crate::generated::apis::urlencode(p_path_trace_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_view {
+        req_builder = req_builder.query(&[("view", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_status {
+        req_builder = req_builder.query(&[("status", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_kind {
+        req_builder = req_builder.query(&[("kind", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_tool_name {
+        req_builder = req_builder.query(&[("tool_name", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseListTraceSpans`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseListTraceSpans`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ListTraceSpansError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2190,7 +3297,7 @@ pub async fn list_trace_spans_api_v1_traces_trace_id_spans_get(
 }
 
 /// Trace root spans, one per attempt. A cursor keeps the window of the first page.
-pub async fn list_traces_api_v1_traces_get(
+pub async fn list_traces(
     configuration: &configuration::Configuration,
     session_id: Option<&str>,
     thread_id: Option<&str>,
@@ -2198,10 +3305,14 @@ pub async fn list_traces_api_v1_traces_get(
     attribute: Option<Vec<String>>,
     started_after: Option<chrono::DateTime<chrono::FixedOffset>>,
     started_before: Option<chrono::DateTime<chrono::FixedOffset>>,
+    view: Option<&str>,
+    status: Option<&str>,
+    kind: Option<&str>,
+    tool_name: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::SpanPage>, Error<ListTracesApiV1TracesGetError>> {
+) -> Result<Response<models::ResponseListTraces>, Error<ListTracesError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_session_id = session_id;
     let p_query_thread_id = thread_id;
@@ -2209,6 +3320,10 @@ pub async fn list_traces_api_v1_traces_get(
     let p_query_attribute = attribute;
     let p_query_started_after = started_after;
     let p_query_started_before = started_before;
+    let p_query_view = view;
+    let p_query_status = status;
+    let p_query_kind = kind;
+    let p_query_tool_name = tool_name;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
     let p_header_x_workspace_id = x_workspace_id;
@@ -2250,6 +3365,18 @@ pub async fn list_traces_api_v1_traces_get(
     if let Some(ref param_value) = p_query_started_before {
         req_builder = req_builder.query(&[("started_before", &param_value.to_string())]);
     }
+    if let Some(ref param_value) = p_query_view {
+        req_builder = req_builder.query(&[("view", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_status {
+        req_builder = req_builder.query(&[("status", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_kind {
+        req_builder = req_builder.query(&[("kind", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_tool_name {
+        req_builder = req_builder.query(&[("tool_name", &param_value.to_string())]);
+    }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
     }
@@ -2290,18 +3417,18 @@ pub async fn list_traces_api_v1_traces_get(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SpanPage`",
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseListTraces`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SpanPage`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseListTraces`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListTracesApiV1TracesGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<ListTracesError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2311,14 +3438,295 @@ pub async fn list_traces_api_v1_traces_get(
     }
 }
 
-pub async fn reorder_inbox_api_v1_threads_thread_id_inbox_order_put(
+pub async fn observe_tool_execution(
+    configuration: &configuration::Configuration,
+    thread_id: &str,
+    execution_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ExecutionObservation>, Error<ObserveToolExecutionError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_thread_id = thread_id;
+    let p_path_execution_id = execution_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/threads/{thread_id}/tool-executions/{execution_id}/observation",
+        configuration.base_path,
+        thread_id = crate::generated::apis::urlencode(p_path_thread_id),
+        execution_id = crate::generated::apis::urlencode(p_path_execution_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ExecutionObservation`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ExecutionObservation`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ObserveToolExecutionError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// Read one display field or follow its retained content reference, under the run's existing authorization.
+pub async fn read_run_item_content(
+    configuration: &configuration::Configuration,
+    run_id: &str,
+    item_id: &str,
+    ordinal: i32,
+    field: Option<&str>,
+    offset: Option<i32>,
+    limit: Option<i32>,
+    version: Option<&str>,
+    query: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::TextRead>, Error<ReadRunItemContentError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_run_id = run_id;
+    let p_path_item_id = item_id;
+    let p_query_ordinal = ordinal;
+    let p_query_field = field;
+    let p_query_offset = offset;
+    let p_query_limit = limit;
+    let p_query_version = version;
+    let p_query_query = query;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/runs/{run_id}/items/{item_id}/content",
+        configuration.base_path,
+        run_id = crate::generated::apis::urlencode(p_path_run_id),
+        item_id = crate::generated::apis::urlencode(p_path_item_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    req_builder = req_builder.query(&[("ordinal", &p_query_ordinal.to_string())]);
+    if let Some(ref param_value) = p_query_field {
+        req_builder = req_builder.query(&[("field", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::TextRead`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::TextRead`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ReadRunItemContentError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// Locate a span in bounded backend pages. Follow next_cursor when empty. Once found, retain that request's cursor while continuing fragments with version and next_offset.
+pub async fn read_span_content(
+    configuration: &configuration::Configuration,
+    trace_id: &str,
+    span_id: &str,
+    section: Option<&str>,
+    cursor: Option<&str>,
+    offset: Option<i32>,
+    limit: Option<i32>,
+    version: Option<&str>,
+    query: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::SpanContentPage>, Error<ReadSpanContentError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_trace_id = trace_id;
+    let p_path_span_id = span_id;
+    let p_query_section = section;
+    let p_query_cursor = cursor;
+    let p_query_offset = offset;
+    let p_query_limit = limit;
+    let p_query_version = version;
+    let p_query_query = query;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/traces/{trace_id}/spans/{span_id}/content",
+        configuration.base_path,
+        trace_id = crate::generated::apis::urlencode(p_path_trace_id),
+        span_id = crate::generated::apis::urlencode(p_path_span_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_section {
+        req_builder = req_builder.query(&[("section", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::SpanContentPage`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::SpanContentPage`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ReadSpanContentError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn reorder_inbox(
     configuration: &configuration::Configuration,
     thread_id: &str,
     inbox_order: models::InboxOrder,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ThreadView>, Error<ReorderInboxApiV1ThreadsThreadIdInboxOrderPutError>>
-{
+) -> Result<Response<models::ThreadView>, Error<ReorderInboxError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_body_inbox_order = inbox_order;
@@ -2389,8 +3797,7 @@ pub async fn reorder_inbox_api_v1_threads_thread_id_inbox_order_put(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ReorderInboxApiV1ThreadsThreadIdInboxOrderPutError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ReorderInboxError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2401,13 +3808,13 @@ pub async fn reorder_inbox_api_v1_threads_thread_id_inbox_order_put(
 }
 
 /// Answer the exact waiting run's approvals, client tools and user questions; the successor continues from them.
-pub async fn resume_run_api_v1_runs_run_id_resume_post(
+pub async fn resume_run(
     configuration: &configuration::Configuration,
     run_id: &str,
     idempotency_key: &str,
     resume: models::Resume,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::RunView>, Error<ResumeRunApiV1RunsRunIdResumePostError>> {
+) -> Result<Response<models::RunView>, Error<ResumeRunError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_run_id = run_id;
     let p_header_idempotency_key = idempotency_key;
@@ -2478,230 +3885,7 @@ pub async fn resume_run_api_v1_runs_run_id_resume_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ResumeRunApiV1RunsRunIdResumePostError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-/// The agent configuration the run executes: its revision with the run's override applied.
-pub async fn run_agent_api_v1_runs_run_id_agent_get(
-    configuration: &configuration::Configuration,
-    run_id: &str,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::RunAgent>, Error<RunAgentApiV1RunsRunIdAgentGetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_run_id = run_id;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/runs/{run_id}/agent",
-        configuration.base_path,
-        run_id = crate::generated::apis::urlencode(p_path_run_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::RunAgent`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::RunAgent`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<RunAgentApiV1RunsRunIdAgentGetError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn run_attempts_api_v1_runs_run_id_attempts_get(
-    configuration: &configuration::Configuration,
-    run_id: &str,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::Attempts>, Error<RunAttemptsApiV1RunsRunIdAttemptsGetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_run_id = run_id;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/runs/{run_id}/attempts",
-        configuration.base_path,
-        run_id = crate::generated::apis::urlencode(p_path_run_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Attempts`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Attempts`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<RunAttemptsApiV1RunsRunIdAttemptsGetError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-/// The complete value behind a committed display reference.
-pub async fn run_content_api_v1_runs_run_id_contents_content_id_get(
-    configuration: &configuration::Configuration,
-    run_id: &str,
-    content_id: &str,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::RunContent>, Error<RunContentApiV1RunsRunIdContentsContentIdGetError>>
-{
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_run_id = run_id;
-    let p_path_content_id = content_id;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/runs/{run_id}/contents/{content_id}",
-        configuration.base_path,
-        run_id = crate::generated::apis::urlencode(p_path_run_id),
-        content_id = crate::generated::apis::urlencode(p_path_content_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::RunContent`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::RunContent`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<RunContentApiV1RunsRunIdContentsContentIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ResumeRunError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2712,12 +3896,12 @@ pub async fn run_content_api_v1_runs_run_id_contents_content_id_get(
 }
 
 /// Read a retained screenshot from committed Run history. Binary media is not an MCP query endpoint.
-pub async fn run_image_api_v1_runs_run_id_images_image_id_get(
+pub async fn run_image(
     configuration: &configuration::Configuration,
     run_id: &str,
     image_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<reqwest::Response, Error<RunImageApiV1RunsRunIdImagesImageIdGetError>> {
+) -> Result<reqwest::Response, Error<RunImageError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_run_id = run_id;
     let p_path_image_id = image_id;
@@ -2751,8 +3935,7 @@ pub async fn run_image_api_v1_runs_run_id_images_image_id_get(
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<RunImageApiV1RunsRunIdImagesImageIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<RunImageError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2762,113 +3945,98 @@ pub async fn run_image_api_v1_runs_run_id_images_image_id_get(
     }
 }
 
-/// A run's committed display items by ordinal. By default the newest, always including the unpaged tail whose items live output can still change; `before` and `after` page from an ordinal and exclude each other.
-pub async fn run_items_api_v1_runs_run_id_items_get(
+/// Rank and filter the entire root-start window before paging. Costs sum reported span costs, not billing.  Providers execute each query without a result cache; pages may reflect updates between requests. Keyset cursors bind the ordering, filters and last sort value with trace/span IDs. Incomplete queries fail without a partial rank.
+pub async fn search_traces(
     configuration: &configuration::Configuration,
-    run_id: &str,
-    before: Option<i32>,
-    after: Option<i32>,
+    started_after: chrono::DateTime<chrono::FixedOffset>,
+    started_before: chrono::DateTime<chrono::FixedOffset>,
+    session_id: Option<&str>,
+    thread_id: Option<&str>,
+    run_id: Option<&str>,
+    attribute: Option<Vec<String>>,
+    order_by: Option<&str>,
+    direction: Option<&str>,
+    min_duration_seconds: Option<&str>,
+    max_duration_seconds: Option<&str>,
+    min_cost_usd: Option<&str>,
+    max_cost_usd: Option<&str>,
     limit: Option<i32>,
+    cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::RunItems>, Error<RunItemsApiV1RunsRunIdItemsGetError>> {
+) -> Result<Response<models::TraceSearchPage>, Error<SearchTracesError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_run_id = run_id;
-    let p_query_before = before;
-    let p_query_after = after;
+    let p_query_started_after = started_after;
+    let p_query_started_before = started_before;
+    let p_query_session_id = session_id;
+    let p_query_thread_id = thread_id;
+    let p_query_run_id = run_id;
+    let p_query_attribute = attribute;
+    let p_query_order_by = order_by;
+    let p_query_direction = direction;
+    let p_query_min_duration_seconds = min_duration_seconds;
+    let p_query_max_duration_seconds = max_duration_seconds;
+    let p_query_min_cost_usd = min_cost_usd;
+    let p_query_max_cost_usd = max_cost_usd;
     let p_query_limit = limit;
+    let p_query_cursor = cursor;
     let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/runs/{run_id}/items",
-        configuration.base_path,
-        run_id = crate::generated::apis::urlencode(p_path_run_id)
-    );
+    let uri_str = format!("{}/api/v1/traces/search", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
-    if let Some(ref param_value) = p_query_before {
-        req_builder = req_builder.query(&[("before", &param_value.to_string())]);
+    if let Some(ref param_value) = p_query_session_id {
+        req_builder = req_builder.query(&[("session_id", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_query_after {
-        req_builder = req_builder.query(&[("after", &param_value.to_string())]);
+    if let Some(ref param_value) = p_query_thread_id {
+        req_builder = req_builder.query(&[("thread_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_run_id {
+        req_builder = req_builder.query(&[("run_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_attribute {
+        req_builder = match "multi" {
+            "multi" => req_builder.query(
+                &param_value
+                    .into_iter()
+                    .map(|p| ("attribute".to_owned(), p.to_string()))
+                    .collect::<Vec<(std::string::String, std::string::String)>>(),
+            ),
+            _ => req_builder.query(&[(
+                "attribute",
+                &param_value
+                    .into_iter()
+                    .map(|p| p.to_string())
+                    .collect::<Vec<String>>()
+                    .join(",")
+                    .to_string(),
+            )]),
+        };
+    }
+    req_builder = req_builder.query(&[("started_after", &p_query_started_after.to_string())]);
+    req_builder = req_builder.query(&[("started_before", &p_query_started_before.to_string())]);
+    if let Some(ref param_value) = p_query_order_by {
+        req_builder = req_builder.query(&[("order_by", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_direction {
+        req_builder = req_builder.query(&[("direction", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_min_duration_seconds {
+        req_builder =
+            req_builder.query(&[("min_duration_seconds", &serde_json::to_string(param_value)?)]);
+    }
+    if let Some(ref param_value) = p_query_max_duration_seconds {
+        req_builder =
+            req_builder.query(&[("max_duration_seconds", &serde_json::to_string(param_value)?)]);
+    }
+    if let Some(ref param_value) = p_query_min_cost_usd {
+        req_builder = req_builder.query(&[("min_cost_usd", &serde_json::to_string(param_value)?)]);
+    }
+    if let Some(ref param_value) = p_query_max_cost_usd {
+        req_builder = req_builder.query(&[("max_cost_usd", &serde_json::to_string(param_value)?)]);
     }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
     }
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::RunItems`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::RunItems`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<RunItemsApiV1RunsRunIdItemsGetError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-/// The run and its ancestors, nearest first, across fork origins.
-pub async fn run_lineage_api_v1_runs_run_id_lineage_get(
-    configuration: &configuration::Configuration,
-    run_id: &str,
-    cursor: Option<&str>,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::RunPage>, Error<RunLineageApiV1RunsRunIdLineageGetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_run_id = run_id;
-    let p_query_cursor = cursor;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/runs/{run_id}/lineage",
-        configuration.base_path,
-        run_id = crate::generated::apis::urlencode(p_path_run_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
     if let Some(ref param_value) = p_query_cursor {
         req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
     }
@@ -2906,19 +4074,18 @@ pub async fn run_lineage_api_v1_runs_run_id_lineage_get(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::RunPage`",
+                    "Received `text/plain` content type response that cannot be converted to `models::TraceSearchPage`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::RunPage`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::TraceSearchPage`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RunLineageApiV1RunsRunIdLineageGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<SearchTracesError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2928,12 +4095,12 @@ pub async fn run_lineage_api_v1_runs_run_id_lineage_get(
     }
 }
 
-/// The session's threads and the live output of their runs over SSE: `thread`, `items`, `delta` and `gap` frames. Every connection starts from a snapshot.
-pub async fn session_stream_api_v1_sessions_session_id_stream_get(
+/// The session's threads and the live output of their runs over SSE: `thread`, `items`, `delta` and `gap` frames, plus `schedule` and `occurrence` state for Schedule-owned sessions. Every connection starts from a snapshot.
+pub async fn session_stream(
     configuration: &configuration::Configuration,
     session_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<reqwest::Response, Error<SessionStreamApiV1SessionsSessionIdStreamGetError>> {
+) -> Result<reqwest::Response, Error<SessionStreamError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_session_id = session_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -2965,8 +4132,7 @@ pub async fn session_stream_api_v1_sessions_session_id_stream_get(
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<SessionStreamApiV1SessionsSessionIdStreamGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<SessionStreamError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2977,13 +4143,13 @@ pub async fn session_stream_api_v1_sessions_session_id_stream_get(
 }
 
 /// Append a message; it starts a run at once when the thread can accept it, or steers the active run.
-pub async fn submit_message_api_v1_threads_thread_id_inbox_post(
+pub async fn submit_message(
     configuration: &configuration::Configuration,
     thread_id: &str,
     idempotency_key: &str,
     message: models::Message,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Submitted>, Error<SubmitMessageApiV1ThreadsThreadIdInboxPostError>> {
+) -> Result<Response<models::Submitted>, Error<SubmitMessageError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_header_idempotency_key = idempotency_key;
@@ -3054,8 +4220,7 @@ pub async fn submit_message_api_v1_threads_thread_id_inbox_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<SubmitMessageApiV1ThreadsThreadIdInboxPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<SubmitMessageError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3066,14 +4231,14 @@ pub async fn submit_message_api_v1_threads_thread_id_inbox_post(
 }
 
 /// Live output of one thread's runs over SSE: `delta` and `boundary` frames with `changed`, `reset`, `gap`. Resumes from `Last-Event-ID` or a run's `position`; the session stream suits clients that do not track them.
-pub async fn thread_stream_api_v1_threads_thread_id_stream_get(
+pub async fn thread_stream(
     configuration: &configuration::Configuration,
     thread_id: &str,
     run: Option<&str>,
     position: Option<&str>,
     last_event_id: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<reqwest::Response, Error<ThreadStreamApiV1ThreadsThreadIdStreamGetError>> {
+) -> Result<reqwest::Response, Error<ThreadStreamError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_query_run = run;
@@ -3117,8 +4282,7 @@ pub async fn thread_stream_api_v1_threads_thread_id_stream_get(
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<ThreadStreamApiV1ThreadsThreadIdStreamGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ThreadStreamError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3129,13 +4293,13 @@ pub async fn thread_stream_api_v1_threads_thread_id_stream_get(
 }
 
 /// Labels only.
-pub async fn update_run_api_v1_runs_run_id_patch(
+pub async fn update_run(
     configuration: &configuration::Configuration,
     run_id: &str,
     run_labels: models::RunLabels,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::RunView>, Error<UpdateRunApiV1RunsRunIdPatchError>> {
+) -> Result<Response<models::RunView>, Error<UpdateRunError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_run_id = run_id;
     let p_body_run_labels = run_labels;
@@ -3208,7 +4372,7 @@ pub async fn update_run_api_v1_runs_run_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateRunApiV1RunsRunIdPatchError> = serde_json::from_str(&content).ok();
+        let entity: Option<UpdateRunError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3218,13 +4382,13 @@ pub async fn update_run_api_v1_runs_run_id_patch(
     }
 }
 
-pub async fn update_session_api_v1_sessions_session_id_patch(
+pub async fn update_session(
     configuration: &configuration::Configuration,
     session_id: &str,
     session_update: models::SessionUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::SessionView>, Error<UpdateSessionApiV1SessionsSessionIdPatchError>> {
+) -> Result<Response<models::SessionView>, Error<UpdateSessionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_session_id = session_id;
     let p_body_session_update = session_update;
@@ -3297,8 +4461,7 @@ pub async fn update_session_api_v1_sessions_session_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateSessionApiV1SessionsSessionIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateSessionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3308,13 +4471,13 @@ pub async fn update_session_api_v1_sessions_session_id_patch(
     }
 }
 
-pub async fn update_thread_api_v1_threads_thread_id_patch(
+pub async fn update_thread(
     configuration: &configuration::Configuration,
     thread_id: &str,
     thread_update: models::ThreadUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ThreadView>, Error<UpdateThreadApiV1ThreadsThreadIdPatchError>> {
+) -> Result<Response<models::ThreadView>, Error<UpdateThreadError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_body_thread_update = thread_update;
@@ -3387,8 +4550,7 @@ pub async fn update_thread_api_v1_threads_thread_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateThreadApiV1ThreadsThreadIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateThreadError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3399,16 +4561,13 @@ pub async fn update_thread_api_v1_threads_thread_id_patch(
 }
 
 /// Withdraw a pending entry; its tombstone keeps the request key.
-pub async fn withdraw_entry_api_v1_threads_thread_id_inbox_entry_id_delete(
+pub async fn withdraw_entry(
     configuration: &configuration::Configuration,
     thread_id: &str,
     entry_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::Submitted>,
-    Error<WithdrawEntryApiV1ThreadsThreadIdInboxEntryIdDeleteError>,
-> {
+) -> Result<Response<models::Submitted>, Error<WithdrawEntryError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_thread_id = thread_id;
     let p_path_entry_id = entry_id;
@@ -3481,8 +4640,7 @@ pub async fn withdraw_entry_api_v1_threads_thread_id_inbox_entry_id_delete(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<WithdrawEntryApiV1ThreadsThreadIdInboxEntryIdDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<WithdrawEntryError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

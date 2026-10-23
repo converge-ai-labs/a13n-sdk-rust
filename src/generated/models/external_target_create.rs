@@ -18,6 +18,17 @@ pub struct ExternalTargetCreate {
     pub endpoint: String,
 
     #[serde(
+        rename = "metrics_data_source_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub metrics_data_source_id: Option<Option<String>>,
+
+    #[serde(rename = "metrics_labels", skip_serializing_if = "Option::is_none")]
+    pub metrics_labels: Option<serde_json::Value>,
+
+    #[serde(
         rename = "name",
         default,
         with = "::serde_with::rust::double_option",
@@ -34,6 +45,8 @@ impl ExternalTargetCreate {
     pub fn new(endpoint: String, token: String) -> ExternalTargetCreate {
         ExternalTargetCreate {
             endpoint,
+            metrics_data_source_id: None,
+            metrics_labels: None,
             name: None,
             token,
         }

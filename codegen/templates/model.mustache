@@ -155,8 +155,8 @@ impl<'de> Deserialize<'de> for {{classname}} {
     {{#vendorExtensions.isMandatory}}#[serde_as(as = "serde_with::base64::Base64")]{{/vendorExtensions.isMandatory}}{{^vendorExtensions.isMandatory}}#[serde_as(as = "{{^serdeAsDoubleOption}}Option{{/serdeAsDoubleOption}}{{#serdeAsDoubleOption}}super::DoubleOption{{/serdeAsDoubleOption}}<serde_with::base64::Base64>")]{{/vendorExtensions.isMandatory}}
     {{/isByteArray}}
     {{#vendorExtensions.x-rust-null-only}}#[serde(default, deserialize_with = "deserialize_optional_null")]{{/vendorExtensions.x-rust-null-only}}
-    {{#vendorExtensions.x-rust-non-null}}#[serde(default, deserialize_with = "deserialize_non_null_{{{name}}}")]{{/vendorExtensions.x-rust-non-null}}
-    {{#vendorExtensions.x-rust-bounded-integer}}#[serde(deserialize_with = "deserialize_bounded_{{{name}}}")]{{/vendorExtensions.x-rust-bounded-integer}}
+    {{#vendorExtensions.x-rust-non-null}}#[serde(default, deserialize_with = "deserialize_non_null_{{{baseName}}}")]{{/vendorExtensions.x-rust-non-null}}
+    {{#vendorExtensions.x-rust-bounded-integer}}#[serde(deserialize_with = "deserialize_bounded_{{{baseName}}}")]{{/vendorExtensions.x-rust-bounded-integer}}
     #[serde(rename = "{{{baseName}}}"{{^required}}{{#isNullable}}, default{{^isByteArray}}, with = "::serde_with::rust::double_option"{{/isByteArray}}{{/isNullable}}{{/required}}{{^required}}, skip_serializing_if = "Option::is_none"{{/required}}{{#required}}{{#isNullable}}, deserialize_with = "Option::deserialize"{{/isNullable}}{{/required}})]
     pub {{{name}}}: {{!
     ### Option Start
@@ -310,6 +310,10 @@ impl Default for {{{enumName}}} {
     }
 }
 {{/isEnum}}
+{{/vars}}
+{{#anyOf.isEmpty}}
+{{#oneOf.isEmpty}}
+{{#vars}}
 {{#vendorExtensions.x-rust-null-only}}
 fn deserialize_optional_null<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Option<()>, D::Error> {
     <()>::deserialize(deserializer).map(Some)
@@ -317,13 +321,13 @@ fn deserialize_optional_null<'de, D: serde::Deserializer<'de>>(deserializer: D) 
 {{/vendorExtensions.x-rust-null-only}}
 {{#vendorExtensions.x-rust-non-null}}
 {{^discriminator}}
-fn deserialize_non_null_{{{name}}}<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(deserializer: D) -> Result<Option<T>, D::Error> {
+fn deserialize_non_null_{{{baseName}}}<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(deserializer: D) -> Result<Option<T>, D::Error> {
     T::deserialize(deserializer).map(Some)
 }
 {{/discriminator}}
 {{/vendorExtensions.x-rust-non-null}}
 {{#vendorExtensions.x-rust-bounded-integer}}
-fn deserialize_bounded_{{{name}}}<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<{{{dataType}}}, D::Error> {
+fn deserialize_bounded_{{{baseName}}}<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<{{{dataType}}}, D::Error> {
     let value = <{{{dataType}}}>::deserialize(deserializer)?;
     if value < {{vendorExtensions.x-rust-minimum}} {
         return Err(serde::de::Error::custom("Integer is below its schema minimum"));
@@ -332,6 +336,8 @@ fn deserialize_bounded_{{{name}}}<'de, D: serde::Deserializer<'de>>(deserializer
 }
 {{/vendorExtensions.x-rust-bounded-integer}}
 {{/vars}}
+{{/oneOf.isEmpty}}
+{{/anyOf.isEmpty}}
 
 {{/model}}
 {{/models}}

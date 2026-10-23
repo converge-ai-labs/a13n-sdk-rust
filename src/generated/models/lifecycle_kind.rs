@@ -38,6 +38,24 @@ pub enum LifecycleKind {
     RunAttemptFailed,
     #[serde(rename = "run_attempt.cancelled")]
     RunAttemptCancelled,
+    #[serde(rename = "schedule.enabled")]
+    ScheduleEnabled,
+    #[serde(rename = "schedule.paused")]
+    SchedulePaused,
+    #[serde(rename = "schedule.completed")]
+    ScheduleCompleted,
+    #[serde(rename = "schedule.archived")]
+    ScheduleArchived,
+    #[serde(rename = "schedule_occurrence.submitted")]
+    ScheduleOccurrenceSubmitted,
+    #[serde(rename = "schedule_occurrence.skipped")]
+    ScheduleOccurrenceSkipped,
+    #[serde(rename = "schedule_occurrence.failed")]
+    ScheduleOccurrenceFailed,
+    #[serde(rename = "schedule_occurrence.cancelled")]
+    ScheduleOccurrenceCancelled,
+    #[serde(rename = "schedule_occurrence.completed")]
+    ScheduleOccurrenceCompleted,
 }
 
 impl std::fmt::Display for LifecycleKind {
@@ -55,6 +73,15 @@ impl std::fmt::Display for LifecycleKind {
             Self::RunAttemptYielded => write!(f, "run_attempt.yielded"),
             Self::RunAttemptFailed => write!(f, "run_attempt.failed"),
             Self::RunAttemptCancelled => write!(f, "run_attempt.cancelled"),
+            Self::ScheduleEnabled => write!(f, "schedule.enabled"),
+            Self::SchedulePaused => write!(f, "schedule.paused"),
+            Self::ScheduleCompleted => write!(f, "schedule.completed"),
+            Self::ScheduleArchived => write!(f, "schedule.archived"),
+            Self::ScheduleOccurrenceSubmitted => write!(f, "schedule_occurrence.submitted"),
+            Self::ScheduleOccurrenceSkipped => write!(f, "schedule_occurrence.skipped"),
+            Self::ScheduleOccurrenceFailed => write!(f, "schedule_occurrence.failed"),
+            Self::ScheduleOccurrenceCancelled => write!(f, "schedule_occurrence.cancelled"),
+            Self::ScheduleOccurrenceCompleted => write!(f, "schedule_occurrence.completed"),
         }
     }
 }

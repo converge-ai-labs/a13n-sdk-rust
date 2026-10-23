@@ -32,11 +32,6 @@ impl IsolatedSkillSync {
         }
     }
 }
-fn deserialize_non_null_cache_count<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
-    deserializer: D,
-) -> Result<Option<T>, D::Error> {
-    T::deserialize(deserializer).map(Some)
-}
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum Mode {
@@ -48,6 +43,11 @@ impl Default for Mode {
     fn default() -> Mode {
         Self::Isolated
     }
+}
+fn deserialize_non_null_cache_count<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }
 fn deserialize_non_null_mode<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
     deserializer: D,

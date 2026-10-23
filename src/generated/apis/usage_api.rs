@@ -13,67 +13,67 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`context_usage_api_v1_usage_context_get`]
+/// struct for typed errors of method [`context_usage`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ContextUsageApiV1UsageContextGetError {
+pub enum ContextUsageError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`model_request_metrics_api_v1_usage_records_record_id_metrics_get`]
+/// struct for typed errors of method [`model_request_metrics`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ModelRequestMetricsApiV1UsageRecordsRecordIdMetricsGetError {
+pub enum ModelRequestMetricsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`summarize_usage_api_v1_usage_get`]
+/// struct for typed errors of method [`summarize_usage`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum SummarizeUsageApiV1UsageGetError {
+pub enum SummarizeUsageError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`usage_agents_api_v1_usage_agents_get`]
+/// struct for typed errors of method [`usage_agents`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UsageAgentsApiV1UsageAgentsGetError {
+pub enum UsageAgentsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`usage_models_api_v1_usage_models_get`]
+/// struct for typed errors of method [`usage_models`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UsageModelsApiV1UsageModelsGetError {
+pub enum UsageModelsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`usage_overview_api_v1_usage_overview_get`]
+/// struct for typed errors of method [`usage_overview`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UsageOverviewApiV1UsageOverviewGetError {
+pub enum UsageOverviewError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn context_usage_api_v1_usage_context_get(
+pub async fn context_usage(
     configuration: &configuration::Configuration,
     thread_id: Option<&str>,
     run_id: Option<&str>,
     record_id: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<Option<models::ContextUsage>>, Error<ContextUsageApiV1UsageContextGetError>> {
+) -> Result<Response<Option<models::ContextUsage>>, Error<ContextUsageError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_thread_id = thread_id;
     let p_query_run_id = run_id;
@@ -137,8 +137,7 @@ pub async fn context_usage_api_v1_usage_context_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ContextUsageApiV1UsageContextGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ContextUsageError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -148,14 +147,11 @@ pub async fn context_usage_api_v1_usage_context_get(
     }
 }
 
-pub async fn model_request_metrics_api_v1_usage_records_record_id_metrics_get(
+pub async fn model_request_metrics(
     configuration: &configuration::Configuration,
     record_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::ModelRequestMetrics>,
-    Error<ModelRequestMetricsApiV1UsageRecordsRecordIdMetricsGetError>,
-> {
+) -> Result<Response<models::ModelRequestMetrics>, Error<ModelRequestMetricsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_record_id = record_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -212,8 +208,7 @@ pub async fn model_request_metrics_api_v1_usage_records_record_id_metrics_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ModelRequestMetricsApiV1UsageRecordsRecordIdMetricsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ModelRequestMetricsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -223,7 +218,7 @@ pub async fn model_request_metrics_api_v1_usage_records_record_id_metrics_get(
     }
 }
 
-pub async fn summarize_usage_api_v1_usage_get(
+pub async fn summarize_usage(
     configuration: &configuration::Configuration,
     run_id: Option<&str>,
     thread_id: Option<&str>,
@@ -231,7 +226,7 @@ pub async fn summarize_usage_api_v1_usage_get(
     ingested_after: Option<chrono::DateTime<chrono::FixedOffset>>,
     ingested_before: Option<chrono::DateTime<chrono::FixedOffset>>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::UsageSummary>, Error<SummarizeUsageApiV1UsageGetError>> {
+) -> Result<Response<models::UsageSummary>, Error<SummarizeUsageError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_run_id = run_id;
     let p_query_thread_id = thread_id;
@@ -303,7 +298,7 @@ pub async fn summarize_usage_api_v1_usage_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<SummarizeUsageApiV1UsageGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<SummarizeUsageError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -313,14 +308,14 @@ pub async fn summarize_usage_api_v1_usage_get(
     }
 }
 
-pub async fn usage_agents_api_v1_usage_agents_get(
+pub async fn usage_agents(
     configuration: &configuration::Configuration,
     start: chrono::DateTime<chrono::FixedOffset>,
     end: chrono::DateTime<chrono::FixedOffset>,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::AgentUsagePage>, Error<UsageAgentsApiV1UsageAgentsGetError>> {
+) -> Result<Response<models::AgentUsagePage>, Error<UsageAgentsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_start = start;
     let p_query_end = end;
@@ -384,8 +379,7 @@ pub async fn usage_agents_api_v1_usage_agents_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UsageAgentsApiV1UsageAgentsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UsageAgentsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -395,14 +389,14 @@ pub async fn usage_agents_api_v1_usage_agents_get(
     }
 }
 
-pub async fn usage_models_api_v1_usage_models_get(
+pub async fn usage_models(
     configuration: &configuration::Configuration,
     start: chrono::DateTime<chrono::FixedOffset>,
     end: chrono::DateTime<chrono::FixedOffset>,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ModelUsagePage>, Error<UsageModelsApiV1UsageModelsGetError>> {
+) -> Result<Response<models::ModelUsagePage>, Error<UsageModelsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_start = start;
     let p_query_end = end;
@@ -466,8 +460,7 @@ pub async fn usage_models_api_v1_usage_models_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UsageModelsApiV1UsageModelsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UsageModelsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -477,13 +470,13 @@ pub async fn usage_models_api_v1_usage_models_get(
     }
 }
 
-pub async fn usage_overview_api_v1_usage_overview_get(
+pub async fn usage_overview(
     configuration: &configuration::Configuration,
     start: chrono::DateTime<chrono::FixedOffset>,
     end: chrono::DateTime<chrono::FixedOffset>,
     timezone: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::UsageOverview>, Error<UsageOverviewApiV1UsageOverviewGetError>> {
+) -> Result<Response<models::UsageOverview>, Error<UsageOverviewError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_start = start;
     let p_query_end = end;
@@ -543,8 +536,7 @@ pub async fn usage_overview_api_v1_usage_overview_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UsageOverviewApiV1UsageOverviewGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UsageOverviewError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

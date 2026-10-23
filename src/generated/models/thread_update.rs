@@ -14,6 +14,14 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ThreadUpdate {
     #[serde(
+        rename = "execution",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub execution: Option<Option<Box<models::ExecutionOverride>>>,
+
+    #[serde(
         rename = "labels",
         default,
         with = "::serde_with::rust::double_option",
@@ -33,6 +41,7 @@ pub struct ThreadUpdate {
 impl ThreadUpdate {
     pub fn new() -> ThreadUpdate {
         ThreadUpdate {
+            execution: None,
             labels: None,
             mcp_headers: None,
         }

@@ -14,6 +14,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ToolSearchGroup {
+    #[serde(default, deserialize_with = "deserialize_non_null_capabilities")]
+    #[serde(rename = "capabilities", skip_serializing_if = "Option::is_none")]
+    pub capabilities: Option<Vec<Capabilities>>,
+
     #[serde(default, deserialize_with = "deserialize_non_null_connections")]
     #[serde(rename = "connections", skip_serializing_if = "Option::is_none")]
     pub connections: Option<Vec<String>>,
@@ -33,12 +37,32 @@ pub struct ToolSearchGroup {
 impl ToolSearchGroup {
     pub fn new(description: String) -> ToolSearchGroup {
         ToolSearchGroup {
+            capabilities: None,
             connections: None,
             description,
             platform: None,
             plugins: None,
         }
     }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Capabilities {
+    #[serde(rename = "environment")]
+    Environment,
+    #[serde(rename = "web")]
+    Web,
+}
+
+impl Default for Capabilities {
+    fn default() -> Capabilities {
+        Self::Environment
+    }
+}
+fn deserialize_non_null_capabilities<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }
 fn deserialize_non_null_connections<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
     deserializer: D,

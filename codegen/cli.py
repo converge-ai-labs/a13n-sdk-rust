@@ -157,7 +157,7 @@ def command(trie: dict, name: str, op_tests: list[dict], definitions: list[str])
                     leaf += '.arg(Arg::new("file_name").long("file-name")).arg(Arg::new("content_type").long("content-type").required_unless_present_any(["schema", "example"]))'
             if test["op"]["result"] is None:
                 leaf += '.arg(Arg::new("output").long("output").help("File path or - for stdout (required for binary content)"))'
-            if test["method"] == "list" and any(p["name"] == "cursor" for p in op["parameters"]):
+            if test["paged"]:
                 leaf += '.arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array"))'
             leaf += '.arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))'
             definitions.append(f"fn operation_{index}() -> Command {{ {leaf} }}")
@@ -237,7 +237,7 @@ def dispatch_case(index: int, test: dict) -> str:
     call = f"{chain(op, owner)}.{test['method']}({', '.join(args)})"
     if op["result"] is None:
         result = f"let response = {call}.await?; output::binary(response, matches).await"
-    elif test["method"] == "list" and any(p["name"] == "cursor" for p in op["parameters"]):
+    elif test["paged"]:
         result = f'if matches.get_flag("all") {{ output::pages({chain(op, owner)}.pages(options), config).await }} else {{let response = {call}.await?; output::response(response, config).await}}'
         # options is moved into .list only in the else branch.
     else:

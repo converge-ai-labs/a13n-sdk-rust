@@ -15,165 +15,192 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use tokio::fs::File as TokioFile;
 use tokio_util::codec::{BytesCodec, FramedRead};
 
-/// struct for typed errors of method [`archive_agent_api_v1_agents_agent_id_archive_post`]
+/// struct for typed errors of method [`archive_agent`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ArchiveAgentApiV1AgentsAgentIdArchivePostError {
+pub enum ArchiveAgentError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_agent_api_v1_agents_post`]
+/// struct for typed errors of method [`compare_agent_revisions`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateAgentApiV1AgentsPostError {
+pub enum CompareAgentRevisionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_revision_api_v1_agents_agent_id_revisions_post`]
+/// struct for typed errors of method [`create_agent`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateRevisionApiV1AgentsAgentIdRevisionsPostError {
+pub enum CreateAgentError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_avatar_api_v1_agents_agent_id_avatar_delete`]
+/// struct for typed errors of method [`create_agent_revision`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteAvatarApiV1AgentsAgentIdAvatarDeleteError {
+pub enum CreateAgentRevisionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`duplicate_agent_api_v1_agents_agent_id_duplicate_post`]
+/// struct for typed errors of method [`define_toolsets`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DuplicateAgentApiV1AgentsAgentIdDuplicatePostError {
+pub enum DefineToolsetsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_agent_api_v1_agents_agent_id_get`]
+/// struct for typed errors of method [`delete_agent_avatar`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAgentApiV1AgentsAgentIdGetError {
+pub enum DeleteAgentAvatarError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_avatar_api_v1_agents_agent_id_avatar_get`]
+/// struct for typed errors of method [`duplicate_agent`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAvatarApiV1AgentsAgentIdAvatarGetError {
+pub enum DuplicateAgentError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_revision_api_v1_agents_agent_id_revisions_revision_id_get`]
+/// struct for typed errors of method [`get_agent`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetRevisionApiV1AgentsAgentIdRevisionsRevisionIdGetError {
+pub enum GetAgentError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_agents_api_v1_agents_get`]
+/// struct for typed errors of method [`get_agent_avatar`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListAgentsApiV1AgentsGetError {
+pub enum GetAgentAvatarError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_revisions_api_v1_agents_agent_id_revisions_get`]
+/// struct for typed errors of method [`get_agent_revision`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListRevisionsApiV1AgentsAgentIdRevisionsGetError {
+pub enum GetAgentRevisionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_toolsets_api_v1_toolsets_get`]
+/// struct for typed errors of method [`index_toolsets`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListToolsetsApiV1ToolsetsGetError {
+pub enum IndexToolsetsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`prepare_composer_api_v1_agent_composer_post`]
+/// struct for typed errors of method [`list_agent_revisions`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PrepareComposerApiV1AgentComposerPostError {
+pub enum ListAgentRevisionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`put_avatar_api_v1_agents_agent_id_avatar_put`]
+/// struct for typed errors of method [`list_agents`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PutAvatarApiV1AgentsAgentIdAvatarPutError {
+pub enum ListAgentsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`set_default_api_v1_agents_agent_id_revisions_revision_id_set_default_post`]
+/// struct for typed errors of method [`list_toolsets`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum SetDefaultApiV1AgentsAgentIdRevisionsRevisionIdSetDefaultPostError {
+pub enum ListToolsetsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`unarchive_agent_api_v1_agents_agent_id_unarchive_post`]
+/// struct for typed errors of method [`prepare_composer`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UnarchiveAgentApiV1AgentsAgentIdUnarchivePostError {
+pub enum PrepareComposerError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_agent_api_v1_agents_agent_id_patch`]
+/// struct for typed errors of method [`put_agent_avatar`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateAgentApiV1AgentsAgentIdPatchError {
+pub enum PutAgentAvatarError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`validate_revision_api_v1_agents_validate_post`]
+/// struct for typed errors of method [`set_default_agent_revision`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ValidateRevisionApiV1AgentsValidatePostError {
+pub enum SetDefaultAgentRevisionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn archive_agent_api_v1_agents_agent_id_archive_post(
+/// struct for typed errors of method [`unarchive_agent`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum UnarchiveAgentError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`update_agent`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum UpdateAgentError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`validate_agent`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ValidateAgentError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+pub async fn archive_agent(
     configuration: &configuration::Configuration,
     agent_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Agent>, Error<ArchiveAgentApiV1AgentsAgentIdArchivePostError>> {
+) -> Result<Response<models::Agent>, Error<ArchiveAgentError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_agent_id = agent_id;
     let p_header_if_match = if_match;
@@ -244,8 +271,7 @@ pub async fn archive_agent_api_v1_agents_agent_id_archive_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ArchiveAgentApiV1AgentsAgentIdArchivePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ArchiveAgentError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -255,11 +281,114 @@ pub async fn archive_agent_api_v1_agents_agent_id_archive_post(
     }
 }
 
-pub async fn create_agent_api_v1_agents_post(
+/// Versioned unified diff of two revisions of this agent, optionally limited to one configuration section.
+pub async fn compare_agent_revisions(
+    configuration: &configuration::Configuration,
+    agent_id: &str,
+    revision_id: &str,
+    base_revision_id: &str,
+    section: Option<&str>,
+    offset: Option<i32>,
+    limit: Option<i32>,
+    version: Option<&str>,
+    query: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::TextRead>, Error<CompareAgentRevisionsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_agent_id = agent_id;
+    let p_path_revision_id = revision_id;
+    let p_query_base_revision_id = base_revision_id;
+    let p_query_section = section;
+    let p_query_offset = offset;
+    let p_query_limit = limit;
+    let p_query_version = version;
+    let p_query_query = query;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/agents/{agent_id}/revisions/{revision_id}/compare",
+        configuration.base_path,
+        agent_id = crate::generated::apis::urlencode(p_path_agent_id),
+        revision_id = crate::generated::apis::urlencode(p_path_revision_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    req_builder = req_builder.query(&[("base_revision_id", &p_query_base_revision_id.to_string())]);
+    if let Some(ref param_value) = p_query_section {
+        req_builder = req_builder.query(&[("section", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::TextRead`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::TextRead`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<CompareAgentRevisionsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn create_agent(
     configuration: &configuration::Configuration,
     agent_create: models::AgentCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Agent>, Error<CreateAgentApiV1AgentsPostError>> {
+) -> Result<Response<models::Agent>, Error<CreateAgentError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_agent_create = agent_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -323,7 +452,7 @@ pub async fn create_agent_api_v1_agents_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateAgentApiV1AgentsPostError> = serde_json::from_str(&content).ok();
+        let entity: Option<CreateAgentError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -334,16 +463,13 @@ pub async fn create_agent_api_v1_agents_post(
 }
 
 /// A configuration that validates to the default revision's creates nothing and returns that revision.
-pub async fn create_revision_api_v1_agents_agent_id_revisions_post(
+pub async fn create_agent_revision(
     configuration: &configuration::Configuration,
     agent_id: &str,
     agent_revision_create: models::AgentRevisionCreate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::AgentRevision>,
-    Error<CreateRevisionApiV1AgentsAgentIdRevisionsPostError>,
-> {
+) -> Result<Response<models::AgentRevision>, Error<CreateAgentRevisionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_agent_id = agent_id;
     let p_body_agent_revision_create = agent_revision_create;
@@ -416,8 +542,7 @@ pub async fn create_revision_api_v1_agents_agent_id_revisions_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateRevisionApiV1AgentsAgentIdRevisionsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateAgentRevisionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -427,12 +552,117 @@ pub async fn create_revision_api_v1_agents_agent_id_revisions_post(
     }
 }
 
-pub async fn delete_avatar_api_v1_agents_agent_id_avatar_delete(
+/// Read up to five exact definitions. Oversized values provide a versioned fragment reference.
+pub async fn define_toolsets(
+    configuration: &configuration::Configuration,
+    name: Vec<String>,
+    offset: Option<i32>,
+    limit: Option<i32>,
+    version: Option<&str>,
+    query: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ResponseDefineToolsets>, Error<DefineToolsetsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_query_name = name;
+    let p_query_offset = offset;
+    let p_query_limit = limit;
+    let p_query_version = version;
+    let p_query_query = query;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!("{}/api/v1/toolsets/definitions", configuration.base_path);
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    req_builder = match "multi" {
+        "multi" => req_builder.query(
+            &p_query_name
+                .into_iter()
+                .map(|p| ("name".to_owned(), p.to_string()))
+                .collect::<Vec<(std::string::String, std::string::String)>>(),
+        ),
+        _ => req_builder.query(&[(
+            "name",
+            &p_query_name
+                .into_iter()
+                .map(|p| p.to_string())
+                .collect::<Vec<String>>()
+                .join(",")
+                .to_string(),
+        )]),
+    };
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseDefineToolsets`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseDefineToolsets`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<DefineToolsetsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn delete_agent_avatar(
     configuration: &configuration::Configuration,
     agent_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Agent>, Error<DeleteAvatarApiV1AgentsAgentIdAvatarDeleteError>> {
+) -> Result<Response<models::Agent>, Error<DeleteAgentAvatarError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_agent_id = agent_id;
     let p_header_if_match = if_match;
@@ -503,8 +733,7 @@ pub async fn delete_avatar_api_v1_agents_agent_id_avatar_delete(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteAvatarApiV1AgentsAgentIdAvatarDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DeleteAgentAvatarError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -514,12 +743,12 @@ pub async fn delete_avatar_api_v1_agents_agent_id_avatar_delete(
     }
 }
 
-pub async fn duplicate_agent_api_v1_agents_agent_id_duplicate_post(
+pub async fn duplicate_agent(
     configuration: &configuration::Configuration,
     agent_id: &str,
     agent_duplicate: models::AgentDuplicate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Agent>, Error<DuplicateAgentApiV1AgentsAgentIdDuplicatePostError>> {
+) -> Result<Response<models::Agent>, Error<DuplicateAgentError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_agent_id = agent_id;
     let p_body_agent_duplicate = agent_duplicate;
@@ -588,8 +817,7 @@ pub async fn duplicate_agent_api_v1_agents_agent_id_duplicate_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<DuplicateAgentApiV1AgentsAgentIdDuplicatePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DuplicateAgentError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -599,11 +827,11 @@ pub async fn duplicate_agent_api_v1_agents_agent_id_duplicate_post(
     }
 }
 
-pub async fn get_agent_api_v1_agents_agent_id_get(
+pub async fn get_agent(
     configuration: &configuration::Configuration,
     agent_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Agent>, Error<GetAgentApiV1AgentsAgentIdGetError>> {
+) -> Result<Response<models::Agent>, Error<GetAgentError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_agent_id = agent_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -660,8 +888,7 @@ pub async fn get_agent_api_v1_agents_agent_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetAgentApiV1AgentsAgentIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetAgentError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -671,11 +898,11 @@ pub async fn get_agent_api_v1_agents_agent_id_get(
     }
 }
 
-pub async fn get_avatar_api_v1_agents_agent_id_avatar_get(
+pub async fn get_agent_avatar(
     configuration: &configuration::Configuration,
     agent_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<reqwest::Response, Error<GetAvatarApiV1AgentsAgentIdAvatarGetError>> {
+) -> Result<reqwest::Response, Error<GetAgentAvatarError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_agent_id = agent_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -707,8 +934,7 @@ pub async fn get_avatar_api_v1_agents_agent_id_avatar_get(
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetAvatarApiV1AgentsAgentIdAvatarGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetAgentAvatarError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -718,18 +944,27 @@ pub async fn get_avatar_api_v1_agents_agent_id_avatar_get(
     }
 }
 
-pub async fn get_revision_api_v1_agents_agent_id_revisions_revision_id_get(
+pub async fn get_agent_revision(
     configuration: &configuration::Configuration,
     agent_id: &str,
     revision_id: &str,
+    view: Option<&str>,
+    section: Option<&str>,
+    offset: Option<i32>,
+    limit: Option<i32>,
+    version: Option<&str>,
+    query: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::AgentRevision>,
-    Error<GetRevisionApiV1AgentsAgentIdRevisionsRevisionIdGetError>,
-> {
+) -> Result<Response<models::ResponseGetAgentRevision>, Error<GetAgentRevisionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_agent_id = agent_id;
     let p_path_revision_id = revision_id;
+    let p_query_view = view;
+    let p_query_section = section;
+    let p_query_offset = offset;
+    let p_query_limit = limit;
+    let p_query_version = version;
+    let p_query_query = query;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
@@ -740,6 +975,24 @@ pub async fn get_revision_api_v1_agents_agent_id_revisions_revision_id_get(
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
+    if let Some(ref param_value) = p_query_view {
+        req_builder = req_builder.query(&[("view", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_section {
+        req_builder = req_builder.query(&[("section", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
@@ -774,19 +1027,185 @@ pub async fn get_revision_api_v1_agents_agent_id_revisions_revision_id_get(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::AgentRevision`",
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseGetAgentRevision`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::AgentRevision`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseGetAgentRevision`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetRevisionApiV1AgentsAgentIdRevisionsRevisionIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetAgentRevisionError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// Search full names and descriptions; definitions are read separately by exact name.
+pub async fn index_toolsets(
+    configuration: &configuration::Configuration,
+    query: Option<&str>,
+    limit: Option<i32>,
+    cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::CatalogIndex>, Error<IndexToolsetsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_query_query = query;
+    let p_query_limit = limit;
+    let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!("{}/api/v1/toolsets/index", configuration.base_path);
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::CatalogIndex`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::CatalogIndex`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<IndexToolsetsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn list_agent_revisions(
+    configuration: &configuration::Configuration,
+    agent_id: &str,
+    view: Option<&str>,
+    limit: Option<i32>,
+    cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ResponseListAgentRevisions>, Error<ListAgentRevisionsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_agent_id = agent_id;
+    let p_query_view = view;
+    let p_query_limit = limit;
+    let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/agents/{agent_id}/revisions",
+        configuration.base_path,
+        agent_id = crate::generated::apis::urlencode(p_path_agent_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_view {
+        req_builder = req_builder.query(&[("view", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseListAgentRevisions`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseListAgentRevisions`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ListAgentRevisionsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -797,7 +1216,7 @@ pub async fn get_revision_api_v1_agents_agent_id_revisions_revision_id_get(
 }
 
 /// Agents of the workspace. `q` matches the name or description, ignoring case; `archived` keeps only archived agents, or only open ones; `source=builtin` finds managed presets; the skill filters keep those with a revision pinning that skill or that skill revision.
-pub async fn list_agents_api_v1_agents_get(
+pub async fn list_agents(
     configuration: &configuration::Configuration,
     label: Option<Vec<String>>,
     q: Option<&str>,
@@ -809,7 +1228,7 @@ pub async fn list_agents_api_v1_agents_get(
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::AgentPage>, Error<ListAgentsApiV1AgentsGetError>> {
+) -> Result<Response<models::AgentPage>, Error<ListAgentsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_label = label;
     let p_query_q = q;
@@ -913,7 +1332,7 @@ pub async fn list_agents_api_v1_agents_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListAgentsApiV1AgentsGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<ListAgentsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -923,95 +1342,10 @@ pub async fn list_agents_api_v1_agents_get(
     }
 }
 
-pub async fn list_revisions_api_v1_agents_agent_id_revisions_get(
-    configuration: &configuration::Configuration,
-    agent_id: &str,
-    limit: Option<i32>,
-    cursor: Option<&str>,
-    x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::AgentRevisionPage>,
-    Error<ListRevisionsApiV1AgentsAgentIdRevisionsGetError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_agent_id = agent_id;
-    let p_query_limit = limit;
-    let p_query_cursor = cursor;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/agents/{agent_id}/revisions",
-        configuration.base_path,
-        agent_id = crate::generated::apis::urlencode(p_path_agent_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref param_value) = p_query_limit {
-        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_cursor {
-        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
-    }
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::AgentRevisionPage`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::AgentRevisionPage`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<ListRevisionsApiV1AgentsAgentIdRevisionsGetError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn list_toolsets_api_v1_toolsets_get(
+pub async fn list_toolsets(
     configuration: &configuration::Configuration,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ToolsetCatalog>, Error<ListToolsetsApiV1ToolsetsGetError>> {
+) -> Result<Response<models::ToolsetCatalog>, Error<ListToolsetsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_header_x_workspace_id = x_workspace_id;
 
@@ -1063,7 +1397,7 @@ pub async fn list_toolsets_api_v1_toolsets_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListToolsetsApiV1ToolsetsGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<ListToolsetsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1074,10 +1408,10 @@ pub async fn list_toolsets_api_v1_toolsets_get(
 }
 
 /// The workspace's Agent Composer, created or brought up to date with the deployment's definition.  Refused with `model_required` while the workspace has no model the caller can use.
-pub async fn prepare_composer_api_v1_agent_composer_post(
+pub async fn prepare_composer(
     configuration: &configuration::Configuration,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Agent>, Error<PrepareComposerApiV1AgentComposerPostError>> {
+) -> Result<Response<models::Agent>, Error<PrepareComposerError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_header_x_workspace_id = x_workspace_id;
 
@@ -1139,8 +1473,7 @@ pub async fn prepare_composer_api_v1_agent_composer_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PrepareComposerApiV1AgentComposerPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<PrepareComposerError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1150,14 +1483,14 @@ pub async fn prepare_composer_api_v1_agent_composer_post(
     }
 }
 
-pub async fn put_avatar_api_v1_agents_agent_id_avatar_put(
+pub async fn put_agent_avatar(
     configuration: &configuration::Configuration,
     agent_id: &str,
     content_type: &str,
     body: std::path::PathBuf,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Agent>, Error<PutAvatarApiV1AgentsAgentIdAvatarPutError>> {
+) -> Result<Response<models::Agent>, Error<PutAgentAvatarError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_agent_id = agent_id;
     let p_header_content_type = content_type;
@@ -1232,8 +1565,7 @@ pub async fn put_avatar_api_v1_agents_agent_id_avatar_put(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PutAvatarApiV1AgentsAgentIdAvatarPutError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<PutAgentAvatarError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1243,16 +1575,13 @@ pub async fn put_avatar_api_v1_agents_agent_id_avatar_put(
     }
 }
 
-pub async fn set_default_api_v1_agents_agent_id_revisions_revision_id_set_default_post(
+pub async fn set_default_agent_revision(
     configuration: &configuration::Configuration,
     agent_id: &str,
     revision_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::Agent>,
-    Error<SetDefaultApiV1AgentsAgentIdRevisionsRevisionIdSetDefaultPostError>,
-> {
+) -> Result<Response<models::Agent>, Error<SetDefaultAgentRevisionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_agent_id = agent_id;
     let p_path_revision_id = revision_id;
@@ -1325,8 +1654,7 @@ pub async fn set_default_api_v1_agents_agent_id_revisions_revision_id_set_defaul
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<SetDefaultApiV1AgentsAgentIdRevisionsRevisionIdSetDefaultPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<SetDefaultAgentRevisionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1336,12 +1664,12 @@ pub async fn set_default_api_v1_agents_agent_id_revisions_revision_id_set_defaul
     }
 }
 
-pub async fn unarchive_agent_api_v1_agents_agent_id_unarchive_post(
+pub async fn unarchive_agent(
     configuration: &configuration::Configuration,
     agent_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Agent>, Error<UnarchiveAgentApiV1AgentsAgentIdUnarchivePostError>> {
+) -> Result<Response<models::Agent>, Error<UnarchiveAgentError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_agent_id = agent_id;
     let p_header_if_match = if_match;
@@ -1412,8 +1740,7 @@ pub async fn unarchive_agent_api_v1_agents_agent_id_unarchive_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UnarchiveAgentApiV1AgentsAgentIdUnarchivePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UnarchiveAgentError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1423,13 +1750,13 @@ pub async fn unarchive_agent_api_v1_agents_agent_id_unarchive_post(
     }
 }
 
-pub async fn update_agent_api_v1_agents_agent_id_patch(
+pub async fn update_agent(
     configuration: &configuration::Configuration,
     agent_id: &str,
     agent_update: models::AgentUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Agent>, Error<UpdateAgentApiV1AgentsAgentIdPatchError>> {
+) -> Result<Response<models::Agent>, Error<UpdateAgentError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_agent_id = agent_id;
     let p_body_agent_update = agent_update;
@@ -1502,8 +1829,7 @@ pub async fn update_agent_api_v1_agents_agent_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateAgentApiV1AgentsAgentIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateAgentError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1514,11 +1840,11 @@ pub async fn update_agent_api_v1_agents_agent_id_patch(
 }
 
 /// No content when creating a revision of the configuration would accept it, else the same `invalid_argument` error with the field's path relative to `config`; nothing is stored.
-pub async fn validate_revision_api_v1_agents_validate_post(
+pub async fn validate_agent(
     configuration: &configuration::Configuration,
     agent_validate: models::AgentValidate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<()>, Error<ValidateRevisionApiV1AgentsValidatePostError>> {
+) -> Result<Response<()>, Error<ValidateAgentError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_agent_validate = agent_validate;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1561,8 +1887,7 @@ pub async fn validate_revision_api_v1_agents_validate_post(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<ValidateRevisionApiV1AgentsValidatePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ValidateAgentError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

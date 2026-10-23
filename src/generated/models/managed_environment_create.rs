@@ -15,6 +15,17 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ManagedEnvironmentCreate {
     #[serde(
+        rename = "metrics_data_source_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub metrics_data_source_id: Option<Option<String>>,
+
+    #[serde(rename = "metrics_labels", skip_serializing_if = "Option::is_none")]
+    pub metrics_labels: Option<serde_json::Value>,
+
+    #[serde(
         rename = "name",
         default,
         with = "::serde_with::rust::double_option",
@@ -30,6 +41,8 @@ impl ManagedEnvironmentCreate {
     /// A workspace-managed sandbox reserved from a template, for threads to mount; maintenance creates it.
     pub fn new(template_id: String) -> ManagedEnvironmentCreate {
         ManagedEnvironmentCreate {
+            metrics_data_source_id: None,
+            metrics_labels: None,
             name: None,
             template_id,
         }

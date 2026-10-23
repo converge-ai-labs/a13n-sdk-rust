@@ -54,7 +54,9 @@ def prepare(document: dict) -> dict:
                         response_schema = media.get("schema", {})
                         if any(branch.get("type") == "null" for branch in response_schema.get("anyOf", [])):
                             value["x-rust-nullable-response"] = True
-                        if media_type == "text/event-stream":
+                        if media_type == "text/event-stream" or (
+                            media_type != "application/json" and not response_schema
+                        ):
                             media["schema"] = {"type": "string", "format": "binary"}
             branches = value.get("anyOf", [])
             if any(unrestricted(branch) for branch in branches):
@@ -79,9 +81,8 @@ def prepare(document: dict) -> dict:
     # Imported native history is immutable ordered JSON, including each message
     # object. HashMap would reorder the model-visible context at the wire boundary.
     for name, schema in schemas.items():
-        if name in {"ToolSearch", "ToolSearchGroup", "ProxyToolSearchConfig", "NativeToolSearchConfig"}:
-            # These new configuration objects are closed, including both union
-            # branches. Do not silently accept a hybrid proxy/native payload.
+        if name in {"ToolSearch", "ToolSearchGroup", "ToolSearchConfig"}:
+            # Preserve closed configuration objects at the typed boundary.
             schema["x-rust-deny-unknown-fields"] = schema.get("additionalProperties") is False
             for field, prop in schema.get("properties", {}).items():
                 nullable = any(branch.get("type") == "null" for branch in prop.get("anyOf", []))
@@ -111,6 +112,11 @@ def with_session_models(document: dict, stream: dict) -> dict:
         for name in stream["$defs"]
     }
 
+    # Schedule stream configuration and observability HTTP configuration are
+    # distinct contracts whose standalone exports share a short name.
+    if "Configuration" in names:
+        names["Configuration"] = "ScheduleConfiguration"
+
     def convert(value: object) -> object:
         if isinstance(value, dict):
             return {key: convert(child) for key, child in value.items()}
@@ -135,6 +141,8 @@ def with_session_models(document: dict, stream: dict) -> dict:
             if comparable(schemas[target]) != comparable(converted):
                 raise ValueError(f"Session and HTTP models disagree: {name}")
         else:
+            if target != name and isinstance(converted, dict):
+                converted["title"] = target
             schemas[target] = converted
     # Preserve integer lower bounds on the Session snapshot's canonical models.
     # Frame coordinates with no declared minimum remain unrestricted.

@@ -95,6 +95,10 @@ pub enum EnvironmentAction {
     EnvironmentComputerTypeText,
     #[serde(rename = "environment.computer.press_keys")]
     EnvironmentComputerPressKeys,
+    #[serde(rename = "environment.computer.read_clipboard")]
+    EnvironmentComputerReadClipboard,
+    #[serde(rename = "environment.computer.write_clipboard")]
+    EnvironmentComputerWriteClipboard,
 }
 
 impl std::fmt::Display for EnvironmentAction {
@@ -140,6 +144,12 @@ impl std::fmt::Display for EnvironmentAction {
             Self::EnvironmentComputerScroll => write!(f, "environment.computer.scroll"),
             Self::EnvironmentComputerTypeText => write!(f, "environment.computer.type_text"),
             Self::EnvironmentComputerPressKeys => write!(f, "environment.computer.press_keys"),
+            Self::EnvironmentComputerReadClipboard => {
+                write!(f, "environment.computer.read_clipboard")
+            }
+            Self::EnvironmentComputerWriteClipboard => {
+                write!(f, "environment.computer.write_clipboard")
+            }
         }
     }
 }

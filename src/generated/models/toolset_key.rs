@@ -26,12 +26,22 @@ pub enum ToolsetKey {
     Memory,
     #[serde(rename = "assets")]
     Assets,
-    #[serde(rename = "configuration")]
-    Configuration,
-    #[serde(rename = "traces")]
-    Traces,
-    #[serde(rename = "findings")]
-    Findings,
+    #[serde(rename = "agents")]
+    Agents,
+    #[serde(rename = "models")]
+    Models,
+    #[serde(rename = "connections")]
+    Connections,
+    #[serde(rename = "skills")]
+    Skills,
+    #[serde(rename = "environment_templates")]
+    EnvironmentTemplates,
+    #[serde(rename = "providers")]
+    Providers,
+    #[serde(rename = "execution")]
+    Execution,
+    #[serde(rename = "schedules")]
+    Schedules,
 }
 
 impl std::fmt::Display for ToolsetKey {
@@ -43,9 +53,14 @@ impl std::fmt::Display for ToolsetKey {
             Self::Web => write!(f, "web"),
             Self::Memory => write!(f, "memory"),
             Self::Assets => write!(f, "assets"),
-            Self::Configuration => write!(f, "configuration"),
-            Self::Traces => write!(f, "traces"),
-            Self::Findings => write!(f, "findings"),
+            Self::Agents => write!(f, "agents"),
+            Self::Models => write!(f, "models"),
+            Self::Connections => write!(f, "connections"),
+            Self::Skills => write!(f, "skills"),
+            Self::EnvironmentTemplates => write!(f, "environment_templates"),
+            Self::Providers => write!(f, "providers"),
+            Self::Execution => write!(f, "execution"),
+            Self::Schedules => write!(f, "schedules"),
         }
     }
 }
