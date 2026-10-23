@@ -92,8 +92,13 @@ fn every_label_resource_uses_the_sdk_http_contract() {
                 }
                 let request = String::from_utf8(bytes).unwrap();
                 assert!(request.starts_with(&format!(
-                    "{} /api/v1/{collection}/resource_test HTTP/1.1",
-                    if replace { "PATCH" } else { "GET" }
+                    "{} /api/v1/{collection}/resource_test{} HTTP/1.1",
+                    if replace { "PATCH" } else { "GET" },
+                    if !replace && kind == "run" {
+                        "?view=detailed"
+                    } else {
+                        ""
+                    }
                 )));
                 assert!(
                     request

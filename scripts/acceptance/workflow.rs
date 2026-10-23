@@ -41,23 +41,29 @@ pub async fn offline(receipt: Value, entry: Value, run: Value) -> Result<()> {
     // A bounded script rejects extra requests (including Items or a mutation retry).
     let replies = vec![
         ("POST /api/v1/threads ", receipt.to_string()),
-        ("GET /api/v1/threads/t/inbox/e ", entry.to_string()),
-        ("GET /api/v1/runs/r ", run.to_string()),
+        (
+            "GET /api/v1/threads/t/inbox/e?view=detailed ",
+            entry.to_string(),
+        ),
+        ("GET /api/v1/runs/r?view=detailed ", run.to_string()),
         ("POST /api/v1/threads ", receipt.to_string()),
         ("POST /api/v1/threads/t/inbox ", receipt.to_string()),
-        ("GET /api/v1/threads/t/inbox/e ", entry.to_string()),
-        ("GET /api/v1/runs/r ", run.to_string()),
+        (
+            "GET /api/v1/threads/t/inbox/e?view=detailed ",
+            entry.to_string(),
+        ),
+        ("GET /api/v1/runs/r?view=detailed ", run.to_string()),
         ("POST /api/v1/runs/r/resume ", successor.to_string()),
         ("GET /api/v1/threads/t/stream ", stream),
-        ("GET /api/v1/runs/r2 ", completed.to_string()),
-        ("GET /api/v1/runs/r ", run.to_string()),
+        ("GET /api/v1/runs/r2?view=detailed ", completed.to_string()),
+        ("GET /api/v1/runs/r?view=detailed ", run.to_string()),
         ("POST /api/v1/runs/r/fork ", receipt.to_string()),
         (
             "POST /api/v1/threads ",
             "<html>gateway timeout</html>".into(),
         ),
-        ("GET /api/v1/runs/r ", run.to_string()),
-        ("GET /api/v1/runs/r ", run.to_string()),
+        ("GET /api/v1/runs/r?view=detailed ", run.to_string()),
+        ("GET /api/v1/runs/r?view=detailed ", run.to_string()),
     ];
     let server = tokio::spawn(async move {
         let mut chosen_keys = Vec::new();

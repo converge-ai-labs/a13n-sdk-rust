@@ -38,7 +38,7 @@ pub async fn offline() -> Result<()> {
                 json!({"pending":true,"processed_seq":0,"history_gap":false}),
             ),
             ("PATCH /api/v1/sessions/s ", 200, session),
-            ("GET /api/v1/runs/r ", 200, run),
+            ("GET /api/v1/runs/r?view=detailed ", 200, run),
             (
                 "GET /api/v1/runs/r/agent ",
                 200,

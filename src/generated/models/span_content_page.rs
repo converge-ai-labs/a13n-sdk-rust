@@ -11,7 +11,7 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// SpanContentPage : A matching span's selected content, or a continuation to keep locating that span.
+/// SpanContentPage : A matching span's selected content, or no items when the trace has no such span.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SpanContentPage {
     #[serde(rename = "items")]
@@ -22,7 +22,7 @@ pub struct SpanContentPage {
 }
 
 impl SpanContentPage {
-    /// A matching span's selected content, or a continuation to keep locating that span.
+    /// A matching span's selected content, or no items when the trace has no such span.
     pub fn new(items: Vec<models::TextRead>, next_cursor: Option<String>) -> SpanContentPage {
         SpanContentPage { items, next_cursor }
     }

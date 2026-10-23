@@ -54,7 +54,16 @@ async fn result_only_waits_for_consumed_entry_not_provisional_assignment() {
                 },
             );
         }
-        assert!(request.target.ends_with("/runs/r"), "{}", request.target);
+        assert!(
+            request
+                .target
+                .split('?')
+                .next()
+                .unwrap()
+                .ends_with("/runs/r"),
+            "{}",
+            request.target
+        );
         Reply::json(200, run("waiting"))
     })
     .await;
@@ -262,7 +271,7 @@ async fn finite_frames_filter_other_runs_and_idle_stream_seals() {
             reply.chunks.push((Duration::from_secs(10), vec![b'\n']));
             return reply;
         }
-        assert!(request.target.ends_with("/runs/r"));
+        assert!(request.target.split('?').next().unwrap().ends_with("/runs/r"));
         Reply::json(200, run("completed"))
     }).await;
     let sdk = client(&fixture);
@@ -588,7 +597,13 @@ async fn inline_child_agui_media_and_terminal_observations_do_not_finish_root_in
         if request.method == "POST" {
             return Reply::json(201, receipt());
         }
-        if request.target.ends_with("/inbox/e") {
+        if request
+            .target
+            .split('?')
+            .next()
+            .unwrap()
+            .ends_with("/inbox/e")
+        {
             return Reply::json(200, entry("consumed", Some("r")));
         }
         if request.target.ends_with("/stream") {
@@ -643,15 +658,19 @@ async fn explicit_normal_message_continues_last_sealed_failed_or_cancelled_run()
         let mut fixture =
             server(
                 move |request| match (request.method.as_str(), request.target.as_str()) {
-                    ("GET", "/prefix/api/v1/runs/prior") => Reply::json(200, prior.clone()),
+                    ("GET", "/prefix/api/v1/runs/prior?view=detailed") => {
+                        Reply::json(200, prior.clone())
+                    }
                     ("GET", "/prefix/api/v1/threads/t") => Reply::json(200, thread.clone()),
                     ("POST", "/prefix/api/v1/threads/t/inbox") => {
                         Reply::json(201, submitted.clone())
                     }
-                    ("GET", "/prefix/api/v1/threads/t/inbox/e") => {
+                    ("GET", "/prefix/api/v1/threads/t/inbox/e?view=detailed") => {
                         Reply::json(200, entry("consumed", Some("r")))
                     }
-                    ("GET", "/prefix/api/v1/runs/r") => Reply::json(200, next.clone()),
+                    ("GET", "/prefix/api/v1/runs/r?view=detailed") => {
+                        Reply::json(200, next.clone())
+                    }
                     _ => panic!(
                         "implicit recovery request {} {}",
                         request.method, request.target
@@ -721,7 +740,7 @@ async fn desktop_wait_is_finite_recoverable_and_empty_resume_is_explicit() {
         if request.target.ends_with("/stream") {
             return Reply::sse("event: delta\nid: 1-0\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":1,\"event\":{},\"item\":null}\n\n");
         }
-        assert!(request.target.ends_with("/runs/r"));
+        assert!(request.target.split('?').next().unwrap().ends_with("/runs/r"));
         if reads.fetch_add(1, Ordering::SeqCst) == 0 {
             return Reply::json(200, run("running"));
         }

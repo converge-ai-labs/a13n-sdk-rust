@@ -20,6 +20,8 @@ mod interaction;
 pub mod resources;
 pub mod streaming;
 pub use agent::{Agent, ForkOptions, ResumeOptions, SendOptions, StartOptions};
+pub use generated::models::tool_execution_override::Mode as ToolExecutionMode;
+pub use generated::models::{ExecutionOverride, Steering, ToolExecutionOverride};
 pub use preview::{PreviewInterruptedError, PreviewInterruptedKind};
 pub use workflow::{Answer, Input, InputPart, Overrides, RunConfiguration, RunOptions};
 // Selected canonical workflow primitives, not a duplicate schema hierarchy.

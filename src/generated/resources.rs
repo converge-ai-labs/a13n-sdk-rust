@@ -13756,8 +13756,6 @@ pub struct TraceSpanContentResource<'a>(pub(crate) Binding<'a>);
 pub struct TraceSpanContentListOptions {
     /// Query parameter `section`. `None` omits this parameter.
     pub section: Option<TraceSpanContentSection>,
-    /// Query parameter `cursor`. `None` omits this parameter.
-    pub cursor: Option<String>,
     /// Query parameter `offset`. Unicode code-point offset; continue with next_offset. `None` omits this parameter.
     pub offset: Option<i32>,
     /// Query parameter `limit`. Maximum Unicode code points in this fragment. `None` omits this parameter.
@@ -13768,22 +13766,6 @@ pub struct TraceSpanContentListOptions {
     pub query: Option<String>,
     /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
     pub x_workspace_id: Option<String>,
-}
-/// Page source owned by [`TraceSpanContentResource::pages`].
-pub struct TraceSpanContentPages<'a> {
-    resource: TraceSpanContentResource<'a>,
-    options: TraceSpanContentListOptions,
-}
-impl PageSource for TraceSpanContentPages<'_> {
-    type Page = models::SpanContentPage;
-    async fn fetch(&self, cursor: Option<String>) -> Result<Response<Self::Page>, Error> {
-        let mut options = self.options.clone();
-        options.cursor = cursor;
-        self.resource.list(options).await
-    }
-    fn cursor(page: &Self::Page) -> Option<String> {
-        page.next_cursor.clone()
-    }
 }
 impl<'a> TraceSpanContentResource<'a> {
     /// Read Span Content.
@@ -13809,9 +13791,6 @@ impl<'a> TraceSpanContentResource<'a> {
         if let Some(value) = &options.section {
             request = query(request, "section", value)?;
         }
-        if let Some(value) = &options.cursor {
-            request = query(request, "cursor", value)?;
-        }
         if let Some(value) = &options.offset {
             request = query(request, "offset", value)?;
         }
@@ -13826,17 +13805,6 @@ impl<'a> TraceSpanContentResource<'a> {
         }
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
-    }
-    /// Iterate cursor pages lazily with owned options. Each page retains status and headers; no prefetch occurs. Drop the pager to stop reads.
-    pub fn pages(&self, options: TraceSpanContentListOptions) -> Pages<TraceSpanContentPages<'a>> {
-        let cursor = options.cursor.clone();
-        Pages::new(
-            TraceSpanContentPages {
-                resource: self.clone(),
-                options,
-            },
-            cursor,
-        )
     }
 }
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
