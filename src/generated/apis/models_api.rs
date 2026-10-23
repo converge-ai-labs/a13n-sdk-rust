@@ -13,75 +13,75 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`create_model_api_v1_models_post`]
+/// struct for typed errors of method [`create_model`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateModelApiV1ModelsPostError {
+pub enum CreateModelError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_media_defaults_api_v1_media_understanding_defaults_get`]
+/// struct for typed errors of method [`get_media_defaults`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetMediaDefaultsApiV1MediaUnderstandingDefaultsGetError {
+pub enum GetMediaDefaultsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_model_api_v1_models_key_get`]
+/// struct for typed errors of method [`get_model`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetModelApiV1ModelsKeyGetError {
+pub enum GetModelError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_model_catalog_api_v1_model_catalog_get`]
+/// struct for typed errors of method [`get_model_catalog`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetModelCatalogApiV1ModelCatalogGetError {
+pub enum GetModelCatalogError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_models_api_v1_models_get`]
+/// struct for typed errors of method [`list_models`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListModelsApiV1ModelsGetError {
+pub enum ListModelsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`replace_media_defaults_api_v1_media_understanding_defaults_put`]
+/// struct for typed errors of method [`replace_media_defaults`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReplaceMediaDefaultsApiV1MediaUnderstandingDefaultsPutError {
+pub enum ReplaceMediaDefaultsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_model_api_v1_models_key_patch`]
+/// struct for typed errors of method [`update_model`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateModelApiV1ModelsKeyPatchError {
+pub enum UpdateModelError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
 /// Needs `write` on the workspace and on the model's provider, whose credential the model spends.
-pub async fn create_model_api_v1_models_post(
+pub async fn create_model(
     configuration: &configuration::Configuration,
     model_create: models::ModelCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Model>, Error<CreateModelApiV1ModelsPostError>> {
+) -> Result<Response<models::Model>, Error<CreateModelError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_model_create = model_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -145,7 +145,7 @@ pub async fn create_model_api_v1_models_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateModelApiV1ModelsPostError> = serde_json::from_str(&content).ok();
+        let entity: Option<CreateModelError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -155,13 +155,10 @@ pub async fn create_model_api_v1_models_post(
     }
 }
 
-pub async fn get_media_defaults_api_v1_media_understanding_defaults_get(
+pub async fn get_media_defaults(
     configuration: &configuration::Configuration,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::MediaDefaults>,
-    Error<GetMediaDefaultsApiV1MediaUnderstandingDefaultsGetError>,
-> {
+) -> Result<Response<models::MediaDefaults>, Error<GetMediaDefaultsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_header_x_workspace_id = x_workspace_id;
 
@@ -216,8 +213,7 @@ pub async fn get_media_defaults_api_v1_media_understanding_defaults_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetMediaDefaultsApiV1MediaUnderstandingDefaultsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetMediaDefaultsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -227,11 +223,11 @@ pub async fn get_media_defaults_api_v1_media_understanding_defaults_get(
     }
 }
 
-pub async fn get_model_api_v1_models_key_get(
+pub async fn get_model(
     configuration: &configuration::Configuration,
     key: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Model>, Error<GetModelApiV1ModelsKeyGetError>> {
+) -> Result<Response<models::Model>, Error<GetModelError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_key = key;
     let p_header_x_workspace_id = x_workspace_id;
@@ -288,7 +284,7 @@ pub async fn get_model_api_v1_models_key_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetModelApiV1ModelsKeyGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<GetModelError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -299,14 +295,32 @@ pub async fn get_model_api_v1_models_key_get(
 }
 
 /// Read public model metadata and prices. Filter by provider and model to avoid a large full-catalog response.  Both filters match exactly and combine with AND; omitted filters leave that dimension unrestricted. No match returns empty items with the catalog status. Refreshes always fetch the full catalog when due. Copy the selected item's characteristics, pricing and ref into model config, pricing and catalog_ref when saving.
-pub async fn get_model_catalog_api_v1_model_catalog_get(
+pub async fn get_model_catalog(
     configuration: &configuration::Configuration,
     provider: Option<&str>,
     model: Option<&str>,
-) -> Result<Response<models::ModelCatalog>, Error<GetModelCatalogApiV1ModelCatalogGetError>> {
+    view: Option<&str>,
+    query: Option<&str>,
+    capability: Option<&str>,
+    limit: Option<i32>,
+    cursor: Option<&str>,
+    section: Option<&str>,
+    offset: Option<i32>,
+    text_limit: Option<i32>,
+    version: Option<&str>,
+) -> Result<Response<models::ResponseGetModelCatalog>, Error<GetModelCatalogError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_provider = provider;
     let p_query_model = model;
+    let p_query_view = view;
+    let p_query_query = query;
+    let p_query_capability = capability;
+    let p_query_limit = limit;
+    let p_query_cursor = cursor;
+    let p_query_section = section;
+    let p_query_offset = offset;
+    let p_query_text_limit = text_limit;
+    let p_query_version = version;
 
     let uri_str = format!("{}/api/v1/model-catalog", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -316,6 +330,33 @@ pub async fn get_model_catalog_api_v1_model_catalog_get(
     }
     if let Some(ref param_value) = p_query_model {
         req_builder = req_builder.query(&[("model", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_view {
+        req_builder = req_builder.query(&[("view", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_capability {
+        req_builder = req_builder.query(&[("capability", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_section {
+        req_builder = req_builder.query(&[("section", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_text_limit {
+        req_builder = req_builder.query(&[("text_limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
@@ -348,19 +389,18 @@ pub async fn get_model_catalog_api_v1_model_catalog_get(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ModelCatalog`",
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseGetModelCatalog`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ModelCatalog`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseGetModelCatalog`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetModelCatalogApiV1ModelCatalogGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetModelCatalogError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -370,12 +410,12 @@ pub async fn get_model_catalog_api_v1_model_catalog_get(
     }
 }
 
-pub async fn list_models_api_v1_models_get(
+pub async fn list_models(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::ModelPage>, Error<ListModelsApiV1ModelsGetError>> {
+) -> Result<Response<models::ModelPage>, Error<ListModelsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -435,7 +475,7 @@ pub async fn list_models_api_v1_models_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListModelsApiV1ModelsGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<ListModelsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -446,15 +486,12 @@ pub async fn list_models_api_v1_models_get(
 }
 
 /// Replaces all three kinds; each model must declare it understands its kind. Requires workspace admin.
-pub async fn replace_media_defaults_api_v1_media_understanding_defaults_put(
+pub async fn replace_media_defaults(
     configuration: &configuration::Configuration,
     media_understanding_selection: models::MediaUnderstandingSelection,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::MediaDefaults>,
-    Error<ReplaceMediaDefaultsApiV1MediaUnderstandingDefaultsPutError>,
-> {
+) -> Result<Response<models::MediaDefaults>, Error<ReplaceMediaDefaultsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_media_understanding_selection = media_understanding_selection;
     let p_header_if_match = if_match;
@@ -523,8 +560,7 @@ pub async fn replace_media_defaults_api_v1_media_understanding_defaults_put(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ReplaceMediaDefaultsApiV1MediaUnderstandingDefaultsPutError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ReplaceMediaDefaultsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -535,13 +571,13 @@ pub async fn replace_media_defaults_api_v1_media_understanding_defaults_put(
 }
 
 /// A configuration change also needs `write` on the model's provider.
-pub async fn update_model_api_v1_models_key_patch(
+pub async fn update_model(
     configuration: &configuration::Configuration,
     key: &str,
     model_update: models::ModelUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Model>, Error<UpdateModelApiV1ModelsKeyPatchError>> {
+) -> Result<Response<models::Model>, Error<UpdateModelError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_key = key;
     let p_body_model_update = model_update;
@@ -614,8 +650,7 @@ pub async fn update_model_api_v1_models_key_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateModelApiV1ModelsKeyPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateModelError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

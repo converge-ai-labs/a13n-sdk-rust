@@ -11,7 +11,7 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// ContextUsage : One reported generation, compared with its currently configured window.
+/// ContextUsage : A Run's configured window and its latest eligible generation, when available.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ContextUsage {
     #[serde(
@@ -26,20 +26,20 @@ pub struct ContextUsage {
     #[serde(rename = "output_tokens", deserialize_with = "Option::deserialize")]
     pub output_tokens: Option<i32>,
 
-    #[serde(rename = "record_id")]
-    pub record_id: String,
+    #[serde(rename = "record_id", deserialize_with = "Option::deserialize")]
+    pub record_id: Option<String>,
 
     #[serde(rename = "run_id")]
     pub run_id: String,
 }
 
 impl ContextUsage {
-    /// One reported generation, compared with its currently configured window.
+    /// A Run's configured window and its latest eligible generation, when available.
     pub fn new(
         context_window_tokens: Option<i32>,
         input_tokens: Option<i32>,
         output_tokens: Option<i32>,
-        record_id: String,
+        record_id: Option<String>,
         run_id: String,
     ) -> ContextUsage {
         ContextUsage {

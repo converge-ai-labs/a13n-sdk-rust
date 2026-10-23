@@ -14,6 +14,14 @@ use serde::{Deserialize, Serialize};
 /// ImageInputPolicy : Preparation limits for one model's image input, not native ModelSettings.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ImageInputPolicy {
+    /// Fraction of max_images retained at the first overflow; one evicts only the excess images.
+
+    #[serde(
+        rename = "image_retention_ratio",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub image_retention_ratio: Option<f64>,
+
     #[serde(
         rename = "image_split_max_height",
         skip_serializing_if = "Option::is_none"
@@ -36,7 +44,7 @@ pub struct ImageInputPolicy {
         skip_serializing_if = "Option::is_none"
     )]
     pub max_image_dimension: Option<i32>,
-    /// Keep the newest images; zero removes all image input.
+    /// Maximum retained images; zero removes all image input.
 
     #[serde(rename = "max_images", skip_serializing_if = "Option::is_none")]
     pub max_images: Option<i32>,
@@ -52,6 +60,7 @@ impl ImageInputPolicy {
     /// Preparation limits for one model's image input, not native ModelSettings.
     pub fn new() -> ImageInputPolicy {
         ImageInputPolicy {
+            image_retention_ratio: None,
             image_split_max_height: None,
             image_split_overlap: None,
             max_image_bytes: None,

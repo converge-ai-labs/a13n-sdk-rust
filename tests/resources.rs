@@ -263,7 +263,18 @@ async fn session_uses_current_csrf_and_shared_cookie_jar() {
         );
     }
     *csrf.lock().unwrap() = "advanced".into();
-    client.execute(async |api|a13n::generated::apis::tenancy_api::update_workspace_api_v1_workspaces_workspace_id_patch(api,"w",models::WorkspaceUpdate::default(),Some("v1")).await).await.unwrap();
+    client
+        .execute(async |api| {
+            a13n::generated::apis::tenancy_api::update_workspace(
+                api,
+                "w",
+                models::WorkspaceUpdate::default(),
+                Some("v1"),
+            )
+            .await
+        })
+        .await
+        .unwrap();
     assert!(
         server
             .requests

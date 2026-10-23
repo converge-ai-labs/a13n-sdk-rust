@@ -11,7 +11,7 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// SubscriptionFilter : Absent fields match every run.
+/// SubscriptionFilter : Absent fields match every event; a specified identity must exist and match.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SubscriptionFilter {
     #[serde(
@@ -21,6 +21,14 @@ pub struct SubscriptionFilter {
         skip_serializing_if = "Option::is_none"
     )]
     pub agent_id: Option<Option<String>>,
+
+    #[serde(
+        rename = "schedule_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub schedule_id: Option<Option<String>>,
 
     #[serde(
         rename = "session_id",
@@ -40,10 +48,11 @@ pub struct SubscriptionFilter {
 }
 
 impl SubscriptionFilter {
-    /// Absent fields match every run.
+    /// Absent fields match every event; a specified identity must exist and match.
     pub fn new() -> SubscriptionFilter {
         SubscriptionFilter {
             agent_id: None,
+            schedule_id: None,
             session_id: None,
             thread_id: None,
         }

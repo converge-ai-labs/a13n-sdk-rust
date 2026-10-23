@@ -30,6 +30,14 @@ pub struct AgentConfigInput {
     )]
     pub default_environment_template_id: Option<Option<String>>,
 
+    #[serde(
+        rename = "execution",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub execution: Option<Option<Box<models::ExecutionOverride>>>,
+
     #[serde(rename = "instructions", skip_serializing_if = "Option::is_none")]
     pub instructions: Option<String>,
 
@@ -67,9 +75,6 @@ pub struct AgentConfigInput {
         skip_serializing_if = "Option::is_none"
     )]
     pub output_spec: Option<Option<Box<models::OutputSpec>>>,
-
-    #[serde(rename = "platform_tools", skip_serializing_if = "Option::is_none")]
-    pub platform_tools: Option<Box<models::PlatformSelection>>,
 
     #[serde(rename = "plugins", skip_serializing_if = "Option::is_none")]
     pub plugins: Option<Vec<models::PluginSelection>>,
@@ -124,6 +129,7 @@ impl AgentConfigInput {
             client_tools: None,
             connection_tools: None,
             default_environment_template_id: None,
+            execution: None,
             instructions: None,
             lazy_environment: None,
             media_understanding: None,
@@ -133,7 +139,6 @@ impl AgentConfigInput {
             model_characteristics: None,
             model_settings: None,
             output_spec: None,
-            platform_tools: None,
             plugins: None,
             retries: None,
             reviewer: None,

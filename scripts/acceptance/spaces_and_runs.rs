@@ -1,9 +1,6 @@
 //! New snapshot journeys consuming only the installed crate's public API.
 use super::{Result, ensure, key};
-use a13n::{
-    Client, Overrides, PlatformSelection, RunOptions, StartOptions, generated::models as m,
-    resources::*,
-};
+use a13n::{Client, Overrides, RunOptions, StartOptions, generated::models as m, resources::*};
 use serde_json::{Value, json};
 use std::collections::HashSet;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
@@ -18,6 +15,8 @@ pub async fn offline() -> Result<()> {
     let mut session = serde_json::to_value(m::SessionView::default())?;
     session["memory"] = json!({"enabled":false,"spaces":[]});
     let mut run = serde_json::to_value(m::RunView::default())?;
+    run["id"] = json!("r");
+    run["thread_id"] = json!("t");
     let mounts = json!([
         {"name":"legacy","memory_id":"m","access":"read","recall":false},
         {"name":"shared","memory_id":"m","access":"write","roots":["global/","sessions/s/"],"space_id":"space"}
@@ -161,7 +160,7 @@ pub async fn offline() -> Result<()> {
         changed.data.memory.unwrap().enabled == Some(false),
         "Installed Session memory",
     )?;
-    let read = api.runs().at("r").get(Default::default()).await?;
+    let read = client.run("r").get().await?;
     ensure(
         serde_json::to_value(read.data.memory_mounts)? == mounts,
         "Installed legacy/frozen roots loss",
@@ -307,14 +306,8 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
                 session_id: Some(Some(session.data.id.clone())),
                 idempotency_key: Some(key()),
                 run_options: Some(
-                    RunOptions::new().overrides(Some(
-                        Overrides::new()
-                            .builtin_skills(Some(HashSet::new()))
-                            .platform_tools(Some(PlatformSelection {
-                                groups: Some(vec![]),
-                                ..Default::default()
-                            })),
-                    )),
+                    RunOptions::new()
+                        .overrides(Some(Overrides::new().builtin_skills(Some(HashSet::new())))),
                 ),
                 ..Default::default()
             },
@@ -326,7 +319,7 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
         "Shared Space Run not completed",
     )?;
     let run = api.runs().at(&outcome.run_id);
-    let read = run.get(Default::default()).await?;
+    let read = client.run(&outcome.run_id).get().await?;
     let frozen = read
         .data
         .memory_mounts
@@ -346,9 +339,12 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
         "Frozen Space roots",
     )?;
     let executed = run.agent().get(Default::default()).await?;
-    let config = serde_json::to_value(executed.data.config)?;
+    let m::ResponseGetRunAgent::AnyOf0(executed) = executed.data else {
+        return Err("Expected detailed executed Agent".into());
+    };
+    let config = serde_json::to_value(executed.config)?;
     ensure(
-        config["builtin_skills"] == json!([]) && config["platform_tools"]["groups"] == json!([]),
+        config["builtin_skills"] == json!([]),
         "Executed Agent overrides",
     )?;
     ensure(
@@ -420,7 +416,7 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
         )
         .await?;
     ensure(
-        run.get(Default::default()).await?.data.memory_mounts == read.data.memory_mounts,
+        client.run(&outcome.run_id).get().await?.data.memory_mounts == read.data.memory_mounts,
         "Session edit changed accepted Run mount",
     )?;
     let current = space.get(Default::default()).await?;

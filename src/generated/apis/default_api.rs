@@ -13,23 +13,23 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`health_healthz_get`]
+/// struct for typed errors of method [`health`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum HealthHealthzGetError {
+pub enum HealthError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`ready_readyz_get`]
+/// struct for typed errors of method [`ready`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ReadyReadyzGetError {
+pub enum ReadyError {
     UnknownValue(serde_json::Value),
 }
 
-pub async fn health_healthz_get(
+pub async fn health(
     configuration: &configuration::Configuration,
-) -> Result<Response<std::collections::HashMap<String, String>>, Error<HealthHealthzGetError>> {
+) -> Result<Response<std::collections::HashMap<String, String>>, Error<HealthError>> {
     let uri_str = format!("{}/healthz", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -72,7 +72,7 @@ pub async fn health_healthz_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<HealthHealthzGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<HealthError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -83,9 +83,9 @@ pub async fn health_healthz_get(
 }
 
 /// Ready while started and the database holds a usable schema. Redis only speeds work up, so losing it is reported as degraded rather than taking the replica out of service.
-pub async fn ready_readyz_get(
+pub async fn ready(
     configuration: &configuration::Configuration,
-) -> Result<Response<serde_json::Value>, Error<ReadyReadyzGetError>> {
+) -> Result<Response<serde_json::Value>, Error<ReadyError>> {
     let uri_str = format!("{}/readyz", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -128,7 +128,7 @@ pub async fn ready_readyz_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ReadyReadyzGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<ReadyError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

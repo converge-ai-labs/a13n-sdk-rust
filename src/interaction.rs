@@ -84,13 +84,25 @@ impl Entry {
             options,
         )
     }
+    /// Read the complete entry, retaining the HTTP response evidence.
+    pub async fn get(&self) -> Result<Response<models::EntryView>, Error> {
+        let response = self.resource().get(EntryGetOptions::default()).await?;
+        let models::ResponseGetInboxEntry::AnyOf0(data) = response.data else {
+            return Err(invalid(&response));
+        };
+        Ok(Response {
+            data,
+            status: response.status,
+            headers: response.headers,
+        })
+    }
     /// Advanced disposition-only readback (also used by the CLI inbox wait command).
     pub async fn wait(&self, interval: Duration) -> Result<Response<models::EntryView>, Error> {
         let interval = if interval.is_zero() { POLL } else { interval };
         self.client
             .observe(async {
                 loop {
-                    let result = self.resource().get(EntryGetOptions::default()).await?;
+                    let result = self.get().await?;
                     if result.data.id != self.id || result.data.thread_id != self.thread_id {
                         return Err(invalid(&result));
                     }
@@ -121,6 +133,20 @@ impl Run {
     /// Advanced committed display/window readback; not a final-reply helper.
     pub fn items(&self) -> crate::resources::RunItemsResource<'_> {
         self.resource().items()
+    }
+    /// Read the complete run; list metadata cannot satisfy an exact run observation.
+    pub async fn get(&self) -> Result<Response<models::RunView>, Error> {
+        let response = self.resource().get(RunGetOptions::default()).await?;
+        let models::ResponseGetRun::AnyOf0(data) = response.data else {
+            return Err(invalid(&response));
+        };
+        let snapshot = Response {
+            data,
+            status: response.status,
+            headers: response.headers,
+        };
+        self.check(&snapshot)?;
+        Ok(snapshot)
     }
     pub async fn interrupt(&self) -> Result<Response<models::RunView>, Error> {
         let snapshot = self
@@ -387,11 +413,7 @@ impl Interaction {
             self.remaining()?,
             client.observe(async {
                 loop {
-                    let snapshot = client
-                        .entry(&thread_id, &entry_id)
-                        .resource()
-                        .get(EntryGetOptions::default())
-                        .await?;
+                    let snapshot = client.entry(&thread_id, &entry_id).get().await?;
                     if snapshot.data.id != entry_id || snapshot.data.thread_id != thread_id {
                         return Err(invalid(&snapshot));
                     }
@@ -430,12 +452,9 @@ impl Interaction {
         Ok(run)
     }
     async fn poll_run(&mut self, run: &Run) -> Result<bool, Error> {
-        let snapshot = tokio::time::timeout(
-            self.remaining()?,
-            run.resource().get(RunGetOptions::default()),
-        )
-        .await
-        .map_err(|_| Error::Timeout)??;
+        let snapshot = tokio::time::timeout(self.remaining()?, run.get())
+            .await
+            .map_err(|_| Error::Timeout)??;
         run.check(&snapshot)?;
         if self
             .identity

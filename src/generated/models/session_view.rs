@@ -32,6 +32,14 @@ pub struct SessionView {
     pub memory: Option<Box<models::SessionMemorySettings>>,
 
     #[serde(
+        rename = "origin",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub origin: Option<Option<Box<models::SessionOrigin>>>,
+
+    #[serde(
         rename = "preview",
         default,
         with = "::serde_with::rust::double_option",
@@ -44,6 +52,22 @@ pub struct SessionView {
 
     #[serde(rename = "run_count", skip_serializing_if = "Option::is_none")]
     pub run_count: Option<i32>,
+
+    #[serde(
+        rename = "schedule_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub schedule_id: Option<Option<String>>,
+
+    #[serde(
+        rename = "title",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub title: Option<Option<String>>,
 
     #[serde(rename = "updated_at")]
     pub updated_at: chrono::DateTime<chrono::FixedOffset>,
@@ -73,9 +97,12 @@ impl SessionView {
             labels,
             last_run_id,
             memory: None,
+            origin: None,
             preview: None,
             purpose: None,
             run_count: None,
+            schedule_id: None,
+            title: None,
             updated_at,
             version,
             workspace_id,

@@ -312,7 +312,7 @@ pub async fn offline(receipt: Value, entry: Value, run: Value) -> Result<()> {
             == "r",
         "Owned task-safe handles retain shared Client",
     )?;
-    let native = client.api().runs().at("r").get(Default::default()).await?;
+    let native = client.run("r").get().await?;
     ensure(
         native.data.id == "r" && native.data.status == RunStatus::Completed,
         "Canonical native api and authored workflow share one Client/auth/lifetime",

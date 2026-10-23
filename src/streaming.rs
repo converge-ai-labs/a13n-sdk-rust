@@ -554,6 +554,8 @@ pub enum SessionFrame {
     Items(Box<crate::generated::models::RunSnapshot>),
     Delta(Box<crate::generated::models::Delta>),
     Gap(crate::generated::models::Gap),
+    Schedule(Box<crate::generated::models::ScheduleEvent>),
+    Occurrence(Box<crate::generated::models::OccurrenceEvent>),
 }
 
 #[derive(Clone, Debug, Default)]
@@ -648,7 +650,10 @@ fn decode_session(raw: SseFrame) -> Result<Option<SessionFrame>, Error> {
     fn parse<T: serde::de::DeserializeOwned>(data: &str) -> Result<T, Error> {
         serde_json::from_str(data).map_err(|_| ProtocolError::local(ProtocolKind::InvalidFrame))
     }
-    if !matches!(raw.event.as_str(), "thread" | "items" | "delta" | "gap") {
+    if !matches!(
+        raw.event.as_str(),
+        "thread" | "items" | "delta" | "gap" | "schedule" | "occurrence"
+    ) {
         return Ok(None);
     }
     if raw.cursor.is_some() {
@@ -659,6 +664,8 @@ fn decode_session(raw: SseFrame) -> Result<Option<SessionFrame>, Error> {
         "items" => SessionFrame::Items(parse(&raw.data)?),
         "delta" => SessionFrame::Delta(parse(&raw.data)?),
         "gap" => SessionFrame::Gap(parse(&raw.data)?),
+        "schedule" => SessionFrame::Schedule(parse(&raw.data)?),
+        "occurrence" => SessionFrame::Occurrence(parse(&raw.data)?),
         _ => unreachable!(),
     }))
 }

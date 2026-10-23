@@ -15,519 +15,514 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use tokio::fs::File as TokioFile;
 use tokio_util::codec::{BytesCodec, FramedRead};
 
-/// struct for typed errors of method [`archive_workspace_api_v1_workspaces_workspace_id_archive_post`]
+/// struct for typed errors of method [`archive_workspace`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ArchiveWorkspaceApiV1WorkspacesWorkspaceIdArchivePostError {
+pub enum ArchiveWorkspaceError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`change_organization_grant_api_v1_organizations_organization_id_grants_grant_id_patch`]
+/// struct for typed errors of method [`change_organization_grant`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ChangeOrganizationGrantApiV1OrganizationsOrganizationIdGrantsGrantIdPatchError {
+pub enum ChangeOrganizationGrantError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`change_password_api_v1_users_me_password_post`]
+/// struct for typed errors of method [`change_password`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ChangePasswordApiV1UsersMePasswordPostError {
+pub enum ChangePasswordError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`change_workspace_grant_api_v1_workspaces_workspace_id_grants_grant_id_patch`]
+/// struct for typed errors of method [`change_workspace_grant`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ChangeWorkspaceGrantApiV1WorkspacesWorkspaceIdGrantsGrantIdPatchError {
+pub enum ChangeWorkspaceGrantError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_organization_grant_api_v1_organizations_organization_id_grants_post`]
+/// struct for typed errors of method [`create_organization_grant`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateOrganizationGrantApiV1OrganizationsOrganizationIdGrantsPostError {
+pub enum CreateOrganizationGrantError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_organization_invitation_api_v1_organizations_organization_id_invitations_post`]
+/// struct for typed errors of method [`create_organization_invitation`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateOrganizationInvitationApiV1OrganizationsOrganizationIdInvitationsPostError {
+pub enum CreateOrganizationInvitationError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_service_account_api_v1_workspaces_workspace_id_service_accounts_post`]
+/// struct for typed errors of method [`create_service_account`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateServiceAccountApiV1WorkspacesWorkspaceIdServiceAccountsPostError {
+pub enum CreateServiceAccountError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_service_account_key_api_v1_workspaces_workspace_id_service_accounts_account_id_keys_post`]
+/// struct for typed errors of method [`create_service_account_key`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateServiceAccountKeyApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdKeysPostError {
+pub enum CreateServiceAccountKeyError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_user_key_api_v1_users_me_keys_post`]
+/// struct for typed errors of method [`create_user_key`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateUserKeyApiV1UsersMeKeysPostError {
+pub enum CreateUserKeyError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_workspace_api_v1_organizations_organization_id_workspaces_post`]
+/// struct for typed errors of method [`create_workspace`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateWorkspaceApiV1OrganizationsOrganizationIdWorkspacesPostError {
+pub enum CreateWorkspaceError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_workspace_grant_api_v1_workspaces_workspace_id_grants_post`]
+/// struct for typed errors of method [`create_workspace_grant`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateWorkspaceGrantApiV1WorkspacesWorkspaceIdGrantsPostError {
+pub enum CreateWorkspaceGrantError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_workspace_invitation_api_v1_workspaces_workspace_id_invitations_post`]
+/// struct for typed errors of method [`create_workspace_invitation`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateWorkspaceInvitationApiV1WorkspacesWorkspaceIdInvitationsPostError {
+pub enum CreateWorkspaceInvitationError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_avatar_api_v1_users_me_avatar_delete`]
+/// struct for typed errors of method [`delete_organization_grant`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteAvatarApiV1UsersMeAvatarDeleteError {
+pub enum DeleteOrganizationGrantError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_organization_grant_api_v1_organizations_organization_id_grants_grant_id_delete`]
+/// struct for typed errors of method [`delete_organization_icon`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteOrganizationGrantApiV1OrganizationsOrganizationIdGrantsGrantIdDeleteError {
+pub enum DeleteOrganizationIconError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_organization_icon_api_v1_organizations_organization_id_icon_delete`]
+/// struct for typed errors of method [`delete_service_account`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteOrganizationIconApiV1OrganizationsOrganizationIdIconDeleteError {
+pub enum DeleteServiceAccountError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_service_account_api_v1_workspaces_workspace_id_service_accounts_account_id_delete`]
+/// struct for typed errors of method [`delete_user_avatar`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteServiceAccountApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdDeleteError {
+pub enum DeleteUserAvatarError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_workspace_grant_api_v1_workspaces_workspace_id_grants_grant_id_delete`]
+/// struct for typed errors of method [`delete_workspace_grant`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteWorkspaceGrantApiV1WorkspacesWorkspaceIdGrantsGrantIdDeleteError {
+pub enum DeleteWorkspaceGrantError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_workspace_icon_api_v1_workspaces_workspace_id_icon_delete`]
+/// struct for typed errors of method [`delete_workspace_icon`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteWorkspaceIconApiV1WorkspacesWorkspaceIdIconDeleteError {
+pub enum DeleteWorkspaceIconError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`disable_account_api_v1_users_me_disable_post`]
+/// struct for typed errors of method [`disable_account`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DisableAccountApiV1UsersMeDisablePostError {
+pub enum DisableAccountError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_avatar_api_v1_users_user_id_avatar_get`]
+/// struct for typed errors of method [`get_organization`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAvatarApiV1UsersUserIdAvatarGetError {
+pub enum GetOrganizationError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_organization_api_v1_organizations_organization_id_get`]
+/// struct for typed errors of method [`get_organization_icon`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetOrganizationApiV1OrganizationsOrganizationIdGetError {
+pub enum GetOrganizationIconError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_organization_icon_api_v1_organizations_organization_id_icon_get`]
+/// struct for typed errors of method [`get_profile`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetOrganizationIconApiV1OrganizationsOrganizationIdIconGetError {
+pub enum GetProfileError {
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`get_service_account`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum GetServiceAccountError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_profile_api_v1_users_me_get`]
+/// struct for typed errors of method [`get_user_avatar`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetProfileApiV1UsersMeGetError {
-    DefaultResponse(models::ErrorEnvelope),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`get_service_account_api_v1_workspaces_workspace_id_service_accounts_account_id_get`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GetServiceAccountApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdGetError {
+pub enum GetUserAvatarError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_workspace_api_v1_workspaces_workspace_id_get`]
+/// struct for typed errors of method [`get_workspace`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetWorkspaceApiV1WorkspacesWorkspaceIdGetError {
+pub enum GetWorkspaceError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_workspace_icon_api_v1_workspaces_workspace_id_icon_get`]
+/// struct for typed errors of method [`get_workspace_icon`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetWorkspaceIconApiV1WorkspacesWorkspaceIdIconGetError {
+pub enum GetWorkspaceIconError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_account_audit_events_api_v1_users_me_audit_events_get`]
+/// struct for typed errors of method [`list_account_audit_events`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListAccountAuditEventsApiV1UsersMeAuditEventsGetError {
+pub enum ListAccountAuditEventsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_login_sessions_api_v1_users_me_login_sessions_get`]
+/// struct for typed errors of method [`list_login_sessions`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListLoginSessionsApiV1UsersMeLoginSessionsGetError {
+pub enum ListLoginSessionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_members_api_v1_organizations_organization_id_members_get`]
+/// struct for typed errors of method [`list_members`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListMembersApiV1OrganizationsOrganizationIdMembersGetError {
+pub enum ListMembersError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_organization_audit_events_api_v1_organizations_organization_id_audit_events_get`]
+/// struct for typed errors of method [`list_organization_audit_events`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListOrganizationAuditEventsApiV1OrganizationsOrganizationIdAuditEventsGetError {
+pub enum ListOrganizationAuditEventsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_organization_grants_api_v1_organizations_organization_id_grants_get`]
+/// struct for typed errors of method [`list_organization_grants`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListOrganizationGrantsApiV1OrganizationsOrganizationIdGrantsGetError {
+pub enum ListOrganizationGrantsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_organization_invitations_api_v1_organizations_organization_id_invitations_get`]
+/// struct for typed errors of method [`list_organization_invitations`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListOrganizationInvitationsApiV1OrganizationsOrganizationIdInvitationsGetError {
+pub enum ListOrganizationInvitationsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_organization_workspaces_api_v1_organizations_organization_id_workspaces_get`]
+/// struct for typed errors of method [`list_organization_workspaces`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListOrganizationWorkspacesApiV1OrganizationsOrganizationIdWorkspacesGetError {
+pub enum ListOrganizationWorkspacesError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_organizations_api_v1_organizations_get`]
+/// struct for typed errors of method [`list_organizations`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListOrganizationsApiV1OrganizationsGetError {
+pub enum ListOrganizationsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_service_account_keys_api_v1_workspaces_workspace_id_service_accounts_account_id_keys_get`]
+/// struct for typed errors of method [`list_service_account_keys`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListServiceAccountKeysApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdKeysGetError {
+pub enum ListServiceAccountKeysError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_service_accounts_api_v1_workspaces_workspace_id_service_accounts_get`]
+/// struct for typed errors of method [`list_service_accounts`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListServiceAccountsApiV1WorkspacesWorkspaceIdServiceAccountsGetError {
+pub enum ListServiceAccountsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_user_keys_api_v1_users_me_keys_get`]
+/// struct for typed errors of method [`list_user_keys`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListUserKeysApiV1UsersMeKeysGetError {
+pub enum ListUserKeysError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_workspace_audit_events_api_v1_workspaces_workspace_id_audit_events_get`]
+/// struct for typed errors of method [`list_workspace_audit_events`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListWorkspaceAuditEventsApiV1WorkspacesWorkspaceIdAuditEventsGetError {
+pub enum ListWorkspaceAuditEventsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_workspace_grants_api_v1_workspaces_workspace_id_grants_get`]
+/// struct for typed errors of method [`list_workspace_grants`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListWorkspaceGrantsApiV1WorkspacesWorkspaceIdGrantsGetError {
+pub enum ListWorkspaceGrantsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_workspace_invitations_api_v1_workspaces_workspace_id_invitations_get`]
+/// struct for typed errors of method [`list_workspace_invitations`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListWorkspaceInvitationsApiV1WorkspacesWorkspaceIdInvitationsGetError {
+pub enum ListWorkspaceInvitationsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_workspace_keys_api_v1_workspaces_workspace_id_keys_get`]
+/// struct for typed errors of method [`list_workspace_keys`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListWorkspaceKeysApiV1WorkspacesWorkspaceIdKeysGetError {
+pub enum ListWorkspaceKeysError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_workspaces_api_v1_workspaces_get`]
+/// struct for typed errors of method [`list_workspaces`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListWorkspacesApiV1WorkspacesGetError {
+pub enum ListWorkspacesError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`put_avatar_api_v1_users_me_avatar_put`]
+/// struct for typed errors of method [`put_organization_icon`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PutAvatarApiV1UsersMeAvatarPutError {
+pub enum PutOrganizationIconError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`put_organization_icon_api_v1_organizations_organization_id_icon_put`]
+/// struct for typed errors of method [`put_user_avatar`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PutOrganizationIconApiV1OrganizationsOrganizationIdIconPutError {
+pub enum PutUserAvatarError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`put_workspace_icon_api_v1_workspaces_workspace_id_icon_put`]
+/// struct for typed errors of method [`put_workspace_icon`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PutWorkspaceIconApiV1WorkspacesWorkspaceIdIconPutError {
+pub enum PutWorkspaceIconError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`resend_organization_invitation_api_v1_organizations_organization_id_invitations_invitation_id_resend_post`]
+/// struct for typed errors of method [`resend_organization_invitation`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ResendOrganizationInvitationApiV1OrganizationsOrganizationIdInvitationsInvitationIdResendPostError
-{
+pub enum ResendOrganizationInvitationError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`resend_workspace_invitation_api_v1_workspaces_workspace_id_invitations_invitation_id_resend_post`]
+/// struct for typed errors of method [`resend_workspace_invitation`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ResendWorkspaceInvitationApiV1WorkspacesWorkspaceIdInvitationsInvitationIdResendPostError {
+pub enum ResendWorkspaceInvitationError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`revoke_login_session_api_v1_users_me_login_sessions_session_id_delete`]
+/// struct for typed errors of method [`revoke_login_session`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RevokeLoginSessionApiV1UsersMeLoginSessionsSessionIdDeleteError {
+pub enum RevokeLoginSessionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`revoke_organization_invitation_api_v1_organizations_organization_id_invitations_invitation_id_revoke_post`]
+/// struct for typed errors of method [`revoke_organization_invitation`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RevokeOrganizationInvitationApiV1OrganizationsOrganizationIdInvitationsInvitationIdRevokePostError
-{
+pub enum RevokeOrganizationInvitationError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`revoke_user_key_api_v1_users_me_keys_key_id_delete`]
+/// struct for typed errors of method [`revoke_user_key`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RevokeUserKeyApiV1UsersMeKeysKeyIdDeleteError {
+pub enum RevokeUserKeyError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`revoke_workspace_invitation_api_v1_workspaces_workspace_id_invitations_invitation_id_revoke_post`]
+/// struct for typed errors of method [`revoke_workspace_invitation`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RevokeWorkspaceInvitationApiV1WorkspacesWorkspaceIdInvitationsInvitationIdRevokePostError {
+pub enum RevokeWorkspaceInvitationError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`revoke_workspace_key_api_v1_workspaces_workspace_id_keys_key_id_delete`]
+/// struct for typed errors of method [`revoke_workspace_key`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RevokeWorkspaceKeyApiV1WorkspacesWorkspaceIdKeysKeyIdDeleteError {
+pub enum RevokeWorkspaceKeyError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_organization_api_v1_organizations_organization_id_patch`]
+/// struct for typed errors of method [`update_organization`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateOrganizationApiV1OrganizationsOrganizationIdPatchError {
+pub enum UpdateOrganizationError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_profile_api_v1_users_me_patch`]
+/// struct for typed errors of method [`update_profile`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateProfileApiV1UsersMePatchError {
+pub enum UpdateProfileError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_service_account_api_v1_workspaces_workspace_id_service_accounts_account_id_patch`]
+/// struct for typed errors of method [`update_service_account`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateServiceAccountApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdPatchError {
+pub enum UpdateServiceAccountError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_workspace_api_v1_workspaces_workspace_id_patch`]
+/// struct for typed errors of method [`update_workspace`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateWorkspaceApiV1WorkspacesWorkspaceIdPatchError {
+pub enum UpdateWorkspaceError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn archive_workspace_api_v1_workspaces_workspace_id_archive_post(
+pub async fn archive_workspace(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Workspace>,
-    Error<ArchiveWorkspaceApiV1WorkspacesWorkspaceIdArchivePostError>,
-> {
+) -> Result<Response<models::Workspace>, Error<ArchiveWorkspaceError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_header_if_match = if_match;
@@ -594,8 +589,7 @@ pub async fn archive_workspace_api_v1_workspaces_workspace_id_archive_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ArchiveWorkspaceApiV1WorkspacesWorkspaceIdArchivePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ArchiveWorkspaceError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -606,15 +600,12 @@ pub async fn archive_workspace_api_v1_workspaces_workspace_id_archive_post(
 }
 
 /// The grant is replaced: the result carries its new ID.
-pub async fn change_organization_grant_api_v1_organizations_organization_id_grants_grant_id_patch(
+pub async fn change_organization_grant(
     configuration: &configuration::Configuration,
     organization_id: &str,
     grant_id: &str,
     grant_update: models::GrantUpdate,
-) -> Result<
-    Response<models::GrantView>,
-    Error<ChangeOrganizationGrantApiV1OrganizationsOrganizationIdGrantsGrantIdPatchError>,
-> {
+) -> Result<Response<models::GrantView>, Error<ChangeOrganizationGrantError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
     let p_path_grant_id = grant_id;
@@ -681,9 +672,7 @@ pub async fn change_organization_grant_api_v1_organizations_organization_id_gran
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ChangeOrganizationGrantApiV1OrganizationsOrganizationIdGrantsGrantIdPatchError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ChangeOrganizationGrantError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -693,10 +682,10 @@ pub async fn change_organization_grant_api_v1_organizations_organization_id_gran
     }
 }
 
-pub async fn change_password_api_v1_users_me_password_post(
+pub async fn change_password(
     configuration: &configuration::Configuration,
     password_change: models::PasswordChange,
-) -> Result<Response<()>, Error<ChangePasswordApiV1UsersMePasswordPostError>> {
+) -> Result<Response<()>, Error<ChangePasswordError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_password_change = password_change;
 
@@ -735,8 +724,7 @@ pub async fn change_password_api_v1_users_me_password_post(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<ChangePasswordApiV1UsersMePasswordPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ChangePasswordError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -747,15 +735,12 @@ pub async fn change_password_api_v1_users_me_password_post(
 }
 
 /// The grant is replaced: the result carries its new ID.
-pub async fn change_workspace_grant_api_v1_workspaces_workspace_id_grants_grant_id_patch(
+pub async fn change_workspace_grant(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     grant_id: &str,
     grant_update: models::GrantUpdate,
-) -> Result<
-    Response<models::GrantView>,
-    Error<ChangeWorkspaceGrantApiV1WorkspacesWorkspaceIdGrantsGrantIdPatchError>,
-> {
+) -> Result<Response<models::GrantView>, Error<ChangeWorkspaceGrantError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_path_grant_id = grant_id;
@@ -822,8 +807,7 @@ pub async fn change_workspace_grant_api_v1_workspaces_workspace_id_grants_grant_
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ChangeWorkspaceGrantApiV1WorkspacesWorkspaceIdGrantsGrantIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ChangeWorkspaceGrantError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -833,14 +817,11 @@ pub async fn change_workspace_grant_api_v1_workspaces_workspace_id_grants_grant_
     }
 }
 
-pub async fn create_organization_grant_api_v1_organizations_organization_id_grants_post(
+pub async fn create_organization_grant(
     configuration: &configuration::Configuration,
     organization_id: &str,
     grant_create: models::GrantCreate,
-) -> Result<
-    Response<models::GrantView>,
-    Error<CreateOrganizationGrantApiV1OrganizationsOrganizationIdGrantsPostError>,
-> {
+) -> Result<Response<models::GrantView>, Error<CreateOrganizationGrantError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
     let p_body_grant_create = grant_create;
@@ -905,8 +886,7 @@ pub async fn create_organization_grant_api_v1_organizations_organization_id_gran
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateOrganizationGrantApiV1OrganizationsOrganizationIdGrantsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateOrganizationGrantError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -916,14 +896,11 @@ pub async fn create_organization_grant_api_v1_organizations_organization_id_gran
     }
 }
 
-pub async fn create_organization_invitation_api_v1_organizations_organization_id_invitations_post(
+pub async fn create_organization_invitation(
     configuration: &configuration::Configuration,
     organization_id: &str,
     invitation_create: models::InvitationCreate,
-) -> Result<
-    Response<models::InvitationReceipt>,
-    Error<CreateOrganizationInvitationApiV1OrganizationsOrganizationIdInvitationsPostError>,
-> {
+) -> Result<Response<models::InvitationReceipt>, Error<CreateOrganizationInvitationError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
     let p_body_invitation_create = invitation_create;
@@ -988,9 +965,7 @@ pub async fn create_organization_invitation_api_v1_organizations_organization_id
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            CreateOrganizationInvitationApiV1OrganizationsOrganizationIdInvitationsPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<CreateOrganizationInvitationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1000,14 +975,11 @@ pub async fn create_organization_invitation_api_v1_organizations_organization_id
     }
 }
 
-pub async fn create_service_account_api_v1_workspaces_workspace_id_service_accounts_post(
+pub async fn create_service_account(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     service_account_create: models::ServiceAccountCreate,
-) -> Result<
-    Response<models::ServiceAccount>,
-    Error<CreateServiceAccountApiV1WorkspacesWorkspaceIdServiceAccountsPostError>,
-> {
+) -> Result<Response<models::ServiceAccount>, Error<CreateServiceAccountError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_body_service_account_create = service_account_create;
@@ -1072,8 +1044,7 @@ pub async fn create_service_account_api_v1_workspaces_workspace_id_service_accou
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateServiceAccountApiV1WorkspacesWorkspaceIdServiceAccountsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateServiceAccountError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1084,15 +1055,12 @@ pub async fn create_service_account_api_v1_workspaces_workspace_id_service_accou
 }
 
 /// Needs a login session: an API key never issues keys, so a leaked key cannot outlive its revocation.
-pub async fn create_service_account_key_api_v1_workspaces_workspace_id_service_accounts_account_id_keys_post(
+pub async fn create_service_account_key(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     account_id: &str,
     key_create: models::KeyCreate,
-) -> Result<
-    Response<models::IssuedKey>,
-    Error<CreateServiceAccountKeyApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdKeysPostError>,
-> {
+) -> Result<Response<models::IssuedKey>, Error<CreateServiceAccountKeyError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_path_account_id = account_id;
@@ -1159,9 +1127,7 @@ pub async fn create_service_account_key_api_v1_workspaces_workspace_id_service_a
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            CreateServiceAccountKeyApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdKeysPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<CreateServiceAccountKeyError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1172,10 +1138,10 @@ pub async fn create_service_account_key_api_v1_workspaces_workspace_id_service_a
 }
 
 /// Needs a login session: an API key never issues keys, so a leaked key cannot outlive its revocation.
-pub async fn create_user_key_api_v1_users_me_keys_post(
+pub async fn create_user_key(
     configuration: &configuration::Configuration,
     user_key_create: models::UserKeyCreate,
-) -> Result<Response<models::IssuedKey>, Error<CreateUserKeyApiV1UsersMeKeysPostError>> {
+) -> Result<Response<models::IssuedKey>, Error<CreateUserKeyError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_user_key_create = user_key_create;
 
@@ -1235,8 +1201,7 @@ pub async fn create_user_key_api_v1_users_me_keys_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateUserKeyApiV1UsersMeKeysPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateUserKeyError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1246,14 +1211,11 @@ pub async fn create_user_key_api_v1_users_me_keys_post(
     }
 }
 
-pub async fn create_workspace_api_v1_organizations_organization_id_workspaces_post(
+pub async fn create_workspace(
     configuration: &configuration::Configuration,
     organization_id: &str,
     workspace_create: models::WorkspaceCreate,
-) -> Result<
-    Response<models::Workspace>,
-    Error<CreateWorkspaceApiV1OrganizationsOrganizationIdWorkspacesPostError>,
-> {
+) -> Result<Response<models::Workspace>, Error<CreateWorkspaceError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
     let p_body_workspace_create = workspace_create;
@@ -1318,8 +1280,7 @@ pub async fn create_workspace_api_v1_organizations_organization_id_workspaces_po
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateWorkspaceApiV1OrganizationsOrganizationIdWorkspacesPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateWorkspaceError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1329,14 +1290,11 @@ pub async fn create_workspace_api_v1_organizations_organization_id_workspaces_po
     }
 }
 
-pub async fn create_workspace_grant_api_v1_workspaces_workspace_id_grants_post(
+pub async fn create_workspace_grant(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     grant_create: models::GrantCreate,
-) -> Result<
-    Response<models::GrantView>,
-    Error<CreateWorkspaceGrantApiV1WorkspacesWorkspaceIdGrantsPostError>,
-> {
+) -> Result<Response<models::GrantView>, Error<CreateWorkspaceGrantError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_body_grant_create = grant_create;
@@ -1401,8 +1359,7 @@ pub async fn create_workspace_grant_api_v1_workspaces_workspace_id_grants_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateWorkspaceGrantApiV1WorkspacesWorkspaceIdGrantsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateWorkspaceGrantError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1412,14 +1369,11 @@ pub async fn create_workspace_grant_api_v1_workspaces_workspace_id_grants_post(
     }
 }
 
-pub async fn create_workspace_invitation_api_v1_workspaces_workspace_id_invitations_post(
+pub async fn create_workspace_invitation(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     invitation_create: models::InvitationCreate,
-) -> Result<
-    Response<models::InvitationReceipt>,
-    Error<CreateWorkspaceInvitationApiV1WorkspacesWorkspaceIdInvitationsPostError>,
-> {
+) -> Result<Response<models::InvitationReceipt>, Error<CreateWorkspaceInvitationError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_body_invitation_create = invitation_create;
@@ -1484,9 +1438,7 @@ pub async fn create_workspace_invitation_api_v1_workspaces_workspace_id_invitati
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            CreateWorkspaceInvitationApiV1WorkspacesWorkspaceIdInvitationsPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<CreateWorkspaceInvitationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1496,10 +1448,233 @@ pub async fn create_workspace_invitation_api_v1_workspaces_workspace_id_invitati
     }
 }
 
-pub async fn delete_avatar_api_v1_users_me_avatar_delete(
+pub async fn delete_organization_grant(
+    configuration: &configuration::Configuration,
+    organization_id: &str,
+    grant_id: &str,
+) -> Result<Response<()>, Error<DeleteOrganizationGrantError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_organization_id = organization_id;
+    let p_path_grant_id = grant_id;
+
+    let uri_str = format!(
+        "{}/api/v1/organizations/{organization_id}/grants/{grant_id}",
+        configuration.base_path,
+        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
+        grant_id = crate::generated::apis::urlencode(p_path_grant_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::DELETE, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+
+    if !status.is_client_error() && !status.is_server_error() {
+        Ok(Response {
+            data: (),
+            status,
+            headers,
+        })
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<DeleteOrganizationGrantError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn delete_organization_icon(
+    configuration: &configuration::Configuration,
+    organization_id: &str,
+    if_match: Option<&str>,
+) -> Result<Response<models::Organization>, Error<DeleteOrganizationIconError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_organization_id = organization_id;
+    let p_header_if_match = if_match;
+
+    let uri_str = format!(
+        "{}/api/v1/organizations/{organization_id}/icon",
+        configuration.base_path,
+        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::DELETE, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_if_match {
+        req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Organization`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Organization`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<DeleteOrganizationIconError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn delete_service_account(
+    configuration: &configuration::Configuration,
+    workspace_id: &str,
+    account_id: &str,
+    if_match: Option<&str>,
+) -> Result<Response<models::ServiceAccount>, Error<DeleteServiceAccountError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_workspace_id = workspace_id;
+    let p_path_account_id = account_id;
+    let p_header_if_match = if_match;
+
+    let uri_str = format!(
+        "{}/api/v1/workspaces/{workspace_id}/service-accounts/{account_id}",
+        configuration.base_path,
+        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
+        account_id = crate::generated::apis::urlencode(p_path_account_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::DELETE, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_if_match {
+        req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ServiceAccount`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ServiceAccount`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<DeleteServiceAccountError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn delete_user_avatar(
     configuration: &configuration::Configuration,
     if_match: Option<&str>,
-) -> Result<Response<models::Profile>, Error<DeleteAvatarApiV1UsersMeAvatarDeleteError>> {
+) -> Result<Response<models::Profile>, Error<DeleteUserAvatarError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_header_if_match = if_match;
 
@@ -1561,8 +1736,7 @@ pub async fn delete_avatar_api_v1_users_me_avatar_delete(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteAvatarApiV1UsersMeAvatarDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DeleteUserAvatarError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1572,251 +1746,11 @@ pub async fn delete_avatar_api_v1_users_me_avatar_delete(
     }
 }
 
-pub async fn delete_organization_grant_api_v1_organizations_organization_id_grants_grant_id_delete(
-    configuration: &configuration::Configuration,
-    organization_id: &str,
-    grant_id: &str,
-) -> Result<
-    Response<()>,
-    Error<DeleteOrganizationGrantApiV1OrganizationsOrganizationIdGrantsGrantIdDeleteError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_path_grant_id = grant_id;
-
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/grants/{grant_id}",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id),
-        grant_id = crate::generated::apis::urlencode(p_path_grant_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::DELETE, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
-        let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
-        };
-        req_builder = req_builder.header("X-CSRF-Token", value);
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-
-    if !status.is_client_error() && !status.is_server_error() {
-        Ok(Response {
-            data: (),
-            status,
-            headers,
-        })
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<
-            DeleteOrganizationGrantApiV1OrganizationsOrganizationIdGrantsGrantIdDeleteError,
-        > = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn delete_organization_icon_api_v1_organizations_organization_id_icon_delete(
-    configuration: &configuration::Configuration,
-    organization_id: &str,
-    if_match: Option<&str>,
-) -> Result<
-    Response<models::Organization>,
-    Error<DeleteOrganizationIconApiV1OrganizationsOrganizationIdIconDeleteError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_organization_id = organization_id;
-    let p_header_if_match = if_match;
-
-    let uri_str = format!(
-        "{}/api/v1/organizations/{organization_id}/icon",
-        configuration.base_path,
-        organization_id = crate::generated::apis::urlencode(p_path_organization_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::DELETE, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_if_match {
-        req_builder = req_builder.header("If-Match", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
-        let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
-        };
-        req_builder = req_builder.header("X-CSRF-Token", value);
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Organization`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Organization`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<DeleteOrganizationIconApiV1OrganizationsOrganizationIdIconDeleteError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn delete_service_account_api_v1_workspaces_workspace_id_service_accounts_account_id_delete(
-    configuration: &configuration::Configuration,
-    workspace_id: &str,
-    account_id: &str,
-    if_match: Option<&str>,
-) -> Result<
-    Response<models::ServiceAccount>,
-    Error<DeleteServiceAccountApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdDeleteError>,
-> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_workspace_id = workspace_id;
-    let p_path_account_id = account_id;
-    let p_header_if_match = if_match;
-
-    let uri_str = format!(
-        "{}/api/v1/workspaces/{workspace_id}/service-accounts/{account_id}",
-        configuration.base_path,
-        workspace_id = crate::generated::apis::urlencode(p_path_workspace_id),
-        account_id = crate::generated::apis::urlencode(p_path_account_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::DELETE, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_if_match {
-        req_builder = req_builder.header("If-Match", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
-        let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
-        };
-        req_builder = req_builder.header("X-CSRF-Token", value);
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ServiceAccount`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ServiceAccount`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<
-            DeleteServiceAccountApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdDeleteError,
-        > = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn delete_workspace_grant_api_v1_workspaces_workspace_id_grants_grant_id_delete(
+pub async fn delete_workspace_grant(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     grant_id: &str,
-) -> Result<
-    Response<()>,
-    Error<DeleteWorkspaceGrantApiV1WorkspacesWorkspaceIdGrantsGrantIdDeleteError>,
-> {
+) -> Result<Response<()>, Error<DeleteWorkspaceGrantError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_path_grant_id = grant_id;
@@ -1860,8 +1794,7 @@ pub async fn delete_workspace_grant_api_v1_workspaces_workspace_id_grants_grant_
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteWorkspaceGrantApiV1WorkspacesWorkspaceIdGrantsGrantIdDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DeleteWorkspaceGrantError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1871,14 +1804,11 @@ pub async fn delete_workspace_grant_api_v1_workspaces_workspace_id_grants_grant_
     }
 }
 
-pub async fn delete_workspace_icon_api_v1_workspaces_workspace_id_icon_delete(
+pub async fn delete_workspace_icon(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Workspace>,
-    Error<DeleteWorkspaceIconApiV1WorkspacesWorkspaceIdIconDeleteError>,
-> {
+) -> Result<Response<models::Workspace>, Error<DeleteWorkspaceIconError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_header_if_match = if_match;
@@ -1945,8 +1875,7 @@ pub async fn delete_workspace_icon_api_v1_workspaces_workspace_id_icon_delete(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteWorkspaceIconApiV1WorkspacesWorkspaceIdIconDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DeleteWorkspaceIconError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1957,10 +1886,10 @@ pub async fn delete_workspace_icon_api_v1_workspaces_workspace_id_icon_delete(
 }
 
 /// Disable the caller's own account, proven by the current password; no route enables it again.
-pub async fn disable_account_api_v1_users_me_disable_post(
+pub async fn disable_account(
     configuration: &configuration::Configuration,
     account_disable: models::AccountDisable,
-) -> Result<Response<()>, Error<DisableAccountApiV1UsersMeDisablePostError>> {
+) -> Result<Response<()>, Error<DisableAccountError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_account_disable = account_disable;
 
@@ -1999,8 +1928,7 @@ pub async fn disable_account_api_v1_users_me_disable_post(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<DisableAccountApiV1UsersMeDisablePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DisableAccountError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2010,55 +1938,10 @@ pub async fn disable_account_api_v1_users_me_disable_post(
     }
 }
 
-pub async fn get_avatar_api_v1_users_user_id_avatar_get(
-    configuration: &configuration::Configuration,
-    user_id: &str,
-) -> Result<reqwest::Response, Error<GetAvatarApiV1UsersUserIdAvatarGetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_user_id = user_id;
-
-    let uri_str = format!(
-        "{}/api/v1/users/{user_id}/avatar",
-        configuration.base_path,
-        user_id = crate::generated::apis::urlencode(p_path_user_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-
-    if !status.is_client_error() && !status.is_server_error() {
-        Ok(resp)
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<GetAvatarApiV1UsersUserIdAvatarGetError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn get_organization_api_v1_organizations_organization_id_get(
+pub async fn get_organization(
     configuration: &configuration::Configuration,
     organization_id: &str,
-) -> Result<
-    Response<models::Organization>,
-    Error<GetOrganizationApiV1OrganizationsOrganizationIdGetError>,
-> {
+) -> Result<Response<models::Organization>, Error<GetOrganizationError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
 
@@ -2111,8 +1994,7 @@ pub async fn get_organization_api_v1_organizations_organization_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetOrganizationApiV1OrganizationsOrganizationIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetOrganizationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2122,11 +2004,10 @@ pub async fn get_organization_api_v1_organizations_organization_id_get(
     }
 }
 
-pub async fn get_organization_icon_api_v1_organizations_organization_id_icon_get(
+pub async fn get_organization_icon(
     configuration: &configuration::Configuration,
     organization_id: &str,
-) -> Result<reqwest::Response, Error<GetOrganizationIconApiV1OrganizationsOrganizationIdIconGetError>>
-{
+) -> Result<reqwest::Response, Error<GetOrganizationIconError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
 
@@ -2154,8 +2035,7 @@ pub async fn get_organization_icon_api_v1_organizations_organization_id_icon_get
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetOrganizationIconApiV1OrganizationsOrganizationIdIconGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetOrganizationIconError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2165,9 +2045,9 @@ pub async fn get_organization_icon_api_v1_organizations_organization_id_icon_get
     }
 }
 
-pub async fn get_profile_api_v1_users_me_get(
+pub async fn get_profile(
     configuration: &configuration::Configuration,
-) -> Result<Response<models::Profile>, Error<GetProfileApiV1UsersMeGetError>> {
+) -> Result<Response<models::Profile>, Error<GetProfileError>> {
     let uri_str = format!("{}/api/v1/users/me", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -2213,7 +2093,7 @@ pub async fn get_profile_api_v1_users_me_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetProfileApiV1UsersMeGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<GetProfileError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2223,14 +2103,11 @@ pub async fn get_profile_api_v1_users_me_get(
     }
 }
 
-pub async fn get_service_account_api_v1_workspaces_workspace_id_service_accounts_account_id_get(
+pub async fn get_service_account(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     account_id: &str,
-) -> Result<
-    Response<models::ServiceAccount>,
-    Error<GetServiceAccountApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdGetError>,
-> {
+) -> Result<Response<models::ServiceAccount>, Error<GetServiceAccountError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_path_account_id = account_id;
@@ -2285,9 +2162,7 @@ pub async fn get_service_account_api_v1_workspaces_workspace_id_service_accounts
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            GetServiceAccountApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<GetServiceAccountError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2297,10 +2172,51 @@ pub async fn get_service_account_api_v1_workspaces_workspace_id_service_accounts
     }
 }
 
-pub async fn get_workspace_api_v1_workspaces_workspace_id_get(
+pub async fn get_user_avatar(
+    configuration: &configuration::Configuration,
+    user_id: &str,
+) -> Result<reqwest::Response, Error<GetUserAvatarError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_user_id = user_id;
+
+    let uri_str = format!(
+        "{}/api/v1/users/{user_id}/avatar",
+        configuration.base_path,
+        user_id = crate::generated::apis::urlencode(p_path_user_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+
+    if !status.is_client_error() && !status.is_server_error() {
+        Ok(resp)
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetUserAvatarError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn get_workspace(
     configuration: &configuration::Configuration,
     workspace_id: &str,
-) -> Result<Response<models::Workspace>, Error<GetWorkspaceApiV1WorkspacesWorkspaceIdGetError>> {
+) -> Result<Response<models::Workspace>, Error<GetWorkspaceError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
 
@@ -2353,8 +2269,7 @@ pub async fn get_workspace_api_v1_workspaces_workspace_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetWorkspaceApiV1WorkspacesWorkspaceIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetWorkspaceError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2364,10 +2279,10 @@ pub async fn get_workspace_api_v1_workspaces_workspace_id_get(
     }
 }
 
-pub async fn get_workspace_icon_api_v1_workspaces_workspace_id_icon_get(
+pub async fn get_workspace_icon(
     configuration: &configuration::Configuration,
     workspace_id: &str,
-) -> Result<reqwest::Response, Error<GetWorkspaceIconApiV1WorkspacesWorkspaceIdIconGetError>> {
+) -> Result<reqwest::Response, Error<GetWorkspaceIconError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
 
@@ -2395,8 +2310,7 @@ pub async fn get_workspace_icon_api_v1_workspaces_workspace_id_icon_get(
         Ok(resp)
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetWorkspaceIconApiV1WorkspacesWorkspaceIdIconGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetWorkspaceIconError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2407,12 +2321,11 @@ pub async fn get_workspace_icon_api_v1_workspaces_workspace_id_icon_get(
 }
 
 /// The caller's own trail, account-wide events included; requires a login session.
-pub async fn list_account_audit_events_api_v1_users_me_audit_events_get(
+pub async fn list_account_audit_events(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<Response<models::AuditPage>, Error<ListAccountAuditEventsApiV1UsersMeAuditEventsGetError>>
-{
+) -> Result<Response<models::AuditPage>, Error<ListAccountAuditEventsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -2468,8 +2381,7 @@ pub async fn list_account_audit_events_api_v1_users_me_audit_events_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListAccountAuditEventsApiV1UsersMeAuditEventsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListAccountAuditEventsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2479,14 +2391,11 @@ pub async fn list_account_audit_events_api_v1_users_me_audit_events_get(
     }
 }
 
-pub async fn list_login_sessions_api_v1_users_me_login_sessions_get(
+pub async fn list_login_sessions(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::LoginSessionPage>,
-    Error<ListLoginSessionsApiV1UsersMeLoginSessionsGetError>,
-> {
+) -> Result<Response<models::LoginSessionPage>, Error<ListLoginSessionsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -2542,8 +2451,7 @@ pub async fn list_login_sessions_api_v1_users_me_login_sessions_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListLoginSessionsApiV1UsersMeLoginSessionsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListLoginSessionsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2553,16 +2461,13 @@ pub async fn list_login_sessions_api_v1_users_me_login_sessions_get(
     }
 }
 
-pub async fn list_members_api_v1_organizations_organization_id_members_get(
+pub async fn list_members(
     configuration: &configuration::Configuration,
     organization_id: &str,
     kind: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::MemberPage>,
-    Error<ListMembersApiV1OrganizationsOrganizationIdMembersGetError>,
-> {
+) -> Result<Response<models::MemberPage>, Error<ListMembersError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
     let p_query_kind = kind;
@@ -2627,8 +2532,7 @@ pub async fn list_members_api_v1_organizations_organization_id_members_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListMembersApiV1OrganizationsOrganizationIdMembersGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListMembersError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2638,15 +2542,12 @@ pub async fn list_members_api_v1_organizations_organization_id_members_get(
     }
 }
 
-pub async fn list_organization_audit_events_api_v1_organizations_organization_id_audit_events_get(
+pub async fn list_organization_audit_events(
     configuration: &configuration::Configuration,
     organization_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::AuditPage>,
-    Error<ListOrganizationAuditEventsApiV1OrganizationsOrganizationIdAuditEventsGetError>,
-> {
+) -> Result<Response<models::AuditPage>, Error<ListOrganizationAuditEventsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
     let p_query_limit = limit;
@@ -2707,9 +2608,7 @@ pub async fn list_organization_audit_events_api_v1_organizations_organization_id
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ListOrganizationAuditEventsApiV1OrganizationsOrganizationIdAuditEventsGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ListOrganizationAuditEventsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2719,15 +2618,12 @@ pub async fn list_organization_audit_events_api_v1_organizations_organization_id
     }
 }
 
-pub async fn list_organization_grants_api_v1_organizations_organization_id_grants_get(
+pub async fn list_organization_grants(
     configuration: &configuration::Configuration,
     organization_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::GrantPage>,
-    Error<ListOrganizationGrantsApiV1OrganizationsOrganizationIdGrantsGetError>,
-> {
+) -> Result<Response<models::GrantPage>, Error<ListOrganizationGrantsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
     let p_query_limit = limit;
@@ -2788,8 +2684,7 @@ pub async fn list_organization_grants_api_v1_organizations_organization_id_grant
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListOrganizationGrantsApiV1OrganizationsOrganizationIdGrantsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListOrganizationGrantsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2799,15 +2694,12 @@ pub async fn list_organization_grants_api_v1_organizations_organization_id_grant
     }
 }
 
-pub async fn list_organization_invitations_api_v1_organizations_organization_id_invitations_get(
+pub async fn list_organization_invitations(
     configuration: &configuration::Configuration,
     organization_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::InvitationPage>,
-    Error<ListOrganizationInvitationsApiV1OrganizationsOrganizationIdInvitationsGetError>,
-> {
+) -> Result<Response<models::InvitationPage>, Error<ListOrganizationInvitationsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
     let p_query_limit = limit;
@@ -2868,9 +2760,7 @@ pub async fn list_organization_invitations_api_v1_organizations_organization_id_
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ListOrganizationInvitationsApiV1OrganizationsOrganizationIdInvitationsGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ListOrganizationInvitationsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2880,15 +2770,12 @@ pub async fn list_organization_invitations_api_v1_organizations_organization_id_
     }
 }
 
-pub async fn list_organization_workspaces_api_v1_organizations_organization_id_workspaces_get(
+pub async fn list_organization_workspaces(
     configuration: &configuration::Configuration,
     organization_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::WorkspacePage>,
-    Error<ListOrganizationWorkspacesApiV1OrganizationsOrganizationIdWorkspacesGetError>,
-> {
+) -> Result<Response<models::WorkspacePage>, Error<ListOrganizationWorkspacesError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
     let p_query_limit = limit;
@@ -2949,9 +2836,7 @@ pub async fn list_organization_workspaces_api_v1_organizations_organization_id_w
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ListOrganizationWorkspacesApiV1OrganizationsOrganizationIdWorkspacesGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ListOrganizationWorkspacesError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -2961,12 +2846,11 @@ pub async fn list_organization_workspaces_api_v1_organizations_organization_id_w
     }
 }
 
-pub async fn list_organizations_api_v1_organizations_get(
+pub async fn list_organizations(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<Response<models::OrganizationPage>, Error<ListOrganizationsApiV1OrganizationsGetError>>
-{
+) -> Result<Response<models::OrganizationPage>, Error<ListOrganizationsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -3022,8 +2906,7 @@ pub async fn list_organizations_api_v1_organizations_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListOrganizationsApiV1OrganizationsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListOrganizationsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3033,16 +2916,13 @@ pub async fn list_organizations_api_v1_organizations_get(
     }
 }
 
-pub async fn list_service_account_keys_api_v1_workspaces_workspace_id_service_accounts_account_id_keys_get(
+pub async fn list_service_account_keys(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     account_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::ApiKeyPage>,
-    Error<ListServiceAccountKeysApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdKeysGetError>,
-> {
+) -> Result<Response<models::ApiKeyPage>, Error<ListServiceAccountKeysError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_path_account_id = account_id;
@@ -3105,9 +2985,7 @@ pub async fn list_service_account_keys_api_v1_workspaces_workspace_id_service_ac
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            ListServiceAccountKeysApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdKeysGetError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<ListServiceAccountKeysError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3117,15 +2995,12 @@ pub async fn list_service_account_keys_api_v1_workspaces_workspace_id_service_ac
     }
 }
 
-pub async fn list_service_accounts_api_v1_workspaces_workspace_id_service_accounts_get(
+pub async fn list_service_accounts(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::ServiceAccountPage>,
-    Error<ListServiceAccountsApiV1WorkspacesWorkspaceIdServiceAccountsGetError>,
-> {
+) -> Result<Response<models::ServiceAccountPage>, Error<ListServiceAccountsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_query_limit = limit;
@@ -3186,8 +3061,7 @@ pub async fn list_service_accounts_api_v1_workspaces_workspace_id_service_accoun
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListServiceAccountsApiV1WorkspacesWorkspaceIdServiceAccountsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListServiceAccountsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3197,12 +3071,12 @@ pub async fn list_service_accounts_api_v1_workspaces_workspace_id_service_accoun
     }
 }
 
-pub async fn list_user_keys_api_v1_users_me_keys_get(
+pub async fn list_user_keys(
     configuration: &configuration::Configuration,
     workspace_id: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<Response<models::ApiKeyPage>, Error<ListUserKeysApiV1UsersMeKeysGetError>> {
+) -> Result<Response<models::ApiKeyPage>, Error<ListUserKeysError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_workspace_id = workspace_id;
     let p_query_limit = limit;
@@ -3262,8 +3136,7 @@ pub async fn list_user_keys_api_v1_users_me_keys_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListUserKeysApiV1UsersMeKeysGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListUserKeysError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3273,15 +3146,12 @@ pub async fn list_user_keys_api_v1_users_me_keys_get(
     }
 }
 
-pub async fn list_workspace_audit_events_api_v1_workspaces_workspace_id_audit_events_get(
+pub async fn list_workspace_audit_events(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::AuditPage>,
-    Error<ListWorkspaceAuditEventsApiV1WorkspacesWorkspaceIdAuditEventsGetError>,
-> {
+) -> Result<Response<models::AuditPage>, Error<ListWorkspaceAuditEventsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_query_limit = limit;
@@ -3342,8 +3212,7 @@ pub async fn list_workspace_audit_events_api_v1_workspaces_workspace_id_audit_ev
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListWorkspaceAuditEventsApiV1WorkspacesWorkspaceIdAuditEventsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListWorkspaceAuditEventsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3353,15 +3222,12 @@ pub async fn list_workspace_audit_events_api_v1_workspaces_workspace_id_audit_ev
     }
 }
 
-pub async fn list_workspace_grants_api_v1_workspaces_workspace_id_grants_get(
+pub async fn list_workspace_grants(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::GrantPage>,
-    Error<ListWorkspaceGrantsApiV1WorkspacesWorkspaceIdGrantsGetError>,
-> {
+) -> Result<Response<models::GrantPage>, Error<ListWorkspaceGrantsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_query_limit = limit;
@@ -3422,8 +3288,7 @@ pub async fn list_workspace_grants_api_v1_workspaces_workspace_id_grants_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListWorkspaceGrantsApiV1WorkspacesWorkspaceIdGrantsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListWorkspaceGrantsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3433,15 +3298,12 @@ pub async fn list_workspace_grants_api_v1_workspaces_workspace_id_grants_get(
     }
 }
 
-pub async fn list_workspace_invitations_api_v1_workspaces_workspace_id_invitations_get(
+pub async fn list_workspace_invitations(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::InvitationPage>,
-    Error<ListWorkspaceInvitationsApiV1WorkspacesWorkspaceIdInvitationsGetError>,
-> {
+) -> Result<Response<models::InvitationPage>, Error<ListWorkspaceInvitationsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_query_limit = limit;
@@ -3502,8 +3364,7 @@ pub async fn list_workspace_invitations_api_v1_workspaces_workspace_id_invitatio
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListWorkspaceInvitationsApiV1WorkspacesWorkspaceIdInvitationsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListWorkspaceInvitationsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3513,16 +3374,13 @@ pub async fn list_workspace_invitations_api_v1_workspaces_workspace_id_invitatio
     }
 }
 
-pub async fn list_workspace_keys_api_v1_workspaces_workspace_id_keys_get(
+pub async fn list_workspace_keys(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     principal_id: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<
-    Response<models::ApiKeyPage>,
-    Error<ListWorkspaceKeysApiV1WorkspacesWorkspaceIdKeysGetError>,
-> {
+) -> Result<Response<models::ApiKeyPage>, Error<ListWorkspaceKeysError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_query_principal_id = principal_id;
@@ -3587,8 +3445,7 @@ pub async fn list_workspace_keys_api_v1_workspaces_workspace_id_keys_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListWorkspaceKeysApiV1WorkspacesWorkspaceIdKeysGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListWorkspaceKeysError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3598,11 +3455,11 @@ pub async fn list_workspace_keys_api_v1_workspaces_workspace_id_keys_get(
     }
 }
 
-pub async fn list_workspaces_api_v1_workspaces_get(
+pub async fn list_workspaces(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<Response<models::WorkspacePage>, Error<ListWorkspacesApiV1WorkspacesGetError>> {
+) -> Result<Response<models::WorkspacePage>, Error<ListWorkspacesError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -3658,8 +3515,7 @@ pub async fn list_workspaces_api_v1_workspaces_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListWorkspacesApiV1WorkspacesGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListWorkspacesError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3669,98 +3525,13 @@ pub async fn list_workspaces_api_v1_workspaces_get(
     }
 }
 
-pub async fn put_avatar_api_v1_users_me_avatar_put(
-    configuration: &configuration::Configuration,
-    content_type: &str,
-    body: std::path::PathBuf,
-    if_match: Option<&str>,
-) -> Result<Response<models::Profile>, Error<PutAvatarApiV1UsersMeAvatarPutError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_header_content_type = content_type;
-    let p_body_body = body;
-    let p_header_if_match = if_match;
-
-    let uri_str = format!("{}/api/v1/users/me/avatar", configuration.base_path);
-    let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_if_match {
-        req_builder = req_builder.header("If-Match", param_value.to_string());
-    }
-    req_builder = req_builder.header("Content-Type", p_header_content_type.to_string());
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
-        let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
-        };
-        req_builder = req_builder.header("X-CSRF-Token", value);
-    };
-    let file = TokioFile::open(p_body_body).await?;
-    let stream = FramedRead::new(file, BytesCodec::new());
-    req_builder = req_builder.body(reqwest::Body::wrap_stream(stream));
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Profile`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Profile`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<PutAvatarApiV1UsersMeAvatarPutError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn put_organization_icon_api_v1_organizations_organization_id_icon_put(
+pub async fn put_organization_icon(
     configuration: &configuration::Configuration,
     organization_id: &str,
     content_type: &str,
     body: std::path::PathBuf,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Organization>,
-    Error<PutOrganizationIconApiV1OrganizationsOrganizationIdIconPutError>,
-> {
+) -> Result<Response<models::Organization>, Error<PutOrganizationIconError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
     let p_header_content_type = content_type;
@@ -3831,8 +3602,7 @@ pub async fn put_organization_icon_api_v1_organizations_organization_id_icon_put
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PutOrganizationIconApiV1OrganizationsOrganizationIdIconPutError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<PutOrganizationIconError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3842,16 +3612,94 @@ pub async fn put_organization_icon_api_v1_organizations_organization_id_icon_put
     }
 }
 
-pub async fn put_workspace_icon_api_v1_workspaces_workspace_id_icon_put(
+pub async fn put_user_avatar(
+    configuration: &configuration::Configuration,
+    content_type: &str,
+    body: std::path::PathBuf,
+    if_match: Option<&str>,
+) -> Result<Response<models::Profile>, Error<PutUserAvatarError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_header_content_type = content_type;
+    let p_body_body = body;
+    let p_header_if_match = if_match;
+
+    let uri_str = format!("{}/api/v1/users/me/avatar", configuration.base_path);
+    let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_if_match {
+        req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    req_builder = req_builder.header("Content-Type", p_header_content_type.to_string());
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+    let file = TokioFile::open(p_body_body).await?;
+    let stream = FramedRead::new(file, BytesCodec::new());
+    req_builder = req_builder.body(reqwest::Body::wrap_stream(stream));
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Profile`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Profile`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<PutUserAvatarError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn put_workspace_icon(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     content_type: &str,
     body: std::path::PathBuf,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Workspace>,
-    Error<PutWorkspaceIconApiV1WorkspacesWorkspaceIdIconPutError>,
-> {
+) -> Result<Response<models::Workspace>, Error<PutWorkspaceIconError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_header_content_type = content_type;
@@ -3922,8 +3770,7 @@ pub async fn put_workspace_icon_api_v1_workspaces_workspace_id_icon_put(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PutWorkspaceIconApiV1WorkspacesWorkspaceIdIconPutError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<PutWorkspaceIconError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -3933,7 +3780,12 @@ pub async fn put_workspace_icon_api_v1_workspaces_workspace_id_icon_put(
     }
 }
 
-pub async fn resend_organization_invitation_api_v1_organizations_organization_id_invitations_invitation_id_resend_post(configuration: &configuration::Configuration, organization_id: &str, invitation_id: &str, if_match: Option<&str>) -> Result<Response<models::InvitationReceipt>, Error<ResendOrganizationInvitationApiV1OrganizationsOrganizationIdInvitationsInvitationIdResendPostError>>{
+pub async fn resend_organization_invitation(
+    configuration: &configuration::Configuration,
+    organization_id: &str,
+    invitation_id: &str,
+    if_match: Option<&str>,
+) -> Result<Response<models::InvitationReceipt>, Error<ResendOrganizationInvitationError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
     let p_path_invitation_id = invitation_id;
@@ -4002,7 +3854,7 @@ pub async fn resend_organization_invitation_api_v1_organizations_organization_id
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ResendOrganizationInvitationApiV1OrganizationsOrganizationIdInvitationsInvitationIdResendPostError> = serde_json::from_str(&content).ok();
+        let entity: Option<ResendOrganizationInvitationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -4012,17 +3864,12 @@ pub async fn resend_organization_invitation_api_v1_organizations_organization_id
     }
 }
 
-pub async fn resend_workspace_invitation_api_v1_workspaces_workspace_id_invitations_invitation_id_resend_post(
+pub async fn resend_workspace_invitation(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     invitation_id: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::InvitationReceipt>,
-    Error<
-        ResendWorkspaceInvitationApiV1WorkspacesWorkspaceIdInvitationsInvitationIdResendPostError,
-    >,
-> {
+) -> Result<Response<models::InvitationReceipt>, Error<ResendWorkspaceInvitationError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_path_invitation_id = invitation_id;
@@ -4091,7 +3938,7 @@ pub async fn resend_workspace_invitation_api_v1_workspaces_workspace_id_invitati
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ResendWorkspaceInvitationApiV1WorkspacesWorkspaceIdInvitationsInvitationIdResendPostError> = serde_json::from_str(&content).ok();
+        let entity: Option<ResendWorkspaceInvitationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -4101,10 +3948,10 @@ pub async fn resend_workspace_invitation_api_v1_workspaces_workspace_id_invitati
     }
 }
 
-pub async fn revoke_login_session_api_v1_users_me_login_sessions_session_id_delete(
+pub async fn revoke_login_session(
     configuration: &configuration::Configuration,
     session_id: &str,
-) -> Result<Response<()>, Error<RevokeLoginSessionApiV1UsersMeLoginSessionsSessionIdDeleteError>> {
+) -> Result<Response<()>, Error<RevokeLoginSessionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_session_id = session_id;
 
@@ -4146,8 +3993,7 @@ pub async fn revoke_login_session_api_v1_users_me_login_sessions_session_id_dele
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<RevokeLoginSessionApiV1UsersMeLoginSessionsSessionIdDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<RevokeLoginSessionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -4157,7 +4003,12 @@ pub async fn revoke_login_session_api_v1_users_me_login_sessions_session_id_dele
     }
 }
 
-pub async fn revoke_organization_invitation_api_v1_organizations_organization_id_invitations_invitation_id_revoke_post(configuration: &configuration::Configuration, organization_id: &str, invitation_id: &str, if_match: Option<&str>) -> Result<Response<models::Invitation>, Error<RevokeOrganizationInvitationApiV1OrganizationsOrganizationIdInvitationsInvitationIdRevokePostError>>{
+pub async fn revoke_organization_invitation(
+    configuration: &configuration::Configuration,
+    organization_id: &str,
+    invitation_id: &str,
+    if_match: Option<&str>,
+) -> Result<Response<models::Invitation>, Error<RevokeOrganizationInvitationError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
     let p_path_invitation_id = invitation_id;
@@ -4226,7 +4077,7 @@ pub async fn revoke_organization_invitation_api_v1_organizations_organization_id
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RevokeOrganizationInvitationApiV1OrganizationsOrganizationIdInvitationsInvitationIdRevokePostError> = serde_json::from_str(&content).ok();
+        let entity: Option<RevokeOrganizationInvitationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -4236,11 +4087,11 @@ pub async fn revoke_organization_invitation_api_v1_organizations_organization_id
     }
 }
 
-pub async fn revoke_user_key_api_v1_users_me_keys_key_id_delete(
+pub async fn revoke_user_key(
     configuration: &configuration::Configuration,
     key_id: &str,
     if_match: Option<&str>,
-) -> Result<Response<models::ApiKey>, Error<RevokeUserKeyApiV1UsersMeKeysKeyIdDeleteError>> {
+) -> Result<Response<models::ApiKey>, Error<RevokeUserKeyError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_key_id = key_id;
     let p_header_if_match = if_match;
@@ -4307,8 +4158,7 @@ pub async fn revoke_user_key_api_v1_users_me_keys_key_id_delete(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RevokeUserKeyApiV1UsersMeKeysKeyIdDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<RevokeUserKeyError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -4318,17 +4168,12 @@ pub async fn revoke_user_key_api_v1_users_me_keys_key_id_delete(
     }
 }
 
-pub async fn revoke_workspace_invitation_api_v1_workspaces_workspace_id_invitations_invitation_id_revoke_post(
+pub async fn revoke_workspace_invitation(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     invitation_id: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Invitation>,
-    Error<
-        RevokeWorkspaceInvitationApiV1WorkspacesWorkspaceIdInvitationsInvitationIdRevokePostError,
-    >,
-> {
+) -> Result<Response<models::Invitation>, Error<RevokeWorkspaceInvitationError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_path_invitation_id = invitation_id;
@@ -4397,7 +4242,7 @@ pub async fn revoke_workspace_invitation_api_v1_workspaces_workspace_id_invitati
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RevokeWorkspaceInvitationApiV1WorkspacesWorkspaceIdInvitationsInvitationIdRevokePostError> = serde_json::from_str(&content).ok();
+        let entity: Option<RevokeWorkspaceInvitationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -4407,15 +4252,12 @@ pub async fn revoke_workspace_invitation_api_v1_workspaces_workspace_id_invitati
     }
 }
 
-pub async fn revoke_workspace_key_api_v1_workspaces_workspace_id_keys_key_id_delete(
+pub async fn revoke_workspace_key(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     key_id: &str,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::ApiKey>,
-    Error<RevokeWorkspaceKeyApiV1WorkspacesWorkspaceIdKeysKeyIdDeleteError>,
-> {
+) -> Result<Response<models::ApiKey>, Error<RevokeWorkspaceKeyError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_path_key_id = key_id;
@@ -4484,8 +4326,7 @@ pub async fn revoke_workspace_key_api_v1_workspaces_workspace_id_keys_key_id_del
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RevokeWorkspaceKeyApiV1WorkspacesWorkspaceIdKeysKeyIdDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<RevokeWorkspaceKeyError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -4495,15 +4336,12 @@ pub async fn revoke_workspace_key_api_v1_workspaces_workspace_id_keys_key_id_del
     }
 }
 
-pub async fn update_organization_api_v1_organizations_organization_id_patch(
+pub async fn update_organization(
     configuration: &configuration::Configuration,
     organization_id: &str,
     organization_update: models::OrganizationUpdate,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::Organization>,
-    Error<UpdateOrganizationApiV1OrganizationsOrganizationIdPatchError>,
-> {
+) -> Result<Response<models::Organization>, Error<UpdateOrganizationError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_organization_id = organization_id;
     let p_body_organization_update = organization_update;
@@ -4572,8 +4410,7 @@ pub async fn update_organization_api_v1_organizations_organization_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateOrganizationApiV1OrganizationsOrganizationIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateOrganizationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -4583,11 +4420,11 @@ pub async fn update_organization_api_v1_organizations_organization_id_patch(
     }
 }
 
-pub async fn update_profile_api_v1_users_me_patch(
+pub async fn update_profile(
     configuration: &configuration::Configuration,
     profile_update: models::ProfileUpdate,
     if_match: Option<&str>,
-) -> Result<Response<models::Profile>, Error<UpdateProfileApiV1UsersMePatchError>> {
+) -> Result<Response<models::Profile>, Error<UpdateProfileError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_profile_update = profile_update;
     let p_header_if_match = if_match;
@@ -4651,8 +4488,7 @@ pub async fn update_profile_api_v1_users_me_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateProfileApiV1UsersMePatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateProfileError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -4662,16 +4498,13 @@ pub async fn update_profile_api_v1_users_me_patch(
     }
 }
 
-pub async fn update_service_account_api_v1_workspaces_workspace_id_service_accounts_account_id_patch(
+pub async fn update_service_account(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     account_id: &str,
     service_account_update: models::ServiceAccountUpdate,
     if_match: Option<&str>,
-) -> Result<
-    Response<models::ServiceAccount>,
-    Error<UpdateServiceAccountApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdPatchError>,
-> {
+) -> Result<Response<models::ServiceAccount>, Error<UpdateServiceAccountError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_path_account_id = account_id;
@@ -4742,9 +4575,7 @@ pub async fn update_service_account_api_v1_workspaces_workspace_id_service_accou
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            UpdateServiceAccountApiV1WorkspacesWorkspaceIdServiceAccountsAccountIdPatchError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<UpdateServiceAccountError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -4754,13 +4585,12 @@ pub async fn update_service_account_api_v1_workspaces_workspace_id_service_accou
     }
 }
 
-pub async fn update_workspace_api_v1_workspaces_workspace_id_patch(
+pub async fn update_workspace(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     workspace_update: models::WorkspaceUpdate,
     if_match: Option<&str>,
-) -> Result<Response<models::Workspace>, Error<UpdateWorkspaceApiV1WorkspacesWorkspaceIdPatchError>>
-{
+) -> Result<Response<models::Workspace>, Error<UpdateWorkspaceError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_workspace_id = workspace_id;
     let p_body_workspace_update = workspace_update;
@@ -4829,8 +4659,7 @@ pub async fn update_workspace_api_v1_workspaces_workspace_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateWorkspaceApiV1WorkspacesWorkspaceIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateWorkspaceError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

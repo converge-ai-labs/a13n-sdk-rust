@@ -13,74 +13,75 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`create_finding_api_v1_findings_post`]
+/// struct for typed errors of method [`create_finding`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateFindingApiV1FindingsPostError {
+pub enum CreateFindingError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_finding_api_v1_findings_finding_id_get`]
+/// struct for typed errors of method [`get_finding`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetFindingApiV1FindingsFindingIdGetError {
+pub enum GetFindingError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_analyses_api_v1_finding_analyses_get`]
+/// struct for typed errors of method [`list_finding_analyses`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListAnalysesApiV1FindingAnalysesGetError {
+pub enum ListFindingAnalysesError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_findings_api_v1_findings_get`]
+/// struct for typed errors of method [`list_findings`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListFindingsApiV1FindingsGetError {
+pub enum ListFindingsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`prepare_finding_agent_api_v1_finding_agent_post`]
+/// struct for typed errors of method [`prepare_finding_agent`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PrepareFindingAgentApiV1FindingAgentPostError {
+pub enum PrepareFindingAgentError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`start_analysis_api_v1_finding_analyses_post`]
+/// struct for typed errors of method [`start_analysis`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum StartAnalysisApiV1FindingAnalysesPostError {
+pub enum StartAnalysisError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_finding_api_v1_findings_finding_id_patch`]
+/// struct for typed errors of method [`update_finding`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateFindingApiV1FindingsFindingIdPatchError {
+pub enum UpdateFindingError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn create_finding_api_v1_findings_post(
+/// Record an unconfirmed finding with evidence and a suggestion; a stable source_key makes a retry safe. A Run's own submission names that Run as its source; an analysis cites only selected traces it has read.
+pub async fn create_finding(
     configuration: &configuration::Configuration,
     finding_create: models::FindingCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Finding>, Error<CreateFindingApiV1FindingsPostError>> {
+) -> Result<Response<models::Finding>, Error<CreateFindingError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_finding_create = finding_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -144,8 +145,7 @@ pub async fn create_finding_api_v1_findings_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateFindingApiV1FindingsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateFindingError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -155,11 +155,11 @@ pub async fn create_finding_api_v1_findings_post(
     }
 }
 
-pub async fn get_finding_api_v1_findings_finding_id_get(
+pub async fn get_finding(
     configuration: &configuration::Configuration,
     finding_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Finding>, Error<GetFindingApiV1FindingsFindingIdGetError>> {
+) -> Result<Response<models::Finding>, Error<GetFindingError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_finding_id = finding_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -216,8 +216,7 @@ pub async fn get_finding_api_v1_findings_finding_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetFindingApiV1FindingsFindingIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetFindingError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -227,12 +226,12 @@ pub async fn get_finding_api_v1_findings_finding_id_get(
     }
 }
 
-pub async fn list_analyses_api_v1_finding_analyses_get(
+pub async fn list_finding_analyses(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::AnalysisPage>, Error<ListAnalysesApiV1FindingAnalysesGetError>> {
+) -> Result<Response<models::AnalysisPage>, Error<ListFindingAnalysesError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -292,8 +291,7 @@ pub async fn list_analyses_api_v1_finding_analyses_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListAnalysesApiV1FindingAnalysesGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListFindingAnalysesError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -303,7 +301,7 @@ pub async fn list_analyses_api_v1_finding_analyses_get(
     }
 }
 
-pub async fn list_findings_api_v1_findings_get(
+pub async fn list_findings(
     configuration: &configuration::Configuration,
     agent_id: Option<&str>,
     category: Option<&str>,
@@ -313,7 +311,7 @@ pub async fn list_findings_api_v1_findings_get(
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::FindingPage>, Error<ListFindingsApiV1FindingsGetError>> {
+) -> Result<Response<models::FindingPage>, Error<ListFindingsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_agent_id = agent_id;
     let p_query_category = category;
@@ -393,7 +391,7 @@ pub async fn list_findings_api_v1_findings_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListFindingsApiV1FindingsGetError> = serde_json::from_str(&content).ok();
+        let entity: Option<ListFindingsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -403,10 +401,10 @@ pub async fn list_findings_api_v1_findings_get(
     }
 }
 
-pub async fn prepare_finding_agent_api_v1_finding_agent_post(
+pub async fn prepare_finding_agent(
     configuration: &configuration::Configuration,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Agent>, Error<PrepareFindingAgentApiV1FindingAgentPostError>> {
+) -> Result<Response<models::Agent>, Error<PrepareFindingAgentError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_header_x_workspace_id = x_workspace_id;
 
@@ -468,8 +466,7 @@ pub async fn prepare_finding_agent_api_v1_finding_agent_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<PrepareFindingAgentApiV1FindingAgentPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<PrepareFindingAgentError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -479,12 +476,12 @@ pub async fn prepare_finding_agent_api_v1_finding_agent_post(
     }
 }
 
-pub async fn start_analysis_api_v1_finding_analyses_post(
+pub async fn start_analysis(
     configuration: &configuration::Configuration,
     idempotency_key: &str,
     analysis_create: models::AnalysisCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Analysis>, Error<StartAnalysisApiV1FindingAnalysesPostError>> {
+) -> Result<Response<models::Analysis>, Error<StartAnalysisError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_header_idempotency_key = idempotency_key;
     let p_body_analysis_create = analysis_create;
@@ -550,8 +547,7 @@ pub async fn start_analysis_api_v1_finding_analyses_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<StartAnalysisApiV1FindingAnalysesPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<StartAnalysisError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -561,13 +557,13 @@ pub async fn start_analysis_api_v1_finding_analyses_post(
     }
 }
 
-pub async fn update_finding_api_v1_findings_finding_id_patch(
+pub async fn update_finding(
     configuration: &configuration::Configuration,
     finding_id: &str,
     finding_update: models::FindingUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Finding>, Error<UpdateFindingApiV1FindingsFindingIdPatchError>> {
+) -> Result<Response<models::Finding>, Error<UpdateFindingError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_finding_id = finding_id;
     let p_body_finding_update = finding_update;
@@ -640,8 +636,7 @@ pub async fn update_finding_api_v1_findings_finding_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateFindingApiV1FindingsFindingIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateFindingError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

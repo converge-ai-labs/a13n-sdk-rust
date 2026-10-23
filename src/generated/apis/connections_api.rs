@@ -13,142 +13,175 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`authorize_connection_api_v1_connections_connection_id_authorize_post`]
+/// struct for typed errors of method [`authorize_connection`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum AuthorizeConnectionApiV1ConnectionsConnectionIdAuthorizePostError {
+pub enum AuthorizeConnectionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`complete_authorization_api_v1_connections_callback_get`]
+/// struct for typed errors of method [`complete_authorization`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CompleteAuthorizationApiV1ConnectionsCallbackGetError {
+pub enum CompleteAuthorizationError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`create_connection_api_v1_connections_post`]
+/// struct for typed errors of method [`create_connection`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateConnectionApiV1ConnectionsPostError {
+pub enum CreateConnectionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_app_api_v1_connector_providers_provider_id_apps_app_get`]
+/// struct for typed errors of method [`define_connection_tools`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAppApiV1ConnectorProvidersProviderIdAppsAppGetError {
+pub enum DefineConnectionToolsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_connection_api_v1_connections_connection_id_get`]
+/// struct for typed errors of method [`define_connector_actions`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetConnectionApiV1ConnectionsConnectionIdGetError {
+pub enum DefineConnectorActionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_redirect_uri_api_v1_connections_redirect_uri_get`]
+/// struct for typed errors of method [`get_connection`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetRedirectUriApiV1ConnectionsRedirectUriGetError {
-    DefaultResponse(models::ErrorEnvelope),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`list_actions_api_v1_connector_providers_provider_id_apps_app_actions_get`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum ListActionsApiV1ConnectorProvidersProviderIdAppsAppActionsGetError {
+pub enum GetConnectionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_apps_api_v1_connector_providers_provider_id_apps_get`]
+/// struct for typed errors of method [`get_connector_app`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListAppsApiV1ConnectorProvidersProviderIdAppsGetError {
+pub enum GetConnectorAppError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_connections_api_v1_connections_get`]
+/// struct for typed errors of method [`get_redirect_uri`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListConnectionsApiV1ConnectionsGetError {
+pub enum GetRedirectUriError {
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`index_connection_tools`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum IndexConnectionToolsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_mcp_servers_api_v1_mcp_servers_get`]
+/// struct for typed errors of method [`index_connector_actions`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListMcpServersApiV1McpServersGetError {
+pub enum IndexConnectorActionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_tools_api_v1_connections_connection_id_tools_get`]
+/// struct for typed errors of method [`list_connection_tools`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListToolsApiV1ConnectionsConnectionIdToolsGetError {
+pub enum ListConnectionToolsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`revoke_connection_api_v1_connections_connection_id_revoke_post`]
+/// struct for typed errors of method [`list_connections`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RevokeConnectionApiV1ConnectionsConnectionIdRevokePostError {
+pub enum ListConnectionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`test_connection_api_v1_connections_connection_id_test_post`]
+/// struct for typed errors of method [`list_connector_actions`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum TestConnectionApiV1ConnectionsConnectionIdTestPostError {
+pub enum ListConnectorActionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_connection_api_v1_connections_connection_id_patch`]
+/// struct for typed errors of method [`list_connector_apps`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateConnectionApiV1ConnectionsConnectionIdPatchError {
+pub enum ListConnectorAppsError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`list_mcp_servers`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ListMcpServersError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`revoke_connection`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum RevokeConnectionError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`test_connection`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum TestConnectionError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`update_connection`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum UpdateConnectionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
 /// A browser flow needs a login session and is bound to this browser by a cookie the callback checks; an API key authorizes only a client-credentials client, without a browser.
-pub async fn authorize_connection_api_v1_connections_connection_id_authorize_post(
+pub async fn authorize_connection(
     configuration: &configuration::Configuration,
     connection_id: &str,
     authorization_request: models::AuthorizationRequest,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::AuthorizationResult>,
-    Error<AuthorizeConnectionApiV1ConnectionsConnectionIdAuthorizePostError>,
-> {
+) -> Result<Response<models::AuthorizationResult>, Error<AuthorizeConnectionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_connection_id = connection_id;
     let p_body_authorization_request = authorization_request;
@@ -221,8 +254,7 @@ pub async fn authorize_connection_api_v1_connections_connection_id_authorize_pos
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AuthorizeConnectionApiV1ConnectionsConnectionIdAuthorizePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<AuthorizeConnectionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -233,17 +265,14 @@ pub async fn authorize_connection_api_v1_connections_connection_id_authorize_pos
 }
 
 /// Public: the one-use state authenticates the browser that the authorization server sends back, and the flow cookie the browser that started the flow.  Attempts per client address share the login flows' bound.
-pub async fn complete_authorization_api_v1_connections_callback_get(
+pub async fn complete_authorization(
     configuration: &configuration::Configuration,
     state: &str,
     code: Option<&str>,
     error: Option<&str>,
     iss: Option<&str>,
     session_uri: Option<&str>,
-) -> Result<
-    Response<models::CallbackOutcome>,
-    Error<CompleteAuthorizationApiV1ConnectionsCallbackGetError>,
-> {
+) -> Result<Response<models::CallbackOutcome>, Error<CompleteAuthorizationError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_state = state;
     let p_query_code = code;
@@ -306,8 +335,7 @@ pub async fn complete_authorization_api_v1_connections_callback_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CompleteAuthorizationApiV1ConnectionsCallbackGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CompleteAuthorizationError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -317,11 +345,11 @@ pub async fn complete_authorization_api_v1_connections_callback_get(
     }
 }
 
-pub async fn create_connection_api_v1_connections_post(
+pub async fn create_connection(
     configuration: &configuration::Configuration,
     connection_create: models::ConnectionCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Connection>, Error<CreateConnectionApiV1ConnectionsPostError>> {
+) -> Result<Response<models::Connection>, Error<CreateConnectionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_connection_create = connection_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -385,8 +413,7 @@ pub async fn create_connection_api_v1_connections_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateConnectionApiV1ConnectionsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateConnectionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -396,15 +423,308 @@ pub async fn create_connection_api_v1_connections_post(
     }
 }
 
-pub async fn get_app_api_v1_connector_providers_provider_id_apps_app_get(
+/// Read up to five exact definitions. Oversized values provide a versioned fragment reference.
+pub async fn define_connection_tools(
+    configuration: &configuration::Configuration,
+    connection_id: &str,
+    name: Vec<String>,
+    offset: Option<i32>,
+    limit: Option<i32>,
+    version: Option<&str>,
+    query: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ResponseDefineConnectionTools>, Error<DefineConnectionToolsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_connection_id = connection_id;
+    let p_query_name = name;
+    let p_query_offset = offset;
+    let p_query_limit = limit;
+    let p_query_version = version;
+    let p_query_query = query;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/connections/{connection_id}/tools/definitions",
+        configuration.base_path,
+        connection_id = crate::generated::apis::urlencode(p_path_connection_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    req_builder = match "multi" {
+        "multi" => req_builder.query(
+            &p_query_name
+                .into_iter()
+                .map(|p| ("name".to_owned(), p.to_string()))
+                .collect::<Vec<(std::string::String, std::string::String)>>(),
+        ),
+        _ => req_builder.query(&[(
+            "name",
+            &p_query_name
+                .into_iter()
+                .map(|p| p.to_string())
+                .collect::<Vec<String>>()
+                .join(",")
+                .to_string(),
+        )]),
+    };
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseDefineConnectionTools`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseDefineConnectionTools`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<DefineConnectionToolsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// Read up to five exact definitions. Oversized values provide a versioned fragment reference.
+pub async fn define_connector_actions(
+    configuration: &configuration::Configuration,
+    provider_id: &str,
+    app: &str,
+    name: Vec<String>,
+    offset: Option<i32>,
+    limit: Option<i32>,
+    version: Option<&str>,
+    query: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ResponseDefineConnectorActions>, Error<DefineConnectorActionsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_provider_id = provider_id;
+    let p_path_app = app;
+    let p_query_name = name;
+    let p_query_offset = offset;
+    let p_query_limit = limit;
+    let p_query_version = version;
+    let p_query_query = query;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/connector-providers/{provider_id}/apps/{app}/actions/definitions",
+        configuration.base_path,
+        provider_id = crate::generated::apis::urlencode(p_path_provider_id),
+        app = crate::generated::apis::urlencode(p_path_app)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    req_builder = match "multi" {
+        "multi" => req_builder.query(
+            &p_query_name
+                .into_iter()
+                .map(|p| ("name".to_owned(), p.to_string()))
+                .collect::<Vec<(std::string::String, std::string::String)>>(),
+        ),
+        _ => req_builder.query(&[(
+            "name",
+            &p_query_name
+                .into_iter()
+                .map(|p| p.to_string())
+                .collect::<Vec<String>>()
+                .join(",")
+                .to_string(),
+        )]),
+    };
+    if let Some(ref param_value) = p_query_offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_version {
+        req_builder = req_builder.query(&[("version", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ResponseDefineConnectorActions`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ResponseDefineConnectorActions`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<DefineConnectorActionsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn get_connection(
+    configuration: &configuration::Configuration,
+    connection_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Connection>, Error<GetConnectionError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_connection_id = connection_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/connections/{connection_id}",
+        configuration.base_path,
+        connection_id = crate::generated::apis::urlencode(p_path_connection_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Connection`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Connection`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetConnectionError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn get_connector_app(
     configuration: &configuration::Configuration,
     provider_id: &str,
     app: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::ConnectorApp>,
-    Error<GetAppApiV1ConnectorProvidersProviderIdAppsAppGetError>,
-> {
+) -> Result<Response<models::ConnectorApp>, Error<GetConnectorAppError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_path_app = app;
@@ -463,81 +783,7 @@ pub async fn get_app_api_v1_connector_providers_provider_id_apps_app_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetAppApiV1ConnectorProvidersProviderIdAppsAppGetError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn get_connection_api_v1_connections_connection_id_get(
-    configuration: &configuration::Configuration,
-    connection_id: &str,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::Connection>, Error<GetConnectionApiV1ConnectionsConnectionIdGetError>>
-{
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_connection_id = connection_id;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/connections/{connection_id}",
-        configuration.base_path,
-        connection_id = crate::generated::apis::urlencode(p_path_connection_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Connection`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Connection`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<GetConnectionApiV1ConnectionsConnectionIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetConnectorAppError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -548,10 +794,9 @@ pub async fn get_connection_api_v1_connections_connection_id_get(
 }
 
 /// The deployment's callback, for registering an OAuth client in advance; the same for every connection.
-pub async fn get_redirect_uri_api_v1_connections_redirect_uri_get(
+pub async fn get_redirect_uri(
     configuration: &configuration::Configuration,
-) -> Result<Response<models::OAuthRedirect>, Error<GetRedirectUriApiV1ConnectionsRedirectUriGetError>>
-{
+) -> Result<Response<models::OAuthRedirect>, Error<GetRedirectUriError>> {
     let uri_str = format!(
         "{}/api/v1/connections/redirect-uri",
         configuration.base_path
@@ -600,8 +845,7 @@ pub async fn get_redirect_uri_api_v1_connections_redirect_uri_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetRedirectUriApiV1ConnectionsRedirectUriGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetRedirectUriError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -611,15 +855,335 @@ pub async fn get_redirect_uri_api_v1_connections_redirect_uri_get(
     }
 }
 
-pub async fn list_actions_api_v1_connector_providers_provider_id_apps_app_actions_get(
+/// Search full names and descriptions; definitions are read separately by exact name.
+pub async fn index_connection_tools(
+    configuration: &configuration::Configuration,
+    connection_id: &str,
+    query: Option<&str>,
+    limit: Option<i32>,
+    cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::CatalogIndex>, Error<IndexConnectionToolsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_connection_id = connection_id;
+    let p_query_query = query;
+    let p_query_limit = limit;
+    let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/connections/{connection_id}/tools/index",
+        configuration.base_path,
+        connection_id = crate::generated::apis::urlencode(p_path_connection_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::CatalogIndex`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::CatalogIndex`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<IndexConnectionToolsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// Search full names and descriptions; definitions are read separately by exact name.
+pub async fn index_connector_actions(
+    configuration: &configuration::Configuration,
+    provider_id: &str,
+    app: &str,
+    query: Option<&str>,
+    limit: Option<i32>,
+    cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::CatalogIndex>, Error<IndexConnectorActionsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_provider_id = provider_id;
+    let p_path_app = app;
+    let p_query_query = query;
+    let p_query_limit = limit;
+    let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/connector-providers/{provider_id}/apps/{app}/actions/index",
+        configuration.base_path,
+        provider_id = crate::generated::apis::urlencode(p_path_provider_id),
+        app = crate::generated::apis::urlencode(p_path_app)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_query {
+        req_builder = req_builder.query(&[("query", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::CatalogIndex`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::CatalogIndex`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<IndexConnectorActionsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn list_connection_tools(
+    configuration: &configuration::Configuration,
+    connection_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ToolPage>, Error<ListConnectionToolsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_connection_id = connection_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/connections/{connection_id}/tools",
+        configuration.base_path,
+        connection_id = crate::generated::apis::urlencode(p_path_connection_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ToolPage`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ToolPage`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ListConnectionToolsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn list_connections(
+    configuration: &configuration::Configuration,
+    limit: Option<i32>,
+    cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::ConnectionPage>, Error<ListConnectionsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_query_limit = limit;
+    let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!("{}/api/v1/connections", configuration.base_path);
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::ConnectionPage`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::ConnectionPage`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ListConnectionsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn list_connector_actions(
     configuration: &configuration::Configuration,
     provider_id: &str,
     app: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::ConnectorActionPage>,
-    Error<ListActionsApiV1ConnectorProvidersProviderIdAppsAppActionsGetError>,
-> {
+) -> Result<Response<models::ConnectorActionPage>, Error<ListConnectorActionsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_path_app = app;
@@ -678,8 +1242,7 @@ pub async fn list_actions_api_v1_connector_providers_provider_id_apps_app_action
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListActionsApiV1ConnectorProvidersProviderIdAppsAppActionsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListConnectorActionsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -689,7 +1252,7 @@ pub async fn list_actions_api_v1_connector_providers_provider_id_apps_app_action
     }
 }
 
-pub async fn list_apps_api_v1_connector_providers_provider_id_apps_get(
+pub async fn list_connector_apps(
     configuration: &configuration::Configuration,
     provider_id: &str,
     query: Option<&str>,
@@ -697,10 +1260,7 @@ pub async fn list_apps_api_v1_connector_providers_provider_id_apps_get(
     cursor: Option<&str>,
     refresh: Option<bool>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::ConnectorAppPage>,
-    Error<ListAppsApiV1ConnectorProvidersProviderIdAppsGetError>,
-> {
+) -> Result<Response<models::ConnectorAppPage>, Error<ListConnectorAppsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_provider_id = provider_id;
     let p_query_query = query;
@@ -773,84 +1333,7 @@ pub async fn list_apps_api_v1_connector_providers_provider_id_apps_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListAppsApiV1ConnectorProvidersProviderIdAppsGetError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn list_connections_api_v1_connections_get(
-    configuration: &configuration::Configuration,
-    limit: Option<i32>,
-    cursor: Option<&str>,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::ConnectionPage>, Error<ListConnectionsApiV1ConnectionsGetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_query_limit = limit;
-    let p_query_cursor = cursor;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!("{}/api/v1/connections", configuration.base_path);
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref param_value) = p_query_limit {
-        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_query_cursor {
-        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
-    }
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ConnectionPage`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ConnectionPage`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<ListConnectionsApiV1ConnectionsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListConnectorAppsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -861,12 +1344,12 @@ pub async fn list_connections_api_v1_connections_get(
 }
 
 /// Suggested Remote MCP servers, packaged and from the deployment; readable by every signed-in principal.
-pub async fn list_mcp_servers_api_v1_mcp_servers_get(
+pub async fn list_mcp_servers(
     configuration: &configuration::Configuration,
     query: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
-) -> Result<Response<models::McpServerPage>, Error<ListMcpServersApiV1McpServersGetError>> {
+) -> Result<Response<models::McpServerPage>, Error<ListMcpServersError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_query = query;
     let p_query_limit = limit;
@@ -926,8 +1409,7 @@ pub async fn list_mcp_servers_api_v1_mcp_servers_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListMcpServersApiV1McpServersGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListMcpServersError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -937,87 +1419,12 @@ pub async fn list_mcp_servers_api_v1_mcp_servers_get(
     }
 }
 
-pub async fn list_tools_api_v1_connections_connection_id_tools_get(
-    configuration: &configuration::Configuration,
-    connection_id: &str,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::ToolPage>, Error<ListToolsApiV1ConnectionsConnectionIdToolsGetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_connection_id = connection_id;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/connections/{connection_id}/tools",
-        configuration.base_path,
-        connection_id = crate::generated::apis::urlencode(p_path_connection_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::ToolPage`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::ToolPage`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<ListToolsApiV1ConnectionsConnectionIdToolsGetError> =
-            serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn revoke_connection_api_v1_connections_connection_id_revoke_post(
+pub async fn revoke_connection(
     configuration: &configuration::Configuration,
     connection_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::RevokedConnection>,
-    Error<RevokeConnectionApiV1ConnectionsConnectionIdRevokePostError>,
-> {
+) -> Result<Response<models::RevokedConnection>, Error<RevokeConnectionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_connection_id = connection_id;
     let p_header_if_match = if_match;
@@ -1088,8 +1495,7 @@ pub async fn revoke_connection_api_v1_connections_connection_id_revoke_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RevokeConnectionApiV1ConnectionsConnectionIdRevokePostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<RevokeConnectionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1099,14 +1505,11 @@ pub async fn revoke_connection_api_v1_connections_connection_id_revoke_post(
     }
 }
 
-pub async fn test_connection_api_v1_connections_connection_id_test_post(
+pub async fn test_connection(
     configuration: &configuration::Configuration,
     connection_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::ConnectionTest>,
-    Error<TestConnectionApiV1ConnectionsConnectionIdTestPostError>,
-> {
+) -> Result<Response<models::ConnectionTest>, Error<TestConnectionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_connection_id = connection_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -1173,8 +1576,7 @@ pub async fn test_connection_api_v1_connections_connection_id_test_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<TestConnectionApiV1ConnectionsConnectionIdTestPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<TestConnectionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -1184,16 +1586,13 @@ pub async fn test_connection_api_v1_connections_connection_id_test_post(
     }
 }
 
-pub async fn update_connection_api_v1_connections_connection_id_patch(
+pub async fn update_connection(
     configuration: &configuration::Configuration,
     connection_id: &str,
     connection_update: models::ConnectionUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::Connection>,
-    Error<UpdateConnectionApiV1ConnectionsConnectionIdPatchError>,
-> {
+) -> Result<Response<models::Connection>, Error<UpdateConnectionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_connection_id = connection_id;
     let p_body_connection_update = connection_update;
@@ -1266,8 +1665,7 @@ pub async fn update_connection_api_v1_connections_connection_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateConnectionApiV1ConnectionsConnectionIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateConnectionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

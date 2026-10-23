@@ -21,6 +21,8 @@ pub struct StartOptions {
     pub memories: Option<Vec<models::MemoryMount>>,
     pub message_history: Option<Vec<serde_json::Map<String, serde_json::Value>>>,
     pub run_options: Option<RunOptions>,
+    pub execution: Option<Option<models::ExecutionOverride>>,
+    pub session: Option<Option<models::SessionCreate>>,
     pub session_id: Option<Option<String>>,
 }
 #[derive(Default)]
@@ -91,6 +93,8 @@ impl Agent {
         body.message_history = options.message_history;
         body.options = options.run_options.map(|v| Box::new(v.into_wire()));
         body.session_id = options.session_id;
+        body.execution = options.execution.map(|value| value.map(Box::new));
+        body.session = options.session.map(|value| value.map(Box::new));
         self.client
             .mutation(
                 "start",

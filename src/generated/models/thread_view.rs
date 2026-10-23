@@ -22,6 +22,14 @@ pub struct ThreadView {
     #[serde(rename = "current_run_id", deserialize_with = "Option::deserialize")]
     pub current_run_id: Option<String>,
 
+    #[serde(
+        rename = "execution",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub execution: Option<Option<Box<models::ExecutionOverride>>>,
+
     #[serde(rename = "id")]
     pub id: String,
 
@@ -52,6 +60,14 @@ pub struct ThreadView {
     #[serde(default, deserialize_with = "deserialize_non_null_purpose")]
     #[serde(rename = "purpose", skip_serializing_if = "Option::is_none")]
     pub purpose: Option<Purpose>,
+
+    #[serde(
+        rename = "schedule_occurrence_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub schedule_occurrence_id: Option<Option<String>>,
 
     #[serde(rename = "session_id")]
     pub session_id: String,
@@ -92,6 +108,7 @@ impl ThreadView {
             archived_at,
             created_at,
             current_run_id,
+            execution: None,
             id,
             labels,
             last_run_id,
@@ -101,6 +118,7 @@ impl ThreadView {
             origin_thread_id,
             origin_tool_call_id,
             purpose: None,
+            schedule_occurrence_id: None,
             session_id,
             subagent,
             updated_at,

@@ -30,6 +30,14 @@ pub struct NewThread {
     #[serde(rename = "environments", skip_serializing_if = "Option::is_none")]
     pub environments: Option<Vec<models::MountCreate>>,
 
+    #[serde(
+        rename = "execution",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub execution: Option<Option<Box<models::ExecutionOverride>>>,
+
     #[serde(rename = "kind", skip_serializing_if = "Option::is_none")]
     pub kind: Option<Kind>,
 
@@ -50,6 +58,14 @@ pub struct NewThread {
     pub payload: Box<models::MessagePayload>,
 
     #[serde(
+        rename = "session",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub session: Option<Option<Box<models::SessionCreate>>>,
+
+    #[serde(
         rename = "session_id",
         default,
         with = "::serde_with::rust::double_option",
@@ -65,12 +81,14 @@ impl NewThread {
             agent_revision_id: None,
             delivery: None,
             environments: None,
+            execution: None,
             kind: None,
             mcp_headers: None,
             memories: None,
             message_history: None,
             options: None,
             payload: Box::new(payload),
+            session: None,
             session_id: None,
         }
     }

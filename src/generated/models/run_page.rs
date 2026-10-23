@@ -14,14 +14,14 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RunPage {
     #[serde(rename = "items")]
-    pub items: Vec<models::RunView>,
+    pub items: Vec<models::RunListItem>,
 
     #[serde(rename = "next_cursor", deserialize_with = "Option::deserialize")]
     pub next_cursor: Option<String>,
 }
 
 impl RunPage {
-    pub fn new(items: Vec<models::RunView>, next_cursor: Option<String>) -> RunPage {
+    pub fn new(items: Vec<models::RunListItem>, next_cursor: Option<String>) -> RunPage {
         RunPage { items, next_cursor }
     }
 }

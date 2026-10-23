@@ -531,7 +531,7 @@ def offline(source: Path) -> None:
         native_selection = {
             "overrides": {
                 "builtin_skills": [],
-                "platform_tools": {"groups": [], "read_permission": "deny", "write_permission": "ask"},
+                "toolsets": {},
             }
         }
         execute(
@@ -861,7 +861,7 @@ def main() -> None:
                 "agent_id": agent,
                 "session_id": selected_id,
                 "payload": payload("CLI shared Space readback"),
-                "options": {"overrides": {"builtin_skills": [], "platform_tools": {"groups": []}}},
+                "options": {"overrides": {"builtin_skills": [], "toolsets": {}}},
             },
             status=201,
         )["data"]
@@ -875,7 +875,7 @@ def main() -> None:
         shared = next(mount for mount in frozen if mount.get("space_id") == space_id)
         assert shared["roots"] == ["global/", f"sessions/{selected_id}/"]
         executed = call("runs", "agent", "get", "--run", selected_run)["data"]
-        assert executed["config"]["builtin_skills"] == [] and executed["config"]["platform_tools"]["groups"] == []
+        assert executed["config"]["builtin_skills"] == [] and executed["config"]["toolsets"] == {}
         assert any(
             run["id"] == selected_run for run in call("runs", "list", "--session-id", selected_id)["data"]["items"]
         )

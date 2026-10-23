@@ -23,6 +23,22 @@ pub struct SessionCreate {
         skip_serializing_if = "Option::is_none"
     )]
     pub memory: Option<Option<Box<models::SessionMemorySettings>>>,
+
+    #[serde(
+        rename = "origin",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub origin: Option<Option<Box<models::SessionOrigin>>>,
+
+    #[serde(
+        rename = "title",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub title: Option<Option<String>>,
 }
 
 impl SessionCreate {
@@ -30,6 +46,8 @@ impl SessionCreate {
         SessionCreate {
             labels: None,
             memory: None,
+            origin: None,
+            title: None,
         }
     }
 }

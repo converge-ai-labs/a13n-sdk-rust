@@ -111,8 +111,11 @@ pub async fn offline() -> Result<()> {
         .at("c")
         .get(Default::default())
         .await?;
+    let m::ResponseGetRunContent::AnyOf0(content_data) = &content.data else {
+        return Err("Expected detailed content".into());
+    };
     ensure(
-        content.data.value == Some(json!({"z":false,"a":[null,0]})),
+        content_data.value == Some(json!({"z":false,"a":[null,0]})),
         "Installed content native JSON",
     )?;
     let authors = client
@@ -186,9 +189,8 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
         outcome.status == m::RunStatus::Completed,
         "Content journey not completed",
     )?;
-    let items = outcome.run.items().get(Default::default()).await?;
+    let items = crate::detailed_items(outcome.run.items().get(Default::default()).await?.data)?;
     let reference = items
-        .data
         .items
         .iter()
         .filter_map(|item| item.content_refs.as_ref())
@@ -203,8 +205,11 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
         .at(&reference.id)
         .get(Default::default())
         .await?;
+    let m::ResponseGetRunContent::AnyOf0(content_data) = &content.data else {
+        return Err("Expected detailed content".into());
+    };
     ensure(
-        content.data.value == Some(json!(text)) && content.data.truncated == Some(false),
+        content_data.value == Some(json!(text)) && content_data.truncated == Some(false),
         "Full Unicode content/truncation",
     )?;
     ensure(

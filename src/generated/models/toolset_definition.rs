@@ -28,6 +28,9 @@ pub struct ToolsetDefinition {
     #[serde(rename = "key")]
     pub key: models::ToolsetKey,
 
+    #[serde(rename = "platform", skip_serializing_if = "Option::is_none")]
+    pub platform: Option<bool>,
+
     #[serde(rename = "tools")]
     pub tools: Vec<models::ToolDefinition>,
 }
@@ -46,6 +49,7 @@ impl ToolsetDefinition {
             description: None,
             display_name,
             key,
+            platform: None,
             tools,
         }
     }

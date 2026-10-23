@@ -51,16 +51,6 @@ impl Default for History {
         Self::None
     }
 }
-fn deserialize_non_null_history<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
-    deserializer: D,
-) -> Result<Option<T>, D::Error> {
-    T::deserialize(deserializer).map(Some)
-}
-fn deserialize_non_null_include_task<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
-    deserializer: D,
-) -> Result<Option<T>, D::Error> {
-    T::deserialize(deserializer).map(Some)
-}
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum TaskState {
@@ -74,6 +64,16 @@ impl Default for TaskState {
     fn default() -> TaskState {
         Self::Shared
     }
+}
+fn deserialize_non_null_history<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_include_task<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }
 fn deserialize_non_null_task_state<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
     deserializer: D,

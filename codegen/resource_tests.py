@@ -19,7 +19,11 @@ def sample(schema: dict, schemas: dict, depth: int = 0):
             return sample(next((s for s in branches if s.get("type") != "null"), branches[0]), schemas, depth + 1)
     kind = schema.get("type")
     if kind == "object" or "properties" in schema:
-        return {key: sample(schema["properties"][key], schemas, depth + 1) for key in schema.get("required", [])}
+        return {
+            key: sample(prop, schemas, depth + 1)
+            for key, prop in schema.get("properties", {}).items()
+            if key in schema.get("required", []) or "const" in prop
+        }
     if kind == "array":
         return []
     if kind in {"integer", "number"}:

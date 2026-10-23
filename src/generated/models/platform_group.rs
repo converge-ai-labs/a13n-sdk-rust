@@ -28,6 +28,8 @@ pub enum PlatformGroup {
     Providers,
     #[serde(rename = "execution")]
     Execution,
+    #[serde(rename = "schedules")]
+    Schedules,
 }
 
 impl std::fmt::Display for PlatformGroup {
@@ -40,6 +42,7 @@ impl std::fmt::Display for PlatformGroup {
             Self::EnvironmentTemplates => write!(f, "environment_templates"),
             Self::Providers => write!(f, "providers"),
             Self::Execution => write!(f, "execution"),
+            Self::Schedules => write!(f, "schedules"),
         }
     }
 }

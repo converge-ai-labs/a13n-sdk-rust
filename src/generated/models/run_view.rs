@@ -90,6 +90,14 @@ pub struct RunView {
     #[serde(rename = "revision_selection")]
     pub revision_selection: RevisionSelection,
 
+    #[serde(
+        rename = "schedule_origin",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub schedule_origin: Option<Option<Box<models::ScheduleOrigin>>>,
+
     #[serde(rename = "sealed_at", deserialize_with = "Option::deserialize")]
     pub sealed_at: Option<chrono::DateTime<chrono::FixedOffset>>,
 
@@ -202,6 +210,7 @@ impl RunView {
             },
             resumed_by_id,
             revision_selection,
+            schedule_origin: None,
             sealed_at,
             session_id,
             source_entry_id,

@@ -34,10 +34,10 @@ def test_adapter_keeps_typed_unions_and_contract_unchanged() -> None:
     assert legacy["required"] == frozen["required"]
     assert all(value == frozen["properties"][name] for name, value in legacy["properties"].items())
     assert frozen["properties"]["roots"]["x-rust-non-null"]
-    for name in ["ToolSearch", "ToolSearchGroup", "ProxyToolSearchConfig", "NativeToolSearchConfig"]:
+    for name in ["ToolSearch", "ToolSearchGroup", "ToolSearchConfig"]:
         assert schemas[name]["x-rust-deny-unknown-fields"]
     assert schemas["ToolSearch"]["properties"]["config"]["x-rust-non-null"]
-    assert "x-rust-non-null" not in schemas["NativeToolSearchConfig"]["properties"]["strategy"]
+    assert "NativeToolSearchConfig" not in schemas
     for path in ["/api/v1/usage/context", "/api/v1/runs/{run_id}/desktop-control"]:
         assert adapted["paths"][path]["get"]["x-rust-nullable-response"]
     assert "x-rust-nullable-response" not in adapted["paths"]["/api/v1/runs/{run_id}"]["get"]
@@ -275,7 +275,7 @@ def test_session_export_extends_models_without_reintroducing_http_readback_field
     merged = codegen.with_session_models(document, stream)
     schemas = merged["components"]["schemas"]
     assert json.dumps([document, stream]) == original
-    assert set(stream["frames"]) == {"thread", "items", "delta", "gap"}
+    assert set(stream["frames"]) == {"thread", "items", "delta", "gap", "schedule", "occurrence"}
     assert schemas["ThreadState"]["properties"]["thread"] == {"$ref": "#/components/schemas/ThreadView"}
     assert schemas["RunSnapshot"]["properties"]["continuation"]["anyOf"][0] == {
         "$ref": "#/components/schemas/DisplayContinuation"

@@ -34,6 +34,25 @@ pub struct EnvironmentView {
     #[serde(rename = "last_used_at", deserialize_with = "Option::deserialize")]
     pub last_used_at: Option<chrono::DateTime<chrono::FixedOffset>>,
 
+    #[serde(
+        rename = "metrics_application",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub metrics_application: Option<Option<Box<models::MetricsApplication>>>,
+
+    #[serde(
+        rename = "metrics_data_source_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub metrics_data_source_id: Option<Option<String>>,
+
+    #[serde(rename = "metrics_labels", skip_serializing_if = "Option::is_none")]
+    pub metrics_labels: Option<serde_json::Value>,
+
     #[serde(rename = "name")]
     pub name: String,
 
@@ -107,6 +126,9 @@ impl EnvironmentView {
             },
             id,
             last_used_at,
+            metrics_application: None,
+            metrics_data_source_id: None,
+            metrics_labels: None,
             name,
             operation_id,
             operation_started_at,

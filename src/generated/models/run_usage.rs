@@ -18,16 +18,26 @@ pub struct RunUsage {
 
     #[serde(rename = "run_id")]
     pub run_id: String,
+    /// One-based chronological position among all Runs in the Thread.
+
+    #[serde(rename = "run_number")]
+    pub run_number: i32,
 
     #[serde(rename = "thread_id")]
     pub thread_id: String,
 }
 
 impl RunUsage {
-    pub fn new(models: Vec<models::ModelUsage>, run_id: String, thread_id: String) -> RunUsage {
+    pub fn new(
+        models: Vec<models::ModelUsage>,
+        run_id: String,
+        run_number: i32,
+        thread_id: String,
+    ) -> RunUsage {
         RunUsage {
             models,
             run_id,
+            run_number,
             thread_id,
         }
     }

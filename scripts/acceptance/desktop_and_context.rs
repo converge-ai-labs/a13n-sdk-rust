@@ -5,22 +5,17 @@ use serde_json::json;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 pub async fn offline() -> Result<()> {
-    for wire in [
-        json!({"mode":"native"}),
-        json!({"mode":"native","strategy":null}),
-        json!({"mode":"native","strategy":"regex"}),
-        json!({"mode":"proxy","max_results":7}),
-    ] {
+    for wire in [json!({"mode":"proxy","max_results":7})] {
         let typed: m::ToolSearchConfig = serde_json::from_value(wire.clone())?;
         ensure(
             serde_json::to_value(typed)? == wire,
-            "ToolSearch union roundtrip",
+            "ToolSearch configuration roundtrip",
         )?;
     }
     for wire in [
         json!({"mode":"native","max_results":7}),
         json!({"mode":"proxy","strategy":"regex"}),
-        json!({}),
+        json!({"mode":"native"}),
     ] {
         ensure(
             serde_json::from_value::<m::ToolSearchConfig>(wire).is_err(),
@@ -84,7 +79,7 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
             .usage()
             .context()
             .get(UsageContextGetOptions {
-                record_id: Some(record),
+                record_id: Some(record.clone()),
                 ..Default::default()
             })
             .await?;
@@ -99,12 +94,7 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
                 && usage.context_window_tokens.is_none(),
             "Context nullable window",
         )?;
-        let run = client
-            .api()
-            .runs()
-            .at(&usage.run_id)
-            .get(Default::default())
-            .await?;
+        let run = client.run(&usage.run_id).get().await?;
         for options in [
             UsageContextGetOptions {
                 run_id: Some(usage.run_id.clone()),
@@ -124,7 +114,7 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
             UsageContextGetOptions::default(),
             UsageContextGetOptions {
                 run_id: Some(usage.run_id.clone()),
-                record_id: Some(usage.record_id.clone()),
+                record_id: Some(record.clone()),
                 ..Default::default()
             },
         ] {
@@ -175,9 +165,6 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
     let model = required("A13N_MODEL_KEY")?;
     for config in [
         json!({"mode":"proxy","search_name":"find_grouped_tools","call_name":"invoke_grouped_tool","max_results":7}),
-        json!({"mode":"native"}),
-        json!({"mode":"native","strategy":null}),
-        json!({"mode":"native","strategy":"regex"}),
     ] {
         let body: m::AgentCreate = serde_json::from_value(
             json!({"name":format!("ToolSearch {}",key()),"config":{"model":model,"tool_search":{"config":config,"groups":{}}}}),
@@ -199,7 +186,10 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
                 .ok_or("Created Agent has no default Revision")?)
             .get(Default::default())
             .await?;
-        let saved = serde_json::to_value(revision.data.config)?;
+        let m::ResponseGetAgentRevision::AnyOf0(revision) = revision.data else {
+            return Err("Expected detailed revision".into());
+        };
+        let saved = serde_json::to_value(revision.config)?;
         ensure(
             saved["tool_search"]["groups"] == json!({}),
             "Empty groups lost",

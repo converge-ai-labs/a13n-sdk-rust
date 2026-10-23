@@ -24,6 +24,12 @@ fn ensure(ok: bool, description: &str) -> Result<()> {
         Err(description.to_owned().into())
     }
 }
+fn detailed_items(value: m::ResponseListRunItems) -> Result<m::RunItems> {
+    match value {
+        m::ResponseListRunItems::AnyOf0(items) => Ok(items),
+        _ => Err("Expected detailed Run Items".into()),
+    }
+}
 fn required(name: &str) -> Result<String> {
     let value = env::var(name)?;
     ensure(!value.is_empty(), &format!("{name} must not be empty"))?;
@@ -64,9 +70,9 @@ async fn wait(run: &a13n::Run, expected: m::RunStatus) -> Result<()> {
             result.http_response.data.status
         ),
     )?;
-    let items = run.items().get(Default::default()).await?;
+    let items = detailed_items(run.items().get(Default::default()).await?.data)?;
     ensure(
-        items.data.run.id == result.http_response.data.id && items.data.complete,
+        items.run.id == result.http_response.data.id && items.complete,
         "Run Items mismatch",
     )
 }
@@ -367,23 +373,10 @@ async fn native_configuration(client: &Client, agent_id: &str) -> Result<()> {
         .ok_or("Configured start has no Run")?
         .id
         .clone();
-    check_configuration(
-        &client
-            .run(&run_id)
-            .resource()
-            .get(Default::default())
-            .await?
-            .data,
-        "first",
-    )?;
+    check_configuration(&client.run(&run_id).get().await?.data, "first")?;
     tokio::time::timeout(Duration::from_secs(20), async {
         loop {
-            let state = client
-                .run(&run_id)
-                .resource()
-                .get(Default::default())
-                .await?
-                .data;
+            let state = client.run(&run_id).get().await?.data;
             if state.status == m::RunStatus::Running {
                 return Ok::<_, Box<dyn StdError>>(());
             }
@@ -419,14 +412,7 @@ async fn native_configuration(client: &Client, agent_id: &str) -> Result<()> {
         steer.close();
     }
     ensure(
-        client
-            .run(&run_id)
-            .resource()
-            .get(Default::default())
-            .await?
-            .data
-            .status
-            == m::RunStatus::Running,
+        client.run(&run_id).get().await?.data.status == m::RunStatus::Running,
         "Configuration fixture sealed before conflict test",
     )?;
     let conflict = agent
@@ -693,9 +679,9 @@ async fn live() -> Result<()> {
         outcome.status == m::RunStatus::Completed,
         "Finite Interaction Run status",
     )?;
-    let items = outcome.run.items().get(Default::default()).await?;
+    let items = detailed_items(outcome.run.items().get(Default::default()).await?.data)?;
     ensure(
-        items.data.run.id == outcome.run.id && items.data.complete,
+        items.run.id == outcome.run.id && items.complete,
         "Finite Interaction committed Run Items",
     )?;
     display::live_window(&outcome.run).await?;
@@ -775,8 +761,7 @@ async fn live() -> Result<()> {
             queued.identity.thread_id.as_deref().unwrap(),
             queued.identity.entry_id.as_deref().unwrap(),
         )
-        .resource()
-        .get(Default::default())
+        .get()
         .await?;
     ensure(
         consumed.data.status == m::EntryStatus::Consumed
@@ -1145,14 +1130,7 @@ async fn memory(client: &Client, ws: &ServiceResources<'_>, agent: &str) -> Resu
         )
         .await?;
     ensure(
-        accepted(&submitted)?
-            .resource()
-            .get(RunGetOptions::default())
-            .await?
-            .data
-            .memory_mounts[0]
-            .access
-            == m::MemoryAccess::Read,
+        accepted(&submitted)?.get().await?.data.memory_mounts[0].access == m::MemoryAccess::Read,
         "Frozen Run mounts",
     )?;
     let mut record_memory = m::MemoryCreate::new("Rust records".into());

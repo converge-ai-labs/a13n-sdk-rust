@@ -84,8 +84,6 @@ pub enum State {
     Disconnected,
     #[serde(rename = "connected")]
     Connected,
-    #[serde(rename = "refreshing")]
-    Refreshing,
     #[serde(rename = "reauthentication_required")]
     ReauthenticationRequired,
 }

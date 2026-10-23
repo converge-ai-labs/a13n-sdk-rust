@@ -125,6 +125,8 @@ pub enum Kind {
     Message,
     #[serde(rename = "child_result")]
     ChildResult,
+    #[serde(rename = "tool_result")]
+    ToolResult,
 }
 
 impl Default for Kind {

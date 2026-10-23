@@ -13,78 +13,75 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`create_subscription_api_v1_subscriptions_post`]
+/// struct for typed errors of method [`create_subscription`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateSubscriptionApiV1SubscriptionsPostError {
+pub enum CreateSubscriptionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_subscription_api_v1_subscriptions_subscription_id_delete`]
+/// struct for typed errors of method [`delete_subscription`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteSubscriptionApiV1SubscriptionsSubscriptionIdDeleteError {
+pub enum DeleteSubscriptionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_subscription_api_v1_subscriptions_subscription_id_get`]
+/// struct for typed errors of method [`get_subscription`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetSubscriptionApiV1SubscriptionsSubscriptionIdGetError {
+pub enum GetSubscriptionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_deliveries_api_v1_subscriptions_subscription_id_deliveries_get`]
+/// struct for typed errors of method [`list_deliveries`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListDeliveriesApiV1SubscriptionsSubscriptionIdDeliveriesGetError {
+pub enum ListDeliveriesError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`list_subscriptions_api_v1_subscriptions_get`]
+/// struct for typed errors of method [`list_subscriptions`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListSubscriptionsApiV1SubscriptionsGetError {
+pub enum ListSubscriptionsError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`redeliver_api_v1_subscriptions_subscription_id_deliveries_delivery_id_redeliver_post`]
+/// struct for typed errors of method [`redeliver`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RedeliverApiV1SubscriptionsSubscriptionIdDeliveriesDeliveryIdRedeliverPostError {
+pub enum RedeliverError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`update_subscription_api_v1_subscriptions_subscription_id_patch`]
+/// struct for typed errors of method [`update_subscription`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateSubscriptionApiV1SubscriptionsSubscriptionIdPatchError {
+pub enum UpdateSubscriptionError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
 /// The response is the only time the signing secret is returned.
-pub async fn create_subscription_api_v1_subscriptions_post(
+pub async fn create_subscription(
     configuration: &configuration::Configuration,
     subscription_create: models::SubscriptionCreate,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::CreatedSubscription>,
-    Error<CreateSubscriptionApiV1SubscriptionsPostError>,
-> {
+) -> Result<Response<models::CreatedSubscription>, Error<CreateSubscriptionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_body_subscription_create = subscription_create;
     let p_header_x_workspace_id = x_workspace_id;
@@ -148,8 +145,7 @@ pub async fn create_subscription_api_v1_subscriptions_post(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CreateSubscriptionApiV1SubscriptionsPostError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CreateSubscriptionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -159,12 +155,12 @@ pub async fn create_subscription_api_v1_subscriptions_post(
     }
 }
 
-pub async fn delete_subscription_api_v1_subscriptions_subscription_id_delete(
+pub async fn delete_subscription(
     configuration: &configuration::Configuration,
     subscription_id: &str,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<()>, Error<DeleteSubscriptionApiV1SubscriptionsSubscriptionIdDeleteError>> {
+) -> Result<Response<()>, Error<DeleteSubscriptionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_subscription_id = subscription_id;
     let p_header_if_match = if_match;
@@ -214,8 +210,7 @@ pub async fn delete_subscription_api_v1_subscriptions_subscription_id_delete(
         })
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteSubscriptionApiV1SubscriptionsSubscriptionIdDeleteError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<DeleteSubscriptionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -225,14 +220,11 @@ pub async fn delete_subscription_api_v1_subscriptions_subscription_id_delete(
     }
 }
 
-pub async fn get_subscription_api_v1_subscriptions_subscription_id_get(
+pub async fn get_subscription(
     configuration: &configuration::Configuration,
     subscription_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::Subscription>,
-    Error<GetSubscriptionApiV1SubscriptionsSubscriptionIdGetError>,
-> {
+) -> Result<Response<models::Subscription>, Error<GetSubscriptionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_subscription_id = subscription_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -289,8 +281,7 @@ pub async fn get_subscription_api_v1_subscriptions_subscription_id_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetSubscriptionApiV1SubscriptionsSubscriptionIdGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<GetSubscriptionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -300,16 +291,13 @@ pub async fn get_subscription_api_v1_subscriptions_subscription_id_get(
     }
 }
 
-pub async fn list_deliveries_api_v1_subscriptions_subscription_id_deliveries_get(
+pub async fn list_deliveries(
     configuration: &configuration::Configuration,
     subscription_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::DeliveryPage>,
-    Error<ListDeliveriesApiV1SubscriptionsSubscriptionIdDeliveriesGetError>,
-> {
+) -> Result<Response<models::DeliveryPage>, Error<ListDeliveriesError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_subscription_id = subscription_id;
     let p_query_limit = limit;
@@ -374,8 +362,7 @@ pub async fn list_deliveries_api_v1_subscriptions_subscription_id_deliveries_get
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListDeliveriesApiV1SubscriptionsSubscriptionIdDeliveriesGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListDeliveriesError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -385,13 +372,12 @@ pub async fn list_deliveries_api_v1_subscriptions_subscription_id_deliveries_get
     }
 }
 
-pub async fn list_subscriptions_api_v1_subscriptions_get(
+pub async fn list_subscriptions(
     configuration: &configuration::Configuration,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::SubscriptionPage>, Error<ListSubscriptionsApiV1SubscriptionsGetError>>
-{
+) -> Result<Response<models::SubscriptionPage>, Error<ListSubscriptionsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_limit = limit;
     let p_query_cursor = cursor;
@@ -451,8 +437,7 @@ pub async fn list_subscriptions_api_v1_subscriptions_get(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ListSubscriptionsApiV1SubscriptionsGetError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<ListSubscriptionsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -462,15 +447,12 @@ pub async fn list_subscriptions_api_v1_subscriptions_get(
     }
 }
 
-pub async fn redeliver_api_v1_subscriptions_subscription_id_deliveries_delivery_id_redeliver_post(
+pub async fn redeliver(
     configuration: &configuration::Configuration,
     subscription_id: &str,
     delivery_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::WebhookDelivery>,
-    Error<RedeliverApiV1SubscriptionsSubscriptionIdDeliveriesDeliveryIdRedeliverPostError>,
-> {
+) -> Result<Response<models::WebhookDelivery>, Error<RedeliverError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_subscription_id = subscription_id;
     let p_path_delivery_id = delivery_id;
@@ -539,9 +521,7 @@ pub async fn redeliver_api_v1_subscriptions_subscription_id_deliveries_delivery_
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<
-            RedeliverApiV1SubscriptionsSubscriptionIdDeliveriesDeliveryIdRedeliverPostError,
-        > = serde_json::from_str(&content).ok();
+        let entity: Option<RedeliverError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -551,16 +531,13 @@ pub async fn redeliver_api_v1_subscriptions_subscription_id_deliveries_delivery_
     }
 }
 
-pub async fn update_subscription_api_v1_subscriptions_subscription_id_patch(
+pub async fn update_subscription(
     configuration: &configuration::Configuration,
     subscription_id: &str,
     subscription_update: models::SubscriptionUpdate,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<
-    Response<models::Subscription>,
-    Error<UpdateSubscriptionApiV1SubscriptionsSubscriptionIdPatchError>,
-> {
+) -> Result<Response<models::Subscription>, Error<UpdateSubscriptionError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_subscription_id = subscription_id;
     let p_body_subscription_update = subscription_update;
@@ -633,8 +610,7 @@ pub async fn update_subscription_api_v1_subscriptions_subscription_id_patch(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpdateSubscriptionApiV1SubscriptionsSubscriptionIdPatchError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<UpdateSubscriptionError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

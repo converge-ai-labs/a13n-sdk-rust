@@ -22,6 +22,33 @@ fn frame(name: &str, value: Value) -> String {
 }
 
 #[tokio::test]
+async fn session_schedule_and_occurrence_frames_preserve_native_payloads() {
+    let schedule: Value =
+        serde_json::from_str(include_str!("fixtures/ScheduleEvent.json")).unwrap();
+    let occurrence: Value =
+        serde_json::from_str(include_str!("fixtures/OccurrenceEvent.json")).unwrap();
+    let body = format!(
+        "{}{}",
+        frame("schedule", schedule.clone()),
+        frame("occurrence", occurrence.clone())
+    );
+    let fixture = server(move |_| Reply::sse(&body)).await;
+    let sdk = client(&fixture);
+    let mut reader = SessionStream::open(sdk.api().sessions().at("s"), Default::default())
+        .await
+        .unwrap();
+    let Some(SessionFrame::Schedule(value)) = reader.next().await.unwrap() else {
+        panic!("schedule")
+    };
+    assert_eq!(serde_json::to_value(value).unwrap(), schedule);
+    let Some(SessionFrame::Occurrence(value)) = reader.next().await.unwrap() else {
+        panic!("occurrence")
+    };
+    assert_eq!(serde_json::to_value(value).unwrap(), occurrence);
+    assert!(reader.next().await.unwrap().is_none());
+}
+
+#[tokio::test]
 async fn session_frames_are_typed_snapshot_based_and_distinct_from_thread_cursors() {
     let body = format!(
         "\u{feff}: heartbeat\r\n\r\nevent: future\ndata: not JSON\n\n{}{}{}{}",

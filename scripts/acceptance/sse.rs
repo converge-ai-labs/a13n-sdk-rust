@@ -77,8 +77,9 @@ async fn verify_snapshot(
         }
         // A fresh connection does not replay Items of an already sealed Run.
         reader.close();
-        let saved = client.run(run).items().get(Default::default()).await?;
-        if saved.data.run.id != run || !saved.data.complete {
+        let saved =
+            crate::detailed_items(client.run(run).items().get(Default::default()).await?.data)?;
+        if saved.run.id != run || !saved.complete {
             return Err("Sealed Run Items readback".into());
         }
     }
