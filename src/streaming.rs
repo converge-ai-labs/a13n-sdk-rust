@@ -250,8 +250,12 @@ impl ThreadStream {
             match chunk {
                 Ok(Some(chunk)) => self.parser.chunk = chunk,
                 Ok(None) => {
-                    self.parser.finish()?;
+                    let finished = self.parser.finish();
                     self.response = None;
+                    if let Err(error) = finished {
+                        self.schedule(error)?;
+                        continue;
+                    }
                     if self.options.max_reconnects == 0 {
                         self.close();
                         return Ok(None);
@@ -316,6 +320,7 @@ impl ThreadStream {
         self.check_parent()?;
         let transient = match &error {
             Error::Transport(_) => true,
+            Error::Protocol(protocol) if protocol.kind == ProtocolKind::IncompleteFrame => true,
             Error::Api(api) => matches!(api.status, 429 | 502 | 503 | 504),
             _ => false,
         };
@@ -533,6 +538,12 @@ impl Parser {
         Ok(None)
     }
     fn finish(&self) -> Result<(), Error> {
+        // EOF can cut a valid code point, but cannot repair an invalid prefix.
+        if let Err(error) = std::str::from_utf8(&self.line)
+            && error.error_len().is_some()
+        {
+            return Err(ProtocolError::local(ProtocolKind::InvalidUtf8));
+        }
         if !self.line.is_empty()
             || !self.data.is_empty()
             || !self.event.is_empty()
@@ -556,6 +567,7 @@ pub enum SessionFrame {
     Gap(crate::generated::models::Gap),
     Schedule(Box<crate::generated::models::ScheduleEvent>),
     Occurrence(Box<crate::generated::models::OccurrenceEvent>),
+    AppReady(Box<crate::generated::models::AppReady>),
 }
 
 #[derive(Clone, Debug, Default)]
@@ -652,7 +664,7 @@ fn decode_session(raw: SseFrame) -> Result<Option<SessionFrame>, Error> {
     }
     if !matches!(
         raw.event.as_str(),
-        "thread" | "items" | "delta" | "gap" | "schedule" | "occurrence"
+        "thread" | "items" | "delta" | "gap" | "schedule" | "occurrence" | "app_ready"
     ) {
         return Ok(None);
     }
@@ -666,6 +678,7 @@ fn decode_session(raw: SseFrame) -> Result<Option<SessionFrame>, Error> {
         "gap" => SessionFrame::Gap(parse(&raw.data)?),
         "schedule" => SessionFrame::Schedule(parse(&raw.data)?),
         "occurrence" => SessionFrame::Occurrence(parse(&raw.data)?),
+        "app_ready" => SessionFrame::AppReady(parse(&raw.data)?),
         _ => unreachable!(),
     }))
 }

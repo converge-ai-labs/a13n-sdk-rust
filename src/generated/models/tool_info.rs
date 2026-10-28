@@ -22,6 +22,9 @@ pub struct ToolInfo {
     #[serde(rename = "input_schema")]
     pub input_schema: std::collections::HashMap<String, serde_json::Value>,
 
+    #[serde(rename = "metadata", skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<std::collections::HashMap<String, serde_json::Value>>,
+
     #[serde(rename = "name")]
     pub name: String,
 
@@ -52,6 +55,7 @@ impl ToolInfo {
             annotations: None,
             description,
             input_schema,
+            metadata: None,
             name,
             output_schema: None,
             provider_version: None,

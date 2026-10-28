@@ -20,7 +20,7 @@ pub struct AgentOverrideOutput {
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub builtin_skills: Option<Option<std::collections::HashSet<BuiltinSkills>>>,
+    pub builtin_skills: Option<Option<Vec<models::BuiltinSkillName>>>,
 
     #[serde(
         rename = "client_tools",
@@ -182,17 +182,5 @@ impl AgentOverrideOutput {
             tool_search: None,
             toolsets: None,
         }
-    }
-}
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum BuiltinSkills {
-    #[serde(rename = "platform-operations")]
-    PlatformOperations,
-}
-
-impl Default for BuiltinSkills {
-    fn default() -> BuiltinSkills {
-        Self::PlatformOperations
     }
 }

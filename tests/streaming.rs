@@ -531,3 +531,112 @@ async fn delta_required_nullable_item_and_optional_metadata_preserve_exact_wire(
     assert!(matches!(reader.next().await, Err(Error::Protocol(_))));
     assert_eq!(reader.applied_cursor(), None);
 }
+
+#[tokio::test]
+async fn truncated_stream_recovers_only_from_applied_cursor() {
+    for tail in [
+        b"event: delta\nid: 2-0\ndata: {".to_vec(),
+        delta("run_test", 1, 2, "2-0")
+            .trim_end_matches('\n')
+            .to_owned()
+            .into_bytes(),
+        b"event: delta\nid: 2-0\ndata: \xf0\x9f".to_vec(),
+    ] {
+        let calls = Arc::new(AtomicUsize::new(0));
+        let count = calls.clone();
+        let mut server = server(move |_| {
+            if count.fetch_add(1, Ordering::SeqCst) == 0 {
+                let mut body = delta("run_test", 1, 1, "1-0").into_bytes();
+                body.extend_from_slice(&tail);
+                Reply::bytes(200, "text/event-stream", body)
+            } else {
+                Reply::sse(&(delta("run_test", 1, 2, "2-0") + &BOUNDARY.replace("1-0", "3-0")))
+            }
+        })
+        .await;
+        let client = client(&server);
+        let mut stream = ThreadStream::open(
+            client.api().threads().at("t"),
+            StreamOptions {
+                max_reconnects: 2,
+                ..options()
+            },
+        )
+        .await
+        .unwrap();
+        for cursor in ["1-0", "2-0", "3-0"] {
+            assert_eq!(stream.next().await.unwrap().unwrap().cursor(), Some(cursor));
+        }
+        assert_eq!(stream.applied_cursor(), Some("2-0"));
+        assert_eq!(calls.load(Ordering::SeqCst), 2);
+        assert!(
+            !server
+                .requests
+                .recv()
+                .await
+                .unwrap()
+                .headers
+                .contains("last-event-id")
+        );
+        assert!(
+            server
+                .requests
+                .recv()
+                .await
+                .unwrap()
+                .headers
+                .contains("last-event-id: 1-0")
+        );
+        stream.close();
+    }
+}
+
+#[tokio::test]
+async fn truncation_budget_preserves_protocol_error_and_invalid_bytes_are_fatal() {
+    use a13n::ProtocolKind;
+    for (body, retries, expected_calls, kind) in [
+        (b"data: {".as_slice(), 2, 3, ProtocolKind::IncompleteFrame),
+        (b"data: {".as_slice(), 0, 1, ProtocolKind::IncompleteFrame),
+        (b"data: \xff".as_slice(), 2, 1, ProtocolKind::InvalidUtf8),
+        (b"data: \x80".as_slice(), 2, 1, ProtocolKind::InvalidUtf8),
+        (
+            b"data: \xc0\xf0\x9f".as_slice(),
+            2,
+            1,
+            ProtocolKind::InvalidUtf8,
+        ),
+        (
+            b"data: \xff\n\n".as_slice(),
+            2,
+            1,
+            ProtocolKind::InvalidUtf8,
+        ),
+        (
+            b"data: \xf0\x9f\n\n".as_slice(),
+            2,
+            1,
+            ProtocolKind::InvalidUtf8,
+        ),
+    ] {
+        let calls = Arc::new(AtomicUsize::new(0));
+        let count = calls.clone();
+        let server = server(move |_| {
+            count.fetch_add(1, Ordering::SeqCst);
+            Reply::bytes(200, "text/event-stream", body.to_vec())
+        })
+        .await;
+        let client = client(&server);
+        let mut stream = ThreadStream::open(
+            client.api().threads().at("t"),
+            StreamOptions {
+                max_reconnects: retries,
+                ..options()
+            },
+        )
+        .await
+        .unwrap();
+        assert!(matches!(stream.next().await, Err(Error::Protocol(error)) if error.kind == kind));
+        assert_eq!(calls.load(Ordering::SeqCst), expected_calls);
+        assert!(stream.next().await.unwrap().is_none());
+    }
+}

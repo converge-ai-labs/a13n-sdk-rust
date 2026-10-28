@@ -374,3 +374,48 @@ async fn session_desktop_wait_preserves_pending_snapshot_without_control() {
     assert_eq!(fixture.requests.recv().await.unwrap().method, "GET");
     assert!(fixture.requests.try_recv().is_err());
 }
+
+#[tokio::test]
+async fn app_ready_is_typed_repeatable_and_rejects_malformed_payloads_and_ids() {
+    let value = json!({"thread_id":"t","run_id":"r","apps":[{
+        "app_id":"app","connection_id":"con","agent_revision_id":"rev","source_run_id":"r",
+        "tool_call_id":"call","tool_name":"chart","resource_uri":"ui://chart"
+    }]});
+    let body = frame("app_ready", value.clone()).repeat(2);
+    let fixture = server(move |_| Reply::sse(&body)).await;
+    let sdk = client(&fixture);
+    let mut reader = SessionStream::open(sdk.api().sessions().at("s"), Default::default())
+        .await
+        .unwrap();
+    for _ in 0..2 {
+        let Some(SessionFrame::AppReady(ready)) = reader.next().await.unwrap() else {
+            panic!("missing readiness")
+        };
+        assert_eq!(serde_json::to_value(ready).unwrap(), value);
+    }
+    assert!(reader.next().await.unwrap().is_none());
+    let mut invalid = vec![
+        format!("id: 1-0\n{}", frame("app_ready", value.clone())),
+        frame(
+            "app_ready",
+            json!({"thread_id":"t","run_id":"r","apps":[{}]}),
+        ),
+        frame(
+            "app_ready",
+            json!({"thread_id":"t","run_id":"r","apps":null}),
+        ),
+    ];
+    for field in ["thread_id", "run_id", "apps"] {
+        let mut missing = value.clone();
+        missing.as_object_mut().unwrap().remove(field);
+        invalid.push(frame("app_ready", missing));
+    }
+    for body in invalid {
+        let fixture = server(move |_| Reply::sse(&body)).await;
+        let sdk = client(&fixture);
+        let mut reader = SessionStream::open(sdk.api().sessions().at("s"), Default::default())
+            .await
+            .unwrap();
+        assert!(matches!(reader.next().await, Err(Error::Protocol(_))));
+    }
+}

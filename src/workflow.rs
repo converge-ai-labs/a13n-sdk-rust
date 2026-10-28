@@ -94,6 +94,11 @@ wire_value!(RunOptions, RunOptionsInput);
 wire_value!(RunConfiguration, RunConfigurationInput);
 wire_value!(Overrides, AgentOverrideInput);
 impl RunOptions {
+    /// Request body context; `None` transmits null and omission leaves it unset.
+    pub fn context(mut self, value: Option<models::RequestContext>) -> Self {
+        self.0.context = Some(value.map(Box::new));
+        self
+    }
     /// `None` explicitly selects null; not calling the builder omits the field.
     pub fn configuration(mut self, value: Option<RunConfiguration>) -> Self {
         self.0.configuration = Some(value.map(|v| Box::new(v.0)));
@@ -144,10 +149,13 @@ macro_rules! boxed_override_field {
     };
 }
 impl Overrides {
-    override_field!(
-        builtin_skills,
-        std::collections::HashSet<models::agent_override_input::BuiltinSkills>
-    );
+    pub fn builtin_skills(
+        mut self,
+        value: Option<std::collections::HashSet<models::BuiltinSkillName>>,
+    ) -> Self {
+        self.0.builtin_skills = Some(value.map(|values| values.into_iter().collect()));
+        self
+    }
     override_field!(client_tools, Vec<models::ClientToolDefinition>);
     override_field!(connection_tools, Vec<models::ConnectionSelection>);
     override_field!(instructions, String);

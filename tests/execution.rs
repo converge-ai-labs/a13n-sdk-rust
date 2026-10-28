@@ -132,3 +132,63 @@ async fn observers_request_detailed_and_reject_fragments() {
         Err(a13n::Error::Protocol(_))
     ));
 }
+
+#[tokio::test]
+async fn request_context_builder_preserves_explicit_body_data() {
+    for expected in [
+        json!({}),
+        json!({"context":null}),
+        json!({"context":{}}),
+        json!({"context":{"headers":{}}}),
+        json!({"context":{"headers":{"X-Tenant":"demo"}}}),
+    ] {
+        let options = match expected.get("context") {
+            None => RunOptions::new(),
+            Some(Value::Null) => RunOptions::new().context(None),
+            Some(value) => RunOptions::new().context(Some(
+                serde_json::from_value::<a13n::RequestContext>(value.clone()).unwrap(),
+            )),
+        };
+        assert_eq!(serde_json::to_value(&options).unwrap(), expected);
+        let mut srv = server(|_| {
+            let mut receipt = sample("Submitted");
+            receipt["thread"]["id"] = json!("t");
+            receipt["entry"]["thread_id"] = json!("t");
+            receipt["run"] = Value::Null;
+            Reply::json(201, receipt)
+        })
+        .await;
+        let c = client(&srv);
+        let mut first = c
+            .agent("agent")
+            .start_with(
+                "x",
+                StartOptions {
+                    run_options: Some(options.clone()),
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap();
+        let mut next = c
+            .agent("agent")
+            .send_with(
+                "t",
+                "x",
+                SendOptions {
+                    run_options: Some(options),
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap();
+        for _ in 0..2 {
+            assert_eq!(
+                srv.requests.recv().await.unwrap().json()["options"],
+                expected
+            );
+        }
+        first.close();
+        next.close();
+    }
+}
