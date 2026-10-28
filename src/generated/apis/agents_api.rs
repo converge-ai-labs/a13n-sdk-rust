@@ -105,6 +105,15 @@ pub enum GetAgentRevisionError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`get_builtin_skill`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum GetBuiltinSkillError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`index_toolsets`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -132,6 +141,24 @@ pub enum ListAgentsError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`list_builtin_skills`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ListBuiltinSkillsError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`list_plugins`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ListPluginsError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`list_toolsets`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -154,6 +181,15 @@ pub enum PrepareComposerError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum PutAgentAvatarError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`read_builtin_skill_archive`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ReadBuiltinSkillArchiveError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
@@ -1048,6 +1084,78 @@ pub async fn get_agent_revision(
     }
 }
 
+/// The current deployment's bundled skill and its package file manifest.
+pub async fn get_builtin_skill(
+    configuration: &configuration::Configuration,
+    name: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::BuiltinSkillDetail>, Error<GetBuiltinSkillError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_name = name;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/builtin-skills/{name}",
+        configuration.base_path,
+        name = crate::generated::apis::urlencode(p_path_name)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::BuiltinSkillDetail`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::BuiltinSkillDetail`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<GetBuiltinSkillError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
 /// Search full names and descriptions; definitions are read separately by exact name.
 pub async fn index_toolsets(
     configuration: &configuration::Configuration,
@@ -1342,6 +1450,138 @@ pub async fn list_agents(
     }
 }
 
+/// The skills bundled with this Service release, separately from workspace skill resources.
+pub async fn list_builtin_skills(
+    configuration: &configuration::Configuration,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::BuiltinSkillCatalog>, Error<ListBuiltinSkillsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!("{}/api/v1/builtin-skills", configuration.base_path);
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::BuiltinSkillCatalog`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::BuiltinSkillCatalog`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ListBuiltinSkillsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// The plugins loaded by this Control process, without constructing or executing instances.
+pub async fn list_plugins(
+    configuration: &configuration::Configuration,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::PluginCatalog>, Error<ListPluginsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!("{}/api/v1/plugins", configuration.base_path);
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::PluginCatalog`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::PluginCatalog`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ListPluginsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
 pub async fn list_toolsets(
     configuration: &configuration::Configuration,
     x_workspace_id: Option<&str>,
@@ -1407,7 +1647,7 @@ pub async fn list_toolsets(
     }
 }
 
-/// The workspace's Agent Composer, created or brought up to date with the deployment's definition.  Refused with `model_required` while the workspace has no model the caller can use.
+/// The workspace's Agent Composer, initialized or offered an updated official revision without changing its default.  Initial preparation requires a usable model; later preparation preserves the selected model and revision.
 pub async fn prepare_composer(
     configuration: &configuration::Configuration,
     x_workspace_id: Option<&str>,
@@ -1566,6 +1806,58 @@ pub async fn put_agent_avatar(
     } else {
         let content = resp.text().await?;
         let entity: Option<PutAgentAvatarError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// Optionally require the manifest's digest; a changed package returns conflict.
+pub async fn read_builtin_skill_archive(
+    configuration: &configuration::Configuration,
+    name: &str,
+    package_digest: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<reqwest::Response, Error<ReadBuiltinSkillArchiveError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_name = name;
+    let p_query_package_digest = package_digest;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/builtin-skills/{name}/content",
+        configuration.base_path,
+        name = crate::generated::apis::urlencode(p_path_name)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_package_digest {
+        req_builder = req_builder.query(&[("package_digest", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+
+    if !status.is_client_error() && !status.is_server_error() {
+        Ok(resp)
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ReadBuiltinSkillArchiveError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

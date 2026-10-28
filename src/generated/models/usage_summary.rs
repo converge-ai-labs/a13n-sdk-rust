@@ -15,13 +15,10 @@ use serde::{Deserialize, Serialize};
 pub struct UsageSummary {
     #[serde(rename = "models")]
     pub models: Vec<models::ModelUsage>,
-
-    #[serde(rename = "runs")]
-    pub runs: Vec<models::RunUsage>,
 }
 
 impl UsageSummary {
-    pub fn new(models: Vec<models::ModelUsage>, runs: Vec<models::RunUsage>) -> UsageSummary {
-        UsageSummary { models, runs }
+    pub fn new(models: Vec<models::ModelUsage>) -> UsageSummary {
+        UsageSummary { models }
     }
 }

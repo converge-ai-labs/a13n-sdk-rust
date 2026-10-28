@@ -374,13 +374,14 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
     )?;
     let usage = api
         .usage()
-        .get(UsageGetOptions {
+        .runs()
+        .list(UsageRunsListOptions {
             run_id: Some(outcome.run_id.clone()),
             ..Default::default()
         })
         .await?;
     ensure(
-        usage.data.runs.iter().all(|r| r.run_id == outcome.run_id),
+        usage.data.items.iter().all(|r| r.run_id == outcome.run_id),
         "Run usage filter",
     )?;
     ensure(

@@ -21,7 +21,7 @@ pub mod resources;
 pub mod streaming;
 pub use agent::{Agent, ForkOptions, ResumeOptions, SendOptions, StartOptions};
 pub use generated::models::tool_execution_override::Mode as ToolExecutionMode;
-pub use generated::models::{ExecutionOverride, Steering, ToolExecutionOverride};
+pub use generated::models::{ExecutionOverride, RequestContext, Steering, ToolExecutionOverride};
 pub use preview::{PreviewInterruptedError, PreviewInterruptedKind};
 pub use workflow::{Answer, Input, InputPart, Overrides, RunConfiguration, RunOptions};
 // Selected canonical workflow primitives, not a duplicate schema hierarchy.
@@ -39,8 +39,7 @@ pub use generated::models::{
     ToolSearchGroup, ToolsetSelection, UsageLimit,
 };
 pub use generated::models::{
-    AgentOverrideInputSkillSync as OverrideSkillSync,
-    agent_override_input::BuiltinSkills as BuiltinSkill,
+    AgentOverrideInputSkillSync as OverrideSkillSync, BuiltinSkillName as BuiltinSkill,
     agent_reviewer::{OnError as ReviewerOnError, OnFlagged as ReviewerOnFlagged},
     client_tool_definition::Permission as ClientToolPermission,
     isolated_skill_sync::Mode as IsolatedSkillSyncMode,

@@ -15,6 +15,15 @@ use serde::{Deserialize, Serialize};
 pub struct AgentRevision {
     #[serde(rename = "agent_id")]
     pub agent_id: String,
+    /// Current deployment guidance for this builtin Agent, not a revision or Run snapshot.
+
+    #[serde(
+        rename = "builtin_instructions",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub builtin_instructions: Option<Option<String>>,
 
     #[serde(rename = "config")]
     pub config: Box<models::AgentConfigOutput>,
@@ -51,6 +60,7 @@ impl AgentRevision {
     ) -> AgentRevision {
         AgentRevision {
             agent_id,
+            builtin_instructions: None,
             config: Box::new(config),
             created_at,
             created_by_id,

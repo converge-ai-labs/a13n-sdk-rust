@@ -13,6 +13,12 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct McpConfig {
+    #[serde(
+        rename = "forward_context_headers",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub forward_context_headers: Option<bool>,
+
     #[serde(rename = "headers", skip_serializing_if = "Option::is_none")]
     pub headers: Option<Vec<String>>,
 
@@ -39,6 +45,7 @@ pub struct McpConfig {
 impl McpConfig {
     pub fn new(url: String) -> McpConfig {
         McpConfig {
+            forward_context_headers: None,
             headers: None,
             oauth: None,
             tools: None,

@@ -275,7 +275,7 @@ def test_session_export_extends_models_without_reintroducing_http_readback_field
     merged = codegen.with_session_models(document, stream)
     schemas = merged["components"]["schemas"]
     assert json.dumps([document, stream]) == original
-    assert set(stream["frames"]) == {"thread", "items", "delta", "gap", "schedule", "occurrence"}
+    assert set(stream["frames"]) == {"thread", "items", "delta", "gap", "schedule", "occurrence", "app_ready"}
     assert schemas["ThreadState"]["properties"]["thread"] == {"$ref": "#/components/schemas/ThreadView"}
     assert schemas["RunSnapshot"]["properties"]["continuation"]["anyOf"][0] == {
         "$ref": "#/components/schemas/DisplayContinuation"

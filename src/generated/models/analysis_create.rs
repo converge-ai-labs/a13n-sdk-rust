@@ -21,6 +21,9 @@ pub struct AnalysisCreate {
     )]
     pub agent_id: Option<Option<String>>,
 
+    #[serde(rename = "instructions", skip_serializing_if = "Option::is_none")]
+    pub instructions: Option<String>,
+
     #[serde(rename = "max_traces", skip_serializing_if = "Option::is_none")]
     pub max_traces: Option<i32>,
 
@@ -56,6 +59,7 @@ impl AnalysisCreate {
     pub fn new() -> AnalysisCreate {
         AnalysisCreate {
             agent_id: None,
+            instructions: None,
             max_traces: None,
             presets: None,
             started_after: None,

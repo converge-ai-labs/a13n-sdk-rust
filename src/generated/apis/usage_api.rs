@@ -22,6 +22,24 @@ pub enum ContextUsageError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`list_run_usage`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ListRunUsageError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`list_usage_members`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ListUsageMembersError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`model_request_metrics`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -138,6 +156,193 @@ pub async fn context_usage(
     } else {
         let content = resp.text().await?;
         let entity: Option<ContextUsageError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// One page of Run usage; Run numbers include all Runs in each Thread, including those without usage.
+pub async fn list_run_usage(
+    configuration: &configuration::Configuration,
+    run_id: Option<&str>,
+    thread_id: Option<&str>,
+    session_id: Option<&str>,
+    ingested_after: Option<chrono::DateTime<chrono::FixedOffset>>,
+    ingested_before: Option<chrono::DateTime<chrono::FixedOffset>>,
+    limit: Option<i32>,
+    cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::RunUsagePage>, Error<ListRunUsageError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_query_run_id = run_id;
+    let p_query_thread_id = thread_id;
+    let p_query_session_id = session_id;
+    let p_query_ingested_after = ingested_after;
+    let p_query_ingested_before = ingested_before;
+    let p_query_limit = limit;
+    let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!("{}/api/v1/usage/runs", configuration.base_path);
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = p_query_run_id {
+        req_builder = req_builder.query(&[("run_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_thread_id {
+        req_builder = req_builder.query(&[("thread_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_session_id {
+        req_builder = req_builder.query(&[("session_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_ingested_after {
+        req_builder = req_builder.query(&[("ingested_after", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_ingested_before {
+        req_builder = req_builder.query(&[("ingested_before", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::RunUsagePage`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::RunUsagePage`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ListRunUsageError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn list_usage_members(
+    configuration: &configuration::Configuration,
+    start: chrono::DateTime<chrono::FixedOffset>,
+    end: chrono::DateTime<chrono::FixedOffset>,
+    principal_id: Option<&str>,
+    limit: Option<i32>,
+    cursor: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::MemberUsagePage>, Error<ListUsageMembersError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_query_start = start;
+    let p_query_end = end;
+    let p_query_principal_id = principal_id;
+    let p_query_limit = limit;
+    let p_query_cursor = cursor;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!("{}/api/v1/usage/members", configuration.base_path);
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    req_builder = req_builder.query(&[("start", &p_query_start.to_string())]);
+    req_builder = req_builder.query(&[("end", &p_query_end.to_string())]);
+    if let Some(ref param_value) = p_query_principal_id {
+        req_builder = req_builder.query(&[("principal_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::MemberUsagePage`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::MemberUsagePage`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ListUsageMembersError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -312,6 +517,7 @@ pub async fn usage_agents(
     configuration: &configuration::Configuration,
     start: chrono::DateTime<chrono::FixedOffset>,
     end: chrono::DateTime<chrono::FixedOffset>,
+    principal_id: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
@@ -319,6 +525,7 @@ pub async fn usage_agents(
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_start = start;
     let p_query_end = end;
+    let p_query_principal_id = principal_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
     let p_header_x_workspace_id = x_workspace_id;
@@ -328,6 +535,9 @@ pub async fn usage_agents(
 
     req_builder = req_builder.query(&[("start", &p_query_start.to_string())]);
     req_builder = req_builder.query(&[("end", &p_query_end.to_string())]);
+    if let Some(ref param_value) = p_query_principal_id {
+        req_builder = req_builder.query(&[("principal_id", &param_value.to_string())]);
+    }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
     }
@@ -393,6 +603,7 @@ pub async fn usage_models(
     configuration: &configuration::Configuration,
     start: chrono::DateTime<chrono::FixedOffset>,
     end: chrono::DateTime<chrono::FixedOffset>,
+    principal_id: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
@@ -400,6 +611,7 @@ pub async fn usage_models(
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_start = start;
     let p_query_end = end;
+    let p_query_principal_id = principal_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
     let p_header_x_workspace_id = x_workspace_id;
@@ -409,6 +621,9 @@ pub async fn usage_models(
 
     req_builder = req_builder.query(&[("start", &p_query_start.to_string())]);
     req_builder = req_builder.query(&[("end", &p_query_end.to_string())]);
+    if let Some(ref param_value) = p_query_principal_id {
+        req_builder = req_builder.query(&[("principal_id", &param_value.to_string())]);
+    }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
     }
@@ -474,12 +689,14 @@ pub async fn usage_overview(
     configuration: &configuration::Configuration,
     start: chrono::DateTime<chrono::FixedOffset>,
     end: chrono::DateTime<chrono::FixedOffset>,
+    principal_id: Option<&str>,
     timezone: Option<&str>,
     x_workspace_id: Option<&str>,
 ) -> Result<Response<models::UsageOverview>, Error<UsageOverviewError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_start = start;
     let p_query_end = end;
+    let p_query_principal_id = principal_id;
     let p_query_timezone = timezone;
     let p_header_x_workspace_id = x_workspace_id;
 
@@ -488,6 +705,9 @@ pub async fn usage_overview(
 
     req_builder = req_builder.query(&[("start", &p_query_start.to_string())]);
     req_builder = req_builder.query(&[("end", &p_query_end.to_string())]);
+    if let Some(ref param_value) = p_query_principal_id {
+        req_builder = req_builder.query(&[("principal_id", &param_value.to_string())]);
+    }
     if let Some(ref param_value) = p_query_timezone {
         req_builder = req_builder.query(&[("timezone", &param_value.to_string())]);
     }

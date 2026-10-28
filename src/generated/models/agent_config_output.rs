@@ -13,8 +13,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AgentConfigOutput {
+    #[serde(
+        rename = "background_compaction",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub background_compaction: Option<Box<models::BackgroundCompactionPolicy>>,
+
     #[serde(rename = "builtin_skills", skip_serializing_if = "Option::is_none")]
-    pub builtin_skills: Option<std::collections::HashSet<BuiltinSkills>>,
+    pub builtin_skills: Option<Vec<models::BuiltinSkillName>>,
 
     #[serde(rename = "client_tools", skip_serializing_if = "Option::is_none")]
     pub client_tools: Option<Vec<models::ClientToolDefinition>>,
@@ -125,6 +131,7 @@ pub struct AgentConfigOutput {
 impl AgentConfigOutput {
     pub fn new(model: String) -> AgentConfigOutput {
         AgentConfigOutput {
+            background_compaction: None,
             builtin_skills: None,
             client_tools: None,
             connection_tools: None,
@@ -150,18 +157,6 @@ impl AgentConfigOutput {
             toolsets: None,
             user_questions: None,
         }
-    }
-}
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum BuiltinSkills {
-    #[serde(rename = "platform-operations")]
-    PlatformOperations,
-}
-
-impl Default for BuiltinSkills {
-    fn default() -> BuiltinSkills {
-        Self::PlatformOperations
     }
 }
 ///

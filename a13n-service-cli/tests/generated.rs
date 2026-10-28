@@ -1479,3 +1479,103 @@ fn desktop_empty_resume_and_tool_search_strict_shapes_are_explicit() {
         );
     }
 }
+
+#[test]
+fn apps_and_usage_refresh_dispatch_preserves_native_json_and_queries() {
+    let (base, server) = serve(vec![
+        (
+            200,
+            vec![("Content-Type", "application/json")],
+            br#"{"result":{"nested":[null,false,1]}}"#.to_vec(),
+        ),
+        (
+            200,
+            vec![("Content-Type", "application/json")],
+            br#"{"items":[],"next_cursor":null}"#.to_vec(),
+        ),
+        (
+            200,
+            vec![("Content-Type", "application/json")],
+            br#"{"items":[],"next_cursor":null}"#.to_vec(),
+        ),
+    ]);
+    let body = r#"{"name":"chart","arguments":{"nested":[null,false,1]}}"#;
+    let output = binary(&[
+        "--base-url",
+        &base,
+        "runs",
+        "apps",
+        "tools",
+        "call",
+        "app #%",
+        "--run",
+        "r",
+        "--body",
+        body,
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let result: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert_eq!(
+        result["result"]["nested"],
+        serde_json::json!([null, false, 1])
+    );
+    let output = binary(&[
+        "--base-url",
+        &base,
+        "sessions",
+        "threads",
+        "list",
+        "--session",
+        "s",
+        "--origin",
+        "new",
+        "--origin",
+        "child",
+        "--thread-id",
+        "t1",
+        "--thread-id",
+        "t2",
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let output = binary(&[
+        "--base-url",
+        &base,
+        "usage",
+        "runs",
+        "list",
+        "--run-id",
+        "r",
+        "--cursor",
+        "next",
+        "--limit",
+        "1",
+    ]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let requests = server.join().unwrap();
+    assert!(requests[0].starts_with("POST /api/v1/runs/r/apps/app%20%23%25/tools/call HTTP/1.1"));
+    let sent: serde_json::Value =
+        serde_json::from_str(requests[0].split_once("\r\n\r\n").unwrap().1).unwrap();
+    assert_eq!(
+        sent,
+        serde_json::from_str::<serde_json::Value>(body).unwrap()
+    );
+    assert!(requests[1].contains("origin=new&origin=child"));
+    assert!(requests[1].contains("thread_id=t1&thread_id=t2"));
+    assert!(
+        requests[2].contains("run_id=r")
+            && requests[2].contains("cursor=next")
+            && requests[2].contains("limit=1")
+    );
+}
