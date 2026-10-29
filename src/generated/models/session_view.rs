@@ -13,6 +13,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SessionView {
+    #[serde(rename = "cost", deserialize_with = "Option::deserialize")]
+    pub cost: Option<String>,
+
     #[serde(rename = "created_at")]
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
 
@@ -50,8 +53,8 @@ pub struct SessionView {
     #[serde(rename = "purpose", skip_serializing_if = "Option::is_none")]
     pub purpose: Option<Purpose>,
 
-    #[serde(rename = "run_count", skip_serializing_if = "Option::is_none")]
-    pub run_count: Option<i32>,
+    #[serde(rename = "run_count")]
+    pub run_count: i32,
 
     #[serde(
         rename = "schedule_id",
@@ -69,6 +72,9 @@ pub struct SessionView {
     )]
     pub title: Option<Option<String>>,
 
+    #[serde(rename = "unpriced_requests")]
+    pub unpriced_requests: i32,
+
     #[serde(rename = "updated_at")]
     pub updated_at: chrono::DateTime<chrono::FixedOffset>,
 
@@ -81,16 +87,20 @@ pub struct SessionView {
 
 impl SessionView {
     pub fn new(
+        cost: Option<String>,
         created_at: chrono::DateTime<chrono::FixedOffset>,
         created_by_id: String,
         id: String,
         labels: std::collections::HashMap<String, String>,
         last_run_id: Option<String>,
+        run_count: i32,
+        unpriced_requests: i32,
         updated_at: chrono::DateTime<chrono::FixedOffset>,
         version: i32,
         workspace_id: String,
     ) -> SessionView {
         SessionView {
+            cost,
             created_at,
             created_by_id,
             id,
@@ -100,9 +110,10 @@ impl SessionView {
             origin: None,
             preview: None,
             purpose: None,
-            run_count: None,
+            run_count,
             schedule_id: None,
             title: None,
+            unpriced_requests,
             updated_at,
             version,
             workspace_id,

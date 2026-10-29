@@ -3173,7 +3173,7 @@ fn group_312() -> Command {
     node
 }
 fn operation_223() -> Command {
-    Command::new("list").about("List Sessions").long_about("List Sessions (GET /api/v1/sessions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli sessions list").arg(Arg::new("text_query").long("text-query")).arg(Arg::new("q").long("q")).arg(Arg::new("application").long("application")).arg(Arg::new("agent_id").long("agent-id")).arg(Arg::new("status").long("status").action(ArgAction::Append)).arg(Arg::new("trigger").long("trigger").action(ArgAction::Append)).arg(Arg::new("updated_after").long("updated-after")).arg(Arg::new("updated_before").long("updated-before")).arg(Arg::new("label").long("label").action(ArgAction::Append)).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Sessions").long_about("List Sessions (GET /api/v1/sessions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli sessions list").arg(Arg::new("text_query").long("text-query")).arg(Arg::new("q").long("q")).arg(Arg::new("application").long("application")).arg(Arg::new("agent_id").long("agent-id")).arg(Arg::new("status").long("status").action(ArgAction::Append)).arg(Arg::new("trigger").long("trigger").action(ArgAction::Append)).arg(Arg::new("updated_after").long("updated-after")).arg(Arg::new("updated_before").long("updated-before")).arg(Arg::new("label").long("label").action(ArgAction::Append)).arg(Arg::new("sort").long("sort").value_parser(["updated_at", "runs", "cost"])).arg(Arg::new("direction").long("direction").value_parser(["asc", "desc"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn operation_224() -> Command {
     Command::new("create").about("Create Session").long_about("Create Session (POST /api/v1/sessions). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli sessions create --body @request.json").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("body").long("body").required_unless_present_any(["schema", "example"]).help("JSON, @file or @- for stdin")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
@@ -3455,7 +3455,7 @@ fn group_373() -> Command {
     node
 }
 fn operation_269() -> Command {
-    Command::new("list").about("List Thread Runs").long_about("Newest first, optionally starting at an anchor run; cursors page towards older or newer runs. (GET /api/v1/threads/{thread_id}/runs). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads runs list --thread THREAD_ID").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("anchor").long("anchor")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Thread Runs").long_about("Page chronological history from an anchor, or rank all Thread runs by a recorded metric. (GET /api/v1/threads/{thread_id}/runs). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli threads runs list --thread THREAD_ID").arg(Arg::new("thread_id").long("thread").required_unless_present_any(["schema", "example"])).arg(Arg::new("limit").long("limit").value_parser(clap::builder::ValueParser::new(|s: &str| -> Result<String,String> { if s.parse::<i64>().is_ok_and(|n| n >= 1) { Ok(s.to_owned()) } else { Err("expected integer >= 1".into()) } }))).arg(Arg::new("cursor").long("cursor")).arg(Arg::new("anchor").long("anchor")).arg(Arg::new("sort").long("sort").value_parser(["cost", "calls", "duration"])).arg(Arg::new("direction").long("direction").value_parser(["asc", "desc"])).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("all").long("all").action(ArgAction::SetTrue).help("Fetch all cursor pages; output pages array")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_375() -> Command {
     let mut node = Command::new("stream")
@@ -7412,6 +7412,8 @@ pub async fn dispatch(
                 updated_after: input::optional(matches, "updated_after")?,
                 updated_before: input::optional(matches, "updated_before")?,
                 label: input::many(matches, "label")?,
+                sort: input::optional(matches, "sort")?,
+                direction: input::optional(matches, "direction")?,
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
@@ -8159,6 +8161,8 @@ pub async fn dispatch(
                 limit: input::optional(matches, "limit")?,
                 cursor: input::optional(matches, "cursor")?,
                 anchor: input::optional(matches, "anchor")?,
+                sort: input::optional(matches, "sort")?,
+                direction: input::optional(matches, "direction")?,
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             if matches.get_flag("all") {
