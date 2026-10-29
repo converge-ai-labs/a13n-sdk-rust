@@ -6,9 +6,13 @@ use serde_json::json;
 #[tokio::test]
 async fn anchored_run_pages_are_lazy_and_drop_the_anchor_when_following_a_cursor() {
     let mut fixture = server(|request| {
-        let mut item = sample("RunListItem");
+        let mut item = sample("ThreadRunItem");
+        item["number"] = json!(501);
+        item["cost"] = json!(null);
+        item["model_calls"] = json!(0);
+        item["unpriced_requests"] = json!(0);
         item["input_preview"] = json!({"text":"😀".repeat(200),"truncated":true});
-        Reply::json(200, json!({"items":[item],"total":10000,"first_number":501,
+        Reply::json(200, json!({"items":[item],"total":10000,
             "previous_cursor":"newer","next_cursor":if request.target.contains("cursor=older") {None} else {Some("older")}}))
     }).await;
     let sdk = client(&fixture);
@@ -25,7 +29,10 @@ async fn anchored_run_pages_are_lazy_and_drop_the_anchor_when_following_a_cursor
     assert!(fixture.requests.try_recv().is_err());
     let page = pages.next().await.unwrap().unwrap().data;
     assert_eq!(page.total, 10000);
-    assert_eq!(page.first_number, 501);
+    assert_eq!(page.items[0].number, 501);
+    assert_eq!(page.items[0].cost, None);
+    assert_eq!(page.items[0].model_calls, 0);
+    assert_eq!(page.items[0].unpriced_requests, 0);
     assert_eq!(page.previous_cursor.as_deref(), Some("newer"));
     assert_eq!(page.items[0].input_preview.text, "😀".repeat(200));
     assert!(page.items[0].input_preview.truncated);
@@ -43,4 +50,64 @@ async fn anchored_run_pages_are_lazy_and_drop_the_anchor_when_following_a_cursor
         assert!(!query.contains_key("view"));
     }
     assert!(fixture.requests.try_recv().is_err());
+}
+
+#[tokio::test]
+async fn metric_sorting_survives_lazy_pagination() {
+    use a13n::resources::{
+        SessionsDirection, SessionsListOptions, SessionsSort, ThreadRunsDirection, ThreadRunsSort,
+    };
+    let mut fixture = server(|request| {
+        Reply::json(200, json!({"items":[],"total":0,"previous_cursor":null,
+            "next_cursor":if request.target.contains("cursor=ranked") {None} else {Some("ranked")}}))
+    }).await;
+    let sdk = client(&fixture);
+    let mut pages = sdk
+        .api()
+        .threads()
+        .at("thr_1")
+        .runs()
+        .pages(ThreadRunsListOptions {
+            sort: Some(ThreadRunsSort::Cost),
+            direction: Some(ThreadRunsDirection::Asc),
+            ..Default::default()
+        });
+    assert!(fixture.requests.try_recv().is_err());
+    assert!(pages.next().await.unwrap().is_some());
+    assert!(pages.next().await.unwrap().is_some());
+    assert!(pages.next().await.unwrap().is_none());
+    let mut sessions = sdk.api().sessions().pages(SessionsListOptions {
+        sort: Some(SessionsSort::Cost),
+        direction: Some(SessionsDirection::Asc),
+        ..Default::default()
+    });
+    assert!(sessions.next().await.unwrap().is_some());
+    assert!(sessions.next().await.unwrap().is_some());
+    assert!(sessions.next().await.unwrap().is_none());
+    for index in 0..4 {
+        let request = fixture.requests.recv().await.unwrap();
+        let url = reqwest::Url::parse(&format!("http://localhost{}", request.target)).unwrap();
+        let query: std::collections::HashMap<_, _> = url.query_pairs().into_owned().collect();
+        assert_eq!(query.get("sort").map(String::as_str), Some("cost"));
+        assert_eq!(query.get("direction").map(String::as_str), Some("asc"));
+        assert_eq!(
+            query.get("cursor").map(String::as_str),
+            if index % 2 == 0 { None } else { Some("ranked") }
+        );
+        assert!(!query.contains_key("anchor"));
+    }
+}
+
+#[test]
+fn nullable_cost_preserves_decimal_precision() {
+    for cost in [json!(null), json!("0"), json!("0.1234567890123456789")] {
+        let mut value = sample("ThreadRunItem");
+        value["cost"] = cost.clone();
+        let item: a13n::generated::models::ThreadRunItem = serde_json::from_value(value).unwrap();
+        assert_eq!(serde_json::to_value(item).unwrap()["cost"], cost);
+        let mut value = sample("SessionView");
+        value["cost"] = cost.clone();
+        let session: a13n::generated::models::SessionView = serde_json::from_value(value).unwrap();
+        assert_eq!(serde_json::to_value(session).unwrap()["cost"], cost);
+    }
 }
