@@ -4557,7 +4557,7 @@ pub async fn search_traces(
     }
 }
 
-/// The session's threads and the live output of their runs over SSE: `thread`, `items`, `delta` and `gap` frames, plus `schedule` and `occurrence` state for Schedule-owned sessions. Every connection starts from a snapshot.
+/// The session's threads and the live output of their runs over SSE: `thread`, `items`, `delta` and `gap` frames, plus `schedule` and `occurrence` state scoped to this session. Every connection starts from a snapshot.
 pub async fn session_stream(
     configuration: &configuration::Configuration,
     session_id: &str,

@@ -884,6 +884,8 @@ pub mod schedule_state;
 pub use self::schedule_state::ScheduleState;
 pub mod schedule_status;
 pub use self::schedule_status::ScheduleStatus;
+pub mod schedule_target;
+pub use self::schedule_target::ScheduleTarget;
 pub mod schedule_time;
 pub use self::schedule_time::ScheduleTime;
 pub mod schedule_trigger;
