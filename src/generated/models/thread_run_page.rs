@@ -11,14 +11,11 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// ThreadRunPage : Newest first; first_number is the first item's 1-based chronological position in the thread.
+/// ThreadRunPage : Chronological history or a metric ranking, retaining each item's chronological number.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ThreadRunPage {
-    #[serde(rename = "first_number")]
-    pub first_number: i32,
-
     #[serde(rename = "items")]
-    pub items: Vec<models::RunListItem>,
+    pub items: Vec<models::ThreadRunItem>,
 
     #[serde(rename = "next_cursor", deserialize_with = "Option::deserialize")]
     pub next_cursor: Option<String>,
@@ -31,16 +28,14 @@ pub struct ThreadRunPage {
 }
 
 impl ThreadRunPage {
-    /// Newest first; first_number is the first item's 1-based chronological position in the thread.
+    /// Chronological history or a metric ranking, retaining each item's chronological number.
     pub fn new(
-        first_number: i32,
-        items: Vec<models::RunListItem>,
+        items: Vec<models::ThreadRunItem>,
         next_cursor: Option<String>,
         previous_cursor: Option<String>,
         total: i32,
     ) -> ThreadRunPage {
         ThreadRunPage {
-            first_number,
             items,
             next_cursor,
             previous_cursor,

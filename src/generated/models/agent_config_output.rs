@@ -113,6 +113,9 @@ pub struct AgentConfigOutput {
     #[serde(rename = "subagents", skip_serializing_if = "Option::is_none")]
     pub subagents: Option<serde_json::Value>,
 
+    #[serde(rename = "summarize", skip_serializing_if = "Option::is_none")]
+    pub summarize: Option<bool>,
+
     #[serde(
         rename = "tool_search",
         default,
@@ -153,6 +156,7 @@ impl AgentConfigOutput {
             skills: None,
             subagent_mode: None,
             subagents: None,
+            summarize: None,
             tool_search: None,
             toolsets: None,
             user_questions: None,

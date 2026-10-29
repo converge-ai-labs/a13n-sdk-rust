@@ -1028,6 +1028,8 @@ pub mod thread_page;
 pub use self::thread_page::ThreadPage;
 pub mod thread_reference;
 pub use self::thread_reference::ThreadReference;
+pub mod thread_run_item;
+pub use self::thread_run_item::ThreadRunItem;
 pub mod thread_run_page;
 pub use self::thread_run_page::ThreadRunPage;
 pub mod thread_state;
