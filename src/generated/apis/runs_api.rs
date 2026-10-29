@@ -2996,6 +2996,8 @@ pub async fn list_sessions(
     updated_after: Option<chrono::DateTime<chrono::FixedOffset>>,
     updated_before: Option<chrono::DateTime<chrono::FixedOffset>>,
     label: Option<Vec<String>>,
+    sort: Option<&str>,
+    direction: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
@@ -3010,6 +3012,8 @@ pub async fn list_sessions(
     let p_query_updated_after = updated_after;
     let p_query_updated_before = updated_before;
     let p_query_label = label;
+    let p_query_sort = sort;
+    let p_query_direction = direction;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
     let p_header_x_workspace_id = x_workspace_id;
@@ -3092,6 +3096,12 @@ pub async fn list_sessions(
             )]),
         };
     }
+    if let Some(ref param_value) = p_query_sort {
+        req_builder = req_builder.query(&[("sort", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_direction {
+        req_builder = req_builder.query(&[("direction", &param_value.to_string())]);
+    }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
     }
@@ -3153,13 +3163,15 @@ pub async fn list_sessions(
     }
 }
 
-/// Newest first, optionally starting at an anchor run; cursors page towards older or newer runs.
+/// Page chronological history from an anchor, or rank all Thread runs by a recorded metric.
 pub async fn list_thread_runs(
     configuration: &configuration::Configuration,
     thread_id: &str,
     limit: Option<i32>,
     cursor: Option<&str>,
     anchor: Option<&str>,
+    sort: Option<&str>,
+    direction: Option<&str>,
     x_workspace_id: Option<&str>,
 ) -> Result<Response<models::ThreadRunPage>, Error<ListThreadRunsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
@@ -3167,6 +3179,8 @@ pub async fn list_thread_runs(
     let p_query_limit = limit;
     let p_query_cursor = cursor;
     let p_query_anchor = anchor;
+    let p_query_sort = sort;
+    let p_query_direction = direction;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
@@ -3184,6 +3198,12 @@ pub async fn list_thread_runs(
     }
     if let Some(ref param_value) = p_query_anchor {
         req_builder = req_builder.query(&[("anchor", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_sort {
+        req_builder = req_builder.query(&[("sort", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_direction {
+        req_builder = req_builder.query(&[("direction", &param_value.to_string())]);
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());

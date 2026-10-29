@@ -12,6 +12,8 @@ pub enum AgentRevisionCompareSection {
     ModelSettings,
     #[serde(rename = "model_characteristics")]
     ModelCharacteristics,
+    #[serde(rename = "summarize")]
+    Summarize,
     #[serde(rename = "instructions")]
     Instructions,
     #[serde(rename = "toolsets")]
@@ -60,6 +62,7 @@ impl AgentRevisionCompareSection {
             Self::Model => "model",
             Self::ModelSettings => "model_settings",
             Self::ModelCharacteristics => "model_characteristics",
+            Self::Summarize => "summarize",
             Self::Instructions => "instructions",
             Self::Toolsets => "toolsets",
             Self::Skills => "skills",
@@ -283,6 +286,8 @@ pub enum RunAgentPart {
     ModelSettings,
     #[serde(rename = "model_characteristics")]
     ModelCharacteristics,
+    #[serde(rename = "summarize")]
+    Summarize,
     #[serde(rename = "instructions")]
     Instructions,
     #[serde(rename = "toolsets")]
@@ -331,6 +336,7 @@ impl RunAgentPart {
             Self::Model => "model",
             Self::ModelSettings => "model_settings",
             Self::ModelCharacteristics => "model_characteristics",
+            Self::Summarize => "summarize",
             Self::Instructions => "instructions",
             Self::Toolsets => "toolsets",
             Self::Skills => "skills",
@@ -421,6 +427,53 @@ impl std::fmt::Display for RunItemContentField {
         f.write_str(self.as_str())
     }
 }
+/// Allowed values for the `sort` selector. Serialized using Service wire values.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum SessionsSort {
+    #[serde(rename = "updated_at")]
+    UpdatedAt,
+    #[serde(rename = "runs")]
+    Runs,
+    #[serde(rename = "cost")]
+    Cost,
+}
+impl SessionsSort {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::UpdatedAt => "updated_at",
+            Self::Runs => "runs",
+            Self::Cost => "cost",
+        }
+    }
+}
+impl std::fmt::Display for SessionsSort {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+/// Allowed values for the `direction` selector. Serialized using Service wire values.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum SessionsDirection {
+    #[serde(rename = "asc")]
+    Asc,
+    #[serde(rename = "desc")]
+    Desc,
+}
+impl SessionsDirection {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Asc => "asc",
+            Self::Desc => "desc",
+        }
+    }
+}
+impl std::fmt::Display for SessionsDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
 /// Allowed values for the `source` selector. Serialized using Service wire values.
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -486,6 +539,53 @@ impl EntrySection {
     }
 }
 impl std::fmt::Display for EntrySection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+/// Allowed values for the `sort` selector. Serialized using Service wire values.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum ThreadRunsSort {
+    #[serde(rename = "cost")]
+    Cost,
+    #[serde(rename = "calls")]
+    Calls,
+    #[serde(rename = "duration")]
+    Duration,
+}
+impl ThreadRunsSort {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Cost => "cost",
+            Self::Calls => "calls",
+            Self::Duration => "duration",
+        }
+    }
+}
+impl std::fmt::Display for ThreadRunsSort {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+/// Allowed values for the `direction` selector. Serialized using Service wire values.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum ThreadRunsDirection {
+    #[serde(rename = "asc")]
+    Asc,
+    #[serde(rename = "desc")]
+    Desc,
+}
+impl ThreadRunsDirection {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Asc => "asc",
+            Self::Desc => "desc",
+        }
+    }
+}
+impl std::fmt::Display for ThreadRunsDirection {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.as_str())
     }
@@ -10978,6 +11078,10 @@ pub struct SessionsListOptions {
     pub updated_before: Option<chrono::DateTime<chrono::FixedOffset>>,
     /// Query parameter `label`. `None` omits this parameter.
     pub label: Option<Vec<String>>,
+    /// Query parameter `sort`. `None` omits this parameter.
+    pub sort: Option<SessionsSort>,
+    /// Query parameter `direction`. `None` omits this parameter.
+    pub direction: Option<SessionsDirection>,
     /// Query parameter `limit`. `None` omits this parameter.
     pub limit: Option<i32>,
     /// Query parameter `cursor`. `None` omits this parameter.
@@ -11057,6 +11161,12 @@ impl<'a> SessionsResource<'a> {
         }
         if let Some(value) = &options.label {
             request = query(request, "label", value)?;
+        }
+        if let Some(value) = &options.sort {
+            request = query(request, "sort", value)?;
+        }
+        if let Some(value) = &options.direction {
+            request = query(request, "direction", value)?;
         }
         if let Some(value) = &options.limit {
             request = query(request, "limit", value)?;
@@ -13210,6 +13320,10 @@ pub struct ThreadRunsListOptions {
     pub cursor: Option<String>,
     /// Query parameter `anchor`. `None` omits this parameter.
     pub anchor: Option<String>,
+    /// Query parameter `sort`. `None` omits this parameter.
+    pub sort: Option<ThreadRunsSort>,
+    /// Query parameter `direction`. `None` omits this parameter.
+    pub direction: Option<ThreadRunsDirection>,
     /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
     pub x_workspace_id: Option<String>,
 }
@@ -13261,6 +13375,12 @@ impl<'a> ThreadRunsResource<'a> {
         }
         if let Some(value) = &options.anchor {
             request = query(request, "anchor", value)?;
+        }
+        if let Some(value) = &options.sort {
+            request = query(request, "sort", value)?;
+        }
+        if let Some(value) = &options.direction {
+            request = query(request, "direction", value)?;
         }
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)

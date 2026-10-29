@@ -22,6 +22,8 @@ pub enum ConfigSection {
     ModelSettings,
     #[serde(rename = "model_characteristics")]
     ModelCharacteristics,
+    #[serde(rename = "summarize")]
+    Summarize,
     #[serde(rename = "instructions")]
     Instructions,
     #[serde(rename = "toolsets")]
@@ -71,6 +73,7 @@ impl std::fmt::Display for ConfigSection {
             Self::Model => write!(f, "model"),
             Self::ModelSettings => write!(f, "model_settings"),
             Self::ModelCharacteristics => write!(f, "model_characteristics"),
+            Self::Summarize => write!(f, "summarize"),
             Self::Instructions => write!(f, "instructions"),
             Self::Toolsets => write!(f, "toolsets"),
             Self::Skills => write!(f, "skills"),
