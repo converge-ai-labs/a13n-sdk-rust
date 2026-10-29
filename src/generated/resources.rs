@@ -12,6 +12,8 @@ pub enum AgentRevisionCompareSection {
     ModelSettings,
     #[serde(rename = "model_characteristics")]
     ModelCharacteristics,
+    #[serde(rename = "summarize")]
+    Summarize,
     #[serde(rename = "instructions")]
     Instructions,
     #[serde(rename = "toolsets")]
@@ -60,6 +62,7 @@ impl AgentRevisionCompareSection {
             Self::Model => "model",
             Self::ModelSettings => "model_settings",
             Self::ModelCharacteristics => "model_characteristics",
+            Self::Summarize => "summarize",
             Self::Instructions => "instructions",
             Self::Toolsets => "toolsets",
             Self::Skills => "skills",
@@ -283,6 +286,8 @@ pub enum RunAgentPart {
     ModelSettings,
     #[serde(rename = "model_characteristics")]
     ModelCharacteristics,
+    #[serde(rename = "summarize")]
+    Summarize,
     #[serde(rename = "instructions")]
     Instructions,
     #[serde(rename = "toolsets")]
@@ -331,6 +336,7 @@ impl RunAgentPart {
             Self::Model => "model",
             Self::ModelSettings => "model_settings",
             Self::ModelCharacteristics => "model_characteristics",
+            Self::Summarize => "summarize",
             Self::Instructions => "instructions",
             Self::Toolsets => "toolsets",
             Self::Skills => "skills",
