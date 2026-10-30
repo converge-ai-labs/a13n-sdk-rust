@@ -127,6 +127,8 @@ pub enum Kind {
     ChildResult,
     #[serde(rename = "tool_result")]
     ToolResult,
+    #[serde(rename = "browser_handback")]
+    BrowserHandback,
 }
 
 impl Default for Kind {
