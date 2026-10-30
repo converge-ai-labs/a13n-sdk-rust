@@ -41,6 +41,9 @@ pub struct ScheduleCreate {
 
     #[serde(rename = "state", skip_serializing_if = "Option::is_none")]
     pub state: Option<State>,
+
+    #[serde(rename = "target", skip_serializing_if = "Option::is_none")]
+    pub target: Option<Box<models::ScheduleTarget>>,
 }
 
 impl ScheduleCreate {
@@ -57,6 +60,7 @@ impl ScheduleCreate {
             name,
             schedule: Box::new(schedule),
             state: None,
+            target: None,
         }
     }
 }

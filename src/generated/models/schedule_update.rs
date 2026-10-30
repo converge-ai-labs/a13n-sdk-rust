@@ -60,6 +60,14 @@ pub struct ScheduleUpdate {
         skip_serializing_if = "Option::is_none"
     )]
     pub schedule: Option<Option<Box<models::ScheduleRule>>>,
+
+    #[serde(
+        rename = "target",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub target: Option<Option<Box<models::ScheduleTarget>>>,
 }
 
 impl ScheduleUpdate {
@@ -71,6 +79,7 @@ impl ScheduleUpdate {
             max_lateness_seconds: None,
             name: None,
             schedule: None,
+            target: None,
         }
     }
 }
