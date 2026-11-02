@@ -786,6 +786,50 @@ impl std::fmt::Display for TraceSpanContentSection {
         f.write_str(self.as_str())
     }
 }
+/// Allowed values for the `group_by` selector. Serialized using Service wire values.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum UsageOverviewGroupBy {
+    #[serde(rename = "agents")]
+    Agents,
+    #[serde(rename = "models")]
+    Models,
+}
+impl UsageOverviewGroupBy {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Agents => "agents",
+            Self::Models => "models",
+        }
+    }
+}
+impl std::fmt::Display for UsageOverviewGroupBy {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+/// Allowed values for the `metric` selector. Serialized using Service wire values.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum UsageOverviewMetric {
+    #[serde(rename = "cost")]
+    Cost,
+    #[serde(rename = "tokens")]
+    Tokens,
+}
+impl UsageOverviewMetric {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Cost => "cost",
+            Self::Tokens => "tokens",
+        }
+    }
+}
+impl std::fmt::Display for UsageOverviewMetric {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
 
 #[derive(Clone)]
@@ -15585,6 +15629,10 @@ pub struct UsageOverviewGetOptions {
     pub end: chrono::DateTime<chrono::FixedOffset>,
     /// Query parameter `principal_id`. Filter by Run execution identity; requires workspace admin. `None` omits this parameter.
     pub principal_id: Option<String>,
+    /// Query parameter `group_by`. `None` omits this parameter.
+    pub group_by: Option<UsageOverviewGroupBy>,
+    /// Query parameter `metric`. `None` omits this parameter.
+    pub metric: Option<UsageOverviewMetric>,
     /// Query parameter `timezone`. `None` omits this parameter.
     pub timezone: Option<String>,
     /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
@@ -15614,6 +15662,12 @@ impl<'a> UsageOverviewResource<'a> {
         request = query(request, "end", &options.end)?;
         if let Some(value) = &options.principal_id {
             request = query(request, "principal_id", value)?;
+        }
+        if let Some(value) = &options.group_by {
+            request = query(request, "group_by", value)?;
+        }
+        if let Some(value) = &options.metric {
+            request = query(request, "metric", value)?;
         }
         if let Some(value) = &options.timezone {
             request = query(request, "timezone", value)?;

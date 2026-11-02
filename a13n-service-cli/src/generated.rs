@@ -3856,7 +3856,7 @@ fn group_436() -> Command {
     node
 }
 fn operation_310() -> Command {
-    Command::new("get").about("Usage Overview").long_about("Usage Overview (GET /api/v1/usage/overview). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli usage overview get --start START --end END").arg(Arg::new("start").long("start").required_unless_present_any(["schema", "example"])).arg(Arg::new("end").long("end").required_unless_present_any(["schema", "example"])).arg(Arg::new("principal_id").long("principal-id")).arg(Arg::new("timezone").long("timezone")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("get").about("Usage Overview").long_about("Usage Overview (GET /api/v1/usage/overview). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli usage overview get --start START --end END").arg(Arg::new("start").long("start").required_unless_present_any(["schema", "example"])).arg(Arg::new("end").long("end").required_unless_present_any(["schema", "example"])).arg(Arg::new("principal_id").long("principal-id")).arg(Arg::new("group_by").long("group-by").value_parser(["agents", "models"])).arg(Arg::new("metric").long("metric").value_parser(["cost", "tokens"])).arg(Arg::new("timezone").long("timezone")).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_438() -> Command {
     let mut node = Command::new("records")
@@ -8975,6 +8975,8 @@ pub async fn dispatch(
                 start: input::option(required(matches, "start")?)?,
                 end: input::option(required(matches, "end")?)?,
                 principal_id: input::optional(matches, "principal_id")?,
+                group_by: input::optional(matches, "group_by")?,
+                metric: input::optional(matches, "metric")?,
                 timezone: input::optional(matches, "timezone")?,
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };

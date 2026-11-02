@@ -1126,6 +1126,8 @@ pub mod usage_limits_output;
 pub use self::usage_limits_output::UsageLimitsOutput;
 pub mod usage_overview;
 pub use self::usage_overview::UsageOverview;
+pub mod usage_series;
+pub use self::usage_series::UsageSeries;
 pub mod usage_summary;
 pub use self::usage_summary::UsageSummary;
 pub mod user_key_create;
