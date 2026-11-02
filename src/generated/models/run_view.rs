@@ -23,6 +23,14 @@ pub struct RunView {
     pub attempts: i32,
 
     #[serde(
+        rename = "browser_binding",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub browser_binding: Option<Option<Box<models::BrowserBinding>>>,
+
+    #[serde(
         rename = "cancel_requested_at",
         deserialize_with = "Option::deserialize"
     )]
@@ -175,6 +183,7 @@ impl RunView {
             agent_id,
             agent_revision_id,
             attempts,
+            browser_binding: None,
             cancel_requested_at,
             created_at,
             current_attempt_id,

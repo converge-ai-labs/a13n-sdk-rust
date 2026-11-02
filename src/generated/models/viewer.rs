@@ -20,6 +20,33 @@ pub struct Viewer {
     #[serde(rename = "expires_at")]
     pub expires_at: chrono::DateTime<chrono::FixedOffset>,
 
+    #[serde(
+        rename = "generation",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub generation: Option<Option<i32>>,
+
+    #[serde(
+        rename = "password",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub password: Option<Option<String>>,
+
+    #[serde(rename = "protocol", skip_serializing_if = "Option::is_none")]
+    pub protocol: Option<Protocol>,
+
+    #[serde(
+        rename = "token",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub token: Option<Option<String>>,
+
     #[serde(rename = "url")]
     pub url: String,
 }
@@ -34,7 +61,25 @@ impl Viewer {
         Viewer {
             episode,
             expires_at,
+            generation: None,
+            password: None,
+            protocol: None,
+            token: None,
             url,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Protocol {
+    #[serde(rename = "iframe")]
+    Iframe,
+    #[serde(rename = "vnc")]
+    Vnc,
+}
+
+impl Default for Protocol {
+    fn default() -> Protocol {
+        Self::Iframe
     }
 }

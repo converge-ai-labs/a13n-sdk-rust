@@ -2686,6 +2686,14 @@ pub struct BrowserRenewOptions {
     /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
     pub x_workspace_id: Option<String>,
 }
+/// Query and header options for [`BrowserResource::stop`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserStopOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
 /// Query and header options for [`BrowserResource::takeover`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
 pub struct BrowserTakeoverOptions {
@@ -2829,6 +2837,35 @@ impl<'a> BrowserResource<'a> {
             .client
             .scoped_request(request, options.x_workspace_id.as_deref());
         request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Stop Browser.
+    ///
+    /// `POST /api/v1/browsers/{browser_id}/stop`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn stop(
+        &self,
+        options: BrowserStopOptions,
+    ) -> Result<Response<models::Browser>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/browsers/{browser_id}/stop",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
@@ -17883,6 +17920,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/browsers/{browser_id}/renew",
         "BrowserResource",
         "renew",
+    ),
+    (
+        "POST",
+        "/api/v1/browsers/{browser_id}/stop",
+        "BrowserResource",
+        "stop",
     ),
     (
         "POST",

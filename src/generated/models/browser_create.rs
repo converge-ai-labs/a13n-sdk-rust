@@ -14,6 +14,14 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BrowserCreate {
     #[serde(
+        rename = "delete_after_seconds",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub delete_after_seconds: Option<Option<i32>>,
+
+    #[serde(
         rename = "idle_seconds",
         default,
         with = "::serde_with::rust::double_option",
@@ -32,16 +40,26 @@ pub struct BrowserCreate {
 
     #[serde(rename = "recipe", skip_serializing_if = "Option::is_none")]
     pub recipe: Option<std::collections::HashMap<String, serde_json::Value>>,
+
+    #[serde(
+        rename = "stop_after_seconds",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub stop_after_seconds: Option<Option<i32>>,
 }
 
 impl BrowserCreate {
     pub fn new(name: String, provider_id: String) -> BrowserCreate {
         BrowserCreate {
+            delete_after_seconds: None,
             idle_seconds: None,
             name,
             prepare: None,
             provider_id,
             recipe: None,
+            stop_after_seconds: None,
         }
     }
 }

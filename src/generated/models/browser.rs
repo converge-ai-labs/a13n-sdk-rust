@@ -25,6 +25,12 @@ pub struct Browser {
     #[serde(rename = "created_at")]
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
 
+    #[serde(
+        rename = "delete_after_seconds",
+        deserialize_with = "Option::deserialize"
+    )]
+    pub delete_after_seconds: Option<i32>,
+
     #[serde(rename = "episode")]
     pub episode: i32,
 
@@ -58,6 +64,12 @@ pub struct Browser {
     #[serde(rename = "status")]
     pub status: models::BrowserStatus,
 
+    #[serde(
+        rename = "stop_after_seconds",
+        deserialize_with = "Option::deserialize"
+    )]
+    pub stop_after_seconds: Option<i32>,
+
     #[serde(rename = "updated_at")]
     pub updated_at: chrono::DateTime<chrono::FixedOffset>,
 
@@ -73,6 +85,7 @@ impl Browser {
         control: models::ControlStatus,
         control_expires_at: Option<chrono::DateTime<chrono::FixedOffset>>,
         created_at: chrono::DateTime<chrono::FixedOffset>,
+        delete_after_seconds: Option<i32>,
         episode: i32,
         expires_at: Option<chrono::DateTime<chrono::FixedOffset>>,
         failure: Option<String>,
@@ -84,6 +97,7 @@ impl Browser {
         provider_id: Option<String>,
         source: Source,
         status: models::BrowserStatus,
+        stop_after_seconds: Option<i32>,
         updated_at: chrono::DateTime<chrono::FixedOffset>,
         version: i32,
         workspace_id: String,
@@ -92,6 +106,7 @@ impl Browser {
             control,
             control_expires_at,
             created_at,
+            delete_after_seconds,
             episode,
             expires_at,
             failure,
@@ -103,6 +118,7 @@ impl Browser {
             provider_id,
             source,
             status,
+            stop_after_seconds,
             updated_at,
             version,
             workspace_id,

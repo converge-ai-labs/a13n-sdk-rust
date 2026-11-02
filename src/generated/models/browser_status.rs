@@ -20,6 +20,12 @@ pub enum BrowserStatus {
     Creating,
     #[serde(rename = "ready")]
     Ready,
+    #[serde(rename = "stopping")]
+    Stopping,
+    #[serde(rename = "stopped")]
+    Stopped,
+    #[serde(rename = "starting")]
+    Starting,
     #[serde(rename = "deleting")]
     Deleting,
     #[serde(rename = "deleted")]
@@ -34,6 +40,9 @@ impl std::fmt::Display for BrowserStatus {
             Self::Reserved => write!(f, "reserved"),
             Self::Creating => write!(f, "creating"),
             Self::Ready => write!(f, "ready"),
+            Self::Stopping => write!(f, "stopping"),
+            Self::Stopped => write!(f, "stopped"),
+            Self::Starting => write!(f, "starting"),
             Self::Deleting => write!(f, "deleting"),
             Self::Deleted => write!(f, "deleted"),
             Self::Lost => write!(f, "lost"),

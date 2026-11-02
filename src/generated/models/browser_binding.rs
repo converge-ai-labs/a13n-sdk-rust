@@ -16,9 +16,11 @@ pub struct BrowserBinding {
     #[serde(rename = "browser_id")]
     pub browser_id: String,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_preparation")]
     #[serde(rename = "preparation", skip_serializing_if = "Option::is_none")]
     pub preparation: Option<Preparation>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_tab_access")]
     #[serde(rename = "tab_access", skip_serializing_if = "Option::is_none")]
     pub tab_access: Option<TabAccess>,
 }
@@ -59,4 +61,14 @@ impl Default for TabAccess {
     fn default() -> TabAccess {
         Self::Global
     }
+}
+fn deserialize_non_null_preparation<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_tab_access<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }
