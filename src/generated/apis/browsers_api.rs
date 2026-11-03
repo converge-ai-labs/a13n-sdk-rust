@@ -299,7 +299,7 @@ pub async fn browser_viewer(
     configuration: &configuration::Configuration,
     browser_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Viewer>, Error<BrowserViewerError>> {
+) -> Result<Response<models::A13nServiceRunsBrowsersSchemasViewer>, Error<BrowserViewerError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_browser_id = browser_id;
     let p_header_x_workspace_id = x_workspace_id;
@@ -355,12 +355,12 @@ pub async fn browser_viewer(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Viewer`",
+                    "Received `text/plain` content type response that cannot be converted to `models::A13nServiceRunsBrowsersSchemasViewer`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Viewer`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::A13nServiceRunsBrowsersSchemasViewer`"
                 ))));
             }
         }
@@ -1097,13 +1097,14 @@ pub async fn stop_browser(
 pub async fn takeover_browser(
     configuration: &configuration::Configuration,
     browser_id: &str,
-    takeover: models::Takeover,
+    a13n_service_runs_browsers_schemas_takeover: models::A13nServiceRunsBrowsersSchemasTakeover,
     if_match: Option<&str>,
     x_workspace_id: Option<&str>,
 ) -> Result<Response<models::Browser>, Error<TakeoverBrowserError>> {
     // add a prefix to parameters to efficiently prevent name collisions
     let p_path_browser_id = browser_id;
-    let p_body_takeover = takeover;
+    let p_body_a13n_service_runs_browsers_schemas_takeover =
+        a13n_service_runs_browsers_schemas_takeover;
     let p_header_if_match = if_match;
     let p_header_x_workspace_id = x_workspace_id;
 
@@ -1136,7 +1137,7 @@ pub async fn takeover_browser(
         };
         req_builder = req_builder.header("X-CSRF-Token", value);
     };
-    req_builder = req_builder.json(&p_body_takeover);
+    req_builder = req_builder.json(&p_body_a13n_service_runs_browsers_schemas_takeover);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;

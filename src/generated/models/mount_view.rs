@@ -13,6 +13,11 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MountView {
+    /// Frozen instance configuration enables human desktop access; not authorization or a health check.
+
+    #[serde(rename = "desktop_enabled")]
+    pub desktop_enabled: bool,
+
     #[serde(rename = "environment_id")]
     pub environment_id: String,
 
@@ -28,11 +33,13 @@ pub struct MountView {
 
 impl MountView {
     pub fn new(
+        desktop_enabled: bool,
         environment_id: String,
         name: String,
         working_directory: Option<String>,
     ) -> MountView {
         MountView {
+            desktop_enabled,
             environment_id,
             name,
             permission_ceiling: None,

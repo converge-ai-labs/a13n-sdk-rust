@@ -11,9 +11,9 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// Viewer : Sensitive, authorized control response; excluded from ordinary Browser reads.
+/// A13nServiceRunsBrowsersSchemasViewer : Sensitive, authorized control response; excluded from ordinary Browser reads.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Viewer {
+pub struct A13nServiceRunsBrowsersSchemasViewer {
     #[serde(rename = "episode")]
     pub episode: i32,
 
@@ -51,14 +51,14 @@ pub struct Viewer {
     pub url: String,
 }
 
-impl Viewer {
+impl A13nServiceRunsBrowsersSchemasViewer {
     /// Sensitive, authorized control response; excluded from ordinary Browser reads.
     pub fn new(
         episode: i32,
         expires_at: chrono::DateTime<chrono::FixedOffset>,
         url: String,
-    ) -> Viewer {
-        Viewer {
+    ) -> A13nServiceRunsBrowsersSchemasViewer {
+        A13nServiceRunsBrowsersSchemasViewer {
             episode,
             expires_at,
             generation: None,

@@ -84,7 +84,7 @@ pub struct RunView {
     pub parent_run_id: Option<String>,
 
     #[serde(rename = "pending", deserialize_with = "Option::deserialize")]
-    pub pending: Option<Box<models::Pending>>,
+    pub pending: Option<Box<models::Pending1>>,
 
     #[serde(rename = "principal_id")]
     pub principal_id: String,
@@ -161,7 +161,7 @@ impl RunView {
         options: models::RunOptionsOutput,
         output: Option<serde_json::Value>,
         parent_run_id: Option<String>,
-        pending: Option<models::Pending>,
+        pending: Option<models::Pending1>,
         principal_id: String,
         resume: Option<models::Resume>,
         resumed_by_id: Option<String>,

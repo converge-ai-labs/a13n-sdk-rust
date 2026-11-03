@@ -12,7 +12,7 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Takeover {
+pub struct A13nServiceRunsBrowsersSchemasTakeover {
     #[serde(
         rename = "lease_seconds",
         default,
@@ -25,9 +25,9 @@ pub struct Takeover {
     pub thread_id: String,
 }
 
-impl Takeover {
-    pub fn new(thread_id: String) -> Takeover {
-        Takeover {
+impl A13nServiceRunsBrowsersSchemasTakeover {
+    pub fn new(thread_id: String) -> A13nServiceRunsBrowsersSchemasTakeover {
+        A13nServiceRunsBrowsersSchemasTakeover {
             lease_seconds: None,
             thread_id,
         }
