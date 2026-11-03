@@ -17,6 +17,14 @@ pub struct ProviderType {
     pub authentication: Box<models::Authentication>,
 
     #[serde(
+        rename = "browser_recipe_schema",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub browser_recipe_schema: Option<Option<std::collections::HashMap<String, serde_json::Value>>>,
+
+    #[serde(
         rename = "catalog_providers",
         default,
         with = "::serde_with::rust::double_option",
@@ -124,6 +132,14 @@ pub struct ProviderType {
     #[serde(rename = "supports_test")]
     pub supports_test: bool,
 
+    #[serde(
+        rename = "supports_viewer",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub supports_viewer: Option<Option<bool>>,
+
     #[serde(rename = "type")]
     pub r#type: String,
 }
@@ -141,6 +157,7 @@ impl ProviderType {
     ) -> ProviderType {
         ProviderType {
             authentication: Box::new(authentication),
+            browser_recipe_schema: None,
             catalog_providers: None,
             configuration_schema,
             credential_schema,
@@ -158,6 +175,7 @@ impl ProviderType {
             supports_model_discovery: None,
             supports_stop: None,
             supports_test,
+            supports_viewer: None,
             r#type,
         }
     }
