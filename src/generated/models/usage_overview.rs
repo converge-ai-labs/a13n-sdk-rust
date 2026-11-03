@@ -19,6 +19,9 @@ pub struct UsageOverview {
     #[serde(rename = "runs")]
     pub runs: Box<models::RunMetrics>,
 
+    #[serde(rename = "series", skip_serializing_if = "Option::is_none")]
+    pub series: Option<Vec<models::UsageSeries>>,
+
     #[serde(rename = "usage")]
     pub usage: Box<models::ModelMetrics>,
 }
@@ -32,6 +35,7 @@ impl UsageOverview {
         UsageOverview {
             daily,
             runs: Box::new(runs),
+            series: None,
             usage: Box::new(usage),
         }
     }

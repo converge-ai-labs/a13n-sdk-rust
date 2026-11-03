@@ -1,4 +1,4 @@
-#![allow(unused_imports)]
+#![allow(unused_imports, non_snake_case)]
 // Generated bindings need not follow handwritten style or optimization advice.
 // Compiler diagnostics and correctness/suspicious lints remain enabled.
 #![allow(clippy::style, clippy::complexity, clippy::perf, clippy::empty_docs)]

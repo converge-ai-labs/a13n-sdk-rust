@@ -13,15 +13,59 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Control {
-    #[serde(rename = "epoch")]
-    pub epoch: i32,
+    #[serde(rename = "control")]
+    pub control: models::DesktopControlState,
 
-    #[serde(rename = "session_id")]
-    pub session_id: String,
+    #[serde(rename = "controller_id", deserialize_with = "Option::deserialize")]
+    pub controller_id: Option<String>,
+
+    #[serde(
+        rename = "controller_thread_id",
+        deserialize_with = "Option::deserialize"
+    )]
+    pub controller_thread_id: Option<String>,
+
+    #[serde(rename = "episode")]
+    pub episode: i32,
+
+    #[serde(rename = "expires_at", deserialize_with = "Option::deserialize")]
+    pub expires_at: Option<chrono::DateTime<chrono::FixedOffset>>,
+
+    #[serde(rename = "failure", deserialize_with = "Option::deserialize")]
+    pub failure: Option<String>,
+
+    #[serde(rename = "generation")]
+    pub generation: i32,
+
+    #[serde(rename = "id")]
+    pub id: String,
+
+    #[serde(rename = "version")]
+    pub version: i32,
 }
 
 impl Control {
-    pub fn new(epoch: i32, session_id: String) -> Control {
-        Control { epoch, session_id }
+    pub fn new(
+        control: models::DesktopControlState,
+        controller_id: Option<String>,
+        controller_thread_id: Option<String>,
+        episode: i32,
+        expires_at: Option<chrono::DateTime<chrono::FixedOffset>>,
+        failure: Option<String>,
+        generation: i32,
+        id: String,
+        version: i32,
+    ) -> Control {
+        Control {
+            control,
+            controller_id,
+            controller_thread_id,
+            episode,
+            expires_at,
+            failure,
+            generation,
+            id,
+            version,
+        }
     }
 }

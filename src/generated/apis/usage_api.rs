@@ -690,6 +690,8 @@ pub async fn usage_overview(
     start: chrono::DateTime<chrono::FixedOffset>,
     end: chrono::DateTime<chrono::FixedOffset>,
     principal_id: Option<&str>,
+    group_by: Option<&str>,
+    metric: Option<&str>,
     timezone: Option<&str>,
     x_workspace_id: Option<&str>,
 ) -> Result<Response<models::UsageOverview>, Error<UsageOverviewError>> {
@@ -697,6 +699,8 @@ pub async fn usage_overview(
     let p_query_start = start;
     let p_query_end = end;
     let p_query_principal_id = principal_id;
+    let p_query_group_by = group_by;
+    let p_query_metric = metric;
     let p_query_timezone = timezone;
     let p_header_x_workspace_id = x_workspace_id;
 
@@ -707,6 +711,12 @@ pub async fn usage_overview(
     req_builder = req_builder.query(&[("end", &p_query_end.to_string())]);
     if let Some(ref param_value) = p_query_principal_id {
         req_builder = req_builder.query(&[("principal_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_group_by {
+        req_builder = req_builder.query(&[("group_by", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_metric {
+        req_builder = req_builder.query(&[("metric", &param_value.to_string())]);
     }
     if let Some(ref param_value) = p_query_timezone {
         req_builder = req_builder.query(&[("timezone", &param_value.to_string())]);

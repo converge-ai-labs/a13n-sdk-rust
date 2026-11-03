@@ -1399,33 +1399,35 @@ fn session_events_emit_typed_jsonl_and_raw_stream_keeps_exact_bytes_without_curs
 }
 
 #[test]
-fn nullable_context_and_desktop_metadata_print_json_null() {
-    for command in [
-        vec!["usage", "context", "get", "--record-id", "record"],
-        vec!["runs", "desktop-control", "get", "--run", "r"],
-    ] {
-        let (base, server) = serve(vec![(
-            200,
-            vec![
-                ("Content-Type", "application/json"),
-                ("X-Request-ID", "nullable"),
-            ],
-            b"null".to_vec(),
-        )]);
-        let mut args = vec!["--base-url", &base];
-        args.extend(command);
-        let output = binary(&args);
-        assert!(
-            output.status.success(),
-            "{}",
-            String::from_utf8_lossy(&output.stderr)
-        );
-        assert_eq!(
-            serde_json::from_slice::<serde_json::Value>(&output.stdout).unwrap(),
-            serde_json::Value::Null
-        );
-        assert_eq!(server.join().unwrap().len(), 1);
-    }
+fn nullable_context_prints_json_null() {
+    let (base, server) = serve(vec![(
+        200,
+        vec![
+            ("Content-Type", "application/json"),
+            ("X-Request-ID", "nullable"),
+        ],
+        b"null".to_vec(),
+    )]);
+    let args = vec![
+        "--base-url",
+        &base,
+        "usage",
+        "context",
+        "get",
+        "--record-id",
+        "record",
+    ];
+    let output = binary(&args);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(&output.stdout).unwrap(),
+        serde_json::Value::Null
+    );
+    assert_eq!(server.join().unwrap().len(), 1);
 }
 
 #[test]

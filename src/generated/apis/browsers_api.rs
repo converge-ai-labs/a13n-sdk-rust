@@ -13,103 +13,133 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for typed errors of method [`complete_assistance`]
+/// struct for typed errors of method [`attach_browser`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CompleteAssistanceError {
+pub enum AttachBrowserError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`control_desktop`]
+/// struct for typed errors of method [`bind_browser`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ControlDesktopError {
+pub enum BindBrowserError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`disconnect_desktop`]
+/// struct for typed errors of method [`browser_viewer`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DisconnectDesktopError {
+pub enum BrowserViewerError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_assistance`]
+/// struct for typed errors of method [`create_browser`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAssistanceError {
+pub enum CreateBrowserError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`get_control`]
+/// struct for typed errors of method [`get_binding`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetControlError {
+pub enum GetBindingError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`open_control`]
+/// struct for typed errors of method [`get_browser`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum OpenControlError {
+pub enum GetBrowserError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`open_view`]
+/// struct for typed errors of method [`handback_browser`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum OpenViewError {
+pub enum HandbackBrowserError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`request_control`]
+/// struct for typed errors of method [`list_browsers`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RequestControlError {
+pub enum ListBrowsersError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`view_desktop`]
+/// struct for typed errors of method [`prepare_browser`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ViewDesktopError {
+pub enum PrepareBrowserError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
 }
 
-pub async fn complete_assistance(
+/// struct for typed errors of method [`release_browser`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ReleaseBrowserError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`renew_browser_control`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum RenewBrowserControlError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`stop_browser`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum StopBrowserError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`takeover_browser`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum TakeoverBrowserError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+pub async fn attach_browser(
     configuration: &configuration::Configuration,
-    assistance_id: &str,
-    completion: models::Completion,
+    browser_attach: models::BrowserAttach,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::View>, Error<CompleteAssistanceError>> {
+) -> Result<Response<models::Browser>, Error<AttachBrowserError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_assistance_id = assistance_id;
-    let p_body_completion = completion;
+    let p_body_browser_attach = browser_attach;
     let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/desktop-assistance/{assistance_id}/complete",
-        configuration.base_path,
-        assistance_id = crate::generated::apis::urlencode(p_path_assistance_id)
-    );
+    let uri_str = format!("{}/api/v1/browsers/attach", configuration.base_path);
     let mut req_builder = configuration
         .client
         .request(reqwest::Method::POST, &uri_str);
@@ -131,7 +161,7 @@ pub async fn complete_assistance(
         };
         req_builder = req_builder.header("X-CSRF-Token", value);
     };
-    req_builder = req_builder.json(&p_body_completion);
+    req_builder = req_builder.json(&p_body_browser_attach);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -157,18 +187,18 @@ pub async fn complete_assistance(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::View`",
+                    "Received `text/plain` content type response that cannot be converted to `models::Browser`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::View`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Browser`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CompleteAssistanceError> = serde_json::from_str(&content).ok();
+        let entity: Option<AttachBrowserError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -178,33 +208,31 @@ pub async fn complete_assistance(
     }
 }
 
-pub async fn control_desktop(
+pub async fn bind_browser(
     configuration: &configuration::Configuration,
-    assistance_id: &str,
-    control: models::Control,
-    renew: Option<bool>,
+    thread_id: &str,
+    if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Access>, Error<ControlDesktopError>> {
+    browser_binding: Option<models::BrowserBinding>,
+) -> Result<Response<Option<models::BrowserBinding>>, Error<BindBrowserError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_assistance_id = assistance_id;
-    let p_body_control = control;
-    let p_query_renew = renew;
+    let p_path_thread_id = thread_id;
+    let p_header_if_match = if_match;
     let p_header_x_workspace_id = x_workspace_id;
+    let p_body_browser_binding = browser_binding;
 
     let uri_str = format!(
-        "{}/api/v1/desktop-assistance/{assistance_id}/control",
+        "{}/api/v1/threads/{thread_id}/browser",
         configuration.base_path,
-        assistance_id = crate::generated::apis::urlencode(p_path_assistance_id)
+        thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
+    let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
 
-    if let Some(ref param_value) = p_query_renew {
-        req_builder = req_builder.query(&[("renew", &param_value.to_string())]);
-    }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_if_match {
+        req_builder = req_builder.header("If-Match", param_value.to_string());
     }
     if let Some(param_value) = p_header_x_workspace_id {
         req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
@@ -220,7 +248,7 @@ pub async fn control_desktop(
         };
         req_builder = req_builder.header("X-CSRF-Token", value);
     };
-    req_builder = req_builder.json(&p_body_control);
+    req_builder = req_builder.json(&p_body_browser_binding);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -246,18 +274,18 @@ pub async fn control_desktop(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Access`",
+                    "Received `text/plain` content type response that cannot be converted to `models::BrowserBinding`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Access`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::BrowserBinding`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ControlDesktopError> = serde_json::from_str(&content).ok();
+        let entity: Option<BindBrowserError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -267,21 +295,19 @@ pub async fn control_desktop(
     }
 }
 
-pub async fn disconnect_desktop(
+pub async fn browser_viewer(
     configuration: &configuration::Configuration,
-    assistance_id: &str,
-    control: models::Control,
+    browser_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::View>, Error<DisconnectDesktopError>> {
+) -> Result<Response<models::A13nServiceRunsBrowsersSchemasViewer>, Error<BrowserViewerError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_assistance_id = assistance_id;
-    let p_body_control = control;
+    let p_path_browser_id = browser_id;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/desktop-assistance/{assistance_id}/disconnect",
+        "{}/api/v1/browsers/{browser_id}/viewer",
         configuration.base_path,
-        assistance_id = crate::generated::apis::urlencode(p_path_assistance_id)
+        browser_id = crate::generated::apis::urlencode(p_path_browser_id)
     );
     let mut req_builder = configuration
         .client
@@ -304,7 +330,6 @@ pub async fn disconnect_desktop(
         };
         req_builder = req_builder.header("X-CSRF-Token", value);
     };
-    req_builder = req_builder.json(&p_body_control);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -330,18 +355,18 @@ pub async fn disconnect_desktop(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::View`",
+                    "Received `text/plain` content type response that cannot be converted to `models::A13nServiceRunsBrowsersSchemasViewer`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::View`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::A13nServiceRunsBrowsersSchemasViewer`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<DisconnectDesktopError> = serde_json::from_str(&content).ok();
+        let entity: Option<BrowserViewerError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -351,22 +376,97 @@ pub async fn disconnect_desktop(
     }
 }
 
-pub async fn get_assistance(
+pub async fn create_browser(
     configuration: &configuration::Configuration,
-    run_id: &str,
-    call_id: &str,
+    browser_create: models::BrowserCreate,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::View>, Error<GetAssistanceError>> {
+) -> Result<Response<models::Browser>, Error<CreateBrowserError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_run_id = run_id;
-    let p_path_call_id = call_id;
+    let p_body_browser_create = browser_create;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!("{}/api/v1/browsers", configuration.base_path);
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+    req_builder = req_builder.json(&p_body_browser_create);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Browser`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Browser`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<CreateBrowserError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn get_binding(
+    configuration: &configuration::Configuration,
+    thread_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<Option<models::BrowserBinding>>, Error<GetBindingError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_thread_id = thread_id;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/runs/{run_id}/desktop-assistance/{call_id}",
+        "{}/api/v1/threads/{thread_id}/browser",
         configuration.base_path,
-        run_id = crate::generated::apis::urlencode(p_path_run_id),
-        call_id = crate::generated::apis::urlencode(p_path_call_id)
+        thread_id = crate::generated::apis::urlencode(p_path_thread_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -404,18 +504,18 @@ pub async fn get_assistance(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::View`",
+                    "Received `text/plain` content type response that cannot be converted to `models::BrowserBinding`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::View`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::BrowserBinding`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetAssistanceError> = serde_json::from_str(&content).ok();
+        let entity: Option<GetBindingError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -425,19 +525,19 @@ pub async fn get_assistance(
     }
 }
 
-pub async fn get_control(
+pub async fn get_browser(
     configuration: &configuration::Configuration,
-    run_id: &str,
+    browser_id: &str,
     x_workspace_id: Option<&str>,
-) -> Result<Response<Option<models::View>>, Error<GetControlError>> {
+) -> Result<Response<models::Browser>, Error<GetBrowserError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_run_id = run_id;
+    let p_path_browser_id = browser_id;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/runs/{run_id}/desktop-control",
+        "{}/api/v1/browsers/{browser_id}",
         configuration.base_path,
-        run_id = crate::generated::apis::urlencode(p_path_run_id)
+        browser_id = crate::generated::apis::urlencode(p_path_browser_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -475,18 +575,18 @@ pub async fn get_control(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::View`",
+                    "Received `text/plain` content type response that cannot be converted to `models::Browser`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::View`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Browser`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<GetControlError> = serde_json::from_str(&content).ok();
+        let entity: Option<GetBrowserError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -496,21 +596,21 @@ pub async fn get_control(
     }
 }
 
-pub async fn open_control(
+pub async fn handback_browser(
     configuration: &configuration::Configuration,
-    run_id: &str,
-    request: models::Request,
+    browser_id: &str,
+    if_match: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::View>, Error<OpenControlError>> {
+) -> Result<Response<models::Browser>, Error<HandbackBrowserError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_run_id = run_id;
-    let p_body_request = request;
+    let p_path_browser_id = browser_id;
+    let p_header_if_match = if_match;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!(
-        "{}/api/v1/runs/{run_id}/desktop-control",
+        "{}/api/v1/browsers/{browser_id}/handback",
         configuration.base_path,
-        run_id = crate::generated::apis::urlencode(p_path_run_id)
+        browser_id = crate::generated::apis::urlencode(p_path_browser_id)
     );
     let mut req_builder = configuration
         .client
@@ -519,171 +619,8 @@ pub async fn open_control(
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
-        let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
-        };
-        req_builder = req_builder.header("X-CSRF-Token", value);
-    };
-    req_builder = req_builder.json(&p_body_request);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::View`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::View`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<OpenControlError> = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn open_view(
-    configuration: &configuration::Configuration,
-    run_id: &str,
-    open_view: models::OpenView,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::Access>, Error<OpenViewError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_run_id = run_id;
-    let p_body_open_view = open_view;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/runs/{run_id}/desktop-control/view",
-        configuration.base_path,
-        run_id = crate::generated::apis::urlencode(p_path_run_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(param_value) = p_header_x_workspace_id {
-        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
-        let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
-        };
-        req_builder = req_builder.header("X-CSRF-Token", value);
-    };
-    req_builder = req_builder.json(&p_body_open_view);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content)
-                .map(|data| Response {
-                    data,
-                    status,
-                    headers,
-                })
-                .map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Access`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Access`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<OpenViewError> = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(Box::new(ResponseContent {
-            status,
-            headers,
-            content,
-            entity,
-        })))
-    }
-}
-
-pub async fn request_control(
-    configuration: &configuration::Configuration,
-    assistance_id: &str,
-    x_workspace_id: Option<&str>,
-) -> Result<Response<models::View>, Error<RequestControlError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_assistance_id = assistance_id;
-    let p_header_x_workspace_id = x_workspace_id;
-
-    let uri_str = format!(
-        "{}/api/v1/desktop-assistance/{assistance_id}/request-control",
-        configuration.base_path,
-        assistance_id = crate::generated::apis::urlencode(p_path_assistance_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    if let Some(param_value) = p_header_if_match {
+        req_builder = req_builder.header("If-Match", param_value.to_string());
     }
     if let Some(param_value) = p_header_x_workspace_id {
         req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
@@ -724,18 +661,18 @@ pub async fn request_control(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::View`",
+                    "Received `text/plain` content type response that cannot be converted to `models::Browser`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::View`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Browser`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RequestControlError> = serde_json::from_str(&content).ok();
+        let entity: Option<HandbackBrowserError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,
@@ -745,30 +682,25 @@ pub async fn request_control(
     }
 }
 
-pub async fn view_desktop(
+pub async fn list_browsers(
     configuration: &configuration::Configuration,
-    assistance_id: &str,
-    control: models::Control,
-    renew: Option<bool>,
+    limit: Option<i32>,
+    cursor: Option<&str>,
     x_workspace_id: Option<&str>,
-) -> Result<Response<models::Access>, Error<ViewDesktopError>> {
+) -> Result<Response<models::BrowserPage>, Error<ListBrowsersError>> {
     // add a prefix to parameters to efficiently prevent name collisions
-    let p_path_assistance_id = assistance_id;
-    let p_body_control = control;
-    let p_query_renew = renew;
+    let p_query_limit = limit;
+    let p_query_cursor = cursor;
     let p_header_x_workspace_id = x_workspace_id;
 
-    let uri_str = format!(
-        "{}/api/v1/desktop-assistance/{assistance_id}/view",
-        configuration.base_path,
-        assistance_id = crate::generated::apis::urlencode(p_path_assistance_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
+    let uri_str = format!("{}/api/v1/browsers", configuration.base_path);
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
-    if let Some(ref param_value) = p_query_renew {
-        req_builder = req_builder.query(&[("renew", &param_value.to_string())]);
+    if let Some(ref param_value) = p_query_limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_cursor {
+        req_builder = req_builder.query(&[("cursor", &param_value.to_string())]);
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
@@ -779,15 +711,6 @@ pub async fn view_desktop(
     if let Some(ref token) = configuration.bearer_access_token {
         req_builder = req_builder.bearer_auth(token.to_owned());
     };
-    if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
-        let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
-        };
-        req_builder = req_builder.header("X-CSRF-Token", value);
-    };
-    req_builder = req_builder.json(&p_body_control);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -813,18 +736,445 @@ pub async fn view_desktop(
                 .map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::Access`",
+                    "Received `text/plain` content type response that cannot be converted to `models::BrowserPage`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::Access`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::BrowserPage`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<ViewDesktopError> = serde_json::from_str(&content).ok();
+        let entity: Option<ListBrowsersError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn prepare_browser(
+    configuration: &configuration::Configuration,
+    browser_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Browser>, Error<PrepareBrowserError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_browser_id = browser_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/browsers/{browser_id}/prepare",
+        configuration.base_path,
+        browser_id = crate::generated::apis::urlencode(p_path_browser_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Browser`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Browser`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<PrepareBrowserError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn release_browser(
+    configuration: &configuration::Configuration,
+    browser_id: &str,
+    if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Browser>, Error<ReleaseBrowserError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_browser_id = browser_id;
+    let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/browsers/{browser_id}/release",
+        configuration.base_path,
+        browser_id = crate::generated::apis::urlencode(p_path_browser_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_if_match {
+        req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Browser`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Browser`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ReleaseBrowserError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn renew_browser_control(
+    configuration: &configuration::Configuration,
+    browser_id: &str,
+    renew_control: models::RenewControl,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Browser>, Error<RenewBrowserControlError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_browser_id = browser_id;
+    let p_body_renew_control = renew_control;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/browsers/{browser_id}/renew",
+        configuration.base_path,
+        browser_id = crate::generated::apis::urlencode(p_path_browser_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+    req_builder = req_builder.json(&p_body_renew_control);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Browser`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Browser`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<RenewBrowserControlError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn stop_browser(
+    configuration: &configuration::Configuration,
+    browser_id: &str,
+    if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Browser>, Error<StopBrowserError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_browser_id = browser_id;
+    let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/browsers/{browser_id}/stop",
+        configuration.base_path,
+        browser_id = crate::generated::apis::urlencode(p_path_browser_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_if_match {
+        req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Browser`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Browser`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<StopBrowserError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+pub async fn takeover_browser(
+    configuration: &configuration::Configuration,
+    browser_id: &str,
+    a13n_service_runs_browsers_schemas_takeover: models::A13nServiceRunsBrowsersSchemasTakeover,
+    if_match: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::Browser>, Error<TakeoverBrowserError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_browser_id = browser_id;
+    let p_body_a13n_service_runs_browsers_schemas_takeover =
+        a13n_service_runs_browsers_schemas_takeover;
+    let p_header_if_match = if_match;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/browsers/{browser_id}/takeover",
+        configuration.base_path,
+        browser_id = crate::generated::apis::urlencode(p_path_browser_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_if_match {
+        req_builder = req_builder.header("If-Match", param_value.to_string());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+    req_builder = req_builder.json(&p_body_a13n_service_runs_browsers_schemas_takeover);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::Browser`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::Browser`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<TakeoverBrowserError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

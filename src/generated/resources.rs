@@ -152,6 +152,8 @@ pub enum ProviderKind {
     Web,
     #[serde(rename = "memory")]
     Memory,
+    #[serde(rename = "browser")]
+    Browser,
 }
 impl ProviderKind {
     pub fn as_str(self) -> &'static str {
@@ -161,6 +163,7 @@ impl ProviderKind {
             Self::Connector => "connector",
             Self::Web => "web",
             Self::Memory => "memory",
+            Self::Browser => "browser",
         }
     }
 }
@@ -783,6 +786,50 @@ impl std::fmt::Display for TraceSpanContentSection {
         f.write_str(self.as_str())
     }
 }
+/// Allowed values for the `group_by` selector. Serialized using Service wire values.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum UsageOverviewGroupBy {
+    #[serde(rename = "agents")]
+    Agents,
+    #[serde(rename = "models")]
+    Models,
+}
+impl UsageOverviewGroupBy {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Agents => "agents",
+            Self::Models => "models",
+        }
+    }
+}
+impl std::fmt::Display for UsageOverviewGroupBy {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+/// Allowed values for the `metric` selector. Serialized using Service wire values.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum UsageOverviewMetric {
+    #[serde(rename = "cost")]
+    Cost,
+    #[serde(rename = "tokens")]
+    Tokens,
+}
+impl UsageOverviewMetric {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Cost => "cost",
+            Self::Tokens => "tokens",
+        }
+    }
+}
+impl std::fmt::Display for UsageOverviewMetric {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
 
 #[derive(Clone)]
@@ -812,6 +859,14 @@ impl<'a> ServiceResources<'a> {
     pub fn auth(&self) -> AuthResource<'a> {
         AuthResource(self.0.clone())
     }
+    /// Access `browser-providers` locally, sharing the client and explicit scope.
+    pub fn browser_providers(&self) -> BrowserProvidersResource<'a> {
+        BrowserProvidersResource(self.0.clone())
+    }
+    /// Access `browsers` locally, sharing the client and explicit scope.
+    pub fn browsers(&self) -> BrowsersResource<'a> {
+        BrowsersResource(self.0.clone())
+    }
     /// Access `builtin-skills` locally, sharing the client and explicit scope.
     pub fn builtin_skills(&self) -> BuiltinSkillsResource<'a> {
         BuiltinSkillsResource(self.0.clone())
@@ -823,10 +878,6 @@ impl<'a> ServiceResources<'a> {
     /// Access `connector-providers` locally, sharing the client and explicit scope.
     pub fn connector_providers(&self) -> ConnectorProvidersResource<'a> {
         ConnectorProvidersResource(self.0.clone())
-    }
-    /// Access `desktop-assistance` locally, sharing the client and explicit scope.
-    pub fn desktop_assistance(&self) -> DesktopAssistanceCollectionResource<'a> {
-        DesktopAssistanceCollectionResource(self.0.clone())
     }
     /// Access `devices` locally, sharing the client and explicit scope.
     pub fn devices(&self) -> DevicesResource<'a> {
@@ -2205,6 +2256,675 @@ impl<'a> AuthSessionResource<'a> {
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
 
 #[derive(Clone)]
+pub struct BrowserProvidersResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`BrowserProvidersResource::list`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserProvidersListOptions {
+    /// Query parameter `limit`. `None` omits this parameter.
+    pub limit: Option<i32>,
+    /// Query parameter `cursor`. `None` omits this parameter.
+    pub cursor: Option<String>,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Page source owned by [`BrowserProvidersResource::pages`].
+pub struct BrowserProvidersPages<'a> {
+    resource: BrowserProvidersResource<'a>,
+    options: BrowserProvidersListOptions,
+}
+impl PageSource for BrowserProvidersPages<'_> {
+    type Page = models::ProviderPage;
+    async fn fetch(&self, cursor: Option<String>) -> Result<Response<Self::Page>, Error> {
+        let mut options = self.options.clone();
+        options.cursor = cursor;
+        self.resource.list(options).await
+    }
+    fn cursor(page: &Self::Page) -> Option<String> {
+        page.next_cursor.clone()
+    }
+}
+/// Query and header options for [`BrowserProvidersResource::create`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserProvidersCreateOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> BrowserProvidersResource<'a> {
+    /// Bind `provider_id` locally without an HTTP request. The returned reference borrows the client, not this collection.
+    pub fn at(&self, id: impl Into<String>) -> BrowserProviderResource<'a> {
+        BrowserProviderResource(self.0.select(id.into()))
+    }
+    /// List browser providers.
+    ///
+    /// `GET /api/v1/browser-providers`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn list(
+        &self,
+        options: BrowserProvidersListOptions,
+    ) -> Result<Response<models::ProviderPage>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/browser-providers",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        if let Some(value) = &options.limit {
+            request = query(request, "limit", value)?;
+        }
+        if let Some(value) = &options.cursor {
+            request = query(request, "cursor", value)?;
+        }
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Iterate cursor pages lazily with owned options. Each page retains status and headers; no prefetch occurs. Drop the pager to stop reads.
+    pub fn pages(&self, options: BrowserProvidersListOptions) -> Pages<BrowserProvidersPages<'a>> {
+        let cursor = options.cursor.clone();
+        Pages::new(
+            BrowserProvidersPages {
+                resource: self.clone(),
+                options,
+            },
+            cursor,
+        )
+    }
+    /// Create browser provider.
+    ///
+    /// `POST /api/v1/browser-providers`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn create(
+        &self,
+        body: &models::ProviderCreate,
+        options: BrowserProvidersCreateOptions,
+    ) -> Result<Response<models::Provider>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/browser-providers",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[201]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct BrowserProviderResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`BrowserProviderResource::delete`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserProviderDeleteOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`BrowserProviderResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserProviderGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`BrowserProviderResource::update`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserProviderUpdateOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`BrowserProviderResource::test`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserProviderTestOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> BrowserProviderResource<'a> {
+    /// Delete Browser Provider.
+    ///
+    /// `DELETE /api/v1/browser-providers/{provider_id}`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn delete(
+        &self,
+        options: BrowserProviderDeleteOptions,
+    ) -> Result<Response<()>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::DELETE,
+            "/api/v1/browser-providers/{provider_id}",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        let response = self.0.client.json(request, &[204]).await?;
+        Ok(response)
+    }
+    /// Get browser provider.
+    ///
+    /// `GET /api/v1/browser-providers/{provider_id}`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: BrowserProviderGetOptions,
+    ) -> Result<Response<models::Provider>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/browser-providers/{provider_id}",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Update browser provider.
+    ///
+    /// `PATCH /api/v1/browser-providers/{provider_id}`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn update(
+        &self,
+        body: &models::ProviderUpdate,
+        options: BrowserProviderUpdateOptions,
+    ) -> Result<Response<models::Provider>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::PATCH,
+            "/api/v1/browser-providers/{provider_id}",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Test browser provider.
+    ///
+    /// `POST /api/v1/browser-providers/{provider_id}/test`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn test(
+        &self,
+        options: BrowserProviderTestOptions,
+    ) -> Result<Response<models::ProviderTest>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/browser-providers/{provider_id}/test",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct BrowsersResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`BrowsersResource::list`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowsersListOptions {
+    /// Query parameter `limit`. `None` omits this parameter.
+    pub limit: Option<i32>,
+    /// Query parameter `cursor`. `None` omits this parameter.
+    pub cursor: Option<String>,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Page source owned by [`BrowsersResource::pages`].
+pub struct BrowsersPages<'a> {
+    resource: BrowsersResource<'a>,
+    options: BrowsersListOptions,
+}
+impl PageSource for BrowsersPages<'_> {
+    type Page = models::BrowserPage;
+    async fn fetch(&self, cursor: Option<String>) -> Result<Response<Self::Page>, Error> {
+        let mut options = self.options.clone();
+        options.cursor = cursor;
+        self.resource.list(options).await
+    }
+    fn cursor(page: &Self::Page) -> Option<String> {
+        page.next_cursor.clone().flatten()
+    }
+}
+/// Query and header options for [`BrowsersResource::create`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowsersCreateOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`BrowsersResource::attach`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowsersAttachOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> BrowsersResource<'a> {
+    /// Bind `browser_id` locally without an HTTP request. The returned reference borrows the client, not this collection.
+    pub fn at(&self, id: impl Into<String>) -> BrowserResource<'a> {
+        BrowserResource(self.0.select(id.into()))
+    }
+    /// List Browsers.
+    ///
+    /// `GET /api/v1/browsers`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn list(
+        &self,
+        options: BrowsersListOptions,
+    ) -> Result<Response<models::BrowserPage>, Error> {
+        let mut request =
+            self.0
+                .client
+                .request(reqwest::Method::GET, "/api/v1/browsers", &self.0.ids)?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        if let Some(value) = &options.limit {
+            request = query(request, "limit", value)?;
+        }
+        if let Some(value) = &options.cursor {
+            request = query(request, "cursor", value)?;
+        }
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Iterate cursor pages lazily with owned options. Each page retains status and headers; no prefetch occurs. Drop the pager to stop reads.
+    pub fn pages(&self, options: BrowsersListOptions) -> Pages<BrowsersPages<'a>> {
+        let cursor = options.cursor.clone();
+        Pages::new(
+            BrowsersPages {
+                resource: self.clone(),
+                options,
+            },
+            cursor,
+        )
+    }
+    /// Create Browser.
+    ///
+    /// `POST /api/v1/browsers`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn create(
+        &self,
+        body: &models::BrowserCreate,
+        options: BrowsersCreateOptions,
+    ) -> Result<Response<models::Browser>, Error> {
+        let mut request =
+            self.0
+                .client
+                .request(reqwest::Method::POST, "/api/v1/browsers", &self.0.ids)?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[201]).await?;
+        Ok(response)
+    }
+    /// Attach Browser.
+    ///
+    /// `POST /api/v1/browsers/attach`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn attach(
+        &self,
+        body: &models::BrowserAttach,
+        options: BrowsersAttachOptions,
+    ) -> Result<Response<models::Browser>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/browsers/attach",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[201]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct BrowserResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`BrowserResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`BrowserResource::handback`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserHandbackOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`BrowserResource::prepare`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserPrepareOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`BrowserResource::release`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserReleaseOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`BrowserResource::renew`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserRenewOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`BrowserResource::stop`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserStopOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`BrowserResource::takeover`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserTakeoverOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`BrowserResource::viewer`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct BrowserViewerOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> BrowserResource<'a> {
+    /// Get Browser.
+    ///
+    /// `GET /api/v1/browsers/{browser_id}`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: BrowserGetOptions,
+    ) -> Result<Response<models::Browser>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/browsers/{browser_id}",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Handback Browser.
+    ///
+    /// `POST /api/v1/browsers/{browser_id}/handback`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn handback(
+        &self,
+        options: BrowserHandbackOptions,
+    ) -> Result<Response<models::Browser>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/browsers/{browser_id}/handback",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Prepare Browser.
+    ///
+    /// `POST /api/v1/browsers/{browser_id}/prepare`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn prepare(
+        &self,
+        options: BrowserPrepareOptions,
+    ) -> Result<Response<models::Browser>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/browsers/{browser_id}/prepare",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Release Browser.
+    ///
+    /// `POST /api/v1/browsers/{browser_id}/release`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn release(
+        &self,
+        options: BrowserReleaseOptions,
+    ) -> Result<Response<models::Browser>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/browsers/{browser_id}/release",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Renew Browser Control.
+    ///
+    /// `POST /api/v1/browsers/{browser_id}/renew`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn renew(
+        &self,
+        body: &models::RenewControl,
+        options: BrowserRenewOptions,
+    ) -> Result<Response<models::Browser>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/browsers/{browser_id}/renew",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Stop Browser.
+    ///
+    /// `POST /api/v1/browsers/{browser_id}/stop`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn stop(
+        &self,
+        options: BrowserStopOptions,
+    ) -> Result<Response<models::Browser>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/browsers/{browser_id}/stop",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Takeover Browser.
+    ///
+    /// `POST /api/v1/browsers/{browser_id}/takeover`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn takeover(
+        &self,
+        body: &models::A13nServiceRunsBrowsersSchemasTakeover,
+        options: BrowserTakeoverOptions,
+    ) -> Result<Response<models::Browser>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/browsers/{browser_id}/takeover",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Browser Viewer.
+    ///
+    /// `POST /api/v1/browsers/{browser_id}/viewer`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn viewer(
+        &self,
+        options: BrowserViewerOptions,
+    ) -> Result<Response<models::A13nServiceRunsBrowsersSchemasViewer>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/browsers/{browser_id}/viewer",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
 pub struct BuiltinSkillsResource<'a>(pub(crate) Binding<'a>);
 /// Query and header options for [`BuiltinSkillsResource::list`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
@@ -3449,193 +4169,6 @@ impl<'a> ConnectorProviderAppActionsIndexResource<'a> {
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
 
 #[derive(Clone)]
-pub struct DesktopAssistanceCollectionResource<'a>(pub(crate) Binding<'a>);
-impl<'a> DesktopAssistanceCollectionResource<'a> {
-    /// Bind `assistance_id` locally without an HTTP request. The returned reference borrows the client, not this collection.
-    pub fn at(&self, id: impl Into<String>) -> DesktopAssistanceResource<'a> {
-        DesktopAssistanceResource(self.0.select(id.into()))
-    }
-}
-/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
-
-#[derive(Clone)]
-pub struct DesktopAssistanceResource<'a>(pub(crate) Binding<'a>);
-/// Query and header options for [`DesktopAssistanceResource::complete`]. Required values must be supplied before calling the method.
-#[derive(Clone, Debug, Default)]
-pub struct DesktopAssistanceCompleteOptions {
-    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
-    pub x_workspace_id: Option<String>,
-}
-/// Query and header options for [`DesktopAssistanceResource::control`]. Required values must be supplied before calling the method.
-#[derive(Clone, Debug, Default)]
-pub struct DesktopAssistanceControlOptions {
-    /// Query parameter `renew`. `None` omits this parameter.
-    pub renew: Option<bool>,
-    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
-    pub x_workspace_id: Option<String>,
-}
-/// Query and header options for [`DesktopAssistanceResource::disconnect`]. Required values must be supplied before calling the method.
-#[derive(Clone, Debug, Default)]
-pub struct DesktopAssistanceDisconnectOptions {
-    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
-    pub x_workspace_id: Option<String>,
-}
-/// Query and header options for [`DesktopAssistanceResource::request_control`]. Required values must be supplied before calling the method.
-#[derive(Clone, Debug, Default)]
-pub struct DesktopAssistanceRequestControlOptions {
-    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
-    pub x_workspace_id: Option<String>,
-}
-/// Query and header options for [`DesktopAssistanceResource::view`]. Required values must be supplied before calling the method.
-#[derive(Clone, Debug, Default)]
-pub struct DesktopAssistanceViewOptions {
-    /// Query parameter `renew`. `None` omits this parameter.
-    pub renew: Option<bool>,
-    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
-    pub x_workspace_id: Option<String>,
-}
-impl<'a> DesktopAssistanceResource<'a> {
-    /// Complete Assistance.
-    ///
-    /// `POST /api/v1/desktop-assistance/{assistance_id}/complete`.
-    ///
-    /// Preserves the actual HTTP status and headers, including ETag and request ID.
-    ///
-    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
-    ///
-    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
-    pub async fn complete(
-        &self,
-        body: &models::Completion,
-        options: DesktopAssistanceCompleteOptions,
-    ) -> Result<Response<models::View>, Error> {
-        let mut request = self.0.client.request(
-            reqwest::Method::POST,
-            "/api/v1/desktop-assistance/{assistance_id}/complete",
-            &self.0.ids,
-        )?;
-        request = self
-            .0
-            .client
-            .scoped_request(request, options.x_workspace_id.as_deref());
-        request = request.json(body);
-        let response = self.0.client.json(request, &[200]).await?;
-        Ok(response)
-    }
-    /// Control Desktop.
-    ///
-    /// `POST /api/v1/desktop-assistance/{assistance_id}/control`.
-    ///
-    /// Preserves the actual HTTP status and headers, including ETag and request ID.
-    ///
-    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
-    ///
-    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
-    pub async fn control(
-        &self,
-        body: &models::Control,
-        options: DesktopAssistanceControlOptions,
-    ) -> Result<Response<models::Access>, Error> {
-        let mut request = self.0.client.request(
-            reqwest::Method::POST,
-            "/api/v1/desktop-assistance/{assistance_id}/control",
-            &self.0.ids,
-        )?;
-        request = self
-            .0
-            .client
-            .scoped_request(request, options.x_workspace_id.as_deref());
-        if let Some(value) = &options.renew {
-            request = query(request, "renew", value)?;
-        }
-        request = request.json(body);
-        let response = self.0.client.json(request, &[200]).await?;
-        Ok(response)
-    }
-    /// Disconnect Desktop.
-    ///
-    /// `POST /api/v1/desktop-assistance/{assistance_id}/disconnect`.
-    ///
-    /// Preserves the actual HTTP status and headers, including ETag and request ID.
-    ///
-    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
-    ///
-    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
-    pub async fn disconnect(
-        &self,
-        body: &models::Control,
-        options: DesktopAssistanceDisconnectOptions,
-    ) -> Result<Response<models::View>, Error> {
-        let mut request = self.0.client.request(
-            reqwest::Method::POST,
-            "/api/v1/desktop-assistance/{assistance_id}/disconnect",
-            &self.0.ids,
-        )?;
-        request = self
-            .0
-            .client
-            .scoped_request(request, options.x_workspace_id.as_deref());
-        request = request.json(body);
-        let response = self.0.client.json(request, &[200]).await?;
-        Ok(response)
-    }
-    /// Request Control.
-    ///
-    /// `POST /api/v1/desktop-assistance/{assistance_id}/request-control`.
-    ///
-    /// Preserves the actual HTTP status and headers, including ETag and request ID.
-    ///
-    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
-    pub async fn request_control(
-        &self,
-        options: DesktopAssistanceRequestControlOptions,
-    ) -> Result<Response<models::View>, Error> {
-        let mut request = self.0.client.request(
-            reqwest::Method::POST,
-            "/api/v1/desktop-assistance/{assistance_id}/request-control",
-            &self.0.ids,
-        )?;
-        request = self
-            .0
-            .client
-            .scoped_request(request, options.x_workspace_id.as_deref());
-        let response = self.0.client.json(request, &[200]).await?;
-        Ok(response)
-    }
-    /// View Desktop.
-    ///
-    /// `POST /api/v1/desktop-assistance/{assistance_id}/view`.
-    ///
-    /// Preserves the actual HTTP status and headers, including ETag and request ID.
-    ///
-    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
-    ///
-    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
-    pub async fn view(
-        &self,
-        body: &models::Control,
-        options: DesktopAssistanceViewOptions,
-    ) -> Result<Response<models::Access>, Error> {
-        let mut request = self.0.client.request(
-            reqwest::Method::POST,
-            "/api/v1/desktop-assistance/{assistance_id}/view",
-            &self.0.ids,
-        )?;
-        request = self
-            .0
-            .client
-            .scoped_request(request, options.x_workspace_id.as_deref());
-        if let Some(value) = &options.renew {
-            request = query(request, "renew", value)?;
-        }
-        request = request.json(body);
-        let response = self.0.client.json(request, &[200]).await?;
-        Ok(response)
-    }
-}
-/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
-
-#[derive(Clone)]
 pub struct DevicesResource<'a>(pub(crate) Binding<'a>);
 /// Query and header options for [`DevicesResource::list`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
@@ -4590,6 +5123,12 @@ pub struct EnvironmentUpdateOptions {
     /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
     pub x_workspace_id: Option<String>,
 }
+/// Query and header options for [`EnvironmentResource::desktop_viewer`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct EnvironmentDesktopViewerOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
 /// Query and header options for [`EnvironmentResource::retry_creation`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
 pub struct EnvironmentRetryCreationOptions {
@@ -4614,6 +5153,10 @@ impl<'a> EnvironmentResource<'a> {
     /// Access `creation` locally, sharing the client and explicit scope.
     pub fn creation(&self) -> EnvironmentCreationResource<'a> {
         EnvironmentCreationResource(self.0.clone())
+    }
+    /// Access `desktop-control` locally, sharing the client and explicit scope.
+    pub fn desktop_control(&self) -> EnvironmentDesktopControlResource<'a> {
+        EnvironmentDesktopControlResource(self.0.clone())
     }
     /// Access `desktop-preview` locally, sharing the client and explicit scope.
     pub fn desktop_preview(&self) -> EnvironmentDesktopPreviewResource<'a> {
@@ -4708,6 +5251,33 @@ impl<'a> EnvironmentResource<'a> {
             .client
             .scoped_request(request, options.x_workspace_id.as_deref());
         request = request.header("If-Match", &options.if_match);
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Open Desktop Viewer.
+    ///
+    /// `POST /api/v1/environments/{environment_id}/desktop-viewer`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn desktop_viewer(
+        &self,
+        body: &models::OpenViewer,
+        options: EnvironmentDesktopViewerOptions,
+    ) -> Result<Response<models::A13nServiceRunsEnvironmentsDesktopSchemasViewer>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/environments/{environment_id}/desktop-viewer",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
         request = request.json(body);
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
@@ -4837,6 +5407,152 @@ impl<'a> EnvironmentCreationResource<'a> {
             .0
             .client
             .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct EnvironmentDesktopControlResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`EnvironmentDesktopControlResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct EnvironmentDesktopControlGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`EnvironmentDesktopControlResource::handback`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct EnvironmentDesktopControlHandbackOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`EnvironmentDesktopControlResource::renew`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct EnvironmentDesktopControlRenewOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`EnvironmentDesktopControlResource::takeover`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct EnvironmentDesktopControlTakeoverOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> EnvironmentDesktopControlResource<'a> {
+    /// Get Desktop Control.
+    ///
+    /// `GET /api/v1/environments/{environment_id}/desktop-control`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: EnvironmentDesktopControlGetOptions,
+    ) -> Result<Response<models::Control>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/environments/{environment_id}/desktop-control",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Return Desktop Control.
+    ///
+    /// `POST /api/v1/environments/{environment_id}/desktop-control/handback`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn handback(
+        &self,
+        options: EnvironmentDesktopControlHandbackOptions,
+    ) -> Result<Response<models::Control>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/environments/{environment_id}/desktop-control/handback",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Renew Desktop Control.
+    ///
+    /// `POST /api/v1/environments/{environment_id}/desktop-control/renew`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn renew(
+        &self,
+        body: &models::Renew,
+        options: EnvironmentDesktopControlRenewOptions,
+    ) -> Result<Response<models::Control>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/environments/{environment_id}/desktop-control/renew",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Take Over Desktop.
+    ///
+    /// `POST /api/v1/environments/{environment_id}/desktop-control/takeover`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn takeover(
+        &self,
+        body: &models::A13nServiceRunsEnvironmentsDesktopSchemasTakeover,
+        options: EnvironmentDesktopControlTakeoverOptions,
+    ) -> Result<Response<models::Control>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/environments/{environment_id}/desktop-control/takeover",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        request = request.json(body);
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
@@ -9420,14 +10136,6 @@ impl<'a> RunResource<'a> {
     pub fn contents(&self) -> RunContentsResource<'a> {
         RunContentsResource(self.0.clone())
     }
-    /// Access `desktop-assistance` locally, sharing the client and explicit scope.
-    pub fn desktop_assistance(&self) -> RunDesktopAssistanceCollectionResource<'a> {
-        RunDesktopAssistanceCollectionResource(self.0.clone())
-    }
-    /// Access `desktop-control` locally, sharing the client and explicit scope.
-    pub fn desktop_control(&self) -> RunDesktopControlResource<'a> {
-        RunDesktopControlResource(self.0.clone())
-    }
     /// Access `images` locally, sharing the client and explicit scope.
     pub fn images(&self) -> RunImagesResource<'a> {
         RunImagesResource(self.0.clone())
@@ -10040,152 +10748,6 @@ impl<'a> RunContentResource<'a> {
         if let Some(value) = &options.query {
             request = query(request, "query", value)?;
         }
-        let response = self.0.client.json(request, &[200]).await?;
-        Ok(response)
-    }
-}
-/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
-
-#[derive(Clone)]
-pub struct RunDesktopAssistanceCollectionResource<'a>(pub(crate) Binding<'a>);
-impl<'a> RunDesktopAssistanceCollectionResource<'a> {
-    /// Bind `call_id` locally without an HTTP request. The returned reference borrows the client, not this collection.
-    pub fn at(&self, id: impl Into<String>) -> RunDesktopAssistanceResource<'a> {
-        RunDesktopAssistanceResource(self.0.select(id.into()))
-    }
-}
-/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
-
-#[derive(Clone)]
-pub struct RunDesktopAssistanceResource<'a>(pub(crate) Binding<'a>);
-/// Query and header options for [`RunDesktopAssistanceResource::get`]. Required values must be supplied before calling the method.
-#[derive(Clone, Debug, Default)]
-pub struct RunDesktopAssistanceGetOptions {
-    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
-    pub x_workspace_id: Option<String>,
-}
-impl<'a> RunDesktopAssistanceResource<'a> {
-    /// Get Assistance.
-    ///
-    /// `GET /api/v1/runs/{run_id}/desktop-assistance/{call_id}`.
-    ///
-    /// Preserves the actual HTTP status and headers, including ETag and request ID.
-    ///
-    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
-    pub async fn get(
-        &self,
-        options: RunDesktopAssistanceGetOptions,
-    ) -> Result<Response<models::View>, Error> {
-        let mut request = self.0.client.request(
-            reqwest::Method::GET,
-            "/api/v1/runs/{run_id}/desktop-assistance/{call_id}",
-            &self.0.ids,
-        )?;
-        request = self
-            .0
-            .client
-            .scoped_request(request, options.x_workspace_id.as_deref());
-        let response = self.0.client.json(request, &[200]).await?;
-        Ok(response)
-    }
-}
-/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
-
-#[derive(Clone)]
-pub struct RunDesktopControlResource<'a>(pub(crate) Binding<'a>);
-/// Query and header options for [`RunDesktopControlResource::get`]. Required values must be supplied before calling the method.
-#[derive(Clone, Debug, Default)]
-pub struct RunDesktopControlGetOptions {
-    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
-    pub x_workspace_id: Option<String>,
-}
-/// Query and header options for [`RunDesktopControlResource::create`]. Required values must be supplied before calling the method.
-#[derive(Clone, Debug, Default)]
-pub struct RunDesktopControlCreateOptions {
-    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
-    pub x_workspace_id: Option<String>,
-}
-/// Query and header options for [`RunDesktopControlResource::view`]. Required values must be supplied before calling the method.
-#[derive(Clone, Debug, Default)]
-pub struct RunDesktopControlViewOptions {
-    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
-    pub x_workspace_id: Option<String>,
-}
-impl<'a> RunDesktopControlResource<'a> {
-    /// Get Control.
-    ///
-    /// `GET /api/v1/runs/{run_id}/desktop-control`.
-    ///
-    /// Preserves the actual HTTP status and headers, including ETag and request ID.
-    ///
-    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
-    pub async fn get(
-        &self,
-        options: RunDesktopControlGetOptions,
-    ) -> Result<Response<Option<models::View>>, Error> {
-        let mut request = self.0.client.request(
-            reqwest::Method::GET,
-            "/api/v1/runs/{run_id}/desktop-control",
-            &self.0.ids,
-        )?;
-        request = self
-            .0
-            .client
-            .scoped_request(request, options.x_workspace_id.as_deref());
-        let response = self.0.client.json(request, &[200]).await?;
-        Ok(response)
-    }
-    /// Open Control.
-    ///
-    /// `POST /api/v1/runs/{run_id}/desktop-control`.
-    ///
-    /// Preserves the actual HTTP status and headers, including ETag and request ID.
-    ///
-    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
-    ///
-    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
-    pub async fn create(
-        &self,
-        body: &models::Request,
-        options: RunDesktopControlCreateOptions,
-    ) -> Result<Response<models::View>, Error> {
-        let mut request = self.0.client.request(
-            reqwest::Method::POST,
-            "/api/v1/runs/{run_id}/desktop-control",
-            &self.0.ids,
-        )?;
-        request = self
-            .0
-            .client
-            .scoped_request(request, options.x_workspace_id.as_deref());
-        request = request.json(body);
-        let response = self.0.client.json(request, &[200]).await?;
-        Ok(response)
-    }
-    /// Open View.
-    ///
-    /// `POST /api/v1/runs/{run_id}/desktop-control/view`.
-    ///
-    /// Preserves the actual HTTP status and headers, including ETag and request ID.
-    ///
-    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
-    ///
-    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
-    pub async fn view(
-        &self,
-        body: &models::OpenView,
-        options: RunDesktopControlViewOptions,
-    ) -> Result<Response<models::Access>, Error> {
-        let mut request = self.0.client.request(
-            reqwest::Method::POST,
-            "/api/v1/runs/{run_id}/desktop-control/view",
-            &self.0.ids,
-        )?;
-        request = self
-            .0
-            .client
-            .scoped_request(request, options.x_workspace_id.as_deref());
-        request = request.json(body);
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
@@ -12545,6 +13107,10 @@ pub struct ThreadArchiveOptions {
     pub x_workspace_id: Option<String>,
 }
 impl<'a> ThreadResource<'a> {
+    /// Access `browser` locally, sharing the client and explicit scope.
+    pub fn browser(&self) -> ThreadBrowserResource<'a> {
+        ThreadBrowserResource(self.0.clone())
+    }
     /// Access `environments` locally, sharing the client and explicit scope.
     pub fn environments(&self) -> ThreadEnvironmentsResource<'a> {
         ThreadEnvironmentsResource(self.0.clone())
@@ -12651,6 +13217,82 @@ impl<'a> ThreadResource<'a> {
             .client
             .scoped_request(request, options.x_workspace_id.as_deref());
         request = request.header("If-Match", &options.if_match);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct ThreadBrowserResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`ThreadBrowserResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ThreadBrowserGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`ThreadBrowserResource::replace`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ThreadBrowserReplaceOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> ThreadBrowserResource<'a> {
+    /// Get Binding.
+    ///
+    /// `GET /api/v1/threads/{thread_id}/browser`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: ThreadBrowserGetOptions,
+    ) -> Result<Response<Option<models::BrowserBinding>>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/threads/{thread_id}/browser",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Bind Browser.
+    ///
+    /// `PUT /api/v1/threads/{thread_id}/browser`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn replace(
+        &self,
+        body: &Option<models::BrowserBinding>,
+        options: ThreadBrowserReplaceOptions,
+    ) -> Result<Response<Option<models::BrowserBinding>>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::PUT,
+            "/api/v1/threads/{thread_id}/browser",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        request = request.json(body);
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
@@ -13699,6 +14341,8 @@ pub struct ToolsetsResource<'a>(pub(crate) Binding<'a>);
 /// Query and header options for [`ToolsetsResource::list`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
 pub struct ToolsetsListOptions {
+    /// Query parameter `connection_ids`. `None` omits this parameter.
+    pub connection_ids: Option<Vec<String>>,
     /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
     pub x_workspace_id: Option<String>,
 }
@@ -13730,6 +14374,9 @@ impl<'a> ToolsetsResource<'a> {
             .0
             .client
             .scoped_request(request, options.x_workspace_id.as_deref());
+        if let Some(value) = &options.connection_ids {
+            request = query(request, "connection_ids", value)?;
+        }
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
@@ -14862,6 +15509,10 @@ pub struct UsageOverviewGetOptions {
     pub end: chrono::DateTime<chrono::FixedOffset>,
     /// Query parameter `principal_id`. Filter by Run execution identity; requires workspace admin. `None` omits this parameter.
     pub principal_id: Option<String>,
+    /// Query parameter `group_by`. `None` omits this parameter.
+    pub group_by: Option<UsageOverviewGroupBy>,
+    /// Query parameter `metric`. `None` omits this parameter.
+    pub metric: Option<UsageOverviewMetric>,
     /// Query parameter `timezone`. `None` omits this parameter.
     pub timezone: Option<String>,
     /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
@@ -14891,6 +15542,12 @@ impl<'a> UsageOverviewResource<'a> {
         request = query(request, "end", &options.end)?;
         if let Some(value) = &options.principal_id {
             request = query(request, "principal_id", value)?;
+        }
+        if let Some(value) = &options.group_by {
+            request = query(request, "group_by", value)?;
+        }
+        if let Some(value) = &options.metric {
+            request = query(request, "metric", value)?;
         }
         if let Some(value) = &options.timezone {
             request = query(request, "timezone", value)?;
@@ -17035,6 +17692,98 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
     ("GET", "/api/v1/auth/session", "AuthSessionResource", "get"),
     (
         "GET",
+        "/api/v1/browser-providers",
+        "BrowserProvidersResource",
+        "list",
+    ),
+    (
+        "POST",
+        "/api/v1/browser-providers",
+        "BrowserProvidersResource",
+        "create",
+    ),
+    (
+        "DELETE",
+        "/api/v1/browser-providers/{provider_id}",
+        "BrowserProviderResource",
+        "delete",
+    ),
+    (
+        "GET",
+        "/api/v1/browser-providers/{provider_id}",
+        "BrowserProviderResource",
+        "get",
+    ),
+    (
+        "PATCH",
+        "/api/v1/browser-providers/{provider_id}",
+        "BrowserProviderResource",
+        "update",
+    ),
+    (
+        "POST",
+        "/api/v1/browser-providers/{provider_id}/test",
+        "BrowserProviderResource",
+        "test",
+    ),
+    ("GET", "/api/v1/browsers", "BrowsersResource", "list"),
+    ("POST", "/api/v1/browsers", "BrowsersResource", "create"),
+    (
+        "POST",
+        "/api/v1/browsers/attach",
+        "BrowsersResource",
+        "attach",
+    ),
+    (
+        "GET",
+        "/api/v1/browsers/{browser_id}",
+        "BrowserResource",
+        "get",
+    ),
+    (
+        "POST",
+        "/api/v1/browsers/{browser_id}/handback",
+        "BrowserResource",
+        "handback",
+    ),
+    (
+        "POST",
+        "/api/v1/browsers/{browser_id}/prepare",
+        "BrowserResource",
+        "prepare",
+    ),
+    (
+        "POST",
+        "/api/v1/browsers/{browser_id}/release",
+        "BrowserResource",
+        "release",
+    ),
+    (
+        "POST",
+        "/api/v1/browsers/{browser_id}/renew",
+        "BrowserResource",
+        "renew",
+    ),
+    (
+        "POST",
+        "/api/v1/browsers/{browser_id}/stop",
+        "BrowserResource",
+        "stop",
+    ),
+    (
+        "POST",
+        "/api/v1/browsers/{browser_id}/takeover",
+        "BrowserResource",
+        "takeover",
+    ),
+    (
+        "POST",
+        "/api/v1/browsers/{browser_id}/viewer",
+        "BrowserResource",
+        "viewer",
+    ),
+    (
+        "GET",
         "/api/v1/builtin-skills",
         "BuiltinSkillsResource",
         "list",
@@ -17184,36 +17933,6 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "ConnectorProviderAppActionsIndexResource",
         "list",
     ),
-    (
-        "POST",
-        "/api/v1/desktop-assistance/{assistance_id}/complete",
-        "DesktopAssistanceResource",
-        "complete",
-    ),
-    (
-        "POST",
-        "/api/v1/desktop-assistance/{assistance_id}/control",
-        "DesktopAssistanceResource",
-        "control",
-    ),
-    (
-        "POST",
-        "/api/v1/desktop-assistance/{assistance_id}/disconnect",
-        "DesktopAssistanceResource",
-        "disconnect",
-    ),
-    (
-        "POST",
-        "/api/v1/desktop-assistance/{assistance_id}/request-control",
-        "DesktopAssistanceResource",
-        "request_control",
-    ),
-    (
-        "POST",
-        "/api/v1/desktop-assistance/{assistance_id}/view",
-        "DesktopAssistanceResource",
-        "view",
-    ),
     ("GET", "/api/v1/devices", "DevicesResource", "list"),
     ("POST", "/api/v1/devices", "DevicesResource", "create"),
     (
@@ -17350,6 +18069,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
     ),
     (
         "POST",
+        "/api/v1/environments/{environment_id}/desktop-viewer",
+        "EnvironmentResource",
+        "desktop_viewer",
+    ),
+    (
+        "POST",
         "/api/v1/environments/{environment_id}/retry-creation",
         "EnvironmentResource",
         "retry_creation",
@@ -17371,6 +18096,30 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/environments/{environment_id}/creation",
         "EnvironmentCreationResource",
         "get",
+    ),
+    (
+        "GET",
+        "/api/v1/environments/{environment_id}/desktop-control",
+        "EnvironmentDesktopControlResource",
+        "get",
+    ),
+    (
+        "POST",
+        "/api/v1/environments/{environment_id}/desktop-control/handback",
+        "EnvironmentDesktopControlResource",
+        "handback",
+    ),
+    (
+        "POST",
+        "/api/v1/environments/{environment_id}/desktop-control/renew",
+        "EnvironmentDesktopControlResource",
+        "renew",
+    ),
+    (
+        "POST",
+        "/api/v1/environments/{environment_id}/desktop-control/takeover",
+        "EnvironmentDesktopControlResource",
+        "takeover",
     ),
     (
         "GET",
@@ -17982,30 +18731,6 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
     ),
     (
         "GET",
-        "/api/v1/runs/{run_id}/desktop-assistance/{call_id}",
-        "RunDesktopAssistanceResource",
-        "get",
-    ),
-    (
-        "GET",
-        "/api/v1/runs/{run_id}/desktop-control",
-        "RunDesktopControlResource",
-        "get",
-    ),
-    (
-        "POST",
-        "/api/v1/runs/{run_id}/desktop-control",
-        "RunDesktopControlResource",
-        "create",
-    ),
-    (
-        "POST",
-        "/api/v1/runs/{run_id}/desktop-control/view",
-        "RunDesktopControlResource",
-        "view",
-    ),
-    (
-        "GET",
         "/api/v1/runs/{run_id}/images/{image_id}",
         "RunImageResource",
         "get",
@@ -18246,6 +18971,18 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/threads/{thread_id}/archive",
         "ThreadResource",
         "archive",
+    ),
+    (
+        "GET",
+        "/api/v1/threads/{thread_id}/browser",
+        "ThreadBrowserResource",
+        "get",
+    ),
+    (
+        "PUT",
+        "/api/v1/threads/{thread_id}/browser",
+        "ThreadBrowserResource",
+        "replace",
     ),
     (
         "GET",

@@ -18,6 +18,9 @@ pub struct RevisionSummaryPage {
 
     #[serde(rename = "next_cursor", deserialize_with = "Option::deserialize")]
     pub next_cursor: Option<String>,
+
+    #[serde(rename = "unavailable", skip_serializing_if = "Option::is_none")]
+    pub unavailable: Option<Vec<models::UnavailableConfiguration>>,
 }
 
 impl RevisionSummaryPage {
@@ -25,6 +28,10 @@ impl RevisionSummaryPage {
         items: Vec<models::RevisionSummary>,
         next_cursor: Option<String>,
     ) -> RevisionSummaryPage {
-        RevisionSummaryPage { items, next_cursor }
+        RevisionSummaryPage {
+            items,
+            next_cursor,
+            unavailable: None,
+        }
     }
 }

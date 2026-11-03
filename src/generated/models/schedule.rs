@@ -66,6 +66,9 @@ pub struct Schedule {
     #[serde(rename = "stream_url")]
     pub stream_url: String,
 
+    #[serde(rename = "target")]
+    pub target: Box<models::ScheduleTarget>,
+
     #[serde(rename = "updated_at")]
     pub updated_at: chrono::DateTime<chrono::FixedOffset>,
 
@@ -93,6 +96,7 @@ impl Schedule {
         session_id: String,
         state: models::ScheduleState,
         stream_url: String,
+        target: models::ScheduleTarget,
         updated_at: chrono::DateTime<chrono::FixedOffset>,
         updated_by_id: String,
         version: i32,
@@ -114,6 +118,7 @@ impl Schedule {
             session_id,
             state,
             stream_url,
+            target: Box::new(target),
             updated_at,
             updated_by_id,
             version,

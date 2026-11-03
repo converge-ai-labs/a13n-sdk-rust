@@ -20,6 +20,8 @@ pub enum ToolsetKey {
     Shell,
     #[serde(rename = "computer")]
     Computer,
+    #[serde(rename = "browser")]
+    Browser,
     #[serde(rename = "web")]
     Web,
     #[serde(rename = "memory")]
@@ -50,6 +52,7 @@ impl std::fmt::Display for ToolsetKey {
             Self::Files => write!(f, "files"),
             Self::Shell => write!(f, "shell"),
             Self::Computer => write!(f, "computer"),
+            Self::Browser => write!(f, "browser"),
             Self::Web => write!(f, "web"),
             Self::Memory => write!(f, "memory"),
             Self::Assets => write!(f, "assets"),

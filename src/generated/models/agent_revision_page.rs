@@ -18,6 +18,9 @@ pub struct AgentRevisionPage {
 
     #[serde(rename = "next_cursor", deserialize_with = "Option::deserialize")]
     pub next_cursor: Option<String>,
+
+    #[serde(rename = "unavailable", skip_serializing_if = "Option::is_none")]
+    pub unavailable: Option<Vec<models::UnavailableConfiguration>>,
 }
 
 impl AgentRevisionPage {
@@ -25,6 +28,10 @@ impl AgentRevisionPage {
         items: Vec<models::AgentRevision>,
         next_cursor: Option<String>,
     ) -> AgentRevisionPage {
-        AgentRevisionPage { items, next_cursor }
+        AgentRevisionPage {
+            items,
+            next_cursor,
+            unavailable: None,
+        }
     }
 }

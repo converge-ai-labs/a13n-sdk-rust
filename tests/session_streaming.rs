@@ -348,7 +348,7 @@ async fn session_desktop_wait_preserves_pending_snapshot_without_control() {
     let mut run = sample("RunView");
     run["status"] = json!("waiting");
     run["wait_reason"] = json!("desktop_control");
-    run["pending"] = json!({"approvals":[],"calls":[],"desktop_control_id":"desktop"});
+    run["pending"] = json!({"approvals":[{"tool_call_id":"a","tool_name":"approval","arguments":{}}],"calls":[{"tool_call_id":"c","tool_name":"call","arguments":{}}],"desktop_control_id":"desktop"});
     let mut snapshot = thread();
     snapshot["current_run"] = run;
     let body = frame("thread", snapshot.clone());
@@ -366,10 +366,10 @@ async fn session_desktop_wait_preserves_pending_snapshot_without_control() {
         run.wait_reason,
         Some(a13n::generated::models::WaitReason::DesktopControl)
     );
-    assert_eq!(
-        run.pending.unwrap().desktop_control_id,
-        Some(Some("desktop".into()))
-    );
+    assert!(matches!(
+        run.pending.as_deref(),
+        Some(a13n::generated::models::Pending1::AnyOf1(p)) if p.desktop_control_id == "desktop" && p.calls[0].tool_call_id == "c" && p.approvals[0].tool_call_id == "a"
+    ));
     reader.close();
     assert_eq!(fixture.requests.recv().await.unwrap().method, "GET");
     assert!(fixture.requests.try_recv().is_err());
@@ -418,4 +418,25 @@ async fn app_ready_is_typed_repeatable_and_rejects_malformed_payloads_and_ids() 
             .unwrap();
         assert!(matches!(reader.next().await, Err(Error::Protocol(_))));
     }
+}
+
+#[tokio::test]
+async fn session_current_pending_preserves_calls_and_approvals() {
+    let mut run = sample("RunView");
+    run["status"] = json!("waiting");
+    run["pending"] = json!({"calls":[{"tool_call_id":"c","tool_name":"call","arguments":{}}],"approvals":[{"tool_call_id":"a","tool_name":"approval","arguments":{}}]});
+    let mut snapshot = thread();
+    snapshot["current_run"] = run;
+    let body = frame("thread", snapshot);
+    let fixture = server(move |_| Reply::sse(&body)).await;
+    let sdk = client(&fixture);
+    let mut reader = SessionStream::open(sdk.api().sessions().at("s"), Default::default())
+        .await
+        .unwrap();
+    let Some(SessionFrame::Thread(value)) = reader.next().await.unwrap() else {
+        panic!("thread")
+    };
+    assert!(
+        matches!(value.current_run.unwrap().pending.as_deref(), Some(a13n::generated::models::Pending1::AnyOf0(p)) if p.calls[0].tool_call_id == "c" && p.approvals[0].tool_call_id == "a")
+    );
 }

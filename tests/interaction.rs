@@ -724,19 +724,9 @@ async fn explicit_normal_message_continues_last_sealed_failed_or_cancelled_run()
 }
 
 #[tokio::test]
-async fn desktop_wait_is_finite_recoverable_and_empty_resume_is_explicit() {
+async fn historical_desktop_wait_is_finite_and_preserves_snapshot() {
     let reads = AtomicUsize::new(0);
     let mut fixture = server(move |request| {
-        if request.target.ends_with("/resume") {
-            assert_eq!(request.json(), json!({"calls":{},"approvals":{}}));
-            let mut successor = run("running");
-            successor["id"] = json!("successor");
-            return Reply::json(201, successor);
-        }
-        if request.target.ends_with("/complete") {
-            assert_eq!(request.json(),json!({"session_id":"browser_session_token_123456","epoch":0}));
-            return Reply::json(200, sample("View"));
-        }
         if request.target.ends_with("/stream") {
             return Reply::sse("event: delta\nid: 1-0\ndata: {\"run_id\":\"r\",\"attempt\":1,\"sequence\":1,\"event\":{},\"item\":null}\n\n");
         }
@@ -746,7 +736,7 @@ async fn desktop_wait_is_finite_recoverable_and_empty_resume_is_explicit() {
         }
         let mut waiting = run("waiting");
         waiting["wait_reason"] = json!("desktop_control");
-        waiting["pending"] = json!({"calls":[],"approvals":[],"desktop_control_id":"desktop"});
+        waiting["pending"] = json!({"calls":[{"tool_call_id":"c","tool_name":"call","arguments":{}}],"approvals":[{"tool_call_id":"a","tool_name":"approval","arguments":{}}],"desktop_control_id":"desktop"});
         Reply::json(200,waiting)
     }).await;
     let sdk = client(&fixture);
@@ -763,50 +753,38 @@ async fn desktop_wait_is_finite_recoverable_and_empty_resume_is_explicit() {
     );
     let outcome = interaction.result().await.unwrap();
     assert_eq!(outcome.status, models::RunStatus::Waiting);
-    assert!(outcome.pending_calls.is_empty() && outcome.pending_approvals.is_empty());
+    assert_eq!(outcome.pending_calls[0].tool_call_id, "c");
+    assert_eq!(outcome.pending_approvals[0].tool_call_id, "a");
     assert_eq!(
         serde_json::to_value(&outcome.http_response.data).unwrap()["wait_reason"],
         "desktop_control"
     );
-    assert_eq!(
-        outcome
-            .http_response
-            .data
-            .pending
-            .as_ref()
-            .unwrap()
-            .desktop_control_id,
-        Some(Some("desktop".into()))
-    );
+    assert!(matches!(
+        outcome.http_response.data.pending.as_deref(),
+        Some(models::Pending1::AnyOf1(p)) if p.desktop_control_id == "desktop"
+    ));
     let recovered = outcome.run.result(Default::default()).await.unwrap();
     assert_eq!(recovered.run_id, "r");
     while let Ok(request) = fixture.requests.try_recv() {
         assert_eq!(request.method, "GET");
     }
-    sdk.api()
-        .desktop_assistance()
-        .at("desktop")
-        .complete(
-            &models::Completion::new(0, "browser_session_token_123456".into()),
-            Default::default(),
-        )
+    assert!(fixture.requests.try_recv().is_err());
+}
+
+#[tokio::test]
+async fn current_pending_preserves_calls_and_approvals_in_run_result() {
+    let mut waiting = run("waiting");
+    waiting["pending"] = json!({"calls":[{"tool_call_id":"c","tool_name":"call","arguments":{}}],"approvals":[{"tool_call_id":"a","tool_name":"approval","arguments":{}}]});
+    let fixture = server(move |_| Reply::json(200, waiting.clone())).await;
+    let outcome = client(&fixture)
+        .run("r")
+        .result(Default::default())
         .await
         .unwrap();
-    assert!(
-        fixture
-            .requests
-            .recv()
-            .await
-            .unwrap()
-            .target
-            .ends_with("/desktop-assistance/desktop/complete")
-    );
-    assert!(fixture.requests.try_recv().is_err()); // Completion never resumes or renews.
-    let successor = outcome.run.resume(Default::default()).await.unwrap();
-    assert_eq!(successor.run.as_ref().unwrap().id, "successor");
-    assert_eq!(
-        fixture.requests.recv().await.unwrap().target,
-        "/prefix/api/v1/runs/r/resume"
-    );
-    assert!(fixture.requests.try_recv().is_err());
+    assert_eq!(outcome.pending_calls[0].tool_call_id, "c");
+    assert_eq!(outcome.pending_approvals[0].tool_call_id, "a");
+    assert!(matches!(
+        outcome.http_response.data.pending.as_deref(),
+        Some(models::Pending1::AnyOf0(_))
+    ));
 }

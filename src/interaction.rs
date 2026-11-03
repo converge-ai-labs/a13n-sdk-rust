@@ -277,22 +277,17 @@ impl RunOutcome {
             .as_deref()
             .cloned()
             .unwrap_or(serde_json::Value::Null);
+        let (pending_approvals, pending_calls) = match snapshot.data.pending.as_deref() {
+            Some(models::Pending1::AnyOf0(p)) => (p.approvals.clone(), p.calls.clone()),
+            Some(models::Pending1::AnyOf1(p)) => (p.approvals.clone(), p.calls.clone()),
+            None => (Vec::new(), Vec::new()),
+        };
         Self {
             status: snapshot.data.status.clone(),
             text: output.as_str().map(str::to_owned),
             output,
-            pending_approvals: snapshot
-                .data
-                .pending
-                .as_ref()
-                .map(|p| p.approvals.clone())
-                .unwrap_or_default(),
-            pending_calls: snapshot
-                .data
-                .pending
-                .as_ref()
-                .map(|p| p.calls.clone())
-                .unwrap_or_default(),
+            pending_approvals,
+            pending_calls,
             failure: snapshot.data.failure.as_deref().cloned(),
             thread_id: snapshot.data.thread_id.clone(),
             run_id: snapshot.data.id.clone(),

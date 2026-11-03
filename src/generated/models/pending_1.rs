@@ -11,17 +11,14 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Request {
-    #[serde(rename = "mount")]
-    pub mount: String,
-
-    #[serde(rename = "reason")]
-    pub reason: String,
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Pending1 {
+    AnyOf0(models::Pending),
+    AnyOf1(models::HistoricalDesktopPending),
 }
-
-impl Request {
-    pub fn new(mount: String, reason: String) -> Request {
-        Request { mount, reason }
+impl Default for Pending1 {
+    fn default() -> Self {
+        Self::AnyOf0(Default::default())
     }
 }

@@ -23,6 +23,14 @@ pub struct RunView {
     pub attempts: i32,
 
     #[serde(
+        rename = "browser_binding",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub browser_binding: Option<Option<Box<models::BrowserBinding>>>,
+
+    #[serde(
         rename = "cancel_requested_at",
         deserialize_with = "Option::deserialize"
     )]
@@ -76,7 +84,7 @@ pub struct RunView {
     pub parent_run_id: Option<String>,
 
     #[serde(rename = "pending", deserialize_with = "Option::deserialize")]
-    pub pending: Option<Box<models::Pending>>,
+    pub pending: Option<Box<models::Pending1>>,
 
     #[serde(rename = "principal_id")]
     pub principal_id: String,
@@ -153,7 +161,7 @@ impl RunView {
         options: models::RunOptionsOutput,
         output: Option<serde_json::Value>,
         parent_run_id: Option<String>,
-        pending: Option<models::Pending>,
+        pending: Option<models::Pending1>,
         principal_id: String,
         resume: Option<models::Resume>,
         resumed_by_id: Option<String>,
@@ -175,6 +183,7 @@ impl RunView {
             agent_id,
             agent_revision_id,
             attempts,
+            browser_binding: None,
             cancel_requested_at,
             created_at,
             current_attempt_id,

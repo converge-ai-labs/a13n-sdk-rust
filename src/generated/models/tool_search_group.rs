@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 pub struct ToolSearchGroup {
     #[serde(default, deserialize_with = "deserialize_non_null_capabilities")]
     #[serde(rename = "capabilities", skip_serializing_if = "Option::is_none")]
-    pub capabilities: Option<Vec<Capabilities>>,
+    pub capabilities: Option<Vec<models::BuiltinToolsetKey>>,
 
     #[serde(default, deserialize_with = "deserialize_non_null_connections")]
     #[serde(rename = "connections", skip_serializing_if = "Option::is_none")]
@@ -43,20 +43,6 @@ impl ToolSearchGroup {
             platform: None,
             plugins: None,
         }
-    }
-}
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Capabilities {
-    #[serde(rename = "environment")]
-    Environment,
-    #[serde(rename = "web")]
-    Web,
-}
-
-impl Default for Capabilities {
-    fn default() -> Capabilities {
-        Self::Environment
     }
 }
 fn deserialize_non_null_capabilities<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(

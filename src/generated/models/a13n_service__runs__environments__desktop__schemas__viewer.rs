@@ -12,12 +12,15 @@ use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Access {
-    #[serde(rename = "assistance")]
-    pub assistance: Box<models::View>,
+pub struct A13nServiceRunsEnvironmentsDesktopSchemasViewer {
+    #[serde(rename = "episode")]
+    pub episode: i32,
 
-    #[serde(rename = "expires_in_seconds")]
-    pub expires_in_seconds: f64,
+    #[serde(rename = "expires_at")]
+    pub expires_at: chrono::DateTime<chrono::FixedOffset>,
+
+    #[serde(rename = "generation")]
+    pub generation: i32,
 
     #[serde(rename = "mode")]
     pub mode: Mode,
@@ -25,23 +28,34 @@ pub struct Access {
     #[serde(rename = "password")]
     pub password: String,
 
+    #[serde(
+        rename = "viewer_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub viewer_id: Option<Option<String>>,
+
     #[serde(rename = "websocket_url")]
     pub websocket_url: String,
 }
 
-impl Access {
+impl A13nServiceRunsEnvironmentsDesktopSchemasViewer {
     pub fn new(
-        assistance: models::View,
-        expires_in_seconds: f64,
+        episode: i32,
+        expires_at: chrono::DateTime<chrono::FixedOffset>,
+        generation: i32,
         mode: Mode,
         password: String,
         websocket_url: String,
-    ) -> Access {
-        Access {
-            assistance: Box::new(assistance),
-            expires_in_seconds,
+    ) -> A13nServiceRunsEnvironmentsDesktopSchemasViewer {
+        A13nServiceRunsEnvironmentsDesktopSchemasViewer {
+            episode,
+            expires_at,
+            generation,
             mode,
             password,
+            viewer_id: None,
             websocket_url,
         }
     }
