@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Control {
     #[serde(rename = "control")]
-    pub control: Control,
+    pub control: models::DesktopControlState,
 
     #[serde(rename = "controller_id", deserialize_with = "Option::deserialize")]
     pub controller_id: Option<String>,
@@ -46,7 +46,7 @@ pub struct Control {
 
 impl Control {
     pub fn new(
-        control: Control,
+        control: models::DesktopControlState,
         controller_id: Option<String>,
         controller_thread_id: Option<String>,
         episode: i32,
@@ -67,23 +67,5 @@ impl Control {
             id,
             version,
         }
-    }
-}
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Control {
-    #[serde(rename = "automation")]
-    Automation,
-    #[serde(rename = "draining")]
-    Draining,
-    #[serde(rename = "human")]
-    Human,
-    #[serde(rename = "returning")]
-    Returning,
-}
-
-impl Default for Control {
-    fn default() -> Control {
-        Self::Automation
     }
 }

@@ -78,9 +78,20 @@ def prepare(document: dict) -> dict:
             for child in value:
                 visit(child)
 
+    # OpenAPI Generator gives an inline enum the same Rust name as its parent
+    # Control struct. Promote it in the generator input, preserving the wire schema.
+    if "Control" in schemas:
+        control = schemas["Control"]["properties"]["control"]
+        schemas["DesktopControlState"] = {**control, "title": "DesktopControlState"}
+        schemas["Control"]["properties"]["control"] = {"$ref": "#/components/schemas/DesktopControlState"}
+
     # Imported native history is immutable ordered JSON, including each message
     # object. HashMap would reorder the model-visible context at the wire boundary.
     for name, schema in schemas.items():
+        if name in {"Pending", "HistoricalDesktopPending"}:
+            # Both union arms are closed; without this serde would accept the
+            # historical arm as Pending and silently discard its control ID.
+            schema["x-rust-deny-unknown-fields"] = True
         if name in {"ToolSearch", "ToolSearchGroup", "ToolSearchConfig"}:
             # Preserve closed configuration objects at the typed boundary.
             schema["x-rust-deny-unknown-fields"] = schema.get("additionalProperties") is False

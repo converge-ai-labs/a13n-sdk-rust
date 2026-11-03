@@ -294,6 +294,8 @@ pub mod deny;
 pub use self::deny::Deny;
 pub mod deployment_preset;
 pub use self::deployment_preset::DeploymentPreset;
+pub mod desktop_control_state;
+pub use self::desktop_control_state::DesktopControlState;
 pub mod device;
 pub use self::device::Device;
 pub mod device_create;

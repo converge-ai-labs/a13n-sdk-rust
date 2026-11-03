@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 
 /// HistoricalDesktopPending : Read-only projection of sealed desktop suspensions predating Computer-scoped control.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct HistoricalDesktopPending {
     #[serde(rename = "approvals")]
     pub approvals: Vec<models::PendingCall>,

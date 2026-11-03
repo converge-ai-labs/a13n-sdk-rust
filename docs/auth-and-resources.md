@@ -126,6 +126,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             max_results: Some(7), ..Default::default()
         })),
         groups: Some(Default::default()),
+        automatic: None,
     };
     let overrides = Overrides::new().tool_search(Some(search));
     assert_eq!(serde_json::to_value(overrides)?["tool_search"]["groups"], serde_json::json!({}));

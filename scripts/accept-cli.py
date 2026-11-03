@@ -151,7 +151,7 @@ def offline(source: Path) -> None:
 
         def serve() -> None:
             try:
-                for _ in range(50):
+                for _ in range(51):
                     connection, _ = listener.accept()
                     with connection:
                         connection.settimeout(5)
@@ -185,8 +185,23 @@ def offline(source: Path) -> None:
                                 "request_id": None,
                             }
                         }
-                        if path in {"/api/v1/usage/context?record_id=record", "/api/v1/runs/r/desktop-control"}:
+                        if path == "/api/v1/usage/context?record_id=record":
                             status, response = 200, None
+                        if path == "/api/v1/environments/e/desktop-control":
+                            status, response = (
+                                200,
+                                {
+                                    "id": "e",
+                                    "version": 1,
+                                    "generation": 1,
+                                    "episode": 0,
+                                    "control": "automation",
+                                    "controller_id": None,
+                                    "controller_thread_id": None,
+                                    "expires_at": None,
+                                    "failure": None,
+                                },
+                            )
                         if path.startswith("/api/v1/model-providers/"):
                             status = 200
                             response = {"provider_id": "p", "state": "disconnected"}
@@ -372,6 +387,28 @@ def offline(source: Path) -> None:
                 return [json.loads(line) for line in result.stdout.splitlines()]
             return json.loads(result.stdout) if result.stdout else None
 
+        for branch in [
+            {"mode": "native"},
+            {"mode": "native", "strategy": None},
+            {"mode": "native", "strategy": "regex"},
+        ]:
+            body = {
+                "name": "CLI ToolSearch",
+                "config": {"model": "model_fixture", "tool_search": {"config": branch, "groups": {}}},
+            }
+            before = len(captured)
+            result = subprocess.run(
+                [str(binary), "--base-url", base, "--error-format", "json", "agents", "create", "--body", "@-"],
+                cwd=directory,
+                env=environment,
+                input=json.dumps(body).encode(),
+                capture_output=True,
+                timeout=8,
+            )
+            assert result.returncode == 2 and not result.stdout
+            assert json.loads(result.stderr)["error"]["kind"] == "input"
+            assert len(captured) == before, "Invalid ToolSearch input reached HTTP"
+
         configurations = [
             {},
             {"configuration": None},
@@ -547,6 +584,17 @@ def offline(source: Path) -> None:
             code=4,
         )
         assert captured[-1][2]["options"] == native_selection
+        execute(
+            "threads",
+            "create",
+            "--body",
+            "@-",
+            "--idempotency-key",
+            "selected-thread",
+            stdin=json.dumps({"agent_id": "a", "payload": native_payload, "options": native_selection}).encode(),
+            code=4,
+        )
+        assert captured[-1][2]["options"]["overrides"] == native_selection["overrides"], "Thread override changed"
         space_body = {
             "name": "shared",
             "enabled": False,
@@ -589,9 +637,9 @@ def offline(source: Path) -> None:
         )
         assert captured[-1][2] == {"permission_ceiling": {"operations": []}}
         assert execute("usage", "context", "get", "--record-id", "record") is None
-        assert execute("runs", "desktop-control", "get", "--run", "r") is None
+        assert execute("environments", "desktop-control", "get", "--environment", "e")["control"] == "automation"
         server.join(timeout=12)
-        assert not server.is_alive() and not failures and len(captured) == 50, (
+        assert not server.is_alive() and not failures and len(captured) == 51, (
             "Copied CLI offline server did not complete"
         )
     print(
@@ -669,6 +717,7 @@ def main() -> None:
             success: bool = True,
             credential: bool = True,
             timeout: int = 90,
+            operation: str = "CLI command",
         ) -> subprocess.CompletedProcess[bytes]:
             process_environment = environment.copy()
             if not credential:
@@ -684,16 +733,20 @@ def main() -> None:
             # Never print credentials or request bodies while reporting failures.
             assert token.encode() not in result.stdout + result.stderr, "CLI exposed its fixture credential"
             if (result.returncode == 0) != success:
-                raise AssertionError(
-                    f"CLI outcome mismatch for {arguments[0] if arguments else 'root'}: exit {result.returncode}"
-                )
+                raise AssertionError(f"CLI outcome mismatch for {operation}: exit {result.returncode}")
             return result
 
-        def call(*arguments: str, body: Any = None, status: int | None = None) -> dict[str, Any]:
+        def call(
+            *arguments: str, body: Any = None, status: int | None = None, operation: str | None = None
+        ) -> dict[str, Any]:
             command = ["--include-meta", *arguments]
             if body is not None:
                 command.extend(["--body", "@-"])
-            result = execute(*command, stdin=json.dumps(body).encode() if body is not None else None)
+            result = execute(
+                *command,
+                stdin=json.dumps(body).encode() if body is not None else None,
+                operation=operation or " ".join(arguments[:2]),
+            )
             value = json.loads(result.stdout)
             assert isinstance(value, dict), "Expected a response envelope"
             if status is not None:
@@ -739,16 +792,17 @@ def main() -> None:
         call("readyz", "get", status=200)
         original = call("agents", "get", agent, status=200)
         model_key = required("A13N_MODEL_KEY")
-        for branch in [
-            {
-                "mode": "proxy",
-                "search_name": "find_grouped_tools",
-                "call_name": "invoke_grouped_tool",
-                "max_results": 7,
-            },
-            {"mode": "native"},
-            {"mode": "native", "strategy": None},
-            {"mode": "native", "strategy": "regex"},
+        for label, branch in [
+            (
+                "proxy-custom",
+                {
+                    "mode": "proxy",
+                    "search_name": "find_grouped_tools",
+                    "call_name": "invoke_grouped_tool",
+                    "max_results": 7,
+                },
+            ),
+            ("proxy-default", {}),
         ]:
             configured = call(
                 "agents",
@@ -757,12 +811,24 @@ def main() -> None:
                     "name": "CLI ToolSearch",
                     "config": {"model": model_key, "tool_search": {"config": branch, "groups": {}}},
                 },
+                operation=f"agents create ToolSearch {label}",
             )["data"]
             revision = call(
                 "agents", "revisions", "get", configured["default_revision_id"], "--agent", configured["id"]
             )["data"]
             saved = revision["config"]["tool_search"]
-            assert saved["groups"] == {} and all(saved["config"][key] == value for key, value in branch.items())
+            expected = {
+                "mode": "proxy",
+                "search_name": "discover_tools",
+                "call_name": "call_tool",
+                "max_results": 10,
+                "max_search_bytes": 32768,
+                "describe_name": "describe_tool",
+                "list_name": "list_tools",
+                "groups_name": "list_tool_groups",
+                **branch,
+            }
+            assert saved == {"groups": {}, "config": expected}, f"ToolSearch revision mismatch: {label}"
         record = os.environ.get("A13N_MODEL_RECORD")
         if record:
             context = call("usage", "context", "get", "--record-id", record, status=200)["data"]
@@ -771,7 +837,6 @@ def main() -> None:
             run = call("runs", "get", context["run_id"])["data"]
             for selector, value in [("--run-id", run["id"]), ("--thread-id", run["thread_id"])]:
                 assert call("usage", "context", "get", selector, value, status=200)["data"] == context
-            assert call("runs", "desktop-control", "get", "--run", run["id"], status=200)["data"] is None
             for arguments, status in [
                 ([], 400),
                 (["--run-id", run["id"], "--record-id", record], 400),
@@ -779,7 +844,8 @@ def main() -> None:
             ]:
                 error = execute("--error-format", "json", "usage", "context", "get", *arguments, success=False)
                 assert json.loads(error.stderr)["error"]["status"] == status
-        print("Copied CLI HTTPS ToolSearch revisions, context selectors and absent desktop metadata passed", flush=True)
+            print("Copied CLI HTTPS context selectors passed", flush=True)
+        print("Copied CLI HTTPS ToolSearch revisions passed", flush=True)
         initial_etag = read_etag(original)
         description = f"CLI acceptance {uuid.uuid4()}"
         changed = call(
@@ -875,14 +941,39 @@ def main() -> None:
         shared = next(mount for mount in frozen if mount.get("space_id") == space_id)
         assert shared["roots"] == ["global/", f"sessions/{selected_id}/"]
         executed = call("runs", "agent", "get", "--run", selected_run)["data"]
-        assert executed["config"]["builtin_skills"] == [] and executed["config"]["toolsets"] == {}
+        assert executed["config"]["builtin_skills"] == [], "Executed builtin skills mismatch"
+        assert executed["config"]["toolsets"] == executed["revision"]["config"]["toolsets"], (
+            "Executed toolsets mismatch"
+        )
         assert any(
             run["id"] == selected_run for run in call("runs", "list", "--session-id", selected_id)["data"]["items"]
         )
         attempt = call("runs", "attempts", "list", "--run", selected_run)["data"]["items"][0]
         assert call("runs", "attempts", "get", attempt["id"], "--run", selected_run)["data"]["run_id"] == selected_run
         summary = call("usage", "get", "--run-id", selected_run)["data"]
-        assert all(run["run_id"] == selected_run for run in summary["runs"])
+        usage_page = call("usage", "runs", "list", "--run-id", selected_run)["data"]
+        assert len(usage_page["items"]) == 1 and usage_page["next_cursor"] is None, "Run usage page mismatch"
+        usage_run = usage_page["items"][0]
+        assert usage_run["run_id"] == selected_run, "Run usage ID mismatch"
+        assert usage_run["thread_id"] == selected_receipt["thread"]["id"], "Run usage Thread mismatch"
+        assert usage_run["run_number"] == 1, "Run usage number mismatch"
+        for models in (summary["models"], usage_run["models"]):
+            assert isinstance(models, list) and models, "Run usage models missing"
+            for model_usage in models:
+                assert set(model_usage) == {
+                    "model",
+                    "requests",
+                    "input_tokens",
+                    "output_tokens",
+                    "cache_read_tokens",
+                    "cache_write_tokens",
+                    "cost",
+                    "average_time_to_first_chunk_seconds",
+                    "output_tokens_per_second",
+                }, "Run usage model shape mismatch"
+                assert isinstance(model_usage["requests"], int) and model_usage["requests"] > 0, (
+                    "Run usage requests missing"
+                )
         assert any(
             session["id"] == selected_id
             for session in call("memory-spaces", "sessions", "list", "--space", space_id)["data"]["items"]
@@ -1415,7 +1506,13 @@ def main() -> None:
                 body={"agent_id": agent, "payload": payload(failure_prompt)},
             )["data"]
             assert call("runs", "wait", failed["run"]["id"])["data"]["status"] == "failed"
-            assert call("usage", "context", "get", "--run-id", failed["run"]["id"], status=200)["data"] is None
+            assert call("usage", "context", "get", "--run-id", failed["run"]["id"], status=200)["data"] == {
+                "run_id": failed["run"]["id"],
+                "record_id": None,
+                "input_tokens": None,
+                "output_tokens": None,
+                "context_window_tokens": None,
+            }
             history_followup(failed["thread"]["id"], failed["run"]["id"])
             print("Copied CLI verified HTTPS: failed last sealed history with normal message successor", flush=True)
         else:

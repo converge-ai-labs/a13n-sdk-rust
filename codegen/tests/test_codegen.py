@@ -22,6 +22,12 @@ def test_adapter_keeps_typed_unions_and_contract_unchanged() -> None:
     for name in ["Part", "ConnectionConfig"]:
         assert schemas[name] == document["components"]["schemas"][name]
     assert schemas["RunStatus"]["x-rust-unknown-enum"]
+    assert schemas["Control"]["properties"]["control"] == {"$ref": "#/components/schemas/DesktopControlState"}
+    assert (
+        schemas["DesktopControlState"]["enum"]
+        == document["components"]["schemas"]["Control"]["properties"]["control"]["enum"]
+    )
+    assert all(schemas[name]["x-rust-deny-unknown-fields"] for name in ("Pending", "HistoricalDesktopPending"))
     assert "x-rust-unknown-enum" not in schemas["ItemKind"]
     for name in ("NewThread",):
         assert schemas[name]["properties"]["message_history"]["x-rust-type"] == (
@@ -38,7 +44,7 @@ def test_adapter_keeps_typed_unions_and_contract_unchanged() -> None:
         assert schemas[name]["x-rust-deny-unknown-fields"]
     assert schemas["ToolSearch"]["properties"]["config"]["x-rust-non-null"]
     assert "NativeToolSearchConfig" not in schemas
-    for path in ["/api/v1/usage/context", "/api/v1/runs/{run_id}/desktop-control"]:
+    for path in ["/api/v1/usage/context"]:
         assert adapted["paths"][path]["get"]["x-rust-nullable-response"]
     assert "x-rust-nullable-response" not in adapted["paths"]["/api/v1/runs/{run_id}"]["get"]
 

@@ -28,15 +28,12 @@ pub async fn offline() -> Result<()> {
         a13n::Secret::new("offline-token"),
     )?;
     let server = tokio::spawn(async move {
-        for _ in 0..2 {
+        for _ in 0..1 {
             let (mut socket, _) = listener.accept().await.unwrap();
             let mut data = [0; 8192];
             let size = socket.read(&mut data).await.unwrap();
             let input = String::from_utf8_lossy(&data[..size]);
-            assert!(
-                input.starts_with("GET /api/v1/usage/context?record_id=r ")
-                    || input.starts_with("GET /api/v1/runs/r/desktop-control ")
-            );
+            assert!(input.starts_with("GET /api/v1/usage/context?record_id=r "));
             socket.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nX-Request-ID: null-evidence\r\nContent-Length: 4\r\nConnection: close\r\n\r\nnull").await.unwrap();
         }
     });
@@ -53,22 +50,8 @@ pub async fn offline() -> Result<()> {
         usage.data.is_none() && usage.status == 200 && usage.request_id() == Some("null-evidence"),
         "Nullable context evidence",
     )?;
-    ensure(
-        client
-            .api()
-            .runs()
-            .at("r")
-            .desktop_control()
-            .get(Default::default())
-            .await?
-            .data
-            .is_none(),
-        "Nullable desktop metadata",
-    )?;
     server.await?;
-    println!(
-        "Installed crate strict ToolSearch and nullable context/desktop mock boundaries passed"
-    );
+    println!("Installed crate strict ToolSearch and nullable context mock boundary passed");
     Ok(())
 }
 
@@ -127,18 +110,6 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
             matches!(client.api().usage().context().get(UsageContextGetOptions{run_id:Some(format!("run_{}","0".repeat(24))),..Default::default()}).await,Err(Error::Api(e)) if e.status==404),
             "Missing Run context",
         )?;
-        ensure(
-            client
-                .api()
-                .runs()
-                .at(&usage.run_id)
-                .desktop_control()
-                .get(Default::default())
-                .await?
-                .data
-                .is_none(),
-            "Absent desktop metadata",
-        )?;
     }
     if let Ok(prompt) = std::env::var("A13N_FAILURE_PROMPT") {
         let mut interaction = client.agent(agent).start(prompt).await?;
@@ -147,19 +118,26 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
             failed.status == m::RunStatus::Failed,
             "Failure fixture did not fail",
         )?;
+        let response = client
+            .api()
+            .usage()
+            .context()
+            .get(UsageContextGetOptions {
+                run_id: Some(failed.run_id.clone()),
+                ..Default::default()
+            })
+            .await?;
+        let usage = response
+            .data
+            .ok_or("Fixture failed Run has no context object")?;
         ensure(
-            client
-                .api()
-                .usage()
-                .context()
-                .get(UsageContextGetOptions {
-                    run_id: Some(failed.run_id),
-                    ..Default::default()
-                })
-                .await?
-                .data
-                .is_none(),
-            "No contribution is JSON null",
+            response.status == 200
+                && usage.run_id == failed.run_id
+                && usage.record_id.is_none()
+                && usage.input_tokens.is_none()
+                && usage.output_tokens.is_none()
+                && usage.context_window_tokens.is_none(),
+            "Fixture failed Run has unknown contribution and capacity",
         )?;
     }
     let model = required("A13N_MODEL_KEY")?;

@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 
 /// Pending : Public projection; complete native requests and private metadata stay in the checkpoint.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Pending {
     #[serde(rename = "approvals")]
     pub approvals: Vec<models::PendingCall>,

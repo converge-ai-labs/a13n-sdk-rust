@@ -1,7 +1,7 @@
 //! Semantic boundaries introduced by Service 647371c. Desktop execution is mocked.
 mod common;
 use a13n::{Overrides, generated::models as m, resources::*};
-use common::{Reply, client, sample, server};
+use common::{Reply, client, server};
 use serde::{Serialize, de::DeserializeOwned};
 use serde_json::{Value, json};
 
@@ -38,6 +38,7 @@ fn tool_search_proxy_and_override_presence_are_lossless() {
     let selected = m::ToolSearch {
         config: Some(Box::default()),
         groups: Some(Default::default()),
+        automatic: None,
     };
     assert_eq!(
         serde_json::to_value(Overrides::new().tool_search(Some(selected))).unwrap(),
@@ -110,22 +111,10 @@ fn context_required_nullable_fields_preserve_null_and_zero() {
             );
         }
     }
-    for name in ["Control", "Completion", "Request"] {
-        let mut wire = sample(name);
-        if name != "Request" {
-            wire["epoch"] = json!(0);
-            wire["session_id"] = json!("browser_session_token_123456");
-        }
-        match name {
-            "Control" => roundtrip::<m::Control>(wire),
-            "Completion" => roundtrip::<m::Completion>(wire),
-            _ => roundtrip::<m::Request>(wire),
-        }
-    }
 }
 
 #[tokio::test]
-async fn context_and_desktop_absence_are_successful_null_not_defaults() {
+async fn context_absence_is_successful_null_not_default() {
     let mut fixture = server(|request| {
         if request.target.contains("run_id=present") {
             Reply::json(200, json!({"run_id":"present","record_id":"record","input_tokens":0,"output_tokens":null,"context_window_tokens":null}))
@@ -162,16 +151,6 @@ async fn context_and_desktop_absence_are_successful_null_not_defaults() {
         .await
         .unwrap();
     assert!(absent.data.is_none());
-    let desktop = sdk
-        .api()
-        .runs()
-        .at("r /")
-        .desktop_control()
-        .get(Default::default())
-        .await
-        .unwrap();
-    assert_eq!(desktop.status, 200);
-    assert!(desktop.data.is_none());
     assert!(
         matches!(sdk.api().usage().context().get(Default::default()).await,Err(a13n::Error::Api(e)) if e.status==400)
     );
@@ -183,9 +162,8 @@ async fn context_and_desktop_absence_are_successful_null_not_defaults() {
         assert_eq!(request.method, "GET");
         targets.push(request.target);
     }
-    assert_eq!(targets.len(), 5);
+    assert_eq!(targets.len(), 4);
     assert!(targets[1].contains("thread_id=t+%2F"));
-    assert!(targets[2].ends_with("/runs/r%20%2F/desktop-control"));
 }
 
 #[tokio::test]
@@ -240,4 +218,79 @@ async fn generated_native_nullable_responses_still_reject_invalid_json_and_nonnu
             .await
             .is_err()
     );
+}
+
+#[test]
+fn automatic_tool_search_preserves_capabilities_and_exclusions() {
+    for automatic in [
+        json!({}),
+        json!(null),
+        json!({"capabilities":["browser","computer"],"connections":true,"exclude_connections":["conn_1"],"exclude_platform":true}),
+        json!({"capabilities":[],"connections":false,"exclude_connections":[],"exclude_platform":false}),
+    ] {
+        roundtrip::<m::ToolSearch>(json!({"automatic":automatic}));
+    }
+    for automatic in [
+        json!({"capabilities":null}),
+        json!({"capabilities":["future"]}),
+        json!({"exclude_connections":null}),
+        json!({"exclude_platform":null}),
+    ] {
+        assert!(serde_json::from_value::<m::ToolSearch>(json!({"automatic":automatic})).is_err());
+    }
+}
+
+#[tokio::test]
+async fn desktop_control_operations_preserve_routes_preconditions_and_payloads() {
+    let mut fixture = server(|_| Reply::json(200, json!({"control":"human","controller_id":"controller","controller_thread_id":"thread","episode":2,"expires_at":null,"failure":null,"generation":3,"id":"control","version":4}))).await;
+    let sdk = client(&fixture);
+    let env = sdk.api().environments().at("env");
+    let control = env.desktop_control();
+    assert_eq!(
+        control.get(Default::default()).await.unwrap().data.control,
+        m::DesktopControlState::Human
+    );
+    let takeover = m::A13nServiceRunsEnvironmentsDesktopSchemasTakeover::new("thread".into());
+    control
+        .takeover(
+            &takeover,
+            EnvironmentDesktopControlTakeoverOptions {
+                if_match: "\"control:4\"".into(),
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
+    control
+        .renew(&m::Renew::new(2, 3), Default::default())
+        .await
+        .unwrap();
+    control
+        .handback(EnvironmentDesktopControlHandbackOptions {
+            if_match: "\"control:4\"".into(),
+            ..Default::default()
+        })
+        .await
+        .unwrap();
+    assert!(matches!(
+        control.handback(Default::default()).await,
+        Err(a13n::Error::InvalidInput)
+    ));
+    let requests: Vec<_> = std::iter::from_fn(|| fixture.requests.try_recv().ok()).collect();
+    assert_eq!(requests.len(), 4);
+    assert_eq!(
+        (&*requests[0].method, &*requests[0].target),
+        ("GET", "/prefix/api/v1/environments/env/desktop-control")
+    );
+    for (index, suffix) in [(1, "takeover"), (2, "renew"), (3, "handback")] {
+        assert_eq!(requests[index].method, "POST");
+        assert_eq!(
+            requests[index].target,
+            format!("/prefix/api/v1/environments/env/desktop-control/{suffix}")
+        );
+    }
+    assert!(requests[1].headers.contains("if-match: \"control:4\""));
+    assert!(requests[3].headers.contains("if-match: \"control:4\""));
+    assert_eq!(requests[1].json(), json!({"thread_id":"thread"}));
+    assert_eq!(requests[2].json(), json!({"episode":2,"generation":3}));
 }
