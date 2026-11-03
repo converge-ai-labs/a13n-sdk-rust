@@ -25,6 +25,10 @@ pub struct ThreadState {
 
     #[serde(rename = "thread")]
     pub thread: Box<models::ThreadView>,
+
+    #[serde(default, deserialize_with = "deserialize_non_null_unavailable")]
+    #[serde(rename = "unavailable", skip_serializing_if = "Option::is_none")]
+    pub unavailable: Option<Vec<models::UnavailableConfiguration>>,
 }
 
 impl ThreadState {
@@ -48,6 +52,12 @@ impl ThreadState {
                 None
             },
             thread: Box::new(thread),
+            unavailable: None,
         }
     }
+}
+fn deserialize_non_null_unavailable<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

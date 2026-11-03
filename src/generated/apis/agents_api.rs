@@ -1584,14 +1584,35 @@ pub async fn list_plugins(
 
 pub async fn list_toolsets(
     configuration: &configuration::Configuration,
+    connection_ids: Option<Vec<String>>,
     x_workspace_id: Option<&str>,
 ) -> Result<Response<models::ToolsetCatalog>, Error<ListToolsetsError>> {
     // add a prefix to parameters to efficiently prevent name collisions
+    let p_query_connection_ids = connection_ids;
     let p_header_x_workspace_id = x_workspace_id;
 
     let uri_str = format!("{}/api/v1/toolsets", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
+    if let Some(ref param_value) = p_query_connection_ids {
+        req_builder = match "multi" {
+            "multi" => req_builder.query(
+                &param_value
+                    .into_iter()
+                    .map(|p| ("connection_ids".to_owned(), p.to_string()))
+                    .collect::<Vec<(std::string::String, std::string::String)>>(),
+            ),
+            _ => req_builder.query(&[(
+                "connection_ids",
+                &param_value
+                    .into_iter()
+                    .map(|p| p.to_string())
+                    .collect::<Vec<String>>()
+                    .join(",")
+                    .to_string(),
+            )]),
+        };
+    }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }

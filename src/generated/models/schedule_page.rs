@@ -23,6 +23,9 @@ pub struct SchedulePage {
         skip_serializing_if = "Option::is_none"
     )]
     pub next_cursor: Option<Option<String>>,
+
+    #[serde(rename = "unavailable", skip_serializing_if = "Option::is_none")]
+    pub unavailable: Option<Vec<models::UnavailableConfiguration>>,
 }
 
 impl SchedulePage {
@@ -30,6 +33,7 @@ impl SchedulePage {
         SchedulePage {
             items,
             next_cursor: None,
+            unavailable: None,
         }
     }
 }

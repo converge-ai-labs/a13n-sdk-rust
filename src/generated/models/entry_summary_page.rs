@@ -18,10 +18,17 @@ pub struct EntrySummaryPage {
 
     #[serde(rename = "next_cursor", deserialize_with = "Option::deserialize")]
     pub next_cursor: Option<String>,
+
+    #[serde(rename = "unavailable", skip_serializing_if = "Option::is_none")]
+    pub unavailable: Option<Vec<models::UnavailableConfiguration>>,
 }
 
 impl EntrySummaryPage {
     pub fn new(items: Vec<models::EntrySummary>, next_cursor: Option<String>) -> EntrySummaryPage {
-        EntrySummaryPage { items, next_cursor }
+        EntrySummaryPage {
+            items,
+            next_cursor,
+            unavailable: None,
+        }
     }
 }

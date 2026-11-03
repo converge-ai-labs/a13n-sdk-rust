@@ -14341,6 +14341,8 @@ pub struct ToolsetsResource<'a>(pub(crate) Binding<'a>);
 /// Query and header options for [`ToolsetsResource::list`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
 pub struct ToolsetsListOptions {
+    /// Query parameter `connection_ids`. `None` omits this parameter.
+    pub connection_ids: Option<Vec<String>>,
     /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
     pub x_workspace_id: Option<String>,
 }
@@ -14372,6 +14374,9 @@ impl<'a> ToolsetsResource<'a> {
             .0
             .client
             .scoped_request(request, options.x_workspace_id.as_deref());
+        if let Some(value) = &options.connection_ids {
+            request = query(request, "connection_ids", value)?;
+        }
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }

@@ -3654,7 +3654,7 @@ fn group_401() -> Command {
     node
 }
 fn operation_291() -> Command {
-    Command::new("list").about("List Toolsets").long_about("List Toolsets (GET /api/v1/toolsets). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli toolsets list").arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
+    Command::new("list").about("List Toolsets").long_about("List Toolsets (GET /api/v1/toolsets). Use --schema for the offline request schema.\n\nExample template (replace uppercase placeholders and provide your own request body):\n  a13n-service-cli toolsets list").arg(Arg::new("connection_ids").long("connection-ids").action(ArgAction::Append)).arg(Arg::new("x_workspace_id").long("x-workspace-id")).arg(Arg::new("schema").long("schema").action(ArgAction::SetTrue)).arg(Arg::new("example").long("example").action(ArgAction::SetTrue))
 }
 fn group_403() -> Command {
     let mut node = Command::new("definitions")
@@ -8630,6 +8630,7 @@ pub async fn dispatch(
         }
         291 => {
             let options = ToolsetsListOptions {
+                connection_ids: input::many(matches, "connection_ids")?,
                 x_workspace_id: input::optional(matches, "x_workspace_id")?,
             };
             let response = client.api().toolsets().list(options).await?;

@@ -13,12 +13,26 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ToolsetCatalog {
+    #[serde(rename = "discovery_defaults")]
+    pub discovery_defaults: Box<models::AutomaticToolSearch>,
+
+    #[serde(rename = "discovery_sources")]
+    pub discovery_sources: Vec<models::DiscoverySource>,
+
     #[serde(rename = "items")]
     pub items: Vec<models::ToolsetDefinition>,
 }
 
 impl ToolsetCatalog {
-    pub fn new(items: Vec<models::ToolsetDefinition>) -> ToolsetCatalog {
-        ToolsetCatalog { items }
+    pub fn new(
+        discovery_defaults: models::AutomaticToolSearch,
+        discovery_sources: Vec<models::DiscoverySource>,
+        items: Vec<models::ToolsetDefinition>,
+    ) -> ToolsetCatalog {
+        ToolsetCatalog {
+            discovery_defaults: Box::new(discovery_defaults),
+            discovery_sources,
+            items,
+        }
     }
 }

@@ -15,6 +15,14 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ToolSearch {
+    #[serde(
+        rename = "automatic",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub automatic: Option<Option<Box<models::AutomaticToolSearch>>>,
+
     #[serde(default, deserialize_with = "deserialize_non_null_config")]
     #[serde(rename = "config", skip_serializing_if = "Option::is_none")]
     pub config: Option<Box<models::ToolSearchConfig>>,
@@ -28,6 +36,7 @@ impl ToolSearch {
     /// Presentation of already-selected sources, composed by Harness once per agent.
     pub fn new() -> ToolSearch {
         ToolSearch {
+            automatic: None,
             config: None,
             groups: None,
         }
