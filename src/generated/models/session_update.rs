@@ -14,6 +14,12 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SessionUpdate {
     #[serde(
+        rename = "auto_recreate_lost_environment",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub auto_recreate_lost_environment: Option<bool>,
+
+    #[serde(
         rename = "labels",
         default,
         with = "::serde_with::rust::double_option",
@@ -49,6 +55,7 @@ pub struct SessionUpdate {
 impl SessionUpdate {
     pub fn new() -> SessionUpdate {
         SessionUpdate {
+            auto_recreate_lost_environment: None,
             labels: None,
             memory: None,
             origin: None,
