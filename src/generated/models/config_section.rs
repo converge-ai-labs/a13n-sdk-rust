@@ -42,8 +42,6 @@ pub enum ConfigSection {
     ClientTools,
     #[serde(rename = "user_questions")]
     UserQuestions,
-    #[serde(rename = "subagent_mode")]
-    SubagentMode,
     #[serde(rename = "subagents")]
     Subagents,
     #[serde(rename = "reviewer")]
@@ -83,7 +81,6 @@ impl std::fmt::Display for ConfigSection {
             Self::BuiltinSkills => write!(f, "builtin_skills"),
             Self::ClientTools => write!(f, "client_tools"),
             Self::UserQuestions => write!(f, "user_questions"),
-            Self::SubagentMode => write!(f, "subagent_mode"),
             Self::Subagents => write!(f, "subagents"),
             Self::Reviewer => write!(f, "reviewer"),
             Self::MediaUnderstanding => write!(f, "media_understanding"),

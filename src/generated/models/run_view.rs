@@ -16,8 +16,8 @@ pub struct RunView {
     #[serde(rename = "agent_id")]
     pub agent_id: String,
 
-    #[serde(rename = "agent_revision_id")]
-    pub agent_revision_id: String,
+    #[serde(rename = "agent_revision_id", deserialize_with = "Option::deserialize")]
+    pub agent_revision_id: Option<String>,
 
     #[serde(rename = "attempts")]
     pub attempts: i32,
@@ -146,7 +146,7 @@ pub struct RunView {
 impl RunView {
     pub fn new(
         agent_id: String,
-        agent_revision_id: String,
+        agent_revision_id: Option<String>,
         attempts: i32,
         cancel_requested_at: Option<chrono::DateTime<chrono::FixedOffset>>,
         created_at: chrono::DateTime<chrono::FixedOffset>,
@@ -244,6 +244,8 @@ pub enum RevisionSelection {
     Default,
     #[serde(rename = "inherited")]
     Inherited,
+    #[serde(rename = "snapshot")]
+    Snapshot,
 }
 
 impl Default for RevisionSelection {

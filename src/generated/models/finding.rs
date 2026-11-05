@@ -16,8 +16,8 @@ pub struct Finding {
     #[serde(rename = "agent_id")]
     pub agent_id: String,
 
-    #[serde(rename = "agent_revision_id")]
-    pub agent_revision_id: String,
+    #[serde(rename = "agent_revision_id", deserialize_with = "Option::deserialize")]
+    pub agent_revision_id: Option<String>,
 
     #[serde(rename = "analysis_id", deserialize_with = "Option::deserialize")]
     pub analysis_id: Option<String>,
@@ -81,7 +81,7 @@ pub struct Finding {
 impl Finding {
     pub fn new(
         agent_id: String,
-        agent_revision_id: String,
+        agent_revision_id: Option<String>,
         analysis_id: Option<String>,
         assessment: models::Assessment,
         assessment_note: String,

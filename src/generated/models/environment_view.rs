@@ -19,6 +19,14 @@ pub struct EnvironmentView {
     #[serde(rename = "created_by_id")]
     pub created_by_id: String,
 
+    #[serde(
+        rename = "debug_hold_until",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_hold_until: Option<Option<chrono::DateTime<chrono::FixedOffset>>>,
+
     #[serde(rename = "device_id", deserialize_with = "Option::deserialize")]
     pub device_id: Option<String>,
 
@@ -74,8 +82,40 @@ pub struct EnvironmentView {
     )]
     pub owner_principal_id: Option<String>,
 
+    #[serde(
+        rename = "preparation_deadline",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub preparation_deadline: Option<Option<chrono::DateTime<chrono::FixedOffset>>>,
+
+    #[serde(
+        rename = "preparation_failed_at",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub preparation_failed_at: Option<Option<chrono::DateTime<chrono::FixedOffset>>>,
+
     #[serde(rename = "provider_id", deserialize_with = "Option::deserialize")]
     pub provider_id: Option<String>,
+
+    #[serde(
+        rename = "reclamation",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub reclamation: Option<Option<Box<models::Reclamation>>>,
+
+    #[serde(
+        rename = "retirement_state",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub retirement_state: Option<Option<Box<models::EnvironmentState>>>,
 
     #[serde(rename = "status")]
     pub status: String,
@@ -117,6 +157,7 @@ impl EnvironmentView {
         EnvironmentView {
             created_at,
             created_by_id,
+            debug_hold_until: None,
             device_id,
             endpoint,
             failure: if let Some(x) = failure {
@@ -134,7 +175,11 @@ impl EnvironmentView {
             operation_started_at,
             organization_id,
             owner_principal_id,
+            preparation_deadline: None,
+            preparation_failed_at: None,
             provider_id,
+            reclamation: None,
+            retirement_state: None,
             status,
             template_id,
             updated_at,
