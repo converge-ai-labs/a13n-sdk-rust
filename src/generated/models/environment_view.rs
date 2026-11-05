@@ -13,6 +13,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct EnvironmentView {
+    #[serde(
+        rename = "client_connection",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub client_connection: Option<Option<Box<models::ClientConnectionObservation>>>,
+
     #[serde(rename = "created_at")]
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
 
@@ -27,6 +35,9 @@ pub struct EnvironmentView {
     )]
     pub debug_hold_until: Option<Option<chrono::DateTime<chrono::FixedOffset>>>,
 
+    #[serde(rename = "desktop_preview", skip_serializing_if = "Option::is_none")]
+    pub desktop_preview: Option<DesktopPreview>,
+
     #[serde(rename = "device_id", deserialize_with = "Option::deserialize")]
     pub device_id: Option<String>,
 
@@ -38,6 +49,9 @@ pub struct EnvironmentView {
 
     #[serde(rename = "id")]
     pub id: String,
+
+    #[serde(rename = "kind")]
+    pub kind: Kind,
 
     #[serde(rename = "last_used_at", deserialize_with = "Option::deserialize")]
     pub last_used_at: Option<chrono::DateTime<chrono::FixedOffset>>,
@@ -141,6 +155,7 @@ impl EnvironmentView {
         endpoint: Option<String>,
         failure: Option<models::EnvironmentFailure>,
         id: String,
+        kind: Kind,
         last_used_at: Option<chrono::DateTime<chrono::FixedOffset>>,
         name: String,
         operation_id: Option<String>,
@@ -155,9 +170,11 @@ impl EnvironmentView {
         workspace_id: String,
     ) -> EnvironmentView {
         EnvironmentView {
+            client_connection: None,
             created_at,
             created_by_id,
             debug_hold_until: None,
+            desktop_preview: None,
             device_id,
             endpoint,
             failure: if let Some(x) = failure {
@@ -166,6 +183,7 @@ impl EnvironmentView {
                 None
             },
             id,
+            kind,
             last_used_at,
             metrics_application: None,
             metrics_data_source_id: None,
@@ -186,5 +204,37 @@ impl EnvironmentView {
             version,
             workspace_id,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum DesktopPreview {
+    #[serde(rename = "supported")]
+    Supported,
+    #[serde(rename = "connection_unsupported")]
+    ConnectionUnsupported,
+    #[serde(rename = "not_configured")]
+    NotConfigured,
+}
+
+impl Default for DesktopPreview {
+    fn default() -> DesktopPreview {
+        Self::Supported
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Kind {
+    #[serde(rename = "managed")]
+    Managed,
+    #[serde(rename = "external_http")]
+    ExternalHttp,
+    #[serde(rename = "external")]
+    External,
+}
+
+impl Default for Kind {
+    fn default() -> Kind {
+        Self::Managed
     }
 }

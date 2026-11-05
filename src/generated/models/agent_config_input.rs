@@ -29,6 +29,14 @@ pub struct AgentConfigInput {
     pub connection_tools: Option<Vec<models::ConnectionSelection>>,
 
     #[serde(
+        rename = "default_environment_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub default_environment_id: Option<Option<String>>,
+
+    #[serde(
         rename = "default_environment_template_id",
         default,
         with = "::serde_with::rust::double_option",
@@ -135,6 +143,7 @@ impl AgentConfigInput {
             builtin_skills: None,
             client_tools: None,
             connection_tools: None,
+            default_environment_id: None,
             default_environment_template_id: None,
             execution: None,
             instructions: None,

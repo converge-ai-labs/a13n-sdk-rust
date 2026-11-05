@@ -56,6 +56,8 @@ pub enum ConfigSection {
     Retries,
     #[serde(rename = "default_environment_template_id")]
     DefaultEnvironmentTemplateId,
+    #[serde(rename = "default_environment_id")]
+    DefaultEnvironmentId,
     #[serde(rename = "lazy_environment")]
     LazyEnvironment,
     #[serde(rename = "memory_mounts")]
@@ -88,6 +90,7 @@ impl std::fmt::Display for ConfigSection {
             Self::OutputSpec => write!(f, "output_spec"),
             Self::Retries => write!(f, "retries"),
             Self::DefaultEnvironmentTemplateId => write!(f, "default_environment_template_id"),
+            Self::DefaultEnvironmentId => write!(f, "default_environment_id"),
             Self::LazyEnvironment => write!(f, "lazy_environment"),
             Self::MemoryMounts => write!(f, "memory_mounts"),
             Self::Memory => write!(f, "memory"),
