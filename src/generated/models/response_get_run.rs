@@ -48,6 +48,8 @@ pub enum RevisionSelection {
     Default,
     #[serde(rename = "inherited")]
     Inherited,
+    #[serde(rename = "snapshot")]
+    Snapshot,
 }
 
 impl Default for RevisionSelection {

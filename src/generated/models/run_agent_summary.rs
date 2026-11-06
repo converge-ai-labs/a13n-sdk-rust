@@ -28,8 +28,8 @@ pub struct RunAgentSummary {
     #[serde(rename = "references_truncated")]
     pub references_truncated: bool,
 
-    #[serde(rename = "revision_id")]
-    pub revision_id: String,
+    #[serde(rename = "revision_id", deserialize_with = "Option::deserialize")]
+    pub revision_id: Option<String>,
 
     #[serde(rename = "skill_ids")]
     pub skill_ids: Vec<String>,
@@ -47,7 +47,7 @@ impl RunAgentSummary {
         connection_ids: Vec<String>,
         overridden_paths: Vec<String>,
         references_truncated: bool,
-        revision_id: String,
+        revision_id: Option<String>,
         skill_ids: Vec<String>,
         subagent_ids: Vec<String>,
     ) -> RunAgentSummary {

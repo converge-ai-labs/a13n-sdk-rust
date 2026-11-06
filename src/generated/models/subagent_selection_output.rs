@@ -16,6 +16,7 @@ pub struct SubagentSelectionOutput {
     #[serde(rename = "agent_id")]
     pub agent_id: String,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_context")]
     #[serde(rename = "context", skip_serializing_if = "Option::is_none")]
     pub context: Option<Box<models::DelegationContextPolicy>>,
 
@@ -27,6 +28,7 @@ pub struct SubagentSelectionOutput {
     )]
     pub description: Option<Option<String>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_environment")]
     #[serde(rename = "environment", skip_serializing_if = "Option::is_none")]
     pub environment: Option<Box<models::ChildEnvironmentPolicy>>,
 
@@ -58,4 +60,14 @@ impl SubagentSelectionOutput {
             usage_limits: None,
         }
     }
+}
+fn deserialize_non_null_context<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_environment<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

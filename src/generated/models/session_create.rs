@@ -13,6 +13,12 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SessionCreate {
+    #[serde(
+        rename = "auto_recreate_lost_environment",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub auto_recreate_lost_environment: Option<bool>,
+
     #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
     pub labels: Option<std::collections::HashMap<String, String>>,
 
@@ -44,6 +50,7 @@ pub struct SessionCreate {
 impl SessionCreate {
     pub fn new() -> SessionCreate {
         SessionCreate {
+            auto_recreate_lost_environment: None,
             labels: None,
             memory: None,
             origin: None,

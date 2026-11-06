@@ -16,8 +16,8 @@ pub struct FindingCreate {
     #[serde(rename = "agent_id")]
     pub agent_id: String,
 
-    #[serde(rename = "agent_revision_id")]
-    pub agent_revision_id: String,
+    #[serde(rename = "agent_revision_id", deserialize_with = "Option::deserialize")]
+    pub agent_revision_id: Option<String>,
     /// One primary issue type for the central evidenced claim, separate from analysis presets, impact and review. Put uncertainty in explanation/limitations; do not invent categories.
 
     #[serde(rename = "category")]
@@ -48,7 +48,7 @@ pub struct FindingCreate {
 impl FindingCreate {
     pub fn new(
         agent_id: String,
-        agent_revision_id: String,
+        agent_revision_id: Option<String>,
         category: models::Category,
         evidence: Vec<models::Evidence>,
         explanation: String,

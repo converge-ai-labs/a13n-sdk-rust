@@ -32,8 +32,6 @@ pub enum AgentRevisionCompareSection {
     ClientTools,
     #[serde(rename = "user_questions")]
     UserQuestions,
-    #[serde(rename = "subagent_mode")]
-    SubagentMode,
     #[serde(rename = "subagents")]
     Subagents,
     #[serde(rename = "reviewer")]
@@ -48,6 +46,8 @@ pub enum AgentRevisionCompareSection {
     Retries,
     #[serde(rename = "default_environment_template_id")]
     DefaultEnvironmentTemplateId,
+    #[serde(rename = "default_environment_id")]
+    DefaultEnvironmentId,
     #[serde(rename = "lazy_environment")]
     LazyEnvironment,
     #[serde(rename = "memory_mounts")]
@@ -72,7 +72,6 @@ impl AgentRevisionCompareSection {
             Self::BuiltinSkills => "builtin_skills",
             Self::ClientTools => "client_tools",
             Self::UserQuestions => "user_questions",
-            Self::SubagentMode => "subagent_mode",
             Self::Subagents => "subagents",
             Self::Reviewer => "reviewer",
             Self::MediaUnderstanding => "media_understanding",
@@ -80,6 +79,7 @@ impl AgentRevisionCompareSection {
             Self::OutputSpec => "output_spec",
             Self::Retries => "retries",
             Self::DefaultEnvironmentTemplateId => "default_environment_template_id",
+            Self::DefaultEnvironmentId => "default_environment_id",
             Self::LazyEnvironment => "lazy_environment",
             Self::MemoryMounts => "memory_mounts",
             Self::Memory => "memory",
@@ -309,8 +309,6 @@ pub enum RunAgentPart {
     ClientTools,
     #[serde(rename = "user_questions")]
     UserQuestions,
-    #[serde(rename = "subagent_mode")]
-    SubagentMode,
     #[serde(rename = "subagents")]
     Subagents,
     #[serde(rename = "reviewer")]
@@ -325,6 +323,8 @@ pub enum RunAgentPart {
     Retries,
     #[serde(rename = "default_environment_template_id")]
     DefaultEnvironmentTemplateId,
+    #[serde(rename = "default_environment_id")]
+    DefaultEnvironmentId,
     #[serde(rename = "lazy_environment")]
     LazyEnvironment,
     #[serde(rename = "memory_mounts")]
@@ -349,7 +349,6 @@ impl RunAgentPart {
             Self::BuiltinSkills => "builtin_skills",
             Self::ClientTools => "client_tools",
             Self::UserQuestions => "user_questions",
-            Self::SubagentMode => "subagent_mode",
             Self::Subagents => "subagents",
             Self::Reviewer => "reviewer",
             Self::MediaUnderstanding => "media_understanding",
@@ -357,6 +356,7 @@ impl RunAgentPart {
             Self::OutputSpec => "output_spec",
             Self::Retries => "retries",
             Self::DefaultEnvironmentTemplateId => "default_environment_template_id",
+            Self::DefaultEnvironmentId => "default_environment_id",
             Self::LazyEnvironment => "lazy_environment",
             Self::MemoryMounts => "memory_mounts",
             Self::Memory => "memory",
@@ -870,6 +870,10 @@ impl<'a> ServiceResources<'a> {
     /// Access `builtin-skills` locally, sharing the client and explicit scope.
     pub fn builtin_skills(&self) -> BuiltinSkillsResource<'a> {
         BuiltinSkillsResource(self.0.clone())
+    }
+    /// Access `client-environments` locally, sharing the client and explicit scope.
+    pub fn client_environments(&self) -> ClientEnvironmentsResource<'a> {
+        ClientEnvironmentsResource(self.0.clone())
     }
     /// Access `connections` locally, sharing the client and explicit scope.
     pub fn connections(&self) -> ConnectionsResource<'a> {
@@ -3042,6 +3046,242 @@ impl<'a> BuiltinSkillContentResource<'a> {
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
 
 #[derive(Clone)]
+pub struct ClientEnvironmentsResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`ClientEnvironmentsResource::create`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ClientEnvironmentsCreateOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`ClientEnvironmentsResource::connect`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ClientEnvironmentsConnectOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> ClientEnvironmentsResource<'a> {
+    /// Bind `environment_id` locally without an HTTP request. The returned reference borrows the client, not this collection.
+    pub fn at(&self, id: impl Into<String>) -> ClientEnvironmentResource<'a> {
+        ClientEnvironmentResource(self.0.select(id.into()))
+    }
+    /// Register Client Environment.
+    ///
+    /// `POST /api/v1/client-environments`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn create(
+        &self,
+        body: &models::Registration,
+        options: ClientEnvironmentsCreateOptions,
+    ) -> Result<Response<models::Registered>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/client-environments",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200, 201]).await?;
+        Ok(response)
+    }
+    /// Connect Client Environment.
+    ///
+    /// `POST /api/v1/client-environments/connect`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn connect(
+        &self,
+        body: &models::ConnectionRequest,
+        options: ClientEnvironmentsConnectOptions,
+    ) -> Result<Response<models::Registered>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/client-environments/connect",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200, 201]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct ClientEnvironmentResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`ClientEnvironmentResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ClientEnvironmentGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`ClientEnvironmentResource::revoke_credential`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ClientEnvironmentRevokeCredentialOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`ClientEnvironmentResource::rotate_credential`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ClientEnvironmentRotateCredentialOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> ClientEnvironmentResource<'a> {
+    /// Access `status` locally, sharing the client and explicit scope.
+    pub fn status(&self) -> ClientEnvironmentStatusResource<'a> {
+        ClientEnvironmentStatusResource(self.0.clone())
+    }
+    /// Get Client Environment.
+    ///
+    /// `GET /api/v1/client-environments/{environment_id}`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: ClientEnvironmentGetOptions,
+    ) -> Result<Response<models::ClientEnvironment>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/client-environments/{environment_id}",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Revoke Client Environment Credential.
+    ///
+    /// `POST /api/v1/client-environments/{environment_id}/revoke-credential`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn revoke_credential(
+        &self,
+        options: ClientEnvironmentRevokeCredentialOptions,
+    ) -> Result<Response<models::Registered>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/client-environments/{environment_id}/revoke-credential",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Rotate Client Environment Credential.
+    ///
+    /// `POST /api/v1/client-environments/{environment_id}/rotate-credential`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn rotate_credential(
+        &self,
+        options: ClientEnvironmentRotateCredentialOptions,
+    ) -> Result<Response<models::Registered>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/client-environments/{environment_id}/rotate-credential",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct ClientEnvironmentStatusResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`ClientEnvironmentStatusResource::update`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct ClientEnvironmentStatusUpdateOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> ClientEnvironmentStatusResource<'a> {
+    /// Change Client Environment Status.
+    ///
+    /// `PATCH /api/v1/client-environments/{environment_id}/status`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn update(
+        &self,
+        body: &models::StatusChange,
+        options: ClientEnvironmentStatusUpdateOptions,
+    ) -> Result<Response<models::ClientEnvironment>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::PATCH,
+            "/api/v1/client-environments/{environment_id}/status",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
 pub struct ConnectionsResource<'a>(pub(crate) Binding<'a>);
 /// Query and header options for [`ConnectionsResource::list`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
@@ -5154,6 +5394,10 @@ impl<'a> EnvironmentResource<'a> {
     pub fn creation(&self) -> EnvironmentCreationResource<'a> {
         EnvironmentCreationResource(self.0.clone())
     }
+    /// Access `debug-hold` locally, sharing the client and explicit scope.
+    pub fn debug_hold(&self) -> EnvironmentDebugHoldResource<'a> {
+        EnvironmentDebugHoldResource(self.0.clone())
+    }
     /// Access `desktop-control` locally, sharing the client and explicit scope.
     pub fn desktop_control(&self) -> EnvironmentDesktopControlResource<'a> {
         EnvironmentDesktopControlResource(self.0.clone())
@@ -5161,6 +5405,10 @@ impl<'a> EnvironmentResource<'a> {
     /// Access `desktop-preview` locally, sharing the client and explicit scope.
     pub fn desktop_preview(&self) -> EnvironmentDesktopPreviewResource<'a> {
         EnvironmentDesktopPreviewResource(self.0.clone())
+    }
+    /// Access `kubernetes` locally, sharing the client and explicit scope.
+    pub fn kubernetes(&self) -> EnvironmentKubernetesResource<'a> {
+        EnvironmentKubernetesResource(self.0.clone())
     }
     /// Access `metrics-binding` locally, sharing the client and explicit scope.
     pub fn metrics_binding(&self) -> EnvironmentMetricsBindingResource<'a> {
@@ -5414,6 +5662,53 @@ impl<'a> EnvironmentCreationResource<'a> {
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
 
 #[derive(Clone)]
+pub struct EnvironmentDebugHoldResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`EnvironmentDebugHoldResource::replace`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct EnvironmentDebugHoldReplaceOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> EnvironmentDebugHoldResource<'a> {
+    /// Set Environment Debug Hold.
+    ///
+    /// `PUT /api/v1/environments/{environment_id}/debug-hold`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn replace(
+        &self,
+        body: &models::DebugHold,
+        options: EnvironmentDebugHoldReplaceOptions,
+    ) -> Result<Response<models::EnvironmentView>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::PUT,
+            "/api/v1/environments/{environment_id}/debug-hold",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        request = request.json(body);
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
 pub struct EnvironmentDesktopControlResource<'a>(pub(crate) Binding<'a>);
 /// Query and header options for [`EnvironmentDesktopControlResource::get`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
@@ -5589,6 +5884,105 @@ impl<'a> EnvironmentDesktopPreviewResource<'a> {
             .client
             .scoped_request(request, options.x_workspace_id.as_deref());
         let response = self.0.client.send(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct EnvironmentKubernetesResource<'a>(pub(crate) Binding<'a>);
+impl<'a> EnvironmentKubernetesResource<'a> {
+    /// Access `diagnostics` locally, sharing the client and explicit scope.
+    pub fn diagnostics(&self) -> EnvironmentKubernetesDiagnosticsResource<'a> {
+        EnvironmentKubernetesDiagnosticsResource(self.0.clone())
+    }
+    /// Access `logs` locally, sharing the client and explicit scope.
+    pub fn logs(&self) -> EnvironmentKubernetesLogsResource<'a> {
+        EnvironmentKubernetesLogsResource(self.0.clone())
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct EnvironmentKubernetesDiagnosticsResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`EnvironmentKubernetesDiagnosticsResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct EnvironmentKubernetesDiagnosticsGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> EnvironmentKubernetesDiagnosticsResource<'a> {
+    /// Get Kubernetes Environment Diagnostics.
+    ///
+    /// `GET /api/v1/environments/{environment_id}/kubernetes/diagnostics`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: EnvironmentKubernetesDiagnosticsGetOptions,
+    ) -> Result<Response<models::InstanceDiagnostics>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/environments/{environment_id}/kubernetes/diagnostics",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct EnvironmentKubernetesLogsResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`EnvironmentKubernetesLogsResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct EnvironmentKubernetesLogsGetOptions {
+    /// Query parameter `container`. `None` omits this parameter.
+    pub container: Option<String>,
+    /// Query parameter `previous`. `None` omits this parameter.
+    pub previous: Option<bool>,
+    /// Query parameter `tail_lines`. `None` omits this parameter.
+    pub tail_lines: Option<i32>,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> EnvironmentKubernetesLogsResource<'a> {
+    /// Get Kubernetes Environment Logs.
+    ///
+    /// `GET /api/v1/environments/{environment_id}/kubernetes/logs`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: EnvironmentKubernetesLogsGetOptions,
+    ) -> Result<Response<models::Logs>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/environments/{environment_id}/kubernetes/logs",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        if let Some(value) = &options.container {
+            request = query(request, "container", value)?;
+        }
+        if let Some(value) = &options.previous {
+            request = query(request, "previous", value)?;
+        }
+        if let Some(value) = &options.tail_lines {
+            request = query(request, "tail_lines", value)?;
+        }
+        let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
     }
 }
@@ -17800,6 +18194,42 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "BuiltinSkillContentResource",
         "get",
     ),
+    (
+        "POST",
+        "/api/v1/client-environments",
+        "ClientEnvironmentsResource",
+        "create",
+    ),
+    (
+        "POST",
+        "/api/v1/client-environments/connect",
+        "ClientEnvironmentsResource",
+        "connect",
+    ),
+    (
+        "GET",
+        "/api/v1/client-environments/{environment_id}",
+        "ClientEnvironmentResource",
+        "get",
+    ),
+    (
+        "POST",
+        "/api/v1/client-environments/{environment_id}/revoke-credential",
+        "ClientEnvironmentResource",
+        "revoke_credential",
+    ),
+    (
+        "POST",
+        "/api/v1/client-environments/{environment_id}/rotate-credential",
+        "ClientEnvironmentResource",
+        "rotate_credential",
+    ),
+    (
+        "PATCH",
+        "/api/v1/client-environments/{environment_id}/status",
+        "ClientEnvironmentStatusResource",
+        "update",
+    ),
     ("GET", "/api/v1/connections", "ConnectionsResource", "list"),
     (
         "POST",
@@ -18098,6 +18528,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "get",
     ),
     (
+        "PUT",
+        "/api/v1/environments/{environment_id}/debug-hold",
+        "EnvironmentDebugHoldResource",
+        "replace",
+    ),
+    (
         "GET",
         "/api/v1/environments/{environment_id}/desktop-control",
         "EnvironmentDesktopControlResource",
@@ -18125,6 +18561,18 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "GET",
         "/api/v1/environments/{environment_id}/desktop-preview",
         "EnvironmentDesktopPreviewResource",
+        "get",
+    ),
+    (
+        "GET",
+        "/api/v1/environments/{environment_id}/kubernetes/diagnostics",
+        "EnvironmentKubernetesDiagnosticsResource",
+        "get",
+    ),
+    (
+        "GET",
+        "/api/v1/environments/{environment_id}/kubernetes/logs",
+        "EnvironmentKubernetesLogsResource",
         "get",
     ),
     (

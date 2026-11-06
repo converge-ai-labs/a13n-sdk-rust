@@ -13,8 +13,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AppReference {
-    #[serde(rename = "agent_revision_id")]
-    pub agent_revision_id: String,
+    #[serde(rename = "agent_definition_id")]
+    pub agent_definition_id: String,
 
     #[serde(rename = "app_id")]
     pub app_id: String,
@@ -41,7 +41,7 @@ pub struct AppReference {
 
 impl AppReference {
     pub fn new(
-        agent_revision_id: String,
+        agent_definition_id: String,
         app_id: String,
         connection_id: String,
         resource_uri: String,
@@ -50,7 +50,7 @@ impl AppReference {
         tool_name: String,
     ) -> AppReference {
         AppReference {
-            agent_revision_id,
+            agent_definition_id,
             app_id,
             connection_id,
             resource_uri,

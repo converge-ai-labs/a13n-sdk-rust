@@ -128,6 +128,7 @@ pub mod agents_api;
 pub mod assets_api;
 pub mod auth_api;
 pub mod browsers_api;
+pub mod client_environments_api;
 pub mod connections_api;
 pub mod default_api;
 pub mod environments_api;

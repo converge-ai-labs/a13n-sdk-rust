@@ -11,7 +11,7 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// AgentOverrideOutput : What one run changes of its revision's configuration; an omitted or null field keeps the revision's.  `toolsets` replaces whole toolsets; `retries` and each subagent edge replace the fields they set, and a null edge removes it; every other field replaces the revision's value.
+/// AgentOverrideOutput : What one run changes of its revision's configuration; an omitted or null field keeps the revision's.  `toolsets` replaces whole toolsets; `retries` replaces supplied members. Every other field, including `subagents`, replaces the whole value.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AgentOverrideOutput {
     #[serde(
@@ -140,7 +140,7 @@ pub struct AgentOverrideOutput {
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub subagents: Option<Option<serde_json::Value>>,
+    pub subagents: Option<Option<Box<models::SubagentsOutput>>>,
 
     #[serde(
         rename = "tool_search",
@@ -160,7 +160,7 @@ pub struct AgentOverrideOutput {
 }
 
 impl AgentOverrideOutput {
-    /// What one run changes of its revision's configuration; an omitted or null field keeps the revision's.  `toolsets` replaces whole toolsets; `retries` and each subagent edge replace the fields they set, and a null edge removes it; every other field replaces the revision's value.
+    /// What one run changes of its revision's configuration; an omitted or null field keeps the revision's.  `toolsets` replaces whole toolsets; `retries` replaces supplied members. Every other field, including `subagents`, replaces the whole value.
     pub fn new() -> AgentOverrideOutput {
         AgentOverrideOutput {
             builtin_skills: None,

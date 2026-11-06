@@ -29,6 +29,14 @@ pub struct AgentConfigOutput {
     pub connection_tools: Option<Vec<models::ConnectionSelection>>,
 
     #[serde(
+        rename = "default_environment_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub default_environment_id: Option<Option<String>>,
+
+    #[serde(
         rename = "default_environment_template_id",
         default,
         with = "::serde_with::rust::double_option",
@@ -107,11 +115,8 @@ pub struct AgentConfigOutput {
     #[serde(rename = "skills", skip_serializing_if = "Option::is_none")]
     pub skills: Option<Vec<models::SkillSelection>>,
 
-    #[serde(rename = "subagent_mode", skip_serializing_if = "Option::is_none")]
-    pub subagent_mode: Option<SubagentMode>,
-
     #[serde(rename = "subagents", skip_serializing_if = "Option::is_none")]
-    pub subagents: Option<serde_json::Value>,
+    pub subagents: Option<Box<models::SubagentsOutput>>,
 
     #[serde(rename = "summarize", skip_serializing_if = "Option::is_none")]
     pub summarize: Option<bool>,
@@ -138,6 +143,7 @@ impl AgentConfigOutput {
             builtin_skills: None,
             client_tools: None,
             connection_tools: None,
+            default_environment_id: None,
             default_environment_template_id: None,
             execution: None,
             instructions: None,
@@ -154,26 +160,11 @@ impl AgentConfigOutput {
             reviewer: None,
             skill_sync: None,
             skills: None,
-            subagent_mode: None,
             subagents: None,
             summarize: None,
             tool_search: None,
             toolsets: None,
             user_questions: None,
         }
-    }
-}
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum SubagentMode {
-    #[serde(rename = "inline")]
-    Inline,
-    #[serde(rename = "async")]
-    Async,
-}
-
-impl Default for SubagentMode {
-    fn default() -> SubagentMode {
-        Self::Inline
     }
 }
