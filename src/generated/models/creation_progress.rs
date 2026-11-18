@@ -24,6 +24,9 @@ pub struct CreationProgress {
     #[serde(rename = "observed_at")]
     pub observed_at: chrono::DateTime<chrono::FixedOffset>,
 
+    #[serde(rename = "profile")]
+    pub profile: Profile,
+
     #[serde(rename = "retryable", skip_serializing_if = "Option::is_none")]
     pub retryable: Option<bool>,
 
@@ -37,16 +40,32 @@ pub struct CreationProgress {
 impl CreationProgress {
     pub fn new(
         observed_at: chrono::DateTime<chrono::FixedOffset>,
+        profile: Profile,
         stage: Stage,
         started_at: chrono::DateTime<chrono::FixedOffset>,
     ) -> CreationProgress {
         CreationProgress {
             ended_at: None,
             observed_at,
+            profile,
             retryable: None,
             stage,
             started_at,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Profile {
+    #[serde(rename = "headless")]
+    Headless,
+    #[serde(rename = "desktop")]
+    Desktop,
+}
+
+impl Default for Profile {
+    fn default() -> Profile {
+        Self::Headless
     }
 }
 ///

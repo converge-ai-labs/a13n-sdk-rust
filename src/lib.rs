@@ -31,12 +31,12 @@ pub use client::{
 };
 pub use generated::models::{
     AgentModelCharacteristics, AgentReviewer, ClientToolDefinition, ConnectionSelection, Delivery,
-    EntryStatus, EnvironmentAction, EnvironmentPermissionSetInput, Failure, FrozenMemoryMount,
+    DynamicSubagentsInput, EntryStatus, EnvironmentAction, EnvironmentPermissionSetInput, Failure,
     IsolatedSkillSync, MediaUnderstandingSelection, MemoryAccess, MemoryMount, MountCreate,
     OutputSpec, OutputVariant, PendingCall, PlatformGroup, PluginSelection, RetryOverride,
-    RunStatus, SessionMemorySettings, SharedSkillSync, SkillSelection, SkillSync, SpaceBinding,
-    ToolPermissionSetting, ToolReviewRule, ToolRiskLevel, ToolSearch, ToolSearchConfig,
-    ToolSearchGroup, ToolsetSelection, UsageLimit,
+    RunMemoryMount, RunStatus, SessionMemorySettings, SharedSkillSync, SkillSelection, SkillSync,
+    SpaceBinding, SubagentsInput, ToolPermissionSetting, ToolReviewRule, ToolRiskLevel, ToolSearch,
+    ToolSearchConfig, ToolSearchGroup, ToolsetSelection, UsageLimit,
 };
 pub use generated::models::{
     AgentOverrideInputSkillSync as OverrideSkillSync, BuiltinSkillName as BuiltinSkill,
@@ -44,6 +44,7 @@ pub use generated::models::{
     client_tool_definition::Permission as ClientToolPermission,
     isolated_skill_sync::Mode as IsolatedSkillSyncMode,
     shared_skill_sync::Mode as SharedSkillSyncMode,
+    subagents_input::Mode as SubagentsMode,
     tool_review_rule::OnFlagged as RuleOnFlagged,
 };
 pub use interaction::{

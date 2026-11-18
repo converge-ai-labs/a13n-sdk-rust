@@ -25,6 +25,14 @@ pub struct TemplateConfig {
     pub recipe: Option<std::collections::HashMap<String, serde_json::Value>>,
 
     #[serde(
+        rename = "reclamation",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub reclamation: Option<Option<Box<models::Reclamation>>>,
+
+    #[serde(
         rename = "stop_after_seconds",
         default,
         with = "::serde_with::rust::double_option",
@@ -38,6 +46,7 @@ impl TemplateConfig {
         TemplateConfig {
             delete_after_seconds: None,
             recipe: None,
+            reclamation: None,
             stop_after_seconds: None,
         }
     }

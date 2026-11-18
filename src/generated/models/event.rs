@@ -11,68 +11,70 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// SubagentOverrideInput : Replaces the fields it sets of an edge; an edge the revision lacks sets at least `agent_id`.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SubagentOverrideInput {
+pub struct Event {
     #[serde(
-        rename = "agent_id",
+        rename = "count",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub agent_id: Option<Option<String>>,
+    pub count: Option<Option<i32>>,
 
     #[serde(
-        rename = "context",
+        rename = "first_timestamp",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub context: Option<Option<Box<models::DelegationContextPolicy>>>,
+    pub first_timestamp: Option<Option<String>>,
 
     #[serde(
-        rename = "description",
+        rename = "last_timestamp",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub description: Option<Option<String>>,
+    pub last_timestamp: Option<Option<String>>,
 
     #[serde(
-        rename = "environment",
+        rename = "message",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub environment: Option<Option<Box<models::ChildEnvironmentPolicy>>>,
+    pub message: Option<Option<String>>,
 
     #[serde(
-        rename = "revision_id",
+        rename = "reason",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub revision_id: Option<Option<String>>,
+    pub reason: Option<Option<String>>,
+
+    #[serde(rename = "resource_uid")]
+    pub resource_uid: String,
 
     #[serde(
-        rename = "usage_limits",
+        rename = "type",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub usage_limits: Option<Option<Box<models::UsageLimitsInput>>>,
+    pub r#type: Option<Option<String>>,
 }
 
-impl SubagentOverrideInput {
-    /// Replaces the fields it sets of an edge; an edge the revision lacks sets at least `agent_id`.
-    pub fn new() -> SubagentOverrideInput {
-        SubagentOverrideInput {
-            agent_id: None,
-            context: None,
-            description: None,
-            environment: None,
-            revision_id: None,
-            usage_limits: None,
+impl Event {
+    pub fn new(resource_uid: String) -> Event {
+        Event {
+            count: None,
+            first_timestamp: None,
+            last_timestamp: None,
+            message: None,
+            reason: None,
+            resource_uid,
+            r#type: None,
         }
     }
 }

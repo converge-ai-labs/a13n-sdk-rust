@@ -30,6 +30,9 @@ pub struct AnalysisCreate {
     #[serde(rename = "presets", skip_serializing_if = "Option::is_none")]
     pub presets: Option<Vec<models::Preset>>,
 
+    #[serde(rename = "session_ids", skip_serializing_if = "Option::is_none")]
+    pub session_ids: Option<Vec<String>>,
+
     #[serde(
         rename = "started_after",
         default,
@@ -62,6 +65,7 @@ impl AnalysisCreate {
             instructions: None,
             max_traces: None,
             presets: None,
+            session_ids: None,
             started_after: None,
             started_before: None,
             trace_id: None,

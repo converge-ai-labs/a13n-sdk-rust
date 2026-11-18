@@ -17,8 +17,8 @@ pub struct ThreadRunItem {
     #[serde(rename = "agent_id")]
     pub agent_id: String,
 
-    #[serde(rename = "agent_revision_id")]
-    pub agent_revision_id: String,
+    #[serde(rename = "agent_revision_id", deserialize_with = "Option::deserialize")]
+    pub agent_revision_id: Option<String>,
 
     #[serde(rename = "attempts")]
     pub attempts: i32,
@@ -100,7 +100,7 @@ impl ThreadRunItem {
     /// Bounded navigation metadata and recorded model usage within one Thread.
     pub fn new(
         agent_id: String,
-        agent_revision_id: String,
+        agent_revision_id: Option<String>,
         attempts: i32,
         cost: Option<String>,
         created_at: chrono::DateTime<chrono::FixedOffset>,

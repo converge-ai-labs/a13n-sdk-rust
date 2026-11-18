@@ -19,8 +19,8 @@ pub struct RunSummary {
     #[serde(rename = "agent_name", deserialize_with = "Option::deserialize")]
     pub agent_name: Option<String>,
 
-    #[serde(rename = "agent_revision_id")]
-    pub agent_revision_id: String,
+    #[serde(rename = "agent_revision_id", deserialize_with = "Option::deserialize")]
+    pub agent_revision_id: Option<String>,
 
     #[serde(rename = "attempts")]
     pub attempts: i32,
@@ -116,7 +116,7 @@ impl RunSummary {
     pub fn new(
         agent_id: String,
         agent_name: Option<String>,
-        agent_revision_id: String,
+        agent_revision_id: Option<String>,
         attempts: i32,
         created_at: chrono::DateTime<chrono::FixedOffset>,
         current_attempt_id: Option<String>,
@@ -205,6 +205,8 @@ pub enum RevisionSelection {
     Default,
     #[serde(rename = "inherited")]
     Inherited,
+    #[serde(rename = "snapshot")]
+    Snapshot,
 }
 
 impl Default for RevisionSelection {

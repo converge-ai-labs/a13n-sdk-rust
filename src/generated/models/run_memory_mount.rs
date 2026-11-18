@@ -11,9 +11,9 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// FrozenMemoryMount : Host-resolved Space identity and roots, never accepted from a mount request.
+/// RunMemoryMount : Host-resolved Space identity and roots, never accepted from a mount request.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct FrozenMemoryMount {
+pub struct RunMemoryMount {
     #[serde(rename = "access")]
     pub access: models::MemoryAccess,
 
@@ -40,10 +40,10 @@ pub struct FrozenMemoryMount {
     pub space_id: Option<Option<String>>,
 }
 
-impl FrozenMemoryMount {
+impl RunMemoryMount {
     /// Host-resolved Space identity and roots, never accepted from a mount request.
-    pub fn new(access: models::MemoryAccess, memory_id: String, name: String) -> FrozenMemoryMount {
-        FrozenMemoryMount {
+    pub fn new(access: models::MemoryAccess, memory_id: String, name: String) -> RunMemoryMount {
+        RunMemoryMount {
             access,
             memory_id,
             name,

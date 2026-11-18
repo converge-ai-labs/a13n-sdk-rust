@@ -17,16 +17,47 @@ pub struct RunAgent {
     #[serde(rename = "config")]
     pub config: Box<models::AgentConfigOutput>,
 
-    #[serde(rename = "revision")]
-    pub revision: Box<models::AgentRevision>,
+    #[serde(rename = "definition_id")]
+    pub definition_id: String,
+
+    #[serde(rename = "revision", deserialize_with = "Option::deserialize")]
+    pub revision: Option<Box<models::AgentRevision>>,
+
+    #[serde(rename = "source")]
+    pub source: Source,
 }
 
 impl RunAgent {
     /// The agent a run executes: its frozen revision, and that revision's configuration with the run's override applied. Models, connections and templates the configuration names stay live.
-    pub fn new(config: models::AgentConfigOutput, revision: models::AgentRevision) -> RunAgent {
+    pub fn new(
+        config: models::AgentConfigOutput,
+        definition_id: String,
+        revision: Option<models::AgentRevision>,
+        source: Source,
+    ) -> RunAgent {
         RunAgent {
             config: Box::new(config),
-            revision: Box::new(revision),
+            definition_id,
+            revision: if let Some(x) = revision {
+                Some(Box::new(x))
+            } else {
+                None
+            },
+            source,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Source {
+    #[serde(rename = "revision")]
+    Revision,
+    #[serde(rename = "thread_snapshot")]
+    ThreadSnapshot,
+}
+
+impl Default for Source {
+    fn default() -> Source {
+        Self::Revision
     }
 }

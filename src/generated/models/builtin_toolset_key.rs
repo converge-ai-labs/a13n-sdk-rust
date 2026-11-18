@@ -28,6 +28,8 @@ pub enum BuiltinToolsetKey {
     Memory,
     #[serde(rename = "assets")]
     Assets,
+    #[serde(rename = "object_store")]
+    ObjectStore,
 }
 
 impl std::fmt::Display for BuiltinToolsetKey {
@@ -40,6 +42,7 @@ impl std::fmt::Display for BuiltinToolsetKey {
             Self::Web => write!(f, "web"),
             Self::Memory => write!(f, "memory"),
             Self::Assets => write!(f, "assets"),
+            Self::ObjectStore => write!(f, "object_store"),
         }
     }
 }

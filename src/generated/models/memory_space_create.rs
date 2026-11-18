@@ -27,13 +27,8 @@ pub struct MemorySpaceCreate {
     #[serde(rename = "enabled", skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
 
-    #[serde(
-        rename = "guide",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub guide: Option<Option<String>>,
+    #[serde(rename = "guidance", skip_serializing_if = "Option::is_none")]
+    pub guidance: Option<Box<models::FileMemoryGuidance>>,
 
     #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
     pub labels: Option<std::collections::HashMap<String, String>>,
@@ -51,7 +46,7 @@ impl MemorySpaceCreate {
             always_load: None,
             description: None,
             enabled: None,
-            guide: None,
+            guidance: None,
             labels: None,
             name,
             organization: None,

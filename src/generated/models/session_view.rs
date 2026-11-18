@@ -13,6 +13,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SessionView {
+    #[serde(rename = "auto_recreate_lost_environment")]
+    pub auto_recreate_lost_environment: bool,
+
     #[serde(rename = "cost", deserialize_with = "Option::deserialize")]
     pub cost: Option<String>,
 
@@ -87,6 +90,7 @@ pub struct SessionView {
 
 impl SessionView {
     pub fn new(
+        auto_recreate_lost_environment: bool,
         cost: Option<String>,
         created_at: chrono::DateTime<chrono::FixedOffset>,
         created_by_id: String,
@@ -100,6 +104,7 @@ impl SessionView {
         workspace_id: String,
     ) -> SessionView {
         SessionView {
+            auto_recreate_lost_environment,
             cost,
             created_at,
             created_by_id,

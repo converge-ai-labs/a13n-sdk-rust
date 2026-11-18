@@ -1581,3 +1581,62 @@ fn apps_and_usage_refresh_dispatch_preserves_native_json_and_queries() {
             && requests[2].contains("limit=1")
     );
 }
+
+#[test]
+fn app_plugins_list_and_replace_dispatch_false_and_precondition() {
+    let response = br#"{"id":"org_1","version":2,"permissions":[],"items":[]}"#.to_vec();
+    let (base, server) = serve(vec![
+        (
+            200,
+            vec![("Content-Type", "application/json")],
+            response.clone(),
+        ),
+        (200, vec![("Content-Type", "application/json")], response),
+    ]);
+    let list = binary(&[
+        "--base-url",
+        &base,
+        "--organization",
+        "org_1",
+        "organizations",
+        "app-plugins",
+        "list",
+    ]);
+    assert!(
+        list.status.success(),
+        "{}",
+        String::from_utf8_lossy(&list.stderr)
+    );
+    let put = binary(&[
+        "--base-url",
+        &base,
+        "--organization",
+        "org_1",
+        "organizations",
+        "app-plugins",
+        "replace",
+        "app_1",
+        "--if-match",
+        "\"org_1:1\"",
+        "--body",
+        "{\"enabled\":false}",
+    ]);
+    assert!(
+        put.status.success(),
+        "{}",
+        String::from_utf8_lossy(&put.stderr)
+    );
+    let requests = server.join().unwrap();
+    assert!(requests[0].starts_with("GET /api/v1/organizations/org_1/app-plugins "));
+    assert!(requests[1].starts_with("PUT /api/v1/organizations/org_1/app-plugins/app_1 "));
+    assert!(
+        requests[1]
+            .to_ascii_lowercase()
+            .contains("if-match: \"org_1:1\"")
+    );
+    let body = requests[1].split_once("\r\n\r\n").unwrap().1;
+    assert_eq!(
+        serde_json::from_str::<serde_json::Value>(body).unwrap(),
+        serde_json::json!({"enabled":false})
+    );
+}

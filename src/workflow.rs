@@ -170,10 +170,17 @@ impl Overrides {
     boxed_override_field!(reviewer, models::AgentReviewer);
     boxed_override_field!(skill_sync, models::AgentOverrideInputSkillSync);
     override_field!(skills, Vec<models::SkillSelection>);
-    override_field!(subagents, Value);
+    boxed_override_field!(subagents, models::SubagentsInput);
     /// Replaces the whole tool-search block; `None` retains the Agent revision.
     pub fn tool_search(mut self, value: Option<models::ToolSearch>) -> Self {
-        self.0.tool_search = Some(value.map(Box::new));
+        self.0.tool_search =
+            Some(value.map(|v| Box::new(models::AgentToolSearchSelection::AnyOf0(v))));
+        self
+    }
+    /// Selects native tool search, or sends null to retain the Agent revision.
+    pub fn native_tool_search(mut self, value: Option<models::NativeToolSearch>) -> Self {
+        self.0.tool_search =
+            Some(value.map(|v| Box::new(models::AgentToolSearchSelection::AnyOf1(v))));
         self
     }
     override_field!(toolsets, HashMap<String, models::ToolsetSelection>);

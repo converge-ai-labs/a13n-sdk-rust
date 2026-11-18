@@ -33,17 +33,23 @@ def test_adapter_keeps_typed_unions_and_contract_unchanged() -> None:
         assert schemas[name]["properties"]["message_history"]["x-rust-type"] == (
             "Vec<serde_json::Map<String, serde_json::Value>>"
         )
-    assert schemas["RunView"]["properties"]["memory_mounts"]["items"] == {
-        "$ref": "#/components/schemas/FrozenMemoryMount"
-    }
-    legacy, frozen = schemas["MemoryMount"], schemas["FrozenMemoryMount"]
+    assert schemas["RunView"]["properties"]["memory_mounts"]["items"] == {"$ref": "#/components/schemas/RunMemoryMount"}
+    legacy, frozen = schemas["MemoryMount"], schemas["RunMemoryMount"]
     assert legacy["required"] == frozen["required"]
     assert all(value == frozen["properties"][name] for name, value in legacy["properties"].items())
     assert frozen["properties"]["roots"]["x-rust-non-null"]
-    for name in ["ToolSearch", "ToolSearchGroup", "ToolSearchConfig"]:
+    for name in ["ToolSearch", "ToolSearchGroup", "ToolSearchConfig", "NativeToolSearch", "AutomaticToolSearch"]:
         assert schemas[name]["x-rust-deny-unknown-fields"]
     assert schemas["ToolSearch"]["properties"]["config"]["x-rust-non-null"]
     assert "NativeToolSearchConfig" not in schemas
+    for name in ("AgentConfig-Input", "AgentConfig-Output", "AgentOverride-Input", "AgentOverride-Output"):
+        original = document["components"]["schemas"][name]["properties"]["tool_search"]
+        prepared = schemas[name]["properties"]["tool_search"]
+        assert prepared == {
+            **original,
+            "title": "AgentToolSearchSelection",
+            "anyOf": [*original["anyOf"][:-1], {**original["anyOf"][-1], "x-rust-type": "()"}],
+        }
     for path in ["/api/v1/usage/context"]:
         assert adapted["paths"][path]["get"]["x-rust-nullable-response"]
     assert "x-rust-nullable-response" not in adapted["paths"]["/api/v1/runs/{run_id}"]["get"]
@@ -314,3 +320,20 @@ def test_session_model_constraints_keep_omission_null_and_owned_integer_bounds_d
     assert schemas["StreamPosition"]["properties"]["sequence"]["x-rust-minimum"] == 0
     for model, field in (("RunSnapshot", "first"), ("Delta", "attempt"), ("Delta", "sequence")):
         assert "x-rust-bounded-integer" not in schemas[model]["properties"][field]
+
+
+def test_current_resource_names_do_not_collide() -> None:
+    from resources import resource_name
+
+    document = json.loads((ROOT / "contract/openapi.json").read_text())
+    paths = set()
+    for path in document["paths"]:
+        relative = path.removeprefix("/api/v1/") if path.startswith("/api/v1/") else path.lstrip("/")
+        parts = relative.split("/")
+        paths.update("/".join(parts[:i]) for i in range(1, len(parts) + 1))
+    names = [resource_name(path) for path in paths]
+    assert len(names) == len(set(names))
+    assert resource_name("memories/{memory_id}/organization") != resource_name("memory-organizations/{organization_id}")
+    assert resource_name("threads/{thread_id}/session-bindings/{environment_id}") != resource_name(
+        "threads/{thread_id}/session-bindings/{environment_id}/{name}"
+    )

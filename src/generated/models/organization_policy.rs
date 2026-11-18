@@ -26,6 +26,22 @@ pub struct OrganizationPolicy {
     pub enabled: Option<bool>,
 
     #[serde(
+        rename = "history",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub history: Option<Option<Box<models::AutomaticOrganizationHistory>>>,
+
+    #[serde(
+        rename = "instructions",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub instructions: Option<Option<String>>,
+
+    #[serde(
         rename = "model",
         default,
         with = "::serde_with::rust::double_option",
@@ -43,6 +59,8 @@ impl OrganizationPolicy {
             check_interval_seconds: None,
             cooldown_seconds: None,
             enabled: None,
+            history: None,
+            instructions: None,
             model: None,
             trigger: None,
         }
