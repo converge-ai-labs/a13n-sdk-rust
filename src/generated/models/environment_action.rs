@@ -99,6 +99,182 @@ pub enum EnvironmentAction {
     EnvironmentComputerReadClipboard,
     #[serde(rename = "environment.computer.write_clipboard")]
     EnvironmentComputerWriteClipboard,
+    #[serde(rename = "environment.computer.a11y_describe")]
+    EnvironmentComputerA11yDescribe,
+    #[serde(rename = "environment.computer.a11y_roots")]
+    EnvironmentComputerA11yRoots,
+    #[serde(rename = "environment.computer.a11y_inspect")]
+    EnvironmentComputerA11yInspect,
+    #[serde(rename = "environment.computer.a11y_find")]
+    EnvironmentComputerA11yFind,
+    #[serde(rename = "environment.computer.a11y_read")]
+    EnvironmentComputerA11yRead,
+    #[serde(rename = "environment.computer.a11y_range")]
+    EnvironmentComputerA11yRange,
+    #[serde(rename = "environment.computer.a11y_range_read")]
+    EnvironmentComputerA11yRangeRead,
+    #[serde(rename = "environment.computer.ax_disclosing_set")]
+    EnvironmentComputerAxDisclosingSet,
+    #[serde(rename = "environment.computer.ax_expanded_set")]
+    EnvironmentComputerAxExpandedSet,
+    #[serde(rename = "environment.computer.ax_focus")]
+    EnvironmentComputerAxFocus,
+    #[serde(rename = "environment.computer.ax_focused_window_set")]
+    EnvironmentComputerAxFocusedWindowSet,
+    #[serde(rename = "environment.computer.ax_main_set")]
+    EnvironmentComputerAxMainSet,
+    #[serde(rename = "environment.computer.ax_minimized_set")]
+    EnvironmentComputerAxMinimizedSet,
+    #[serde(rename = "environment.computer.ax_perform_action")]
+    EnvironmentComputerAxPerformAction,
+    #[serde(rename = "environment.computer.ax_position_set")]
+    EnvironmentComputerAxPositionSet,
+    #[serde(rename = "environment.computer.ax_selected_children_set")]
+    EnvironmentComputerAxSelectedChildrenSet,
+    #[serde(rename = "environment.computer.ax_selected_columns_set")]
+    EnvironmentComputerAxSelectedColumnsSet,
+    #[serde(rename = "environment.computer.ax_selected_rows_set")]
+    EnvironmentComputerAxSelectedRowsSet,
+    #[serde(rename = "environment.computer.ax_selected_set")]
+    EnvironmentComputerAxSelectedSet,
+    #[serde(rename = "environment.computer.ax_selected_text_set")]
+    EnvironmentComputerAxSelectedTextSet,
+    #[serde(rename = "environment.computer.ax_size_set")]
+    EnvironmentComputerAxSizeSet,
+    #[serde(rename = "environment.computer.ax_text_range_select")]
+    EnvironmentComputerAxTextRangeSelect,
+    #[serde(rename = "environment.computer.ax_text_ranges_select")]
+    EnvironmentComputerAxTextRangesSelect,
+    #[serde(rename = "environment.computer.ax_value_number_set")]
+    EnvironmentComputerAxValueNumberSet,
+    #[serde(rename = "environment.computer.ax_value_string_set")]
+    EnvironmentComputerAxValueStringSet,
+    #[serde(rename = "environment.computer.ax_visible_text_range_set")]
+    EnvironmentComputerAxVisibleTextRangeSet,
+    #[serde(rename = "environment.computer.uia_collapse")]
+    EnvironmentComputerUiaCollapse,
+    #[serde(rename = "environment.computer.uia_dock_set")]
+    EnvironmentComputerUiaDockSet,
+    #[serde(rename = "environment.computer.uia_expand")]
+    EnvironmentComputerUiaExpand,
+    #[serde(rename = "environment.computer.uia_focus")]
+    EnvironmentComputerUiaFocus,
+    #[serde(rename = "environment.computer.uia_invoke")]
+    EnvironmentComputerUiaInvoke,
+    #[serde(rename = "environment.computer.uia_legacy_default_action")]
+    EnvironmentComputerUiaLegacyDefaultAction,
+    #[serde(rename = "environment.computer.uia_legacy_select")]
+    EnvironmentComputerUiaLegacySelect,
+    #[serde(rename = "environment.computer.uia_legacy_value_set")]
+    EnvironmentComputerUiaLegacyValueSet,
+    #[serde(rename = "environment.computer.uia_range_add_selection")]
+    EnvironmentComputerUiaRangeAddSelection,
+    #[serde(rename = "environment.computer.uia_range_remove_selection")]
+    EnvironmentComputerUiaRangeRemoveSelection,
+    #[serde(rename = "environment.computer.uia_range_scroll_into_view")]
+    EnvironmentComputerUiaRangeScrollIntoView,
+    #[serde(rename = "environment.computer.uia_range_select")]
+    EnvironmentComputerUiaRangeSelect,
+    #[serde(rename = "environment.computer.uia_range_show_context_menu")]
+    EnvironmentComputerUiaRangeShowContextMenu,
+    #[serde(rename = "environment.computer.uia_range_value_set")]
+    EnvironmentComputerUiaRangeValueSet,
+    #[serde(rename = "environment.computer.uia_realize")]
+    EnvironmentComputerUiaRealize,
+    #[serde(rename = "environment.computer.uia_scroll_amount")]
+    EnvironmentComputerUiaScrollAmount,
+    #[serde(rename = "environment.computer.uia_scroll_into_view")]
+    EnvironmentComputerUiaScrollIntoView,
+    #[serde(rename = "environment.computer.uia_scroll_percent")]
+    EnvironmentComputerUiaScrollPercent,
+    #[serde(rename = "environment.computer.uia_selection_add")]
+    EnvironmentComputerUiaSelectionAdd,
+    #[serde(rename = "environment.computer.uia_selection_remove")]
+    EnvironmentComputerUiaSelectionRemove,
+    #[serde(rename = "environment.computer.uia_selection_select")]
+    EnvironmentComputerUiaSelectionSelect,
+    #[serde(rename = "environment.computer.uia_show_context_menu")]
+    EnvironmentComputerUiaShowContextMenu,
+    #[serde(rename = "environment.computer.uia_toggle")]
+    EnvironmentComputerUiaToggle,
+    #[serde(rename = "environment.computer.uia_transform_move")]
+    EnvironmentComputerUiaTransformMove,
+    #[serde(rename = "environment.computer.uia_transform_resize")]
+    EnvironmentComputerUiaTransformResize,
+    #[serde(rename = "environment.computer.uia_transform_rotate")]
+    EnvironmentComputerUiaTransformRotate,
+    #[serde(rename = "environment.computer.uia_transform_zoom")]
+    EnvironmentComputerUiaTransformZoom,
+    #[serde(rename = "environment.computer.uia_transform_zoom_unit")]
+    EnvironmentComputerUiaTransformZoomUnit,
+    #[serde(rename = "environment.computer.uia_value_set")]
+    EnvironmentComputerUiaValueSet,
+    #[serde(rename = "environment.computer.uia_view_set")]
+    EnvironmentComputerUiaViewSet,
+    #[serde(rename = "environment.computer.uia_window_close")]
+    EnvironmentComputerUiaWindowClose,
+    #[serde(rename = "environment.computer.uia_window_state_set")]
+    EnvironmentComputerUiaWindowStateSet,
+    #[serde(rename = "environment.computer.atspi_caret_set")]
+    EnvironmentComputerAtspiCaretSet,
+    #[serde(rename = "environment.computer.atspi_component_extents_set")]
+    EnvironmentComputerAtspiComponentExtentsSet,
+    #[serde(rename = "environment.computer.atspi_component_position_set")]
+    EnvironmentComputerAtspiComponentPositionSet,
+    #[serde(rename = "environment.computer.atspi_component_size_set")]
+    EnvironmentComputerAtspiComponentSizeSet,
+    #[serde(rename = "environment.computer.atspi_do_action")]
+    EnvironmentComputerAtspiDoAction,
+    #[serde(rename = "environment.computer.atspi_document_selections_set")]
+    EnvironmentComputerAtspiDocumentSelectionsSet,
+    #[serde(rename = "environment.computer.atspi_focus")]
+    EnvironmentComputerAtspiFocus,
+    #[serde(rename = "environment.computer.atspi_range_scroll_to")]
+    EnvironmentComputerAtspiRangeScrollTo,
+    #[serde(rename = "environment.computer.atspi_range_scroll_to_point")]
+    EnvironmentComputerAtspiRangeScrollToPoint,
+    #[serde(rename = "environment.computer.atspi_scroll_to")]
+    EnvironmentComputerAtspiScrollTo,
+    #[serde(rename = "environment.computer.atspi_scroll_to_point")]
+    EnvironmentComputerAtspiScrollToPoint,
+    #[serde(rename = "environment.computer.atspi_selection_add_child")]
+    EnvironmentComputerAtspiSelectionAddChild,
+    #[serde(rename = "environment.computer.atspi_selection_all")]
+    EnvironmentComputerAtspiSelectionAll,
+    #[serde(rename = "environment.computer.atspi_selection_clear")]
+    EnvironmentComputerAtspiSelectionClear,
+    #[serde(rename = "environment.computer.atspi_selection_remove_child")]
+    EnvironmentComputerAtspiSelectionRemoveChild,
+    #[serde(rename = "environment.computer.atspi_selection_remove_selected")]
+    EnvironmentComputerAtspiSelectionRemoveSelected,
+    #[serde(rename = "environment.computer.atspi_table_column_select")]
+    EnvironmentComputerAtspiTableColumnSelect,
+    #[serde(rename = "environment.computer.atspi_table_column_unselect")]
+    EnvironmentComputerAtspiTableColumnUnselect,
+    #[serde(rename = "environment.computer.atspi_table_row_select")]
+    EnvironmentComputerAtspiTableRowSelect,
+    #[serde(rename = "environment.computer.atspi_table_row_unselect")]
+    EnvironmentComputerAtspiTableRowUnselect,
+    #[serde(rename = "environment.computer.atspi_text_contents_set")]
+    EnvironmentComputerAtspiTextContentsSet,
+    #[serde(rename = "environment.computer.atspi_text_copy")]
+    EnvironmentComputerAtspiTextCopy,
+    #[serde(rename = "environment.computer.atspi_text_cut")]
+    EnvironmentComputerAtspiTextCut,
+    #[serde(rename = "environment.computer.atspi_text_delete")]
+    EnvironmentComputerAtspiTextDelete,
+    #[serde(rename = "environment.computer.atspi_text_insert")]
+    EnvironmentComputerAtspiTextInsert,
+    #[serde(rename = "environment.computer.atspi_text_paste")]
+    EnvironmentComputerAtspiTextPaste,
+    #[serde(rename = "environment.computer.atspi_text_selection_add")]
+    EnvironmentComputerAtspiTextSelectionAdd,
+    #[serde(rename = "environment.computer.atspi_text_selection_remove")]
+    EnvironmentComputerAtspiTextSelectionRemove,
+    #[serde(rename = "environment.computer.atspi_text_selection_set")]
+    EnvironmentComputerAtspiTextSelectionSet,
+    #[serde(rename = "environment.computer.atspi_value_set")]
+    EnvironmentComputerAtspiValueSet,
 }
 
 impl std::fmt::Display for EnvironmentAction {
@@ -149,6 +325,234 @@ impl std::fmt::Display for EnvironmentAction {
             }
             Self::EnvironmentComputerWriteClipboard => {
                 write!(f, "environment.computer.write_clipboard")
+            }
+            Self::EnvironmentComputerA11yDescribe => {
+                write!(f, "environment.computer.a11y_describe")
+            }
+            Self::EnvironmentComputerA11yRoots => write!(f, "environment.computer.a11y_roots"),
+            Self::EnvironmentComputerA11yInspect => write!(f, "environment.computer.a11y_inspect"),
+            Self::EnvironmentComputerA11yFind => write!(f, "environment.computer.a11y_find"),
+            Self::EnvironmentComputerA11yRead => write!(f, "environment.computer.a11y_read"),
+            Self::EnvironmentComputerA11yRange => write!(f, "environment.computer.a11y_range"),
+            Self::EnvironmentComputerA11yRangeRead => {
+                write!(f, "environment.computer.a11y_range_read")
+            }
+            Self::EnvironmentComputerAxDisclosingSet => {
+                write!(f, "environment.computer.ax_disclosing_set")
+            }
+            Self::EnvironmentComputerAxExpandedSet => {
+                write!(f, "environment.computer.ax_expanded_set")
+            }
+            Self::EnvironmentComputerAxFocus => write!(f, "environment.computer.ax_focus"),
+            Self::EnvironmentComputerAxFocusedWindowSet => {
+                write!(f, "environment.computer.ax_focused_window_set")
+            }
+            Self::EnvironmentComputerAxMainSet => write!(f, "environment.computer.ax_main_set"),
+            Self::EnvironmentComputerAxMinimizedSet => {
+                write!(f, "environment.computer.ax_minimized_set")
+            }
+            Self::EnvironmentComputerAxPerformAction => {
+                write!(f, "environment.computer.ax_perform_action")
+            }
+            Self::EnvironmentComputerAxPositionSet => {
+                write!(f, "environment.computer.ax_position_set")
+            }
+            Self::EnvironmentComputerAxSelectedChildrenSet => {
+                write!(f, "environment.computer.ax_selected_children_set")
+            }
+            Self::EnvironmentComputerAxSelectedColumnsSet => {
+                write!(f, "environment.computer.ax_selected_columns_set")
+            }
+            Self::EnvironmentComputerAxSelectedRowsSet => {
+                write!(f, "environment.computer.ax_selected_rows_set")
+            }
+            Self::EnvironmentComputerAxSelectedSet => {
+                write!(f, "environment.computer.ax_selected_set")
+            }
+            Self::EnvironmentComputerAxSelectedTextSet => {
+                write!(f, "environment.computer.ax_selected_text_set")
+            }
+            Self::EnvironmentComputerAxSizeSet => write!(f, "environment.computer.ax_size_set"),
+            Self::EnvironmentComputerAxTextRangeSelect => {
+                write!(f, "environment.computer.ax_text_range_select")
+            }
+            Self::EnvironmentComputerAxTextRangesSelect => {
+                write!(f, "environment.computer.ax_text_ranges_select")
+            }
+            Self::EnvironmentComputerAxValueNumberSet => {
+                write!(f, "environment.computer.ax_value_number_set")
+            }
+            Self::EnvironmentComputerAxValueStringSet => {
+                write!(f, "environment.computer.ax_value_string_set")
+            }
+            Self::EnvironmentComputerAxVisibleTextRangeSet => {
+                write!(f, "environment.computer.ax_visible_text_range_set")
+            }
+            Self::EnvironmentComputerUiaCollapse => write!(f, "environment.computer.uia_collapse"),
+            Self::EnvironmentComputerUiaDockSet => write!(f, "environment.computer.uia_dock_set"),
+            Self::EnvironmentComputerUiaExpand => write!(f, "environment.computer.uia_expand"),
+            Self::EnvironmentComputerUiaFocus => write!(f, "environment.computer.uia_focus"),
+            Self::EnvironmentComputerUiaInvoke => write!(f, "environment.computer.uia_invoke"),
+            Self::EnvironmentComputerUiaLegacyDefaultAction => {
+                write!(f, "environment.computer.uia_legacy_default_action")
+            }
+            Self::EnvironmentComputerUiaLegacySelect => {
+                write!(f, "environment.computer.uia_legacy_select")
+            }
+            Self::EnvironmentComputerUiaLegacyValueSet => {
+                write!(f, "environment.computer.uia_legacy_value_set")
+            }
+            Self::EnvironmentComputerUiaRangeAddSelection => {
+                write!(f, "environment.computer.uia_range_add_selection")
+            }
+            Self::EnvironmentComputerUiaRangeRemoveSelection => {
+                write!(f, "environment.computer.uia_range_remove_selection")
+            }
+            Self::EnvironmentComputerUiaRangeScrollIntoView => {
+                write!(f, "environment.computer.uia_range_scroll_into_view")
+            }
+            Self::EnvironmentComputerUiaRangeSelect => {
+                write!(f, "environment.computer.uia_range_select")
+            }
+            Self::EnvironmentComputerUiaRangeShowContextMenu => {
+                write!(f, "environment.computer.uia_range_show_context_menu")
+            }
+            Self::EnvironmentComputerUiaRangeValueSet => {
+                write!(f, "environment.computer.uia_range_value_set")
+            }
+            Self::EnvironmentComputerUiaRealize => write!(f, "environment.computer.uia_realize"),
+            Self::EnvironmentComputerUiaScrollAmount => {
+                write!(f, "environment.computer.uia_scroll_amount")
+            }
+            Self::EnvironmentComputerUiaScrollIntoView => {
+                write!(f, "environment.computer.uia_scroll_into_view")
+            }
+            Self::EnvironmentComputerUiaScrollPercent => {
+                write!(f, "environment.computer.uia_scroll_percent")
+            }
+            Self::EnvironmentComputerUiaSelectionAdd => {
+                write!(f, "environment.computer.uia_selection_add")
+            }
+            Self::EnvironmentComputerUiaSelectionRemove => {
+                write!(f, "environment.computer.uia_selection_remove")
+            }
+            Self::EnvironmentComputerUiaSelectionSelect => {
+                write!(f, "environment.computer.uia_selection_select")
+            }
+            Self::EnvironmentComputerUiaShowContextMenu => {
+                write!(f, "environment.computer.uia_show_context_menu")
+            }
+            Self::EnvironmentComputerUiaToggle => write!(f, "environment.computer.uia_toggle"),
+            Self::EnvironmentComputerUiaTransformMove => {
+                write!(f, "environment.computer.uia_transform_move")
+            }
+            Self::EnvironmentComputerUiaTransformResize => {
+                write!(f, "environment.computer.uia_transform_resize")
+            }
+            Self::EnvironmentComputerUiaTransformRotate => {
+                write!(f, "environment.computer.uia_transform_rotate")
+            }
+            Self::EnvironmentComputerUiaTransformZoom => {
+                write!(f, "environment.computer.uia_transform_zoom")
+            }
+            Self::EnvironmentComputerUiaTransformZoomUnit => {
+                write!(f, "environment.computer.uia_transform_zoom_unit")
+            }
+            Self::EnvironmentComputerUiaValueSet => write!(f, "environment.computer.uia_value_set"),
+            Self::EnvironmentComputerUiaViewSet => write!(f, "environment.computer.uia_view_set"),
+            Self::EnvironmentComputerUiaWindowClose => {
+                write!(f, "environment.computer.uia_window_close")
+            }
+            Self::EnvironmentComputerUiaWindowStateSet => {
+                write!(f, "environment.computer.uia_window_state_set")
+            }
+            Self::EnvironmentComputerAtspiCaretSet => {
+                write!(f, "environment.computer.atspi_caret_set")
+            }
+            Self::EnvironmentComputerAtspiComponentExtentsSet => {
+                write!(f, "environment.computer.atspi_component_extents_set")
+            }
+            Self::EnvironmentComputerAtspiComponentPositionSet => {
+                write!(f, "environment.computer.atspi_component_position_set")
+            }
+            Self::EnvironmentComputerAtspiComponentSizeSet => {
+                write!(f, "environment.computer.atspi_component_size_set")
+            }
+            Self::EnvironmentComputerAtspiDoAction => {
+                write!(f, "environment.computer.atspi_do_action")
+            }
+            Self::EnvironmentComputerAtspiDocumentSelectionsSet => {
+                write!(f, "environment.computer.atspi_document_selections_set")
+            }
+            Self::EnvironmentComputerAtspiFocus => write!(f, "environment.computer.atspi_focus"),
+            Self::EnvironmentComputerAtspiRangeScrollTo => {
+                write!(f, "environment.computer.atspi_range_scroll_to")
+            }
+            Self::EnvironmentComputerAtspiRangeScrollToPoint => {
+                write!(f, "environment.computer.atspi_range_scroll_to_point")
+            }
+            Self::EnvironmentComputerAtspiScrollTo => {
+                write!(f, "environment.computer.atspi_scroll_to")
+            }
+            Self::EnvironmentComputerAtspiScrollToPoint => {
+                write!(f, "environment.computer.atspi_scroll_to_point")
+            }
+            Self::EnvironmentComputerAtspiSelectionAddChild => {
+                write!(f, "environment.computer.atspi_selection_add_child")
+            }
+            Self::EnvironmentComputerAtspiSelectionAll => {
+                write!(f, "environment.computer.atspi_selection_all")
+            }
+            Self::EnvironmentComputerAtspiSelectionClear => {
+                write!(f, "environment.computer.atspi_selection_clear")
+            }
+            Self::EnvironmentComputerAtspiSelectionRemoveChild => {
+                write!(f, "environment.computer.atspi_selection_remove_child")
+            }
+            Self::EnvironmentComputerAtspiSelectionRemoveSelected => {
+                write!(f, "environment.computer.atspi_selection_remove_selected")
+            }
+            Self::EnvironmentComputerAtspiTableColumnSelect => {
+                write!(f, "environment.computer.atspi_table_column_select")
+            }
+            Self::EnvironmentComputerAtspiTableColumnUnselect => {
+                write!(f, "environment.computer.atspi_table_column_unselect")
+            }
+            Self::EnvironmentComputerAtspiTableRowSelect => {
+                write!(f, "environment.computer.atspi_table_row_select")
+            }
+            Self::EnvironmentComputerAtspiTableRowUnselect => {
+                write!(f, "environment.computer.atspi_table_row_unselect")
+            }
+            Self::EnvironmentComputerAtspiTextContentsSet => {
+                write!(f, "environment.computer.atspi_text_contents_set")
+            }
+            Self::EnvironmentComputerAtspiTextCopy => {
+                write!(f, "environment.computer.atspi_text_copy")
+            }
+            Self::EnvironmentComputerAtspiTextCut => {
+                write!(f, "environment.computer.atspi_text_cut")
+            }
+            Self::EnvironmentComputerAtspiTextDelete => {
+                write!(f, "environment.computer.atspi_text_delete")
+            }
+            Self::EnvironmentComputerAtspiTextInsert => {
+                write!(f, "environment.computer.atspi_text_insert")
+            }
+            Self::EnvironmentComputerAtspiTextPaste => {
+                write!(f, "environment.computer.atspi_text_paste")
+            }
+            Self::EnvironmentComputerAtspiTextSelectionAdd => {
+                write!(f, "environment.computer.atspi_text_selection_add")
+            }
+            Self::EnvironmentComputerAtspiTextSelectionRemove => {
+                write!(f, "environment.computer.atspi_text_selection_remove")
+            }
+            Self::EnvironmentComputerAtspiTextSelectionSet => {
+                write!(f, "environment.computer.atspi_text_selection_set")
+            }
+            Self::EnvironmentComputerAtspiValueSet => {
+                write!(f, "environment.computer.atspi_value_set")
             }
         }
     }

@@ -29,6 +29,13 @@ pub struct McpConfig {
         skip_serializing_if = "Option::is_none"
     )]
     pub oauth: Option<Option<Box<models::OAuthSettings>>>,
+    /// Object Reference Transport rules by original tool name; '*' matches any characters. Exact names win, then more literal characters, with false winning equally specific patterns. Use {'*': true} to enable all tools; unmatched tools retain native metadata, defaulting to false.
+
+    #[serde(rename = "object_ref_tools", skip_serializing_if = "Option::is_none")]
+    pub object_ref_tools: Option<std::collections::HashMap<String, bool>>,
+
+    #[serde(rename = "on_error", skip_serializing_if = "Option::is_none")]
+    pub on_error: Option<models::StartupErrorPolicy>,
 
     #[serde(
         rename = "tools",
@@ -48,6 +55,8 @@ impl McpConfig {
             forward_context_headers: None,
             headers: None,
             oauth: None,
+            object_ref_tools: None,
+            on_error: None,
             tools: None,
             url,
         }

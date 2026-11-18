@@ -11,8 +11,9 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// AutomaticToolSearch : Group Service-owned sources individually, following the agent's selections.
+/// AutomaticToolSearch : Select Service-owned sources for on-demand discovery.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct AutomaticToolSearch {
     #[serde(default, deserialize_with = "deserialize_non_null_capabilities")]
     #[serde(rename = "capabilities", skip_serializing_if = "Option::is_none")]
@@ -35,7 +36,7 @@ pub struct AutomaticToolSearch {
 }
 
 impl AutomaticToolSearch {
-    /// Group Service-owned sources individually, following the agent's selections.
+    /// Select Service-owned sources for on-demand discovery.
     pub fn new() -> AutomaticToolSearch {
         AutomaticToolSearch {
             capabilities: None,

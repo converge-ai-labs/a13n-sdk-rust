@@ -125,14 +125,18 @@ impl From<&str> for ContentType {
 }
 
 pub mod agents_api;
+pub mod app_plugins_api;
 pub mod assets_api;
 pub mod auth_api;
 pub mod browsers_api;
+pub mod client_environments_api;
 pub mod connections_api;
 pub mod default_api;
+pub mod egress_credentials_api;
 pub mod environments_api;
 pub mod findings_api;
 pub mod memories_api;
+pub mod memory_organizations_api;
 pub mod memory_spaces_api;
 pub mod metrics_dashboards_api;
 pub mod metrics_data_sources_api;

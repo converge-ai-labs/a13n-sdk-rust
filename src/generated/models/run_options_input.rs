@@ -31,6 +31,14 @@ pub struct RunOptionsInput {
     pub context: Option<Option<Box<models::RequestContext>>>,
 
     #[serde(
+        rename = "environment",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub environment: Option<Option<Box<models::RunEnvironmentInput>>>,
+
+    #[serde(
         rename = "execution",
         default,
         with = "::serde_with::rust::double_option",
@@ -64,6 +72,7 @@ impl RunOptionsInput {
         RunOptionsInput {
             configuration: None,
             context: None,
+            environment: None,
             execution: None,
             labels: None,
             max_usage: None,

@@ -34,8 +34,8 @@ pub struct MemorySpace {
     #[serde(rename = "file_count")]
     pub file_count: i32,
 
-    #[serde(rename = "guide", deserialize_with = "Option::deserialize")]
-    pub guide: Option<String>,
+    #[serde(rename = "guidance")]
+    pub guidance: Box<models::FileMemoryGuidance>,
 
     #[serde(rename = "history_bytes")]
     pub history_bytes: i32,
@@ -80,7 +80,7 @@ impl MemorySpace {
         description: Option<String>,
         enabled: bool,
         file_count: i32,
-        guide: Option<String>,
+        guidance: models::FileMemoryGuidance,
         history_bytes: i32,
         id: String,
         labels: std::collections::HashMap<String, String>,
@@ -101,7 +101,7 @@ impl MemorySpace {
             description,
             enabled,
             file_count,
-            guide,
+            guidance: Box::new(guidance),
             history_bytes,
             id,
             labels,

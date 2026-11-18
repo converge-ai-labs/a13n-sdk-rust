@@ -17,6 +17,9 @@ pub struct ExecutionView {
     #[serde(rename = "attempt_id")]
     pub attempt_id: String,
 
+    #[serde(rename = "cancel_requested", skip_serializing_if = "Option::is_none")]
+    pub cancel_requested: Option<bool>,
+
     #[serde(
         rename = "cancel_requested_at",
         deserialize_with = "Option::deserialize"
@@ -104,6 +107,7 @@ impl ExecutionView {
     ) -> ExecutionView {
         ExecutionView {
             attempt_id,
+            cancel_requested: None,
             cancel_requested_at,
             completed_at: None,
             created_at: None,

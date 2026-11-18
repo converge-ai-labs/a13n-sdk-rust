@@ -17,8 +17,8 @@ pub struct RunListItem {
     #[serde(rename = "agent_id")]
     pub agent_id: String,
 
-    #[serde(rename = "agent_revision_id")]
-    pub agent_revision_id: String,
+    #[serde(rename = "agent_revision_id", deserialize_with = "Option::deserialize")]
+    pub agent_revision_id: Option<String>,
 
     #[serde(rename = "attempts")]
     pub attempts: i32,
@@ -88,7 +88,7 @@ impl RunListItem {
     /// Run discovery metadata. Full input, results and execution settings belong to the Run detail read.
     pub fn new(
         agent_id: String,
-        agent_revision_id: String,
+        agent_revision_id: Option<String>,
         attempts: i32,
         created_at: chrono::DateTime<chrono::FixedOffset>,
         current_attempt_id: Option<String>,

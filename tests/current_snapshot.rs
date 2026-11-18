@@ -20,7 +20,7 @@ fn added_native_schemas_preserve_their_wire_shapes() {
         EnvironmentPermissionSetInput => "EnvironmentPermissionSet-Input",
         EnvironmentPermissionSetOutput => "EnvironmentPermissionSet-Output",
         EnvironmentProviderReferences => "EnvironmentProviderReferences",
-        FrozenMemoryMount => "FrozenMemoryMount", MemorySpace => "MemorySpace",
+        RunMemoryMount => "RunMemoryMount", MemorySpace => "MemorySpace",
         MemorySpaceCreate => "MemorySpaceCreate", MemorySpacePage => "MemorySpacePage",
         MemorySpaceUpdate => "MemorySpaceUpdate", ModelRequestMetrics => "ModelRequestMetrics",
         MountUpdate => "MountUpdate", OrganizationPolicy => "OrganizationPolicy",

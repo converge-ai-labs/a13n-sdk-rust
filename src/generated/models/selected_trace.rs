@@ -16,12 +16,24 @@ pub struct SelectedTrace {
     #[serde(rename = "run_id")]
     pub run_id: String,
 
+    #[serde(
+        rename = "session_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub session_id: Option<Option<String>>,
+
     #[serde(rename = "trace_id")]
     pub trace_id: String,
 }
 
 impl SelectedTrace {
     pub fn new(run_id: String, trace_id: String) -> SelectedTrace {
-        SelectedTrace { run_id, trace_id }
+        SelectedTrace {
+            run_id,
+            session_id: None,
+            trace_id,
+        }
     }
 }

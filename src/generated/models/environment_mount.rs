@@ -23,6 +23,24 @@ pub struct EnvironmentMount {
     #[serde(rename = "permission_ceiling", skip_serializing_if = "Option::is_none")]
     pub permission_ceiling: Option<Box<models::EnvironmentPermissionSetOutput>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_session_binding")]
+    #[serde(rename = "session_binding", skip_serializing_if = "Option::is_none")]
+    pub session_binding: Option<String>,
+
+    #[serde(
+        default,
+        deserialize_with = "deserialize_non_null_session_configuration"
+    )]
+    #[serde(
+        rename = "session_configuration",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub session_configuration: Option<Box<models::SessionConfiguration>>,
+
+    #[serde(default, deserialize_with = "deserialize_non_null_session_version")]
+    #[serde(rename = "session_version", skip_serializing_if = "Option::is_none")]
+    pub session_version: Option<i32>,
+
     #[serde(
         rename = "working_directory",
         default,
@@ -38,6 +56,9 @@ impl EnvironmentMount {
             environment_id,
             name,
             permission_ceiling: None,
+            session_binding: None,
+            session_configuration: None,
+            session_version: None,
             working_directory: None,
         }
     }
@@ -47,6 +68,25 @@ fn deserialize_non_null_permission_ceiling<
     D: serde::Deserializer<'de>,
     T: Deserialize<'de>,
 >(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_session_binding<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_session_configuration<
+    'de,
+    D: serde::Deserializer<'de>,
+    T: Deserialize<'de>,
+>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
+}
+fn deserialize_non_null_session_version<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
     deserializer: D,
 ) -> Result<Option<T>, D::Error> {
     T::deserialize(deserializer).map(Some)
