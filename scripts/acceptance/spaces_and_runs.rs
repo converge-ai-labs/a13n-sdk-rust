@@ -243,7 +243,6 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
         .update(
             &m::MemorySpaceUpdate {
                 description: Some(None),
-                guide: Some(None),
                 ..Default::default()
             },
             MemorySpaceUpdateOptions {
@@ -253,7 +252,7 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
         )
         .await?;
     ensure(
-        changed.data.description.is_none() && changed.data.guide.is_none(),
+        changed.data.description.is_none(),
         "Space nullable update",
     )?;
     ensure(
