@@ -251,10 +251,7 @@ pub async fn live(client: &Client, agent: &str) -> Result<()> {
             },
         )
         .await?;
-    ensure(
-        changed.data.description.is_none(),
-        "Space nullable update",
-    )?;
+    ensure(changed.data.description.is_none(), "Space nullable update")?;
     ensure(
         api.memory_spaces()
             .list(Default::default())
