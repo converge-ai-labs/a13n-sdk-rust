@@ -24,6 +24,14 @@ pub struct NewThread {
     )]
     pub agent_revision_id: Option<Option<String>>,
 
+    #[serde(
+        rename = "browser_binding",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub browser_binding: Option<Option<Box<models::BrowserBinding>>>,
+
     #[serde(rename = "delivery", skip_serializing_if = "Option::is_none")]
     pub delivery: Option<models::Delivery>,
 
@@ -79,6 +87,7 @@ impl NewThread {
         NewThread {
             agent_id,
             agent_revision_id: None,
+            browser_binding: None,
             delivery: None,
             environments: None,
             execution: None,
