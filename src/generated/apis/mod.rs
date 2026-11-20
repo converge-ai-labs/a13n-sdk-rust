@@ -130,6 +130,7 @@ pub mod assets_api;
 pub mod auth_api;
 pub mod browsers_api;
 pub mod client_environments_api;
+pub mod cloudflare_deployments_api;
 pub mod connections_api;
 pub mod default_api;
 pub mod egress_credentials_api;

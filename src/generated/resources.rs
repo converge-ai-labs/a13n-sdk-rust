@@ -507,12 +507,15 @@ pub enum InboxKind {
     Message,
     #[serde(rename = "child_result")]
     ChildResult,
+    #[serde(rename = "child_message")]
+    ChildMessage,
 }
 impl InboxKind {
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Message => "message",
             Self::ChildResult => "child_result",
+            Self::ChildMessage => "child_message",
         }
     }
 }
@@ -874,6 +877,10 @@ impl<'a> ServiceResources<'a> {
     /// Access `client-environments` locally, sharing the client and explicit scope.
     pub fn client_environments(&self) -> ClientEnvironmentsResource<'a> {
         ClientEnvironmentsResource(self.0.clone())
+    }
+    /// Access `cloudflare-deployments` locally, sharing the client and explicit scope.
+    pub fn cloudflare_deployments(&self) -> CloudflareDeploymentsResource<'a> {
+        CloudflareDeploymentsResource(self.0.clone())
     }
     /// Access `connections` locally, sharing the client and explicit scope.
     pub fn connections(&self) -> ConnectionsResource<'a> {
@@ -3468,6 +3475,191 @@ impl<'a> ClientEnvironmentStatusResource<'a> {
         request = request.header("If-Match", &options.if_match);
         request = request.json(body);
         let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct CloudflareDeploymentsResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`CloudflareDeploymentsResource::list`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct CloudflareDeploymentsListOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`CloudflareDeploymentsResource::create`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct CloudflareDeploymentsCreateOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> CloudflareDeploymentsResource<'a> {
+    /// Bind `deployment_id` locally without an HTTP request. The returned reference borrows the client, not this collection.
+    pub fn at(&self, id: impl Into<String>) -> CloudflareDeploymentResource<'a> {
+        CloudflareDeploymentResource(self.0.select(id.into()))
+    }
+    /// List Cloudflare Deployments.
+    ///
+    /// `GET /api/v1/cloudflare-deployments`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn list(
+        &self,
+        options: CloudflareDeploymentsListOptions,
+    ) -> Result<Response<models::DeploymentList>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/cloudflare-deployments",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Create Cloudflare Deployment.
+    ///
+    /// `POST /api/v1/cloudflare-deployments`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn create(
+        &self,
+        body: &models::DeploymentCreate,
+        options: CloudflareDeploymentsCreateOptions,
+    ) -> Result<Response<models::Deployment>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/cloudflare-deployments",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[202]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct CloudflareDeploymentResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`CloudflareDeploymentResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct CloudflareDeploymentGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`CloudflareDeploymentResource::retire`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct CloudflareDeploymentRetireOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Query and header options for [`CloudflareDeploymentResource::retry`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct CloudflareDeploymentRetryOptions {
+    /// Header parameter `If-Match`. The resource's ETag: `"{id}:{version}"` of its current view, `"{key}:{version}"` for a model Use the ETag from the resource being changed; the SDK never infers it. Required.
+    pub if_match: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> CloudflareDeploymentResource<'a> {
+    /// Get Cloudflare Deployment.
+    ///
+    /// `GET /api/v1/cloudflare-deployments/{deployment_id}`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: CloudflareDeploymentGetOptions,
+    ) -> Result<Response<models::Deployment>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/cloudflare-deployments/{deployment_id}",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Retire Cloudflare Deployment.
+    ///
+    /// `POST /api/v1/cloudflare-deployments/{deployment_id}/retire`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn retire(
+        &self,
+        options: CloudflareDeploymentRetireOptions,
+    ) -> Result<Response<models::Deployment>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/cloudflare-deployments/{deployment_id}/retire",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        let response = self.0.client.json(request, &[202]).await?;
+        Ok(response)
+    }
+    /// Retry Cloudflare Deployment.
+    ///
+    /// `POST /api/v1/cloudflare-deployments/{deployment_id}/retry`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Pass the target resource's ETag explicitly; Service validates stale preconditions.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn retry(
+        &self,
+        body: &models::DeploymentRetry,
+        options: CloudflareDeploymentRetryOptions,
+    ) -> Result<Response<models::Deployment>, Error> {
+        if options.if_match.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/cloudflare-deployments/{deployment_id}/retry",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.header("If-Match", &options.if_match);
+        request = request.json(body);
+        let response = self.0.client.json(request, &[202]).await?;
         Ok(response)
     }
 }
@@ -19596,6 +19788,36 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/client-environments/{environment_id}/status",
         "ClientEnvironmentStatusResource",
         "update",
+    ),
+    (
+        "GET",
+        "/api/v1/cloudflare-deployments",
+        "CloudflareDeploymentsResource",
+        "list",
+    ),
+    (
+        "POST",
+        "/api/v1/cloudflare-deployments",
+        "CloudflareDeploymentsResource",
+        "create",
+    ),
+    (
+        "GET",
+        "/api/v1/cloudflare-deployments/{deployment_id}",
+        "CloudflareDeploymentResource",
+        "get",
+    ),
+    (
+        "POST",
+        "/api/v1/cloudflare-deployments/{deployment_id}/retire",
+        "CloudflareDeploymentResource",
+        "retire",
+    ),
+    (
+        "POST",
+        "/api/v1/cloudflare-deployments/{deployment_id}/retry",
+        "CloudflareDeploymentResource",
+        "retry",
     ),
     ("GET", "/api/v1/connections", "ConnectionsResource", "list"),
     (

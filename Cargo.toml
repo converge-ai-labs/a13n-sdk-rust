@@ -25,6 +25,7 @@ serde_json = { version = "1", features = ["preserve_order"] }
 serde_with = { version = "3.8", default-features = false, features = ["base64", "std", "macros"] }
 serde_repr = "0.1"
 url = "2.5"
+uuid = { version = "1", features = ["serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 tokio = { version = "1", features = ["macros", "sync", "time", "fs"] }
 tokio-util = { version = "0.7", features = ["codec"] }

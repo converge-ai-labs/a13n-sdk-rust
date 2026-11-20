@@ -48,3 +48,45 @@ async fn app_plugins_get_put_preserves_false_and_if_match() {
     );
     assert_eq!(second.json(), json!({"enabled":false}));
 }
+
+#[test]
+fn cloudflare_create_uuid_serializes_as_a_string_and_redacts_secret() {
+    let request_id = uuid::Uuid::parse_str("00000000-0000-4000-8000-000000000001").unwrap();
+    let request = models::DeploymentCreate::new(
+        "0123456789abcdef0123456789abcdef".into(),
+        "test-secret".into(),
+        "example".into(),
+        request_id,
+    );
+    let value = serde_json::to_value(&request).unwrap();
+    assert_eq!(value["request_id"], "00000000-0000-4000-8000-000000000001");
+    assert_eq!(value["api_token"], "test-secret");
+    assert!(!format!("{request:?}").contains("test-secret"));
+    let decoded: models::DeploymentCreate = serde_json::from_value(value).unwrap();
+    assert_eq!(decoded.request_id, request_id);
+}
+
+#[test]
+fn cloudflare_deployment_cleanup_is_a_typed_map_on_the_wire() {
+    let value = json!({
+        "account_id": "0123456789abcdef0123456789abcdef",
+        "cleanup": {"worker": "removed", "route": "pending"},
+        "endpoint": null,
+        "error": null,
+        "id": "dep_one",
+        "name": "example",
+        "operation": "deploy",
+        "provider_id": null,
+        "source_image": "image",
+        "stage": "complete",
+        "status": "ready",
+        "version": 3,
+        "worker_name": "worker"
+    });
+    let deployment: models::Deployment = serde_json::from_value(value.clone()).unwrap();
+    assert_eq!(deployment.cleanup.len(), 2);
+    assert_eq!(serde_json::to_value(&deployment).unwrap(), value);
+    let mut invalid = value;
+    invalid["cleanup"]["worker"] = json!("unexpected");
+    assert!(serde_json::from_value::<models::Deployment>(invalid).is_err());
+}

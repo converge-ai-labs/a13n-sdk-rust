@@ -337,3 +337,15 @@ def test_current_resource_names_do_not_collide() -> None:
     assert resource_name("threads/{thread_id}/session-bindings/{environment_id}") != resource_name(
         "threads/{thread_id}/session-bindings/{environment_id}/{name}"
     )
+
+
+def test_deployment_cleanup_keeps_map_shape_and_promotes_value_enum() -> None:
+    document = json.loads((ROOT / "contract/openapi.json").read_text())
+    original = document["components"]["schemas"]["Deployment"]["properties"]["cleanup"]
+    prepared = codegen.prepare(document)
+    schemas = prepared["components"]["schemas"]
+    assert schemas["Deployment"]["properties"]["cleanup"]["additionalProperties"] == {
+        "$ref": "#/components/schemas/DeploymentCleanupStatus"
+    }
+    assert schemas["DeploymentCleanupStatus"]["enum"] == original["additionalProperties"]["enum"]
+    assert "enum" in original["additionalProperties"]

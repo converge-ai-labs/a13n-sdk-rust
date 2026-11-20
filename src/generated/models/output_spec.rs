@@ -15,6 +15,14 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct OutputSpec {
     #[serde(
+        rename = "alternatives",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub alternatives: Option<Option<Vec<models::OutputAlternative>>>,
+
+    #[serde(
         rename = "description",
         default,
         with = "::serde_with::rust::double_option",
@@ -55,6 +63,7 @@ impl OutputSpec {
     /// Plain text without a schema, one structured output, or at least two named variants.  `resources` are the schemas `$ref`s may name besides the schema's own definitions.
     pub fn new() -> OutputSpec {
         OutputSpec {
+            alternatives: None,
             description: None,
             name: None,
             resources: None,

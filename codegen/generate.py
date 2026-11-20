@@ -85,6 +85,16 @@ def prepare(document: dict) -> dict:
         schemas["DesktopControlState"] = {**control, "title": "DesktopControlState"}
         schemas["Control"]["properties"]["control"] = {"$ref": "#/components/schemas/DesktopControlState"}
 
+    # Preserve the map shape: OpenAPI Generator mistakes an inline enum in
+    # additionalProperties for an enum on the whole object property.
+    if "Deployment" in schemas:
+        cleanup = schemas["Deployment"]["properties"]["cleanup"]
+        schemas["DeploymentCleanupStatus"] = {
+            **cleanup["additionalProperties"],
+            "title": "DeploymentCleanupStatus",
+        }
+        cleanup["additionalProperties"] = {"$ref": "#/components/schemas/DeploymentCleanupStatus"}
+
     # The nullable tool-search union otherwise inherits the title ToolSearch,
     # colliding with the distinct, named ToolSearch object in generator output.
     for name in ("AgentConfig-Input", "AgentConfig-Output", "AgentOverride-Input", "AgentOverride-Output"):

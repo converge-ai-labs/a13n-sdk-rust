@@ -125,6 +125,8 @@ pub enum Kind {
     Message,
     #[serde(rename = "child_result")]
     ChildResult,
+    #[serde(rename = "child_message")]
+    ChildMessage,
     #[serde(rename = "tool_result")]
     ToolResult,
     #[serde(rename = "browser_handback")]
