@@ -76,7 +76,7 @@ pub enum UpdateFindingError {
     UnknownValue(serde_json::Value),
 }
 
-/// Record an unconfirmed finding with evidence and a suggestion; a stable source_key makes a retry safe. A Run's own submission names that Run as its source; an analysis cites only selected traces it has read.
+/// Record an unconfirmed finding with evidence and a suggestion; a stable source_key makes a retry safe. A Run's own submission names that Run as its source; an analysis cites traces it has read.
 pub async fn create_finding(
     configuration: &configuration::Configuration,
     finding_create: models::FindingCreate,

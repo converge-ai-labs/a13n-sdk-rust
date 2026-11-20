@@ -134,6 +134,8 @@ pub enum Kind {
     Message,
     #[serde(rename = "child_result")]
     ChildResult,
+    #[serde(rename = "child_message")]
+    ChildMessage,
 }
 
 impl Default for Kind {

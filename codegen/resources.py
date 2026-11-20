@@ -17,6 +17,10 @@ CORE = {
     # Assistance is uncountable: collection and selected resource need distinct names.
     "desktop-assistance": "DesktopAssistanceCollectionResource",
     "runs/{run_id}/desktop-assistance": "RunDesktopAssistanceCollectionResource",
+    # Distinguish status from an organization record, and the intermediate
+    # environment scope from a selected Session binding.
+    "memories/{memory_id}/organization": "MemoryOrganizationStatusResource",
+    "threads/{thread_id}/session-bindings/{environment_id}": "ThreadSessionBindingsEnvironmentResource",
 }
 OPTIONAL_MATCH = "/api/v1/memories/{memory_id}/revisions/{seq}/restore"
 DOMAIN_ENUMS = {

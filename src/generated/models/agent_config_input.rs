@@ -45,6 +45,14 @@ pub struct AgentConfigInput {
     pub default_environment_template_id: Option<Option<String>>,
 
     #[serde(
+        rename = "default_session_configuration",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub default_session_configuration: Option<Option<Box<models::SessionConfiguration>>>,
+
+    #[serde(
         rename = "execution",
         default,
         with = "::serde_with::rust::double_option",
@@ -127,7 +135,7 @@ pub struct AgentConfigInput {
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub tool_search: Option<Option<Box<models::ToolSearch>>>,
+    pub tool_search: Option<Option<Box<models::AgentToolSearchSelection>>>,
 
     #[serde(rename = "toolsets", skip_serializing_if = "Option::is_none")]
     pub toolsets: Option<std::collections::HashMap<String, models::ToolsetSelection>>,
@@ -145,6 +153,7 @@ impl AgentConfigInput {
             connection_tools: None,
             default_environment_id: None,
             default_environment_template_id: None,
+            default_session_configuration: None,
             execution: None,
             instructions: None,
             lazy_environment: None,

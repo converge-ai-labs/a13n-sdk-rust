@@ -378,7 +378,7 @@ async fn session_desktop_wait_preserves_pending_snapshot_without_control() {
 #[tokio::test]
 async fn app_ready_is_typed_repeatable_and_rejects_malformed_payloads_and_ids() {
     let value = json!({"thread_id":"t","run_id":"r","apps":[{
-        "app_id":"app","connection_id":"con","agent_revision_id":"rev","source_run_id":"r",
+        "app_id":"app","connection_id":"con","agent_definition_id":"agent","source_run_id":"r",
         "tool_call_id":"call","tool_name":"chart","resource_uri":"ui://chart"
     }]});
     let body = frame("app_ready", value.clone()).repeat(2);
@@ -439,4 +439,36 @@ async fn session_current_pending_preserves_calls_and_approvals() {
     assert!(
         matches!(value.current_run.unwrap().pending.as_deref(), Some(a13n::generated::models::Pending1::AnyOf0(p)) if p.calls[0].tool_call_id == "c" && p.approvals[0].tool_call_id == "a")
     );
+}
+
+#[tokio::test]
+async fn session_run_finding_analysis_id_preserves_absence_null_and_value() {
+    for finding in [None, Some(Value::Null), Some(json!("ana_1"))] {
+        let mut state = thread();
+        let mut run = sample("RunView");
+        run.as_object_mut().unwrap().remove("finding_analysis_id");
+        if let Some(value) = &finding {
+            run["finding_analysis_id"] = value.clone();
+        }
+        state["current_run"] = run;
+        let body = frame("thread", state);
+        let fixture = server(move |_| Reply::sse(&body)).await;
+        let sdk = client(&fixture);
+        let mut reader = SessionStream::open(sdk.api().sessions().at("s"), Default::default())
+            .await
+            .unwrap();
+        let Some(SessionFrame::Thread(value)) = reader.next().await.unwrap() else {
+            panic!("thread")
+        };
+        let run = value.current_run.unwrap();
+        match &finding {
+            None => assert_eq!(run.finding_analysis_id, None),
+            Some(Value::Null) => assert_eq!(run.finding_analysis_id, Some(None)),
+            Some(Value::String(id)) => assert_eq!(run.finding_analysis_id, Some(Some(id.clone()))),
+            _ => unreachable!(),
+        }
+        let result = serde_json::to_value(run).unwrap();
+        assert_eq!(result.get("finding_analysis_id"), finding.as_ref());
+        reader.close();
+    }
 }

@@ -47,6 +47,21 @@ fn tool_search_proxy_and_override_presence_are_lossless() {
     roundtrip::<m::ToolSearch>(
         json!({"groups":{"work":{"description":"Selected sources","connections":[],"plugins":[],"platform":false}}}),
     );
+    for selection in [
+        json!({"mode":"native"}),
+        json!({"mode":"native","sources":{"connections":false}}),
+    ] {
+        roundtrip::<m::AgentConfigInput>(json!({"model":"model","tool_search":selection}));
+    }
+    let native: m::NativeToolSearch = serde_json::from_value(json!({"mode":"native"})).unwrap();
+    assert_eq!(
+        serde_json::to_value(Overrides::new().native_tool_search(Some(native))).unwrap(),
+        json!({"tool_search":{"mode":"native"}})
+    );
+    assert_eq!(
+        serde_json::to_value(Overrides::new().native_tool_search(None)).unwrap(),
+        json!({"tool_search":null})
+    );
 }
 
 #[test]
@@ -70,6 +85,18 @@ fn invalid_tool_search_union_is_rejected_at_typed_boundary() {
         assert!(
             serde_json::from_value::<m::AgentConfigInput>(
                 json!({"model":"m","tool_search":{"config":config}})
+            )
+            .is_err()
+        );
+    }
+    for native in [
+        json!({"mode":"native","groups":{}}),
+        json!({"mode":"native","unknown":true}),
+        json!({"mode":"native","sources":{"unknown":true}}),
+    ] {
+        assert!(
+            serde_json::from_value::<m::AgentConfigInput>(
+                json!({"model":"m","tool_search":native})
             )
             .is_err()
         );

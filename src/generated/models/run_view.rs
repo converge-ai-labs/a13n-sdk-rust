@@ -51,6 +51,14 @@ pub struct RunView {
     #[serde(rename = "failure", deserialize_with = "Option::deserialize")]
     pub failure: Option<Box<models::Failure>>,
 
+    #[serde(
+        rename = "finding_analysis_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub finding_analysis_id: Option<Option<String>>,
+
     #[serde(rename = "id")]
     pub id: String,
 
@@ -72,7 +80,7 @@ pub struct RunView {
     pub max_attempts: i32,
 
     #[serde(rename = "memory_mounts")]
-    pub memory_mounts: Vec<models::FrozenMemoryMount>,
+    pub memory_mounts: Vec<models::RunMemoryMount>,
 
     #[serde(rename = "options")]
     pub options: Box<models::RunOptionsOutput>,
@@ -157,7 +165,7 @@ impl RunView {
         labels: std::collections::HashMap<String, String>,
         lineage: models::Lineage,
         max_attempts: i32,
-        memory_mounts: Vec<models::FrozenMemoryMount>,
+        memory_mounts: Vec<models::RunMemoryMount>,
         options: models::RunOptionsOutput,
         output: Option<serde_json::Value>,
         parent_run_id: Option<String>,
@@ -193,6 +201,7 @@ impl RunView {
             } else {
                 None
             },
+            finding_analysis_id: None,
             id,
             input: None,
             labels,

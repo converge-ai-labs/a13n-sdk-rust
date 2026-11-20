@@ -31,6 +31,9 @@ pub struct Memory {
     #[serde(rename = "file_count", deserialize_with = "Option::deserialize")]
     pub file_count: Option<i32>,
 
+    #[serde(rename = "guidance", deserialize_with = "Option::deserialize")]
+    pub guidance: Option<Box<models::FileMemoryGuidance>>,
+
     #[serde(rename = "guide", deserialize_with = "Option::deserialize")]
     pub guide: Option<String>,
 
@@ -40,8 +43,8 @@ pub struct Memory {
     #[serde(rename = "id")]
     pub id: String,
 
-    #[serde(rename = "inherited_guide")]
-    pub inherited_guide: String,
+    #[serde(rename = "inherited_guide", deserialize_with = "Option::deserialize")]
+    pub inherited_guide: Option<String>,
 
     #[serde(rename = "kind")]
     pub kind: models::MemoryKind,
@@ -85,10 +88,11 @@ impl Memory {
         created_by_id: String,
         description: Option<String>,
         file_count: Option<i32>,
+        guidance: Option<models::FileMemoryGuidance>,
         guide: Option<String>,
         history_bytes: Option<i32>,
         id: String,
-        inherited_guide: String,
+        inherited_guide: Option<String>,
         kind: models::MemoryKind,
         labels: std::collections::HashMap<String, String>,
         name: String,
@@ -108,6 +112,11 @@ impl Memory {
             created_by_id,
             description,
             file_count,
+            guidance: if let Some(x) = guidance {
+                Some(Box::new(x))
+            } else {
+                None
+            },
             guide,
             history_bytes,
             id,

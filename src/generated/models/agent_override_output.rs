@@ -148,7 +148,7 @@ pub struct AgentOverrideOutput {
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub tool_search: Option<Option<Box<models::ToolSearch>>>,
+    pub tool_search: Option<Option<Box<models::AgentToolSearchSelection>>>,
 
     #[serde(
         rename = "toolsets",

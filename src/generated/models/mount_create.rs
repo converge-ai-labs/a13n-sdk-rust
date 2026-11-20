@@ -22,6 +22,17 @@ pub struct MountCreate {
     #[serde(rename = "permission_ceiling", skip_serializing_if = "Option::is_none")]
     pub permission_ceiling: Option<Box<models::EnvironmentPermissionSetInput>>,
 
+    #[serde(rename = "session_binding", skip_serializing_if = "Option::is_none")]
+    pub session_binding: Option<String>,
+
+    #[serde(
+        rename = "session_configuration",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub session_configuration: Option<Option<Box<models::SessionConfiguration>>>,
+
     #[serde(
         rename = "working_directory",
         default,
@@ -37,6 +48,8 @@ impl MountCreate {
             environment_id,
             name,
             permission_ceiling: None,
+            session_binding: None,
+            session_configuration: None,
             working_directory: None,
         }
     }

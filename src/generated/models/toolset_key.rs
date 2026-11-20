@@ -28,6 +28,8 @@ pub enum ToolsetKey {
     Memory,
     #[serde(rename = "assets")]
     Assets,
+    #[serde(rename = "object_store")]
+    ObjectStore,
     #[serde(rename = "agents")]
     Agents,
     #[serde(rename = "models")]
@@ -56,6 +58,7 @@ impl std::fmt::Display for ToolsetKey {
             Self::Web => write!(f, "web"),
             Self::Memory => write!(f, "memory"),
             Self::Assets => write!(f, "assets"),
+            Self::ObjectStore => write!(f, "object_store"),
             Self::Agents => write!(f, "agents"),
             Self::Models => write!(f, "models"),
             Self::Connections => write!(f, "connections"),

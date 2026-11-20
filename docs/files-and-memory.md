@@ -115,7 +115,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 }
 ```
 
-`FrozenMemoryMount` reads both legacy mounts and resolved Space roots without dropping `space_id` or `roots`. Ordinary business roots cover `global/` and the selected Session subtree; later Session edits do not change an accepted Run. Organization status/history are native `space.organization().get(...)` and `space.organizations().list(...)`. Manual `organizations().create(...)` returns **202 request status**, not completion; model/authority and organization scheduling belong to Service. Space deletion requires its ETag and no bound Session or unsealed frozen Run.
+`RunMemoryMount` reads both legacy mounts and resolved Space roots without dropping `space_id` or `roots`. Ordinary business roots cover `global/` and the selected Session subtree; later Session edits do not change an accepted Run. Organization status/history are native `space.organization().get(...)` and `space.organizations().list(...)`. Manual `organizations().create(...)` returns **202 request status**, not completion; model/authority and organization scheduling belong to Service. Space deletion requires its ETag and no bound Session or unsealed frozen Run.
 
 ## Computer checks and retained screenshots
 

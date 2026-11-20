@@ -86,7 +86,10 @@ fn public_input_and_every_options_builder_preserve_wire_presence() {
         .reviewer(None)
         .skill_sync(None)
         .skills(None)
-        .subagents(Some(json!({"nested":[null,{},[]]})))
+        .subagents(Some(
+            serde_json::from_value(json!({"mode":"async","named":{},"dynamic":{"enabled":true}}))
+                .unwrap(),
+        ))
         .toolsets(Some(HashMap::new()));
     let options = RunOptions::new()
         .configuration(Some(
@@ -102,7 +105,7 @@ fn public_input_and_every_options_builder_preserve_wire_presence() {
         .max_usage(None);
     assert_eq!(
         serde_json::to_value(options).unwrap(),
-        json!({"configuration":{"allowed_hosts":[],"extensions":{"org.test":{"empty":"","flag":false}}},"labels":{},"max_usage":null,"overrides":{"builtin_skills":null,"client_tools":null,"connection_tools":null,"instructions":"","lazy_environment":false,"media_understanding":null,"model":null,"model_characteristics":null,"model_settings":{"enabled":false,"zero":0},"output_spec":null,"plugins":null,"retries":null,"reviewer":null,"skill_sync":null,"skills":null,"subagents":{"nested":[null,{},[]]},"toolsets":{}}})
+        json!({"configuration":{"allowed_hosts":[],"extensions":{"org.test":{"empty":"","flag":false}}},"labels":{},"max_usage":null,"overrides":{"builtin_skills":null,"client_tools":null,"connection_tools":null,"instructions":"","lazy_environment":false,"media_understanding":null,"model":null,"model_characteristics":null,"model_settings":{"enabled":false,"zero":0},"output_spec":null,"plugins":null,"retries":null,"reviewer":null,"skill_sync":null,"skills":null,"subagents":{"mode":"async","named":{},"dynamic":{"enabled":true}},"toolsets":{}}})
     );
     assert_eq!(
         serde_json::to_value(RunOptions::new().configuration(None).overrides(None)).unwrap(),
@@ -167,7 +170,10 @@ fn uncommon_supported_options_are_constructible_without_generated_imports() {
                 .retries(Some(RetryOverride::default()))
                 .reviewer(Some(reviewer))
                 .skills(Some(vec![SkillSelection::new("skill".into())]))
-                .subagents(Some(json!({"child":{"agent_id":"agent"}})))
+                .subagents(Some(
+                    serde_json::from_value(json!({"named":{"child":{"agent_id":"agent"}}}))
+                        .unwrap(),
+                ))
                 .toolsets(Some(HashMap::from([(
                     "tools".into(),
                     ToolsetSelection::default(),

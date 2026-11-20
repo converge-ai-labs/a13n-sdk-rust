@@ -85,6 +85,22 @@ def prepare(document: dict) -> dict:
         schemas["DesktopControlState"] = {**control, "title": "DesktopControlState"}
         schemas["Control"]["properties"]["control"] = {"$ref": "#/components/schemas/DesktopControlState"}
 
+    # Preserve the map shape: OpenAPI Generator mistakes an inline enum in
+    # additionalProperties for an enum on the whole object property.
+    if "Deployment" in schemas:
+        cleanup = schemas["Deployment"]["properties"]["cleanup"]
+        schemas["DeploymentCleanupStatus"] = {
+            **cleanup["additionalProperties"],
+            "title": "DeploymentCleanupStatus",
+        }
+        cleanup["additionalProperties"] = {"$ref": "#/components/schemas/DeploymentCleanupStatus"}
+
+    # The nullable tool-search union otherwise inherits the title ToolSearch,
+    # colliding with the distinct, named ToolSearch object in generator output.
+    for name in ("AgentConfig-Input", "AgentConfig-Output", "AgentOverride-Input", "AgentOverride-Output"):
+        if name in schemas:
+            schemas[name]["properties"]["tool_search"]["title"] = "AgentToolSearchSelection"
+
     # Imported native history is immutable ordered JSON, including each message
     # object. HashMap would reorder the model-visible context at the wire boundary.
     for name, schema in schemas.items():
@@ -92,7 +108,7 @@ def prepare(document: dict) -> dict:
             # Both union arms are closed; without this serde would accept the
             # historical arm as Pending and silently discard its control ID.
             schema["x-rust-deny-unknown-fields"] = True
-        if name in {"ToolSearch", "ToolSearchGroup", "ToolSearchConfig"}:
+        if name in {"ToolSearch", "ToolSearchGroup", "ToolSearchConfig", "NativeToolSearch", "AutomaticToolSearch"}:
             # Preserve closed configuration objects at the typed boundary.
             schema["x-rust-deny-unknown-fields"] = schema.get("additionalProperties") is False
             for field, prop in schema.get("properties", {}).items():
@@ -102,11 +118,11 @@ def prepare(document: dict) -> dict:
         if name == "NewThread":
             schema["properties"]["message_history"]["x-rust-type"] = "Vec<serde_json::Map<String, serde_json::Value>>"
         if name == "RunView":
-            # FrozenMemoryMount contains every legacy MemoryMount field with the
+            # RunMemoryMount contains every legacy MemoryMount field with the
             # same required set, plus optional roots/Space identity. Untagged anyOf
             # would match the legacy subset first and silently discard these.
-            schema["properties"]["memory_mounts"]["items"] = {"$ref": "#/components/schemas/FrozenMemoryMount"}
-        if name == "FrozenMemoryMount":
+            schema["properties"]["memory_mounts"]["items"] = {"$ref": "#/components/schemas/RunMemoryMount"}
+        if name == "RunMemoryMount":
             # Missing roots stays omitted; explicit null is not a valid roots array.
             schema["properties"]["roots"]["x-rust-non-null"] = True
     visit(document)

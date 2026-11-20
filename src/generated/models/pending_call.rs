@@ -24,6 +24,10 @@ pub struct PendingCall {
     )]
     pub presentation: Option<Option<std::collections::HashMap<String, serde_json::Value>>>,
 
+    #[serde(default, deserialize_with = "deserialize_non_null_terminal")]
+    #[serde(rename = "terminal", skip_serializing_if = "Option::is_none")]
+    pub terminal: Option<bool>,
+
     #[serde(rename = "tool_call_id")]
     pub tool_call_id: String,
 
@@ -40,8 +44,14 @@ impl PendingCall {
         PendingCall {
             arguments,
             presentation: None,
+            terminal: None,
             tool_call_id,
             tool_name,
         }
     }
+}
+fn deserialize_non_null_terminal<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    deserializer: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(deserializer).map(Some)
 }

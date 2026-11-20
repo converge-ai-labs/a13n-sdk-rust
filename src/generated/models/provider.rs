@@ -34,6 +34,9 @@ pub struct Provider {
     #[serde(rename = "id")]
     pub id: String,
 
+    #[serde(rename = "managed_deployment", skip_serializing_if = "Option::is_none")]
+    pub managed_deployment: Option<bool>,
+
     #[serde(rename = "name")]
     pub name: String,
 
@@ -81,6 +84,7 @@ impl Provider {
             enabled,
             header_names,
             id,
+            managed_deployment: None,
             name,
             organization_id,
             r#type,

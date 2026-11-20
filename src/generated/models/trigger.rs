@@ -22,6 +22,8 @@ pub enum Trigger {
     Resume,
     #[serde(rename = "child_result")]
     ChildResult,
+    #[serde(rename = "child_message")]
+    ChildMessage,
     #[serde(rename = "tool_result")]
     ToolResult,
     #[serde(rename = "browser_handback")]
@@ -39,6 +41,7 @@ impl std::fmt::Display for Trigger {
             Self::Queued => write!(f, "queued"),
             Self::Resume => write!(f, "resume"),
             Self::ChildResult => write!(f, "child_result"),
+            Self::ChildMessage => write!(f, "child_message"),
             Self::ToolResult => write!(f, "tool_result"),
             Self::BrowserHandback => write!(f, "browser_handback"),
             Self::DesktopHandback => write!(f, "desktop_handback"),

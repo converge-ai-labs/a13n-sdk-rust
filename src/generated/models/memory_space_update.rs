@@ -38,12 +38,12 @@ pub struct MemorySpaceUpdate {
     pub enabled: Option<Option<bool>>,
 
     #[serde(
-        rename = "guide",
+        rename = "guidance",
         default,
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub guide: Option<Option<String>>,
+    pub guidance: Option<Option<Box<models::FileMemoryGuidance>>>,
 
     #[serde(
         rename = "labels",
@@ -76,7 +76,7 @@ impl MemorySpaceUpdate {
             always_load: None,
             description: None,
             enabled: None,
-            guide: None,
+            guidance: None,
             labels: None,
             name: None,
             organization: None,
