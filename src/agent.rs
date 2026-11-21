@@ -15,6 +15,7 @@ pub struct StartOptions {
     pub idempotency_key: Option<String>,
     pub observation: ObservationOptions,
     pub agent_revision_id: Option<Option<String>>,
+    pub browser_binding: Option<Option<models::BrowserBinding>>,
     pub delivery: Option<models::Delivery>,
     pub environments: Option<Vec<models::MountCreate>>,
     pub mcp_headers: Option<serde_json::Value>,
@@ -86,6 +87,7 @@ impl Agent {
         let observation = options.observation.freeze()?;
         let mut body = models::NewThread::new(self.id.clone(), input.into().into_wire());
         body.agent_revision_id = options.agent_revision_id;
+        body.browser_binding = options.browser_binding.map(|value| value.map(Box::new));
         body.delivery = options.delivery;
         body.environments = options.environments;
         body.mcp_headers = options.mcp_headers;
