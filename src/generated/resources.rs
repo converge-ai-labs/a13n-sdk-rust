@@ -17080,6 +17080,10 @@ impl<'a> UsageResource<'a> {
     pub fn runs(&self) -> UsageRunsResource<'a> {
         UsageRunsResource(self.0.clone())
     }
+    /// Access `sessions` locally, sharing the client and explicit scope.
+    pub fn sessions(&self) -> UsageSessionsResource<'a> {
+        UsageSessionsResource(self.0.clone())
+    }
     /// Summarize Usage.
     ///
     /// `GET /api/v1/usage`.
@@ -17617,6 +17621,94 @@ impl<'a> UsageRunsResource<'a> {
         let cursor = options.cursor.clone();
         Pages::new(
             UsageRunsPages {
+                resource: self.clone(),
+                options,
+            },
+            cursor,
+        )
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct UsageSessionsResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`UsageSessionsResource::list`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct UsageSessionsListOptions {
+    /// Query parameter `start`. Required; an empty string is rejected locally.
+    pub start: chrono::DateTime<chrono::FixedOffset>,
+    /// Query parameter `end`. Required; an empty string is rejected locally.
+    pub end: chrono::DateTime<chrono::FixedOffset>,
+    /// Query parameter `principal_id`. Filter by Run execution identity; requires workspace admin. `None` omits this parameter.
+    pub principal_id: Option<String>,
+    /// Query parameter `limit`. `None` omits this parameter.
+    pub limit: Option<i32>,
+    /// Query parameter `cursor`. `None` omits this parameter.
+    pub cursor: Option<String>,
+    /// Query parameter `agent_id`. Required; an empty string is rejected locally.
+    pub agent_id: String,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+/// Page source owned by [`UsageSessionsResource::pages`].
+pub struct UsageSessionsPages<'a> {
+    resource: UsageSessionsResource<'a>,
+    options: UsageSessionsListOptions,
+}
+impl PageSource for UsageSessionsPages<'_> {
+    type Page = models::SessionUsagePage;
+    async fn fetch(&self, cursor: Option<String>) -> Result<Response<Self::Page>, Error> {
+        let mut options = self.options.clone();
+        options.cursor = cursor;
+        self.resource.list(options).await
+    }
+    fn cursor(page: &Self::Page) -> Option<String> {
+        page.next_cursor.clone()
+    }
+}
+impl<'a> UsageSessionsResource<'a> {
+    /// List Session Usage.
+    ///
+    /// `GET /api/v1/usage/sessions`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn list(
+        &self,
+        options: UsageSessionsListOptions,
+    ) -> Result<Response<models::SessionUsagePage>, Error> {
+        if options.agent_id.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request =
+            self.0
+                .client
+                .request(reqwest::Method::GET, "/api/v1/usage/sessions", &self.0.ids)?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = query(request, "start", &options.start)?;
+        request = query(request, "end", &options.end)?;
+        if let Some(value) = &options.principal_id {
+            request = query(request, "principal_id", value)?;
+        }
+        if let Some(value) = &options.limit {
+            request = query(request, "limit", value)?;
+        }
+        if let Some(value) = &options.cursor {
+            request = query(request, "cursor", value)?;
+        }
+        request = query(request, "agent_id", &options.agent_id)?;
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+    /// Iterate cursor pages lazily with owned options. Each page retains status and headers; no prefetch occurs. Drop the pager to stop reads.
+    pub fn pages(&self, options: UsageSessionsListOptions) -> Pages<UsageSessionsPages<'a>> {
+        let cursor = options.cursor.clone();
+        Pages::new(
+            UsageSessionsPages {
                 resource: self.clone(),
                 options,
             },
@@ -21371,6 +21463,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "get",
     ),
     ("GET", "/api/v1/usage/runs", "UsageRunsResource", "list"),
+    (
+        "GET",
+        "/api/v1/usage/sessions",
+        "UsageSessionsResource",
+        "list",
+    ),
     ("GET", "/api/v1/users/me", "UsersMeResource", "get"),
     ("PATCH", "/api/v1/users/me", "UsersMeResource", "update"),
     (

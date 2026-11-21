@@ -19,6 +19,17 @@ pub struct ScheduleInvocationInput {
     #[serde(rename = "agent_revision_id", deserialize_with = "Option::deserialize")]
     pub agent_revision_id: Option<String>,
 
+    #[serde(
+        rename = "browser_binding",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub browser_binding: Option<Option<Box<models::BrowserBinding>>>,
+
+    #[serde(rename = "environments", skip_serializing_if = "Option::is_none")]
+    pub environments: Option<Vec<models::MountCreate>>,
+
     #[serde(rename = "memories", skip_serializing_if = "Option::is_none")]
     pub memories: Option<Vec<models::MemoryMount>>,
 
@@ -38,6 +49,8 @@ impl ScheduleInvocationInput {
         ScheduleInvocationInput {
             agent_id,
             agent_revision_id,
+            browser_binding: None,
+            environments: None,
             memories: None,
             options: None,
             payload: Box::new(payload),

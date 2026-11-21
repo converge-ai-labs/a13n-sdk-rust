@@ -788,3 +788,31 @@ async fn current_pending_preserves_calls_and_approvals_in_run_result() {
         Some(models::Pending1::AnyOf0(_))
     ));
 }
+
+#[tokio::test]
+async fn start_preserves_browser_binding_omission_null_and_value() {
+    let mut fixture = server(|_| Reply::json(200, receipt())).await;
+    let sdk = client(&fixture);
+    for browser_binding in [
+        None,
+        Some(None),
+        Some(Some(models::BrowserBinding::new("brw_123".into()))),
+    ] {
+        sdk.agent("agent")
+            .start_with(
+                "hello",
+                StartOptions {
+                    browser_binding,
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap();
+    }
+    let first = fixture.requests.recv().await.unwrap().json();
+    let second = fixture.requests.recv().await.unwrap().json();
+    let third = fixture.requests.recv().await.unwrap().json();
+    assert!(first.get("browser_binding").is_none());
+    assert_eq!(second.get("browser_binding"), Some(&Value::Null));
+    assert_eq!(third["browser_binding"]["browser_id"], "brw_123");
+}
