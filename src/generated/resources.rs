@@ -16605,7 +16605,7 @@ pub struct TracesSearchResource<'a>(pub(crate) Binding<'a>);
 /// Query and header options for [`TracesSearchResource::list`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
 pub struct TracesSearchListOptions {
-    /// Query parameter `session_id`. `None` omits this parameter.
+    /// Query parameter `session_id`. Scope a comparison across Threads to this Session. `None` omits this parameter.
     pub session_id: Option<String>,
     /// Query parameter `thread_id`. `None` omits this parameter.
     pub thread_id: Option<String>,
@@ -16621,7 +16621,7 @@ pub struct TracesSearchListOptions {
     pub order_by: Option<TracesSearchOrderBy>,
     /// Query parameter `direction`. `None` omits this parameter.
     pub direction: Option<TracesSearchDirection>,
-    /// Query parameter `min_duration_seconds`. `None` omits this parameter.
+    /// Query parameter `min_duration_seconds`. Inclusive lower bound on trace duration in seconds, applied before ranking. `None` omits this parameter.
     pub min_duration_seconds: Option<String>,
     /// Query parameter `max_duration_seconds`. `None` omits this parameter.
     pub max_duration_seconds: Option<String>,
