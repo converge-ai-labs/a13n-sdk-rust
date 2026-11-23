@@ -45,6 +45,9 @@ pub struct ModelUsage {
 
     #[serde(rename = "requests")]
     pub requests: i32,
+
+    #[serde(rename = "unpriced_requests")]
+    pub unpriced_requests: i32,
 }
 
 impl ModelUsage {
@@ -58,6 +61,7 @@ impl ModelUsage {
         output_tokens: i32,
         output_tokens_per_second: Option<f64>,
         requests: i32,
+        unpriced_requests: i32,
     ) -> ModelUsage {
         ModelUsage {
             average_time_to_first_chunk_seconds,
@@ -69,6 +73,7 @@ impl ModelUsage {
             output_tokens,
             output_tokens_per_second,
             requests,
+            unpriced_requests,
         }
     }
 }

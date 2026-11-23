@@ -11,7 +11,7 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// SubscriptionUpdate : `signing_secret` replaces the secret for deliveries queued after this change.
+/// SubscriptionUpdate : Secret replacement applies only to newly queued deliveries.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SubscriptionUpdate {
     #[serde(
@@ -64,7 +64,7 @@ pub struct SubscriptionUpdate {
 }
 
 impl SubscriptionUpdate {
-    /// `signing_secret` replaces the secret for deliveries queued after this change.
+    /// Secret replacement applies only to newly queued deliveries.
     pub fn new() -> SubscriptionUpdate {
         SubscriptionUpdate {
             enabled: None,
