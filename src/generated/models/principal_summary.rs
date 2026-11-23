@@ -28,6 +28,14 @@ pub struct PrincipalSummary {
     #[serde(rename = "name")]
     pub name: String,
 
+    #[serde(
+        rename = "oidc_email",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub oidc_email: Option<Option<String>>,
+
     #[serde(rename = "status")]
     pub status: String,
 }
@@ -47,6 +55,7 @@ impl PrincipalSummary {
             image_url,
             kind,
             name,
+            oidc_email: None,
             status,
         }
     }

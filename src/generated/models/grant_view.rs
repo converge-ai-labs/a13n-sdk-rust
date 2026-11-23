@@ -24,12 +24,19 @@ pub struct GrantView {
 
     #[serde(rename = "organization_id")]
     pub organization_id: String,
+    /// The manual grant overrides an SSO default at this scope.
+
+    #[serde(rename = "overrides_sso", skip_serializing_if = "Option::is_none")]
+    pub overrides_sso: Option<bool>,
 
     #[serde(rename = "principal")]
     pub principal: Box<models::PrincipalSummary>,
 
     #[serde(rename = "role")]
     pub role: String,
+
+    #[serde(rename = "source", skip_serializing_if = "Option::is_none")]
+    pub source: Option<Source>,
 
     #[serde(rename = "workspace_id", deserialize_with = "Option::deserialize")]
     pub workspace_id: Option<String>,
@@ -50,9 +57,25 @@ impl GrantView {
             created_by_id,
             id,
             organization_id,
+            overrides_sso: None,
             principal: Box::new(principal),
             role,
+            source: None,
             workspace_id,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Source {
+    #[serde(rename = "manual")]
+    Manual,
+    #[serde(rename = "oidc")]
+    Oidc,
+}
+
+impl Default for Source {
+    fn default() -> Source {
+        Self::Manual
     }
 }

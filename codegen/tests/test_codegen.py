@@ -325,7 +325,7 @@ def test_session_model_constraints_keep_omission_null_and_owned_integer_bounds_d
 def test_current_resource_names_do_not_collide() -> None:
     from resources import resource_name
 
-    document = json.loads((ROOT / "contract/openapi.json").read_text())
+    document = codegen.project_operations(json.loads((ROOT / "contract/openapi.json").read_text()))
     paths = set()
     for path in document["paths"]:
         relative = path.removeprefix("/api/v1/") if path.startswith("/api/v1/") else path.lstrip("/")
@@ -349,3 +349,47 @@ def test_deployment_cleanup_keeps_map_shape_and_promotes_value_enum() -> None:
     }
     assert schemas["DeploymentCleanupStatus"]["enum"] == original["additionalProperties"]["enum"]
     assert "enum" in original["additionalProperties"]
+
+
+def test_browser_navigation_projection_preserves_contract_and_all_other_operations() -> None:
+    document = json.loads((ROOT / "contract/openapi.json").read_text())
+    original = json.loads(json.dumps(document))
+    projected = codegen.project_operations(document)
+    methods = {"get", "put", "post", "delete", "options", "head", "patch", "trace"}
+
+    def operations(value: dict) -> set[tuple[str, str, str]]:
+        return {
+            (path, method, operation["operationId"])
+            for path, item in value["paths"].items()
+            for method, operation in item.items()
+            if method in methods
+        }
+
+    before, after = operations(document), operations(projected)
+    assert {operation[2] for operation in before - after} == {"start_oidc_sign_in", "finish_oidc_sign_in"}
+    assert len(before - after) == 2 and not after - before
+    assert projected["components"] == document["components"]
+    assert document == original
+
+
+def test_generated_cli_inventory_covers_exact_supported_operations() -> None:
+    import re
+
+    document = json.loads((ROOT / "contract/openapi.json").read_text())
+    excluded = {"start_oidc_sign_in", "finish_oidc_sign_in"}
+    expected = {
+        (method.upper(), path)
+        for path, item in document["paths"].items()
+        for method, operation in item.items()
+        if method in {"get", "post", "put", "patch", "delete"} and operation["operationId"] not in excluded
+    }
+    cli = (ROOT / "a13n-service-cli/src/generated.rs").read_text()
+    inventory = cli.split("pub const OPERATIONS:", 1)[1].split("];", 1)[0]
+    actual = re.findall(r'\(\s*"[^"]+",\s*"(GET|POST|PUT|PATCH|DELETE)",\s*"([^"]+)",?\s*\)', inventory)
+    assert len(actual) == len(expected)
+    assert set(actual) == expected
+    assert "/api/v1/auth/oidc" not in cli
+    assert "reset_member_password" in (ROOT / "src/generated/apis/tenancy_api.rs").read_text()
+    assert "search_traces" in (ROOT / "src/generated/apis/runs_api.rs").read_text()
+    schemas = json.loads((ROOT / "a13n-service-cli/src/schemas.json").read_text())["components"]
+    assert {"OIDCSignIn", "OIDCBrand", "AuthConfiguration"} <= set(schemas)
