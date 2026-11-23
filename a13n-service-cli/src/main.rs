@@ -350,21 +350,30 @@ mod tests {
     fn generated_commands_have_offline_schema_for_every_operation() {
         let contract: serde_json::Value =
             serde_json::from_str(include_str!("../../contract/openapi.json")).unwrap();
-        let count: usize = contract["paths"]
-            .as_object()
-            .unwrap()
-            .values()
-            .map(|path| {
-                path.as_object()
-                    .unwrap()
-                    .keys()
-                    .filter(|method| {
-                        matches!(method.as_str(), "get" | "post" | "put" | "patch" | "delete")
-                    })
-                    .count()
-            })
-            .sum();
-        assert_eq!(generated::OPERATIONS.len(), count);
+        let mut excluded = std::collections::BTreeSet::new();
+        let mut expected = std::collections::BTreeSet::new();
+        for (path, item) in contract["paths"].as_object().unwrap() {
+            for (method, operation) in item.as_object().unwrap() {
+                if matches!(method.as_str(), "get" | "post" | "put" | "patch" | "delete") {
+                    let id = operation["operationId"].as_str().unwrap();
+                    if ["start_oidc_sign_in", "finish_oidc_sign_in"].contains(&id) {
+                        excluded.insert(id);
+                    } else {
+                        expected.insert((method.to_uppercase(), path.as_str()));
+                    }
+                }
+            }
+        }
+        assert_eq!(
+            excluded,
+            std::collections::BTreeSet::from(["start_oidc_sign_in", "finish_oidc_sign_in"])
+        );
+        let actual: std::collections::BTreeSet<_> = generated::OPERATIONS
+            .iter()
+            .map(|(_, method, path)| (method.to_string(), *path))
+            .collect();
+        assert_eq!(expected, actual);
+        assert_eq!(actual.len(), generated::OPERATIONS.len());
         for (name, _, _) in generated::OPERATIONS {
             let arguments = std::iter::once("a13n-service-cli".to_owned())
                 .chain(name.split_whitespace().map(str::to_owned))
