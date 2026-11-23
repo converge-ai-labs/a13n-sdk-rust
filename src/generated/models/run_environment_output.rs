@@ -18,6 +18,8 @@ pub enum RunEnvironmentOutput {
     Fresh(Box<models::FreshRunEnvironmentOutput>),
     #[serde(rename = "existing")]
     Existing(Box<models::ExistingRunEnvironmentOutput>),
+    #[serde(rename = "none")]
+    None(Box<models::NoPrimaryEnvironment>),
 }
 
 impl Default for RunEnvironmentOutput {
@@ -37,6 +39,9 @@ impl<'de> Deserialize<'de> for RunEnvironmentOutput {
                 .map_err(serde::de::Error::custom),
             Some("existing") => serde_json::from_value(value)
                 .map(Self::Existing)
+                .map_err(serde::de::Error::custom),
+            Some("none") => serde_json::from_value(value)
+                .map(Self::None)
                 .map_err(serde::de::Error::custom),
             _ => Err(serde::de::Error::custom("Missing or unknown discriminator")),
         }

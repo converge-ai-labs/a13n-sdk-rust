@@ -232,8 +232,24 @@ def install(output: Path, target: Path) -> None:
     shutil.copytree(output, target)
 
 
+def project_operations(document: dict) -> dict:
+    """Omit browser navigation from callable bindings without changing the contract."""
+    document = json.loads(json.dumps(document))
+    excluded = {"start_oidc_sign_in", "finish_oidc_sign_in"}
+    methods = {"get", "put", "post", "delete", "options", "head", "patch", "trace"}
+    for path, item in list(document["paths"].items()):
+        removed = False
+        for method in methods:
+            if item.get(method, {}).get("operationId") in excluded:
+                del item[method]
+                removed = True
+        if removed and not methods.intersection(item):
+            del document["paths"][path]
+    return document
+
+
 def main() -> None:
-    document = json.loads((ROOT / "contract/openapi.json").read_text())
+    document = project_operations(json.loads((ROOT / "contract/openapi.json").read_text()))
     with tempfile.TemporaryDirectory(prefix="a13n-codegen-") as temp:
         stream = json.loads((ROOT / "contract/session-stream.schema.json").read_text())
         output = generate(with_session_models(document, stream), Path(temp))

@@ -40,6 +40,7 @@ pub struct Finding {
 
     #[serde(rename = "created_by_id")]
     pub created_by_id: String,
+    /// Pair each trace with its owning Run. In an analysis, first read every cited trace with get_trace, get_trace_span or a list_trace_spans call that returns spans.
 
     #[serde(rename = "evidence")]
     pub evidence: Vec<models::Evidence>,

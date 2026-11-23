@@ -11,7 +11,7 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// SubscriptionCreate : Without `signing_secret` the service generates one; either way it is returned only by this request.
+/// SubscriptionCreate : The supplied or generated signing secret is returned only at creation.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SubscriptionCreate {
     #[serde(rename = "enabled", skip_serializing_if = "Option::is_none")]
@@ -39,7 +39,7 @@ pub struct SubscriptionCreate {
 }
 
 impl SubscriptionCreate {
-    /// Without `signing_secret` the service generates one; either way it is returned only by this request.
+    /// The supplied or generated signing secret is returned only at creation.
     pub fn new(kinds: Vec<models::LifecycleKind>, name: String, url: String) -> SubscriptionCreate {
         SubscriptionCreate {
             enabled: None,

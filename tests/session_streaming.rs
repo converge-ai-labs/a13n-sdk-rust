@@ -472,3 +472,31 @@ async fn session_run_finding_analysis_id_preserves_absence_null_and_value() {
         reader.close();
     }
 }
+
+#[tokio::test]
+async fn session_thread_preserves_no_environment_and_platform_groups() {
+    let mut state = thread();
+    let mut run = sample("RunView");
+    run["options"]["environment"] = json!({"mode":"none"});
+    run["options"]["overrides"] =
+        json!({"toolsets":{"usage":{},"subscriptions":{},"egress_credentials":{}}});
+    state["current_run"] = run;
+    let body = frame("thread", state);
+    let fixture = server(move |_| Reply::sse(&body)).await;
+    let sdk = client(&fixture);
+    let mut reader = SessionStream::open(sdk.api().sessions().at("s"), Default::default())
+        .await
+        .unwrap();
+    let Some(SessionFrame::Thread(value)) = reader.next().await.unwrap() else {
+        panic!("thread")
+    };
+    let result = serde_json::to_value(value).unwrap();
+    let options = &result["current_run"]["options"];
+    assert_eq!(options["environment"], json!({"mode":"none"}));
+    for key in ["usage", "subscriptions", "egress_credentials"] {
+        assert!(
+            options["overrides"]["toolsets"].get(key).is_some(),
+            "missing {key}"
+        );
+    }
+}

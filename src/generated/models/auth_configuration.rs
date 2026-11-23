@@ -18,13 +18,31 @@ pub struct AuthConfiguration {
 
     #[serde(rename = "initialized")]
     pub initialized: bool,
+
+    #[serde(rename = "manual_password_reset")]
+    pub manual_password_reset: bool,
+
+    #[serde(rename = "oidc_providers")]
+    pub oidc_providers: Vec<models::OidcSignIn>,
+
+    #[serde(rename = "password_enabled")]
+    pub password_enabled: bool,
 }
 
 impl AuthConfiguration {
-    pub fn new(email_delivery: bool, initialized: bool) -> AuthConfiguration {
+    pub fn new(
+        email_delivery: bool,
+        initialized: bool,
+        manual_password_reset: bool,
+        oidc_providers: Vec<models::OidcSignIn>,
+        password_enabled: bool,
+    ) -> AuthConfiguration {
         AuthConfiguration {
             email_delivery,
             initialized,
+            manual_password_reset,
+            oidc_providers,
+            password_enabled,
         }
     }
 }

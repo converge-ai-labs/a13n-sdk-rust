@@ -46,6 +46,12 @@ pub enum ToolsetKey {
     Execution,
     #[serde(rename = "schedules")]
     Schedules,
+    #[serde(rename = "usage")]
+    Usage,
+    #[serde(rename = "subscriptions")]
+    Subscriptions,
+    #[serde(rename = "egress_credentials")]
+    EgressCredentials,
 }
 
 impl std::fmt::Display for ToolsetKey {
@@ -67,6 +73,9 @@ impl std::fmt::Display for ToolsetKey {
             Self::Providers => write!(f, "providers"),
             Self::Execution => write!(f, "execution"),
             Self::Schedules => write!(f, "schedules"),
+            Self::Usage => write!(f, "usage"),
+            Self::Subscriptions => write!(f, "subscriptions"),
+            Self::EgressCredentials => write!(f, "egress_credentials"),
         }
     }
 }

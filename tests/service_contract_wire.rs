@@ -125,3 +125,54 @@ async fn session_usage_selectors_and_typed_page_round_trip() {
     assert_eq!(query.get("cursor").map(String::as_str), Some("next +/"));
     assert_eq!(query.get("limit").map(String::as_str), Some("7"));
 }
+
+#[tokio::test]
+async fn scoped_password_reset_and_trace_decimal_filters_preserve_wire_values() {
+    use a13n::resources::TracesSearchListOptions;
+    let mut fixture = server(|request| {
+        if request.target.contains("password-reset") {
+            Reply::json(200, json!({"email_queued":false,"reset_url":null}))
+        } else {
+            Reply::json(200, json!({"items":[],"next_cursor":null,"total":0,"collected_at":"2026-01-01T00:00:00Z"}))
+        }
+    }).await;
+    let sdk = client(&fixture);
+    let reset = sdk
+        .api()
+        .organizations()
+        .at("org /1")
+        .members()
+        .at("user /2")
+        .password_reset()
+        .await
+        .unwrap();
+    assert!(!reset.data.email_queued);
+    let timestamp = chrono::DateTime::parse_from_rfc3339("2026-01-01T00:00:00Z").unwrap();
+    let options = TracesSearchListOptions {
+        started_after: timestamp,
+        started_before: timestamp,
+        min_duration_seconds: Some("0".into()),
+        max_duration_seconds: Some("10.25".into()),
+        min_cost_usd: Some("0.000000000000001".into()),
+        max_cost_usd: Some("1".into()),
+        ..Default::default()
+    };
+    sdk.api().traces().search().list(options).await.unwrap();
+    let first = fixture.requests.recv().await.unwrap();
+    let second = fixture.requests.recv().await.unwrap();
+    assert_eq!(first.method, "POST");
+    assert_eq!(
+        first.target,
+        "/prefix/api/v1/organizations/org%20%2F1/members/user%20%2F2/password-reset"
+    );
+    let url = reqwest::Url::parse(&format!("https://example.test{}", second.target)).unwrap();
+    let query: std::collections::HashMap<_, _> = url.query_pairs().into_owned().collect();
+    for (key, expected) in [
+        ("min_duration_seconds", "0"),
+        ("max_duration_seconds", "10.25"),
+        ("min_cost_usd", "0.000000000000001"),
+        ("max_cost_usd", "1"),
+    ] {
+        assert_eq!(query.get(key).map(String::as_str), Some(expected));
+    }
+}

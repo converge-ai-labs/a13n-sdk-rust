@@ -11,6 +11,7 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
+/// MinDurationSeconds : Inclusive lower bound on trace duration in seconds, applied before ranking.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum MinDurationSeconds {

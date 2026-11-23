@@ -22,6 +22,7 @@ pub struct FindingCreate {
 
     #[serde(rename = "category")]
     pub category: models::Category,
+    /// Pair each trace with its owning Run. In an analysis, first read every cited trace with get_trace, get_trace_span or a list_trace_spans call that returns spans.
 
     #[serde(rename = "evidence")]
     pub evidence: Vec<models::Evidence>,

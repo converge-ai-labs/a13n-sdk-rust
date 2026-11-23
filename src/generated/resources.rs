@@ -11572,6 +11572,10 @@ impl PageSource for OrganizationMembersPages<'_> {
     }
 }
 impl<'a> OrganizationMembersResource<'a> {
+    /// Bind `user_id` locally without an HTTP request. The returned reference borrows the client, not this collection.
+    pub fn at(&self, id: impl Into<String>) -> OrganizationMemberResource<'a> {
+        OrganizationMemberResource(self.0.select(id.into()))
+    }
     /// List Members.
     ///
     /// `GET /api/v1/organizations/{organization_id}/members`.
@@ -11613,6 +11617,28 @@ impl<'a> OrganizationMembersResource<'a> {
             },
             cursor,
         )
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct OrganizationMemberResource<'a>(pub(crate) Binding<'a>);
+impl<'a> OrganizationMemberResource<'a> {
+    /// Reset Member Password.
+    ///
+    /// `POST /api/v1/organizations/{organization_id}/members/{user_id}/password-reset`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn password_reset(&self) -> Result<Response<models::PasswordResetReceipt>, Error> {
+        let request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/organizations/{organization_id}/members/{user_id}/password-reset",
+            &self.0.ids,
+        )?;
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
     }
 }
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
@@ -16605,7 +16631,7 @@ pub struct TracesSearchResource<'a>(pub(crate) Binding<'a>);
 /// Query and header options for [`TracesSearchResource::list`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
 pub struct TracesSearchListOptions {
-    /// Query parameter `session_id`. `None` omits this parameter.
+    /// Query parameter `session_id`. Scope a comparison across Threads to this Session. `None` omits this parameter.
     pub session_id: Option<String>,
     /// Query parameter `thread_id`. `None` omits this parameter.
     pub thread_id: Option<String>,
@@ -16621,7 +16647,7 @@ pub struct TracesSearchListOptions {
     pub order_by: Option<TracesSearchOrderBy>,
     /// Query parameter `direction`. `None` omits this parameter.
     pub direction: Option<TracesSearchDirection>,
-    /// Query parameter `min_duration_seconds`. `None` omits this parameter.
+    /// Query parameter `min_duration_seconds`. Inclusive lower bound on trace duration in seconds, applied before ranking. `None` omits this parameter.
     pub min_duration_seconds: Option<String>,
     /// Query parameter `max_duration_seconds`. `None` omits this parameter.
     pub max_duration_seconds: Option<String>,
@@ -20912,6 +20938,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/organizations/{organization_id}/members",
         "OrganizationMembersResource",
         "list",
+    ),
+    (
+        "POST",
+        "/api/v1/organizations/{organization_id}/members/{user_id}/password-reset",
+        "OrganizationMemberResource",
+        "password_reset",
     ),
     (
         "GET",
