@@ -102,6 +102,12 @@ pub struct AgentConfigInput {
     pub plugins: Option<Vec<models::PluginSelection>>,
 
     #[serde(
+        rename = "respect_mcp_annotations",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub respect_mcp_annotations: Option<bool>,
+
+    #[serde(
         rename = "retries",
         default,
         with = "::serde_with::rust::double_option",
@@ -165,6 +171,7 @@ impl AgentConfigInput {
             model_settings: None,
             output_spec: None,
             plugins: None,
+            respect_mcp_annotations: None,
             retries: None,
             reviewer: None,
             skill_sync: None,
