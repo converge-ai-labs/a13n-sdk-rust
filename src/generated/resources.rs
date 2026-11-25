@@ -91,6 +91,75 @@ impl std::fmt::Display for AgentRevisionCompareSection {
         f.write_str(self.as_str())
     }
 }
+/// Allowed values for the `source_kind` selector. Serialized using Service wire values.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum AssetsSourceKind {
+    #[serde(rename = "user_upload")]
+    UserUpload,
+    #[serde(rename = "agent_run")]
+    AgentRun,
+}
+impl AssetsSourceKind {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::UserUpload => "user_upload",
+            Self::AgentRun => "agent_run",
+        }
+    }
+}
+impl std::fmt::Display for AssetsSourceKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+/// Allowed values for the `status` selector. Serialized using Service wire values.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum AssetsStatus {
+    #[serde(rename = "all")]
+    All,
+    #[serde(rename = "active")]
+    Active,
+    #[serde(rename = "retired")]
+    Retired,
+}
+impl AssetsStatus {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::All => "all",
+            Self::Active => "active",
+            Self::Retired => "retired",
+        }
+    }
+}
+impl std::fmt::Display for AssetsStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+/// Allowed values for the `order` selector. Serialized using Service wire values.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum AssetsOrder {
+    #[serde(rename = "id")]
+    Id,
+    #[serde(rename = "newest")]
+    Newest,
+}
+impl AssetsOrder {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Id => "id",
+            Self::Newest => "newest",
+        }
+    }
+}
+impl std::fmt::Display for AssetsOrder {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
 /// Allowed values for the `section` selector. Serialized using Service wire values.
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -998,6 +1067,10 @@ impl<'a> ServiceResources<'a> {
     pub fn skills(&self) -> SkillsResource<'a> {
         SkillsResource(self.0.clone())
     }
+    /// Access `storage` locally, sharing the client and explicit scope.
+    pub fn storage(&self) -> StorageResource<'a> {
+        StorageResource(self.0.clone())
+    }
     /// Access `subscriptions` locally, sharing the client and explicit scope.
     pub fn subscriptions(&self) -> SubscriptionsResource<'a> {
         SubscriptionsResource(self.0.clone())
@@ -1877,6 +1950,16 @@ pub struct AssetsListOptions {
     pub limit: Option<i32>,
     /// Query parameter `cursor`. `None` omits this parameter.
     pub cursor: Option<String>,
+    /// Query parameter `query`. Case-insensitive literal filename substring. `None` omits this parameter.
+    pub query: Option<String>,
+    /// Query parameter `created_by_id`. `None` omits this parameter.
+    pub created_by_id: Option<String>,
+    /// Query parameter `source_kind`. `None` omits this parameter.
+    pub source_kind: Option<AssetsSourceKind>,
+    /// Query parameter `status`. `None` omits this parameter.
+    pub status: Option<AssetsStatus>,
+    /// Query parameter `order`. `None` omits this parameter.
+    pub order: Option<AssetsOrder>,
     /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
     pub x_workspace_id: Option<String>,
 }
@@ -1931,6 +2014,21 @@ impl<'a> AssetsResource<'a> {
         }
         if let Some(value) = &options.cursor {
             request = query(request, "cursor", value)?;
+        }
+        if let Some(value) = &options.query {
+            request = query(request, "query", value)?;
+        }
+        if let Some(value) = &options.created_by_id {
+            request = query(request, "created_by_id", value)?;
+        }
+        if let Some(value) = &options.source_kind {
+            request = query(request, "source_kind", value)?;
+        }
+        if let Some(value) = &options.status {
+            request = query(request, "status", value)?;
+        }
+        if let Some(value) = &options.order {
+            request = query(request, "order", value)?;
         }
         let response = self.0.client.json(request, &[200]).await?;
         Ok(response)
@@ -14448,6 +14546,40 @@ impl<'a> SkillRevisionFileResource<'a> {
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
 
 #[derive(Clone)]
+pub struct StorageResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`StorageResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct StorageGetOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> StorageResource<'a> {
+    /// Get Workspace Storage.
+    ///
+    /// `GET /api/v1/storage`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: StorageGetOptions,
+    ) -> Result<Response<models::WorkspaceStorage>, Error> {
+        let mut request =
+            self.0
+                .client
+                .request(reqwest::Method::GET, "/api/v1/storage", &self.0.ids)?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
 pub struct SubscriptionsResource<'a>(pub(crate) Binding<'a>);
 /// Query and header options for [`SubscriptionsResource::list`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
@@ -21209,6 +21341,7 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "SkillRevisionFileResource",
         "get",
     ),
+    ("GET", "/api/v1/storage", "StorageResource", "get"),
     (
         "GET",
         "/api/v1/subscriptions",
