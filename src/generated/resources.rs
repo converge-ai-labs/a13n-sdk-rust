@@ -11058,6 +11058,10 @@ impl<'a> OrganizationResource<'a> {
     pub fn members(&self) -> OrganizationMembersResource<'a> {
         OrganizationMembersResource(self.0.clone())
     }
+    /// Access `update-notices` locally, sharing the client and explicit scope.
+    pub fn update_notices(&self) -> OrganizationUpdateNoticesResource<'a> {
+        OrganizationUpdateNoticesResource(self.0.clone())
+    }
     /// Access `workspaces` locally, sharing the client and explicit scope.
     pub fn workspaces(&self) -> OrganizationWorkspacesResource<'a> {
         OrganizationWorkspacesResource(self.0.clone())
@@ -11733,6 +11737,28 @@ impl<'a> OrganizationMemberResource<'a> {
         let request = self.0.client.request(
             reqwest::Method::POST,
             "/api/v1/organizations/{organization_id}/members/{user_id}/password-reset",
+            &self.0.ids,
+        )?;
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct OrganizationUpdateNoticesResource<'a>(pub(crate) Binding<'a>);
+impl<'a> OrganizationUpdateNoticesResource<'a> {
+    /// Get Update Notices.
+    ///
+    /// `GET /api/v1/organizations/{organization_id}/update-notices`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(&self) -> Result<Response<models::UpdateNotices>, Error> {
+        let request = self.0.client.request(
+            reqwest::Method::GET,
+            "/api/v1/organizations/{organization_id}/update-notices",
             &self.0.ids,
         )?;
         let response = self.0.client.json(request, &[200]).await?;
@@ -21076,6 +21102,12 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/organizations/{organization_id}/members/{user_id}/password-reset",
         "OrganizationMemberResource",
         "password_reset",
+    ),
+    (
+        "GET",
+        "/api/v1/organizations/{organization_id}/update-notices",
+        "OrganizationUpdateNoticesResource",
+        "get",
     ),
     (
         "GET",
