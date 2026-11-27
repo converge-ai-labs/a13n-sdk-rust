@@ -13,6 +13,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ThreadView {
+    #[serde(
+        rename = "app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub app_id: Option<Option<String>>,
+
     #[serde(rename = "archived_at", deserialize_with = "Option::deserialize")]
     pub archived_at: Option<chrono::DateTime<chrono::FixedOffset>>,
 
@@ -105,6 +113,7 @@ impl ThreadView {
         workspace_id: String,
     ) -> ThreadView {
         ThreadView {
+            app_id: None,
             archived_at,
             created_at,
             current_run_id,

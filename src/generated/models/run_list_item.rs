@@ -11,7 +11,6 @@
 use crate::generated::models;
 use serde::{Deserialize, Serialize};
 
-/// RunListItem : Run discovery metadata. Full input, results and execution settings belong to the Run detail read.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RunListItem {
     #[serde(rename = "agent_id")]
@@ -19,6 +18,14 @@ pub struct RunListItem {
 
     #[serde(rename = "agent_revision_id", deserialize_with = "Option::deserialize")]
     pub agent_revision_id: Option<String>,
+
+    #[serde(
+        rename = "app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub app_id: Option<Option<String>>,
 
     #[serde(rename = "attempts")]
     pub attempts: i32,
@@ -71,6 +78,14 @@ pub struct RunListItem {
     #[serde(rename = "trigger")]
     pub trigger: models::Trigger,
 
+    #[serde(
+        rename = "trigger_app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub trigger_app_id: Option<Option<String>>,
+
     #[serde(rename = "updated_at")]
     pub updated_at: chrono::DateTime<chrono::FixedOffset>,
 
@@ -85,7 +100,6 @@ pub struct RunListItem {
 }
 
 impl RunListItem {
-    /// Run discovery metadata. Full input, results and execution settings belong to the Run detail read.
     pub fn new(
         agent_id: String,
         agent_revision_id: Option<String>,
@@ -113,6 +127,7 @@ impl RunListItem {
         RunListItem {
             agent_id,
             agent_revision_id,
+            app_id: None,
             attempts,
             created_at,
             current_attempt_id,
@@ -129,6 +144,7 @@ impl RunListItem {
             status,
             thread_id,
             trigger,
+            trigger_app_id: None,
             updated_at,
             version,
             wait_reason,

@@ -14,14 +14,25 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AssetPage {
     #[serde(rename = "items")]
-    pub items: Vec<models::Asset>,
+    pub items: Vec<models::ListedAsset>,
 
     #[serde(rename = "next_cursor", deserialize_with = "Option::deserialize")]
     pub next_cursor: Option<String>,
+
+    #[serde(rename = "total_count")]
+    pub total_count: i32,
 }
 
 impl AssetPage {
-    pub fn new(items: Vec<models::Asset>, next_cursor: Option<String>) -> AssetPage {
-        AssetPage { items, next_cursor }
+    pub fn new(
+        items: Vec<models::ListedAsset>,
+        next_cursor: Option<String>,
+        total_count: i32,
+    ) -> AssetPage {
+        AssetPage {
+            items,
+            next_cursor,
+            total_count,
+        }
     }
 }

@@ -159,7 +159,17 @@ impl Overrides {
     override_field!(client_tools, Vec<models::ClientToolDefinition>);
     override_field!(connection_tools, Vec<models::ConnectionSelection>);
     override_field!(instructions, String);
-    override_field!(lazy_environment, bool);
+    /// Retains the legacy boolean form; `None` transmits null.
+    pub fn lazy_environment(mut self, value: Option<bool>) -> Self {
+        self.0.lazy_environment =
+            Some(value.map(|v| Box::new(models::LazyEnvironment1::AnyOf1(v))));
+        self
+    }
+    /// Selects the native string or boolean union; `None` transmits null.
+    pub fn lazy_environment_mode(mut self, value: Option<models::LazyEnvironment1>) -> Self {
+        self.0.lazy_environment = Some(value.map(Box::new));
+        self
+    }
     boxed_override_field!(media_understanding, models::MediaUnderstandingSelection);
     override_field!(model, String);
     boxed_override_field!(model_characteristics, models::AgentModelCharacteristics);

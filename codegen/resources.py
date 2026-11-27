@@ -348,9 +348,22 @@ def generate_resources(document: dict, output: Path) -> tuple[dict, list[dict]]:
                 call[0] = call[0].replace("let mut request=", "let request=")
             result_type = op["result"]
             public = "BinaryResponse" if result_type is None else f"Response<{result_type}>"
-            call.append(
-                f"let response=self.0.client.{'send' if result_type is None else 'json'}(request,&{status}).await?;"
+            nonnull_json_with_empty = (
+                204 in status
+                and result_type
+                and result_type.startswith("Option<")
+                and not any(variant.get("type") == "null" for variant in variants)
             )
+            response_type = f":{public}" if nonnull_json_with_empty else ""
+            call.append(
+                f"let response{response_type}=self.0.client.{'send' if result_type is None else 'json'}(request,&{status}).await?;"
+            )
+            if nonnull_json_with_empty:
+                call.append(
+                    "if response.status != reqwest::StatusCode::NO_CONTENT && response.data.is_none() {"
+                    "return Err(crate::error::ProtocolError::response(crate::error::ProtocolKind::InvalidJson,"
+                    "response.status.as_u16(),&response.headers));}"
+                )
             call.append("Ok(response)")
             methods.append(
                 operation_doc(op, public)

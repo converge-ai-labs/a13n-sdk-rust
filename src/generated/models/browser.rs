@@ -13,6 +13,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Browser {
+    #[serde(
+        rename = "app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub app_id: Option<Option<String>>,
+
     #[serde(rename = "control")]
     pub control: models::ControlStatus,
 
@@ -103,6 +111,7 @@ impl Browser {
         workspace_id: String,
     ) -> Browser {
         Browser {
+            app_id: None,
             control,
             control_expires_at,
             created_at,

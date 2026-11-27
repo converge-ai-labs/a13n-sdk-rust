@@ -77,6 +77,17 @@ fn all_new_native_schema_shapes_roundtrip() {
 #[test]
 fn skill_policies_and_lazy_preparation_preserve_presence_and_explicit_discriminators() {
     assert_eq!(serde_json::to_value(Overrides::new()).unwrap(), json!({}));
+    for mode in ["on_demand", "warmup", "eager"] {
+        assert_eq!(
+            serde_json::to_value(
+                Overrides::new().lazy_environment_mode(Some(models::LazyEnvironment1::AnyOf0(
+                    mode.to_owned()
+                ),))
+            )
+            .unwrap(),
+            json!({"lazy_environment": mode})
+        );
+    }
     assert_eq!(
         serde_json::to_value(Overrides::new().lazy_environment(None).skill_sync(None)).unwrap(),
         json!({"lazy_environment":null,"skill_sync":null})
@@ -205,4 +216,90 @@ async fn explicit_content_and_authors_reads_share_auth_and_do_not_expand_evidenc
         Err(a13n::Error::Closed)
     ));
     assert!(fixture.requests.try_recv().is_err());
+}
+
+#[tokio::test]
+async fn logout_preserves_both_success_shapes_and_metadata() {
+    use a13n::generated::apis::{auth_api, configuration::Configuration};
+    for status in [200, 204] {
+        let mut fixture = server(move |_| {
+            if status == 200 {
+                Reply::json(200, json!({"logout_url":"https://identity.example/logout"}))
+            } else {
+                Reply::bytes(204, "application/octet-stream", vec![])
+            }
+        })
+        .await;
+        let config = Configuration {
+            base_path: fixture.url.clone(),
+            ..Default::default()
+        };
+        let native = auth_api::logout(&config).await.unwrap();
+        assert_eq!(native.status.as_u16(), status);
+        assert_eq!(native.headers["x-request-id"], "req_test");
+        assert_eq!(
+            native.data.as_ref().map(|v| v.logout_url.as_str()),
+            (status == 200).then_some("https://identity.example/logout")
+        );
+        let sdk = client(&fixture);
+        let resource = sdk.api().auth().logout().await.unwrap();
+        assert_eq!(resource.status.as_u16(), status);
+        assert_eq!(resource.headers["x-request-id"], "req_test");
+        assert_eq!(
+            resource.data.as_ref().map(|v| v.logout_url.as_str()),
+            (status == 200).then_some("https://identity.example/logout")
+        );
+        assert_eq!(
+            fixture.requests.recv().await.unwrap().target,
+            "/prefix/api/v1/auth/logout"
+        );
+        assert_eq!(
+            fixture.requests.recv().await.unwrap().target,
+            "/prefix/api/v1/auth/logout"
+        );
+        assert!(fixture.requests.try_recv().is_err());
+    }
+}
+
+#[tokio::test]
+async fn logout_rejects_null_json_for_object_success() {
+    use a13n::generated::apis::{auth_api, configuration::Configuration};
+    let fixture = server(|_| Reply::json(200, Value::Null)).await;
+    let config = Configuration {
+        base_path: fixture.url.clone(),
+        ..Default::default()
+    };
+    assert!(auth_api::logout(&config).await.is_err());
+    assert!(matches!(
+        client(&fixture).api().auth().logout().await,
+        Err(a13n::Error::Protocol(_))
+    ));
+}
+
+#[tokio::test]
+async fn generated_app_filter_query_is_unquoted_and_omittable() {
+    use a13n::generated::apis::{browsers_api, configuration::Configuration};
+    let mut fixture = server(|_| Reply::json(200, sample("BrowserPage"))).await;
+    let config = Configuration {
+        base_path: fixture.url.clone(),
+        ..Default::default()
+    };
+    browsers_api::list_browsers(&config, None, None, Some("demo.app"), None)
+        .await
+        .unwrap();
+    browsers_api::list_browsers(&config, None, None, None, None)
+        .await
+        .unwrap();
+    let first = fixture.requests.recv().await.unwrap();
+    let url = reqwest::Url::parse(&format!("http://localhost{}", first.target)).unwrap();
+    assert_eq!(
+        url.query_pairs()
+            .find(|(key, _)| key == "app_id")
+            .unwrap()
+            .1,
+        "demo.app"
+    );
+    let omitted = fixture.requests.recv().await.unwrap();
+    let url = reqwest::Url::parse(&format!("http://localhost{}", omitted.target)).unwrap();
+    assert!(!url.query_pairs().any(|(key, _)| key == "app_id"));
 }

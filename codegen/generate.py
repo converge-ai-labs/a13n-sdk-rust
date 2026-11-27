@@ -34,6 +34,21 @@ def prepare(document: dict) -> dict:
 
     def visit(value: object) -> None:
         if isinstance(value, dict):
+            if value.get("in") == "query":
+                branches = value.get("schema", {}).get("anyOf", [])
+                non_null = [branch for branch in branches if branch.get("type") != "null"]
+                if len(non_null) == 1 and "$ref" in non_null[0]:
+                    target = schemas.get(non_null[0]["$ref"].split("/")[-1], {})
+                    if target.get("type") == "string" and "enum" not in target:
+                        value["x-rust-string-query"] = True
+            responses = value.get("responses", {})
+            if "204" in responses and any(
+                response.get("content", {}).get("application/json")
+                for status, response in responses.items()
+                if status.startswith("2") and status != "204"
+            ):
+                value["x-rust-nullable-response"] = True
+                value["x-rust-empty-response"] = True
             content = value.get("requestBody", {}).get("content", {})
             if content and all(media.get("schema", {}).get("format") == "binary" for media in content.values()):
                 if len(content) == 1:
@@ -233,9 +248,9 @@ def install(output: Path, target: Path) -> None:
 
 
 def project_operations(document: dict) -> dict:
-    """Omit browser navigation from callable bindings without changing the contract."""
+    """Omit provider protocol endpoints from callable bindings without changing the contract."""
     document = json.loads(json.dumps(document))
-    excluded = {"start_oidc_sign_in", "finish_oidc_sign_in"}
+    excluded = {"start_oidc_sign_in", "finish_oidc_sign_in", "oidc_backchannel_logout"}
     methods = {"get", "put", "post", "delete", "options", "head", "patch", "trace"}
     for path, item in list(document["paths"].items()):
         removed = False

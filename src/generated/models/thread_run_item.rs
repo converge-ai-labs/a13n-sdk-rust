@@ -20,6 +20,14 @@ pub struct ThreadRunItem {
     #[serde(rename = "agent_revision_id", deserialize_with = "Option::deserialize")]
     pub agent_revision_id: Option<String>,
 
+    #[serde(
+        rename = "app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub app_id: Option<Option<String>>,
+
     #[serde(rename = "attempts")]
     pub attempts: i32,
 
@@ -80,6 +88,14 @@ pub struct ThreadRunItem {
     #[serde(rename = "trigger")]
     pub trigger: models::Trigger,
 
+    #[serde(
+        rename = "trigger_app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub trigger_app_id: Option<Option<String>>,
+
     #[serde(rename = "unpriced_requests")]
     pub unpriced_requests: i32,
 
@@ -129,6 +145,7 @@ impl ThreadRunItem {
         ThreadRunItem {
             agent_id,
             agent_revision_id,
+            app_id: None,
             attempts,
             cost,
             created_at,
@@ -148,6 +165,7 @@ impl ThreadRunItem {
             status,
             thread_id,
             trigger,
+            trigger_app_id: None,
             unpriced_requests,
             updated_at,
             version,

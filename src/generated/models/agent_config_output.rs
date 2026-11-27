@@ -64,7 +64,7 @@ pub struct AgentConfigOutput {
     pub instructions: Option<String>,
 
     #[serde(rename = "lazy_environment", skip_serializing_if = "Option::is_none")]
-    pub lazy_environment: Option<bool>,
+    pub lazy_environment: Option<Box<models::LazyEnvironment>>,
 
     #[serde(
         rename = "media_understanding",
@@ -100,6 +100,12 @@ pub struct AgentConfigOutput {
 
     #[serde(rename = "plugins", skip_serializing_if = "Option::is_none")]
     pub plugins: Option<Vec<models::PluginSelection>>,
+
+    #[serde(
+        rename = "respect_mcp_annotations",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub respect_mcp_annotations: Option<bool>,
 
     #[serde(
         rename = "retries",
@@ -165,6 +171,7 @@ impl AgentConfigOutput {
             model_settings: None,
             output_spec: None,
             plugins: None,
+            respect_mcp_annotations: None,
             retries: None,
             reviewer: None,
             skill_sync: None,

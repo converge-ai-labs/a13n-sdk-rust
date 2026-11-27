@@ -1053,9 +1053,10 @@ pub async fn list_user_keys(
     }
 }
 
+/// End the local session and, when available, return the provider's browser logout URL.
 pub async fn logout(
     configuration: &configuration::Configuration,
-) -> Result<Response<()>, Error<LogoutError>> {
+) -> Result<Response<Option<models::LogoutRedirect>>, Error<LogoutError>> {
     let uri_str = format!("{}/api/v1/auth/logout", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -1081,13 +1082,41 @@ pub async fn logout(
 
     let status = resp.status();
     let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
 
     if !status.is_client_error() && !status.is_server_error() {
-        Ok(Response {
-            data: (),
-            status,
-            headers,
-        })
+        if status == reqwest::StatusCode::NO_CONTENT {
+            return Ok(Response {
+                data: None,
+                status,
+                headers,
+            });
+        }
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data: Some(data),
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::LogoutRedirect`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::LogoutRedirect`"
+                ))));
+            }
+        }
     } else {
         let content = resp.text().await?;
         let entity: Option<LogoutError> = serde_json::from_str(&content).ok();

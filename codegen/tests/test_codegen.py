@@ -53,6 +53,16 @@ def test_adapter_keeps_typed_unions_and_contract_unchanged() -> None:
     for path in ["/api/v1/usage/context"]:
         assert adapted["paths"][path]["get"]["x-rust-nullable-response"]
     assert "x-rust-nullable-response" not in adapted["paths"]["/api/v1/runs/{run_id}"]["get"]
+    logout = adapted["paths"]["/api/v1/auth/logout"]["post"]
+    assert logout["x-rust-nullable-response"] and logout["x-rust-empty-response"]
+    for path in ("browsers", "egress-credentials", "environments", "memory-spaces", "schedules", "sessions"):
+        params = adapted["paths"][f"/api/v1/{path}"]["get"]["parameters"]
+        app_id = next(param for param in params if param["name"] == "app_id")
+        assert app_id["x-rust-string-query"]
+    for api in ("browsers", "egress_credentials", "environments", "memory_spaces", "schedules", "runs"):
+        generated = (ROOT / f"src/generated/apis/{api}_api.rs").read_text()
+        assert 'query(&[("app_id", &param_value.to_string())])' in generated
+        assert 'query(&[("app_id", &serde_json::to_string(param_value)?)]' not in generated
 
 
 def test_schema_adapters_preserve_presence_constants_binary_and_sensitive_data() -> None:
@@ -287,7 +297,16 @@ def test_session_export_extends_models_without_reintroducing_http_readback_field
     merged = codegen.with_session_models(document, stream)
     schemas = merged["components"]["schemas"]
     assert json.dumps([document, stream]) == original
-    assert set(stream["frames"]) == {"thread", "items", "delta", "gap", "schedule", "occurrence", "app_ready"}
+    assert set(stream["frames"]) == {
+        "thread",
+        "items",
+        "delta",
+        "gap",
+        "schedule",
+        "occurrence",
+        "app_ready",
+        "interactions",
+    }
     assert schemas["ThreadState"]["properties"]["thread"] == {"$ref": "#/components/schemas/ThreadView"}
     assert schemas["RunSnapshot"]["properties"]["continuation"]["anyOf"][0] == {
         "$ref": "#/components/schemas/DisplayContinuation"
@@ -366,8 +385,12 @@ def test_browser_navigation_projection_preserves_contract_and_all_other_operatio
         }
 
     before, after = operations(document), operations(projected)
-    assert {operation[2] for operation in before - after} == {"start_oidc_sign_in", "finish_oidc_sign_in"}
-    assert len(before - after) == 2 and not after - before
+    assert {operation[2] for operation in before - after} == {
+        "start_oidc_sign_in",
+        "finish_oidc_sign_in",
+        "oidc_backchannel_logout",
+    }
+    assert len(before - after) == 3 and not after - before
     assert projected["components"] == document["components"]
     assert document == original
 
@@ -376,7 +399,7 @@ def test_generated_cli_inventory_covers_exact_supported_operations() -> None:
     import re
 
     document = json.loads((ROOT / "contract/openapi.json").read_text())
-    excluded = {"start_oidc_sign_in", "finish_oidc_sign_in"}
+    excluded = {"start_oidc_sign_in", "finish_oidc_sign_in", "oidc_backchannel_logout"}
     expected = {
         (method.upper(), path)
         for path, item in document["paths"].items()

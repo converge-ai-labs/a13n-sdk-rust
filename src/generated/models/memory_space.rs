@@ -16,6 +16,14 @@ pub struct MemorySpace {
     #[serde(rename = "always_load")]
     pub always_load: Vec<String>,
 
+    #[serde(
+        rename = "app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub app_id: Option<Option<String>>,
+
     #[serde(rename = "content_bytes")]
     pub content_bytes: i32,
 
@@ -95,6 +103,7 @@ impl MemorySpace {
     ) -> MemorySpace {
         MemorySpace {
             always_load,
+            app_id: None,
             content_bytes,
             created_at,
             created_by_id,

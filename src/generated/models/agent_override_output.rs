@@ -52,7 +52,7 @@ pub struct AgentOverrideOutput {
         with = "::serde_with::rust::double_option",
         skip_serializing_if = "Option::is_none"
     )]
-    pub lazy_environment: Option<Option<bool>>,
+    pub lazy_environment: Option<Option<Box<models::LazyEnvironment1>>>,
 
     #[serde(
         rename = "media_understanding",

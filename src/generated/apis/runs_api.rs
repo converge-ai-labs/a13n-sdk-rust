@@ -229,6 +229,15 @@ pub enum ListInboxError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method [`list_mcp_inputs`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ListMcpInputsError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`list_run_attempts`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -368,6 +377,15 @@ pub enum ReadSpanContentError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ReorderInboxError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`respond_to_mcp_input`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum RespondToMcpInputError {
     Status400(models::ErrorEnvelope),
     DefaultResponse(models::ErrorEnvelope),
     UnknownValue(serde_json::Value),
@@ -2568,6 +2586,78 @@ pub async fn list_inbox(
     }
 }
 
+/// List pending human input for this run's retained MCP tool executions.
+pub async fn list_mcp_inputs(
+    configuration: &configuration::Configuration,
+    run_id: &str,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<Vec<models::McpElicitation>>, Error<ListMcpInputsError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_run_id = run_id;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/runs/{run_id}/mcp-inputs",
+        configuration.base_path,
+        run_id = crate::generated::apis::urlencode(p_path_run_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `Vec&lt;models::McpElicitation&gt;`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `Vec&lt;models::McpElicitation&gt;`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<ListMcpInputsError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
 pub async fn list_run_attempts(
     configuration: &configuration::Configuration,
     run_id: &str,
@@ -2990,6 +3080,7 @@ pub async fn list_sessions(
     text_query: Option<&str>,
     q: Option<&str>,
     application: Option<&str>,
+    app_id: Option<&str>,
     agent_id: Option<&str>,
     status: Option<Vec<models::RunStatus>>,
     trigger: Option<Vec<models::Trigger>>,
@@ -3006,6 +3097,7 @@ pub async fn list_sessions(
     let p_query_text_query = text_query;
     let p_query_q = q;
     let p_query_application = application;
+    let p_query_app_id = app_id;
     let p_query_agent_id = agent_id;
     let p_query_status = status;
     let p_query_trigger = trigger;
@@ -3029,6 +3121,9 @@ pub async fn list_sessions(
     }
     if let Some(ref param_value) = p_query_application {
         req_builder = req_builder.query(&[("application", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_app_id {
+        req_builder = req_builder.query(&[("app_id", &param_value.to_string())]);
     }
     if let Some(ref param_value) = p_query_agent_id {
         req_builder = req_builder.query(&[("agent_id", &param_value.to_string())]);
@@ -4260,6 +4355,73 @@ pub async fn reorder_inbox(
     } else {
         let content = resp.text().await?;
         let entity: Option<ReorderInboxError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// Send one answer to the originating MCP task, without resuming the run.
+pub async fn respond_to_mcp_input(
+    configuration: &configuration::Configuration,
+    run_id: &str,
+    request_id: &str,
+    mcp_input_response: models::McpInputResponse,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<()>, Error<RespondToMcpInputError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_path_run_id = run_id;
+    let p_path_request_id = request_id;
+    let p_body_mcp_input_response = mcp_input_response;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!(
+        "{}/api/v1/runs/{run_id}/mcp-inputs/{request_id}/response",
+        configuration.base_path,
+        run_id = crate::generated::apis::urlencode(p_path_run_id),
+        request_id = crate::generated::apis::urlencode(p_path_request_id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    if let Some(ref apikey) = configuration.api_key {
+        let key = apikey.key.clone();
+        let value = match apikey.prefix {
+            Some(ref prefix) => format!("{} {}", prefix, key),
+            None => key,
+        };
+        req_builder = req_builder.header("X-CSRF-Token", value);
+    };
+    req_builder = req_builder.json(&p_body_mcp_input_response);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+
+    if !status.is_client_error() && !status.is_server_error() {
+        Ok(Response {
+            data: (),
+            status,
+            headers,
+        })
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<RespondToMcpInputError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

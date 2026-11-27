@@ -19,6 +19,14 @@ pub struct EntryView {
     #[serde(rename = "agent_revision_id", deserialize_with = "Option::deserialize")]
     pub agent_revision_id: Option<String>,
 
+    #[serde(
+        rename = "app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub app_id: Option<Option<String>>,
+
     #[serde(rename = "assigned_run_id", deserialize_with = "Option::deserialize")]
     pub assigned_run_id: Option<String>,
 
@@ -95,6 +103,7 @@ impl EntryView {
         EntryView {
             agent_id,
             agent_revision_id,
+            app_id: None,
             assigned_run_id,
             child_run_id,
             created_at,

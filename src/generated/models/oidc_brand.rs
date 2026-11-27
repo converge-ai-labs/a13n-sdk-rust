@@ -20,6 +20,24 @@ pub enum OidcBrand {
     Google,
     #[serde(rename = "microsoft")]
     Microsoft,
+    #[serde(rename = "okta")]
+    Okta,
+    #[serde(rename = "auth0")]
+    Auth0,
+    #[serde(rename = "github")]
+    Github,
+    #[serde(rename = "gitlab")]
+    Gitlab,
+    #[serde(rename = "cloudflare")]
+    Cloudflare,
+    #[serde(rename = "authentik")]
+    Authentik,
+    #[serde(rename = "keycloak")]
+    Keycloak,
+    #[serde(rename = "authelia")]
+    Authelia,
+    #[serde(rename = "zitadel")]
+    Zitadel,
 }
 
 impl std::fmt::Display for OidcBrand {
@@ -28,6 +46,15 @@ impl std::fmt::Display for OidcBrand {
             Self::Generic => write!(f, "generic"),
             Self::Google => write!(f, "google"),
             Self::Microsoft => write!(f, "microsoft"),
+            Self::Okta => write!(f, "okta"),
+            Self::Auth0 => write!(f, "auth0"),
+            Self::Github => write!(f, "github"),
+            Self::Gitlab => write!(f, "gitlab"),
+            Self::Cloudflare => write!(f, "cloudflare"),
+            Self::Authentik => write!(f, "authentik"),
+            Self::Keycloak => write!(f, "keycloak"),
+            Self::Authelia => write!(f, "authelia"),
+            Self::Zitadel => write!(f, "zitadel"),
         }
     }
 }

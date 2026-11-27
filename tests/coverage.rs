@@ -12,7 +12,13 @@ fn inventory_covers_the_exact_pinned_operations() {
         for (method, operation) in item.as_object().unwrap() {
             if ["get", "post", "put", "patch", "delete"].contains(&method.as_str()) {
                 let id = operation["operationId"].as_str().unwrap();
-                if ["start_oidc_sign_in", "finish_oidc_sign_in"].contains(&id) {
+                if [
+                    "start_oidc_sign_in",
+                    "finish_oidc_sign_in",
+                    "oidc_backchannel_logout",
+                ]
+                .contains(&id)
+                {
                     excluded.insert(id);
                 } else {
                     expected.insert((method.to_uppercase(), path.clone()));
@@ -22,7 +28,11 @@ fn inventory_covers_the_exact_pinned_operations() {
     }
     assert_eq!(
         excluded,
-        BTreeSet::from(["start_oidc_sign_in", "finish_oidc_sign_in"])
+        BTreeSet::from([
+            "start_oidc_sign_in",
+            "finish_oidc_sign_in",
+            "oidc_backchannel_logout"
+        ])
     );
     let actual: BTreeSet<_> = RESOURCE_OPERATIONS
         .iter()

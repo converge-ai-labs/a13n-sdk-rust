@@ -568,6 +568,7 @@ pub enum SessionFrame {
     Schedule(Box<crate::generated::models::ScheduleEvent>),
     Occurrence(Box<crate::generated::models::OccurrenceEvent>),
     AppReady(Box<crate::generated::models::AppReady>),
+    Interactions(Box<crate::generated::models::PendingInteractions>),
 }
 
 #[derive(Clone, Debug, Default)]
@@ -664,7 +665,14 @@ fn decode_session(raw: SseFrame) -> Result<Option<SessionFrame>, Error> {
     }
     if !matches!(
         raw.event.as_str(),
-        "thread" | "items" | "delta" | "gap" | "schedule" | "occurrence" | "app_ready"
+        "thread"
+            | "items"
+            | "delta"
+            | "gap"
+            | "schedule"
+            | "occurrence"
+            | "app_ready"
+            | "interactions"
     ) {
         return Ok(None);
     }
@@ -679,6 +687,7 @@ fn decode_session(raw: SseFrame) -> Result<Option<SessionFrame>, Error> {
         "schedule" => SessionFrame::Schedule(parse(&raw.data)?),
         "occurrence" => SessionFrame::Occurrence(parse(&raw.data)?),
         "app_ready" => SessionFrame::AppReady(parse(&raw.data)?),
+        "interactions" => SessionFrame::Interactions(parse(&raw.data)?),
         _ => unreachable!(),
     }))
 }

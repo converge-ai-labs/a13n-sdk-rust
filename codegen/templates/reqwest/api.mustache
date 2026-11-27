@@ -244,6 +244,10 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
         };
         {{/isArray}}
         {{^isArray}}
+        {{#vendorExtensions.x-rust-string-query}}
+        req_builder = req_builder.query(&[("{{{baseName}}}", &param_value.to_string())]);
+        {{/vendorExtensions.x-rust-string-query}}
+        {{^vendorExtensions.x-rust-string-query}}
         {{#isDeepObject}}
         {{^isExplode}}
         let params = crate::apis::parse_deep_object("{{{baseName}}}", &serde_json::to_value(param_value)?);
@@ -290,6 +294,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
         {{/isModel}}
         {{/isObject}}
         {{/isDeepObject}}
+        {{/vendorExtensions.x-rust-string-query}}
         {{/isArray}}
     }
     {{/required}}
@@ -615,10 +620,20 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
         Ok(Response { data: (), status, headers })
         {{/returnType}}
         {{#returnType}}
+        {{#vendorExtensions.x-rust-empty-response}}
+        if status == reqwest::StatusCode::NO_CONTENT {
+            return Ok(Response { data: None, status, headers });
+        }
+        {{/vendorExtensions.x-rust-empty-response}}
         let content = resp.text(){{#supportAsync}}.await{{/supportAsync}}?;
         match content_type {
             {{^useSerdePathToError}}
+            {{#vendorExtensions.x-rust-empty-response}}
+            ContentType::Json => serde_json::from_str(&content).map(|data| Response { data: Some(data), status, headers }).map_err(Error::from),
+            {{/vendorExtensions.x-rust-empty-response}}
+            {{^vendorExtensions.x-rust-empty-response}}
             ContentType::Json => serde_json::from_str(&content).map(|data| Response { data, status, headers }).map_err(Error::from),
+            {{/vendorExtensions.x-rust-empty-response}}
             {{/useSerdePathToError}}
             {{#useSerdePathToError}}
             ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
