@@ -13,6 +13,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SessionView {
+    #[serde(
+        rename = "app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub app_id: Option<Option<String>>,
+
     #[serde(rename = "auto_recreate_lost_environment")]
     pub auto_recreate_lost_environment: bool,
 
@@ -104,6 +112,7 @@ impl SessionView {
         workspace_id: String,
     ) -> SessionView {
         SessionView {
+            app_id: None,
             auto_recreate_lost_environment,
             cost,
             created_at,

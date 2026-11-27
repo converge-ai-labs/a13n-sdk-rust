@@ -233,9 +233,9 @@ def install(output: Path, target: Path) -> None:
 
 
 def project_operations(document: dict) -> dict:
-    """Omit browser navigation from callable bindings without changing the contract."""
+    """Omit provider protocol endpoints from callable bindings without changing the contract."""
     document = json.loads(json.dumps(document))
-    excluded = {"start_oidc_sign_in", "finish_oidc_sign_in"}
+    excluded = {"start_oidc_sign_in", "finish_oidc_sign_in", "oidc_backchannel_logout"}
     methods = {"get", "put", "post", "delete", "options", "head", "patch", "trace"}
     for path, item in list(document["paths"].items()):
         removed = False

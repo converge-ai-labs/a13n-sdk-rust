@@ -16,6 +16,14 @@ pub struct Credential {
     #[serde(rename = "allowed_hosts")]
     pub allowed_hosts: Vec<String>,
 
+    #[serde(
+        rename = "app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub app_id: Option<Option<String>>,
+
     #[serde(rename = "created_at")]
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
 
@@ -36,14 +44,6 @@ pub struct Credential {
 
     #[serde(rename = "organization_id")]
     pub organization_id: String,
-
-    #[serde(
-        rename = "owner_app_id",
-        default,
-        with = "::serde_with::rust::double_option",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub owner_app_id: Option<Option<String>>,
 
     #[serde(rename = "revoked_at", deserialize_with = "Option::deserialize")]
     pub revoked_at: Option<chrono::DateTime<chrono::FixedOffset>>,
@@ -83,6 +83,7 @@ impl Credential {
     ) -> Credential {
         Credential {
             allowed_hosts,
+            app_id: None,
             created_at,
             created_by_id,
             credential_version,
@@ -90,7 +91,6 @@ impl Credential {
             id,
             name,
             organization_id,
-            owner_app_id: None,
             revoked_at,
             state,
             updated_at,

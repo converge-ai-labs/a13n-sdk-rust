@@ -14,6 +14,14 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct EnvironmentView {
     #[serde(
+        rename = "app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub app_id: Option<Option<String>>,
+
+    #[serde(
         rename = "client_connection",
         default,
         with = "::serde_with::rust::double_option",
@@ -170,6 +178,7 @@ impl EnvironmentView {
         workspace_id: String,
     ) -> EnvironmentView {
         EnvironmentView {
+            app_id: None,
             client_connection: None,
             created_at,
             created_by_id,

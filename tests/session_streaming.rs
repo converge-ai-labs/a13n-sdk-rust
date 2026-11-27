@@ -500,3 +500,44 @@ async fn session_thread_preserves_no_environment_and_platform_groups() {
         );
     }
 }
+
+#[tokio::test]
+async fn interactions_replace_and_clear_pending_without_dispatch() {
+    let requests = json!({"thread_id":"t","requests":[
+        {"request_id":"req1","thread_id":"t","server_id":"mcp","mode":"form","message":"Choose","expires_at":"2026-11-27T12:00:00Z","schema":{"type":"object"}},
+        {"request_id":"req2","thread_id":"t","server_id":"mcp","mode":"url","message":"Confirm","expires_at":"2026-11-27T12:00:00Z","url":"https://example.com/confirm"}
+    ]});
+    let clear = json!({"thread_id":"t","requests":[]});
+    let body = frame("interactions", requests) + &frame("interactions", clear);
+    let mut fixture = server(move |_| Reply::sse(&body)).await;
+    let sdk = client(&fixture);
+    let mut reader = SessionStream::open(sdk.api().sessions().at("s"), Default::default())
+        .await
+        .unwrap();
+    let Some(SessionFrame::Interactions(value)) = reader.next().await.unwrap() else {
+        panic!("missing interactions")
+    };
+    assert_eq!(value.thread_id, "t");
+    assert_eq!(value.requests.len(), 2);
+    let Some(SessionFrame::Interactions(value)) = reader.next().await.unwrap() else {
+        panic!("missing clear")
+    };
+    assert!(value.requests.is_empty());
+    assert!(reader.next().await.unwrap().is_none());
+    assert_eq!(fixture.requests.recv().await.unwrap().method, "GET");
+    assert!(fixture.requests.try_recv().is_err());
+    for body in [
+        frame("interactions", json!({"thread_id":"t"})),
+        format!(
+            "id: bad\n{}",
+            frame("interactions", json!({"thread_id":"t","requests":[]}))
+        ),
+    ] {
+        let fixture = server(move |_| Reply::sse(&body)).await;
+        let sdk = client(&fixture);
+        let mut reader = SessionStream::open(sdk.api().sessions().at("s"), Default::default())
+            .await
+            .unwrap();
+        assert!(matches!(reader.next().await, Err(Error::Protocol(_))));
+    }
+}

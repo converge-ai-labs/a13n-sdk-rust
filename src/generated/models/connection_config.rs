@@ -22,3 +22,19 @@ impl Default for ConnectionConfig {
         Self::AnyOf0(Default::default())
     }
 }
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Authority {
+    #[serde(rename = "operator")]
+    Operator,
+    #[serde(rename = "user")]
+    User,
+    #[serde(rename = "none")]
+    None,
+}
+
+impl Default for Authority {
+    fn default() -> Authority {
+        Self::Operator
+    }
+}

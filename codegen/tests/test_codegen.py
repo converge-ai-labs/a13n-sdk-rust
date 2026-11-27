@@ -287,7 +287,16 @@ def test_session_export_extends_models_without_reintroducing_http_readback_field
     merged = codegen.with_session_models(document, stream)
     schemas = merged["components"]["schemas"]
     assert json.dumps([document, stream]) == original
-    assert set(stream["frames"]) == {"thread", "items", "delta", "gap", "schedule", "occurrence", "app_ready"}
+    assert set(stream["frames"]) == {
+        "thread",
+        "items",
+        "delta",
+        "gap",
+        "schedule",
+        "occurrence",
+        "app_ready",
+        "interactions",
+    }
     assert schemas["ThreadState"]["properties"]["thread"] == {"$ref": "#/components/schemas/ThreadView"}
     assert schemas["RunSnapshot"]["properties"]["continuation"]["anyOf"][0] == {
         "$ref": "#/components/schemas/DisplayContinuation"
@@ -366,8 +375,12 @@ def test_browser_navigation_projection_preserves_contract_and_all_other_operatio
         }
 
     before, after = operations(document), operations(projected)
-    assert {operation[2] for operation in before - after} == {"start_oidc_sign_in", "finish_oidc_sign_in"}
-    assert len(before - after) == 2 and not after - before
+    assert {operation[2] for operation in before - after} == {
+        "start_oidc_sign_in",
+        "finish_oidc_sign_in",
+        "oidc_backchannel_logout",
+    }
+    assert len(before - after) == 3 and not after - before
     assert projected["components"] == document["components"]
     assert document == original
 
@@ -376,7 +389,7 @@ def test_generated_cli_inventory_covers_exact_supported_operations() -> None:
     import re
 
     document = json.loads((ROOT / "contract/openapi.json").read_text())
-    excluded = {"start_oidc_sign_in", "finish_oidc_sign_in"}
+    excluded = {"start_oidc_sign_in", "finish_oidc_sign_in", "oidc_backchannel_logout"}
     expected = {
         (method.upper(), path)
         for path, item in document["paths"].items()

@@ -13,6 +13,12 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct McpConfig {
+    #[serde(rename = "authority", skip_serializing_if = "Option::is_none")]
+    pub authority: Option<Authority>,
+
+    #[serde(rename = "durable_tasks", skip_serializing_if = "Option::is_none")]
+    pub durable_tasks: Option<bool>,
+
     #[serde(
         rename = "forward_context_headers",
         skip_serializing_if = "Option::is_none"
@@ -52,6 +58,8 @@ pub struct McpConfig {
 impl McpConfig {
     pub fn new(url: String) -> McpConfig {
         McpConfig {
+            authority: None,
+            durable_tasks: None,
             forward_context_headers: None,
             headers: None,
             oauth: None,
@@ -60,5 +68,21 @@ impl McpConfig {
             tools: None,
             url,
         }
+    }
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Authority {
+    #[serde(rename = "operator")]
+    Operator,
+    #[serde(rename = "user")]
+    User,
+    #[serde(rename = "none")]
+    None,
+}
+
+impl Default for Authority {
+    fn default() -> Authority {
+        Self::Operator
     }
 }

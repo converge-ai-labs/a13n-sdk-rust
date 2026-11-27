@@ -19,6 +19,14 @@ pub struct RunView {
     #[serde(rename = "agent_revision_id", deserialize_with = "Option::deserialize")]
     pub agent_revision_id: Option<String>,
 
+    #[serde(
+        rename = "app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub app_id: Option<Option<String>>,
+
     #[serde(rename = "attempts")]
     pub attempts: i32,
 
@@ -135,6 +143,14 @@ pub struct RunView {
     #[serde(rename = "trigger")]
     pub trigger: models::Trigger,
 
+    #[serde(
+        rename = "trigger_app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub trigger_app_id: Option<Option<String>>,
+
     #[serde(rename = "updated_at")]
     pub updated_at: chrono::DateTime<chrono::FixedOffset>,
 
@@ -190,6 +206,7 @@ impl RunView {
         RunView {
             agent_id,
             agent_revision_id,
+            app_id: None,
             attempts,
             browser_binding: None,
             cancel_requested_at,
@@ -236,6 +253,7 @@ impl RunView {
             status,
             thread_id,
             trigger,
+            trigger_app_id: None,
             updated_at,
             usage_at_seal,
             version,

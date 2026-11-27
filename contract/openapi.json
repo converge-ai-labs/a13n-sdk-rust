@@ -243,9 +243,21 @@
             "type": "string"
           },
           "lazy_environment": {
+            "anyOf": [
+              {
+                "enum": [
+                  "on_demand",
+                  "warmup",
+                  "eager"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
             "default": true,
-            "title": "Lazy Environment",
-            "type": "boolean"
+            "title": "Lazy Environment"
           },
           "media_understanding": {
             "$ref": "#/components/schemas/MediaUnderstandingSelection"
@@ -478,9 +490,21 @@
             "type": "string"
           },
           "lazy_environment": {
+            "anyOf": [
+              {
+                "enum": [
+                  "on_demand",
+                  "warmup",
+                  "eager"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
             "default": true,
-            "title": "Lazy Environment",
-            "type": "boolean"
+            "title": "Lazy Environment"
           },
           "media_understanding": {
             "$ref": "#/components/schemas/MediaUnderstandingSelection"
@@ -820,6 +844,14 @@
           "lazy_environment": {
             "anyOf": [
               {
+                "enum": [
+                  "on_demand",
+                  "warmup",
+                  "eager"
+                ],
+                "type": "string"
+              },
+              {
                 "type": "boolean"
               },
               {
@@ -1067,6 +1099,14 @@
           },
           "lazy_environment": {
             "anyOf": [
+              {
+                "enum": [
+                  "on_demand",
+                  "warmup",
+                  "eager"
+                ],
+                "type": "string"
+              },
               {
                 "type": "boolean"
               },
@@ -2000,6 +2040,12 @@
         ],
         "title": "ApiKeyPage",
         "type": "object"
+      },
+      "AppIdFilter": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$",
+        "type": "string"
       },
       "AppPlugins": {
         "properties": {
@@ -3180,8 +3226,46 @@
         "title": "BootstrapInput",
         "type": "object"
       },
+      "BoxdVolumeMount": {
+        "additionalProperties": false,
+        "properties": {
+          "disk_id": {
+            "minLength": 1,
+            "title": "Disk ID",
+            "type": "string"
+          },
+          "mount_path": {
+            "minLength": 1,
+            "title": "Mount path",
+            "type": "string"
+          },
+          "read_only": {
+            "default": false,
+            "title": "Read only",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "disk_id",
+          "mount_path"
+        ],
+        "title": "BoxdVolumeMount",
+        "type": "object"
+      },
       "Browser": {
         "properties": {
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
+          },
           "control": {
             "$ref": "#/components/schemas/ControlStatus"
           },
@@ -6287,6 +6371,18 @@
             "title": "Allowed Hosts",
             "type": "array"
           },
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
+          },
           "created_at": {
             "format": "date-time",
             "title": "Created At",
@@ -6315,17 +6411,6 @@
           "organization_id": {
             "title": "Organization Id",
             "type": "string"
-          },
-          "owner_app_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Owner App Id"
           },
           "revoked_at": {
             "anyOf": [
@@ -7027,6 +7112,39 @@
           }
         },
         "title": "DataSourceUpdate",
+        "type": "object"
+      },
+      "DaytonaVolumeMount": {
+        "additionalProperties": false,
+        "properties": {
+          "mount_path": {
+            "minLength": 1,
+            "title": "Mount path",
+            "type": "string"
+          },
+          "subpath": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume subpath"
+          },
+          "volume_id": {
+            "minLength": 1,
+            "title": "Volume ID",
+            "type": "string"
+          }
+        },
+        "required": [
+          "volume_id",
+          "mount_path"
+        ],
+        "title": "DaytonaVolumeMount",
         "type": "object"
       },
       "DebugHold": {
@@ -8255,6 +8373,18 @@
             ],
             "title": "Agent Revision Id"
           },
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
+          },
           "assigned_run_id": {
             "anyOf": [
               {
@@ -8502,6 +8632,18 @@
               }
             ],
             "title": "Agent Revision Id"
+          },
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
           },
           "assigned_run_id": {
             "anyOf": [
@@ -9174,6 +9316,18 @@
       },
       "EnvironmentView": {
         "properties": {
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
+          },
           "client_connection": {
             "anyOf": [
               {
@@ -12564,6 +12718,19 @@
         "title": "LoginSessionPage",
         "type": "object"
       },
+      "LogoutRedirect": {
+        "properties": {
+          "logout_url": {
+            "title": "Logout Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "logout_url"
+        ],
+        "title": "LogoutRedirect",
+        "type": "object"
+      },
       "Logs": {
         "properties": {
           "container": {
@@ -12641,6 +12808,9 @@
             ],
             "title": "Name"
           },
+          "recipe_overrides": {
+            "$ref": "#/components/schemas/RecipeOverrides"
+          },
           "template_id": {
             "maxLength": 41,
             "pattern": "^[a-z][a-z0-9]{1,7}_[0-9a-f]{20,32}$",
@@ -12666,6 +12836,21 @@
       "McpConfig": {
         "additionalProperties": false,
         "properties": {
+          "authority": {
+            "default": "operator",
+            "enum": [
+              "operator",
+              "user",
+              "none"
+            ],
+            "title": "Authority",
+            "type": "string"
+          },
+          "durable_tasks": {
+            "default": false,
+            "title": "Durable Tasks",
+            "type": "boolean"
+          },
           "forward_context_headers": {
             "title": "Forward Context Headers",
             "type": "boolean"
@@ -12738,6 +12923,124 @@
         "title": "McpConfig",
         "type": "object"
       },
+      "McpElicitation": {
+        "properties": {
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "kind": {
+            "const": "mcp_elicitation",
+            "default": "mcp_elicitation",
+            "title": "Kind",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "form",
+              "url"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "schema": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema"
+          },
+          "server_id": {
+            "title": "Server Id",
+            "type": "string"
+          },
+          "server_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Server Name"
+          },
+          "thread_id": {
+            "title": "Thread Id",
+            "type": "string"
+          },
+          "tool_call_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Call Id"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "url_host": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url Host"
+          }
+        },
+        "required": [
+          "request_id",
+          "thread_id",
+          "server_id",
+          "mode",
+          "message",
+          "expires_at"
+        ],
+        "title": "McpElicitation",
+        "type": "object"
+      },
       "McpHeaders": {
         "maxProperties": 32,
         "patternProperties": {
@@ -12751,6 +13054,39 @@
         "propertyNames": {
           "maxLength": 41
         },
+        "type": "object"
+      },
+      "McpInputResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "enum": [
+              "accept",
+              "decline",
+              "cancel"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "title": "McpInputResponse",
         "type": "object"
       },
       "McpServer": {
@@ -14522,6 +14858,18 @@
             "title": "Always Load",
             "type": "array"
           },
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
+          },
           "content_bytes": {
             "title": "Content Bytes",
             "type": "integer"
@@ -15197,6 +15545,45 @@
         "title": "MetricsSample",
         "type": "object"
       },
+      "ModalVolumeMount": {
+        "additionalProperties": false,
+        "properties": {
+          "mount_path": {
+            "minLength": 1,
+            "title": "Mount path",
+            "type": "string"
+          },
+          "read_only": {
+            "default": false,
+            "title": "Read only",
+            "type": "boolean"
+          },
+          "sub_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume subpath"
+          },
+          "volume_name": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9._-]+$",
+            "title": "Volume name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "volume_name",
+          "mount_path"
+        ],
+        "title": "ModalVolumeMount",
+        "type": "object"
+      },
       "Model": {
         "properties": {
           "catalog_ref": {
@@ -15626,6 +16013,46 @@
           "config"
         ],
         "title": "ModelCreate",
+        "type": "object"
+      },
+      "ModelDuplicate": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "key": {
+            "pattern": "^[a-z0-9][a-z0-9.-]{0,127}$",
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "required": [
+          "key"
+        ],
+        "title": "ModelDuplicate",
         "type": "object"
       },
       "ModelMetrics": {
@@ -17006,6 +17433,18 @@
       "Occurrence": {
         "additionalProperties": false,
         "properties": {
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
+          },
           "completed_at": {
             "anyOf": [
               {
@@ -17367,6 +17806,18 @@
       "OccurrenceSummary": {
         "additionalProperties": false,
         "properties": {
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
+          },
           "completed_at": {
             "anyOf": [
               {
@@ -20361,6 +20812,44 @@
         ],
         "type": "string"
       },
+      "RecipeOverrides": {
+        "additionalProperties": false,
+        "properties": {
+          "volume_mounts": {
+            "additionalProperties": {
+              "pattern": "^[a-zA-Z0-9-]+$",
+              "type": "string"
+            },
+            "title": "Volume Mounts",
+            "type": "object"
+          },
+          "volumes": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/DaytonaVolumeMount"
+                },
+                "type": "array"
+              },
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ModalVolumeMount"
+                },
+                "type": "array"
+              },
+              {
+                "items": {
+                  "$ref": "#/components/schemas/BoxdVolumeMount"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Volumes"
+          }
+        },
+        "title": "RecipeOverrides",
+        "type": "object"
+      },
       "Reclamation": {
         "additionalProperties": false,
         "description": "Instance-scoped reclamation settings copied at reservation; no stop/resume semantics.",
@@ -21443,7 +21932,6 @@
         "type": "object"
       },
       "RunListItem": {
-        "description": "Run discovery metadata. Full input, results and execution settings belong to the Run detail read.",
         "properties": {
           "agent_id": {
             "title": "Agent Id",
@@ -21459,6 +21947,18 @@
               }
             ],
             "title": "Agent Revision Id"
+          },
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
           },
           "attempts": {
             "title": "Attempts",
@@ -21557,6 +22057,18 @@
           },
           "trigger": {
             "$ref": "#/components/schemas/Trigger"
+          },
+          "trigger_app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Trigger App Id"
           },
           "updated_at": {
             "format": "date-time",
@@ -21913,6 +22425,18 @@
             ],
             "title": "Agent Revision Id"
           },
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
+          },
           "attempts": {
             "title": "Attempts",
             "type": "integer"
@@ -22068,6 +22592,18 @@
           "trigger": {
             "$ref": "#/components/schemas/Trigger"
           },
+          "trigger_app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Trigger App Id"
+          },
           "updated_at": {
             "format": "date-time",
             "title": "Updated At",
@@ -22210,6 +22746,18 @@
               }
             ],
             "title": "Agent Revision Id"
+          },
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
           },
           "attempts": {
             "title": "Attempts",
@@ -22459,6 +23007,18 @@
           "trigger": {
             "$ref": "#/components/schemas/Trigger"
           },
+          "trigger_app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Trigger App Id"
+          },
           "updated_at": {
             "format": "date-time",
             "title": "Updated At",
@@ -22574,6 +23134,18 @@
       "Schedule": {
         "additionalProperties": false,
         "properties": {
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
+          },
           "archived_at": {
             "anyOf": [
               {
@@ -22790,6 +23362,68 @@
           "invocation"
         ],
         "title": "ScheduleCreate",
+        "type": "object"
+      },
+      "ScheduleDuplicate": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "labels": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                "maxProperties": 32,
+                "propertyNames": {
+                  "maxLength": 128,
+                  "minLength": 1
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Labels"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScheduleTarget"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "ScheduleDuplicate",
         "type": "object"
       },
       "ScheduleInvocation-Input": {
@@ -24401,6 +25035,18 @@
       },
       "SessionView": {
         "properties": {
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
+          },
           "auto_recreate_lost_environment": {
             "title": "Auto Recreate Lost Environment",
             "type": "boolean"
@@ -24762,6 +25408,71 @@
           "source"
         ],
         "title": "SkillCreate",
+        "type": "object"
+      },
+      "SkillDuplicate": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 16384,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "labels": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                "maxProperties": 32,
+                "propertyNames": {
+                  "maxLength": 128,
+                  "minLength": 1
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Labels"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "revision_id": {
+            "anyOf": [
+              {
+                "maxLength": 41,
+                "pattern": "^[a-z][a-z0-9]{1,7}_[0-9a-f]{20,32}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revision Id"
+          }
+        },
+        "title": "SkillDuplicate",
         "type": "object"
       },
       "SkillFile": {
@@ -26983,6 +27694,58 @@
         "title": "TemplateCreate",
         "type": "object"
       },
+      "TemplateDuplicate": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "labels": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                "maxProperties": 32,
+                "propertyNames": {
+                  "maxLength": 128,
+                  "minLength": 1
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Labels"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "title": "TemplateDuplicate",
+        "type": "object"
+      },
       "TemplatePage": {
         "properties": {
           "items": {
@@ -27400,6 +28163,18 @@
             ],
             "title": "Agent Revision Id"
           },
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
+          },
           "attempts": {
             "title": "Attempts",
             "type": "integer"
@@ -27517,6 +28292,18 @@
           },
           "trigger": {
             "$ref": "#/components/schemas/Trigger"
+          },
+          "trigger_app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Trigger App Id"
           },
           "unpriced_requests": {
             "title": "Unpriced Requests",
@@ -27672,6 +28459,18 @@
       },
       "ThreadView": {
         "properties": {
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "App Id"
+          },
           "archived_at": {
             "anyOf": [
               {
@@ -32267,10 +33066,21 @@
     },
     "/api/v1/auth/logout": {
       "post": {
+        "description": "End the local session and, when available, return the provider's browser logout URL.",
         "operationId": "logout",
         "responses": {
-          "204": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoutRedirect"
+                }
+              }
+            },
             "description": "Successful Response"
+          },
+          "204": {
+            "description": "Local logout"
           },
           "default": {
             "$ref": "#/components/responses/Error"
@@ -32286,6 +33096,59 @@
           }
         ],
         "summary": "Logout",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/oidc/{provider_id}/backchannel-logout": {
+      "post": {
+        "description": "Revoke OIDC login sessions on receipt of a signed Logout Token from their provider.",
+        "operationId": "oidc_backchannel_logout",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider_id",
+            "required": true,
+            "schema": {
+              "title": "Provider Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "properties": {
+                  "logout_token": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "logout_token"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "Oidc Backchannel Logout",
         "tags": [
           "auth"
         ]
@@ -32954,6 +33817,22 @@
                 }
               ],
               "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "app_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AppIdFilter"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "App Id"
             }
           },
           {
@@ -38007,6 +38886,22 @@
             }
           },
           {
+            "in": "query",
+            "name": "app_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AppIdFilter"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "App Id"
+            }
+          },
+          {
             "description": "The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden.",
             "in": "header",
             "name": "X-Workspace-ID",
@@ -39599,6 +40494,88 @@
         }
       }
     },
+    "/api/v1/environment-templates/{template_id}/duplicate": {
+      "post": {
+        "operationId": "duplicate_environment_template",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "title": "Template Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden.",
+            "in": "header",
+            "name": "X-Workspace-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 41,
+                  "pattern": "^[a-z][a-z0-9]{1,7}_[0-9a-f]{20,32}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden.",
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateDuplicate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Template"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          },
+          {
+            "csrf": [],
+            "loginSession": []
+          }
+        ],
+        "summary": "Duplicate Environment Template",
+        "tags": [
+          "environments"
+        ],
+        "x-a13n-mcp": true,
+        "x-a13n-platform": {
+          "effect": "write",
+          "group": "environment_templates"
+        }
+      }
+    },
     "/api/v1/environments": {
       "get": {
         "operationId": "list_environments",
@@ -39618,6 +40595,22 @@
                 }
               ],
               "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "app_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AppIdFilter"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "App Id"
             }
           },
           {
@@ -45552,6 +46545,22 @@
           },
           {
             "in": "query",
+            "name": "app_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AppIdFilter"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "App Id"
+            }
+          },
+          {
+            "in": "query",
             "name": "limit",
             "required": false,
             "schema": {
@@ -48730,6 +49739,88 @@
           }
         ],
         "summary": "Update Model",
+        "tags": [
+          "models"
+        ],
+        "x-a13n-mcp": true,
+        "x-a13n-platform": {
+          "effect": "write",
+          "group": "models"
+        }
+      }
+    },
+    "/api/v1/models/{key}/duplicate": {
+      "post": {
+        "operationId": "duplicate_model",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "title": "Key",
+              "type": "string"
+            }
+          },
+          {
+            "description": "The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden.",
+            "in": "header",
+            "name": "X-Workspace-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 41,
+                  "pattern": "^[a-z][a-z0-9]{1,7}_[0-9a-f]{20,32}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden.",
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModelDuplicate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Model"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          },
+          {
+            "csrf": [],
+            "loginSession": []
+          }
+        ],
+        "summary": "Duplicate Model",
         "tags": [
           "models"
         ],
@@ -52539,6 +53630,157 @@
         }
       }
     },
+    "/api/v1/runs/{run_id}/mcp-inputs": {
+      "get": {
+        "description": "List pending human input for this run's retained MCP tool executions.",
+        "operationId": "list_mcp_inputs",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden.",
+            "in": "header",
+            "name": "X-Workspace-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 41,
+                  "pattern": "^[a-z][a-z0-9]{1,7}_[0-9a-f]{20,32}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden.",
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/McpElicitation"
+                  },
+                  "title": "Response List Mcp Inputs",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          },
+          {
+            "loginSession": []
+          }
+        ],
+        "summary": "List Mcp Inputs",
+        "tags": [
+          "runs"
+        ]
+      }
+    },
+    "/api/v1/runs/{run_id}/mcp-inputs/{request_id}/response": {
+      "post": {
+        "description": "Send one answer to the originating MCP task, without resuming the run.",
+        "operationId": "respond_to_mcp_input",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "request_id",
+            "required": true,
+            "schema": {
+              "title": "Request Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden.",
+            "in": "header",
+            "name": "X-Workspace-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 41,
+                  "pattern": "^[a-z][a-z0-9]{1,7}_[0-9a-f]{20,32}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden.",
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/McpInputResponse"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          },
+          {
+            "csrf": [],
+            "loginSession": []
+          }
+        ],
+        "summary": "Respond To Mcp Input",
+        "tags": [
+          "runs"
+        ]
+      }
+    },
     "/api/v1/runs/{run_id}/resume": {
       "post": {
         "description": "Answer the exact waiting run's approvals, client tools and user questions; the successor continues from them.",
@@ -52653,6 +53895,22 @@
               "minimum": 1,
               "title": "Limit",
               "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "app_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AppIdFilter"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "App Id"
             }
           },
           {
@@ -53336,6 +54594,88 @@
         }
       }
     },
+    "/api/v1/schedules/{schedule_id}/duplicate": {
+      "post": {
+        "operationId": "duplicate_schedule",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "schedule_id",
+            "required": true,
+            "schema": {
+              "title": "Schedule Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden.",
+            "in": "header",
+            "name": "X-Workspace-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 41,
+                  "pattern": "^[a-z][a-z0-9]{1,7}_[0-9a-f]{20,32}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden.",
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleDuplicate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Schedule"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          },
+          {
+            "csrf": [],
+            "loginSession": []
+          }
+        ],
+        "summary": "Duplicate Schedule",
+        "tags": [
+          "schedules"
+        ],
+        "x-a13n-mcp": true,
+        "x-a13n-platform": {
+          "effect": "write",
+          "group": "schedules"
+        }
+      }
+    },
     "/api/v1/schedules/{schedule_id}/enable": {
       "post": {
         "operationId": "enable_schedule",
@@ -53964,6 +55304,22 @@
                 }
               ],
               "title": "Application"
+            }
+          },
+          {
+            "in": "query",
+            "name": "app_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AppIdFilter"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "App Id"
             }
           },
           {
@@ -55266,6 +56622,88 @@
           }
         ],
         "summary": "Archive Skill",
+        "tags": [
+          "skills"
+        ],
+        "x-a13n-mcp": true,
+        "x-a13n-platform": {
+          "effect": "write",
+          "group": "skills"
+        }
+      }
+    },
+    "/api/v1/skills/{skill_id}/duplicate": {
+      "post": {
+        "operationId": "duplicate_skill",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "skill_id",
+            "required": true,
+            "schema": {
+              "title": "Skill Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden.",
+            "in": "header",
+            "name": "X-Workspace-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 41,
+                  "pattern": "^[a-z][a-z0-9]{1,7}_[0-9a-f]{20,32}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden.",
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkillDuplicate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Skill"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          },
+          {
+            "csrf": [],
+            "loginSession": []
+          }
+        ],
+        "summary": "Duplicate Skill",
         "tags": [
           "skills"
         ],

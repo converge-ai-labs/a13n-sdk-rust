@@ -64,7 +64,7 @@ pub struct AgentConfigInput {
     pub instructions: Option<String>,
 
     #[serde(rename = "lazy_environment", skip_serializing_if = "Option::is_none")]
-    pub lazy_environment: Option<bool>,
+    pub lazy_environment: Option<Box<models::LazyEnvironment>>,
 
     #[serde(
         rename = "media_understanding",

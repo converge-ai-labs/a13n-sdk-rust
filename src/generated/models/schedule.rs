@@ -13,6 +13,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Schedule {
+    #[serde(
+        rename = "app_id",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub app_id: Option<Option<String>>,
+
     #[serde(rename = "archived_at", deserialize_with = "Option::deserialize")]
     pub archived_at: Option<chrono::DateTime<chrono::FixedOffset>>,
 
@@ -103,6 +111,7 @@ impl Schedule {
         workspace_id: String,
     ) -> Schedule {
         Schedule {
+            app_id: None,
             archived_at,
             created_at,
             created_by_id,

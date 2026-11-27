@@ -356,7 +356,13 @@ mod tests {
             for (method, operation) in item.as_object().unwrap() {
                 if matches!(method.as_str(), "get" | "post" | "put" | "patch" | "delete") {
                     let id = operation["operationId"].as_str().unwrap();
-                    if ["start_oidc_sign_in", "finish_oidc_sign_in"].contains(&id) {
+                    if [
+                        "start_oidc_sign_in",
+                        "finish_oidc_sign_in",
+                        "oidc_backchannel_logout",
+                    ]
+                    .contains(&id)
+                    {
                         excluded.insert(id);
                     } else {
                         expected.insert((method.to_uppercase(), path.as_str()));
@@ -366,7 +372,11 @@ mod tests {
         }
         assert_eq!(
             excluded,
-            std::collections::BTreeSet::from(["start_oidc_sign_in", "finish_oidc_sign_in"])
+            std::collections::BTreeSet::from([
+                "start_oidc_sign_in",
+                "finish_oidc_sign_in",
+                "oidc_backchannel_logout"
+            ])
         );
         let actual: std::collections::BTreeSet<_> = generated::OPERATIONS
             .iter()

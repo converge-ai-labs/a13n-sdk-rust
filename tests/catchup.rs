@@ -77,6 +77,17 @@ fn all_new_native_schema_shapes_roundtrip() {
 #[test]
 fn skill_policies_and_lazy_preparation_preserve_presence_and_explicit_discriminators() {
     assert_eq!(serde_json::to_value(Overrides::new()).unwrap(), json!({}));
+    for mode in ["on_demand", "warmup", "eager"] {
+        assert_eq!(
+            serde_json::to_value(
+                Overrides::new().lazy_environment_mode(Some(models::LazyEnvironment1::AnyOf0(
+                    mode.to_owned()
+                ),))
+            )
+            .unwrap(),
+            json!({"lazy_environment": mode})
+        );
+    }
     assert_eq!(
         serde_json::to_value(Overrides::new().lazy_environment(None).skill_sync(None)).unwrap(),
         json!({"lazy_environment":null,"skill_sync":null})

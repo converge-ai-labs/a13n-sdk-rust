@@ -243,6 +243,10 @@ One transaction authorizes `run` and checks the idempotency key (known keys repl
 
 Installed Apps can submit `Message` in-process using a configured service-account identity, either standalone or inside the caller's Service transaction (lock order: `organization → App → Thread`; kept short because the org lock serializes App submissions until commit). Automatic follow-up acquires the Thread acceptance lock, verifies the expected last Run, idle/unpaused state, and absence of higher-priority pending input, and never restarts failed or cancelled Threads.
 
+### App attribution
+
+Session provenance is copied to every root, child and fork Thread; a Run copies its Thread's `app_id` and `app_context`. A new root submitted over HTTP into an App-owned Session fails with `409 app_managed_session`; a matching App may submit a new root through its SDK. Inbox Entry provenance identifies the submitting App independently of Thread ownership. The Run's `trigger_app_id` identifies App-origin submission, including a scheduled Entry; direct operator input and Resume leave it null. A Thread-owned default, fresh or dedicated Environment inherits Thread provenance, and automatic replacement inherits the original Environment's provenance.
+
 ### Imported model context
 
 `NewThread.message_history` optionally seeds a new thread with conversation content produced elsewhere; the default is `[]`. It is immutable, part of no view, and covered by the create request's idempotency digest. Message, fork, resume and thread-update requests do not accept it. Forks inherit their origin's checkpoint, including any imported context already in it; they do not copy the initial seed separately. Child threads start without imported history.
@@ -377,7 +381,7 @@ Execution holds no database session across external I/O. An attempt:
 
 1. Checks the run's authority as renewal does ([claim, heartbeat and authority](#claim-heartbeat-and-authority); `authority_revoked` otherwise), resolves the frozen revision with its overrides, connections, host capabilities and mounted memories ([11](11-memory.md#execution)), and reads the assigned entries and the requests already recorded against `max_usage`.
 2. Attempts bounded cleanup of unreferenced objects of the run, then loads its own checkpoint or builds the initial state ([assignment and incorporation](#assignment-and-incorporation)).
-3. Constructs inert sources for the frozen mounts ([06](06-environments.md#execution)); `lazy_environment` selects instance creation/startup on first dependent use or directly in Service before entering Harness, while watching cancellation and drain. Harness opens execution connections on first dependent use in both modes. A drain during readiness yields the attempt as a handoff.
+3. Constructs inert sources for the frozen mounts ([06](06-environments.md#execution)); `lazy_environment` selects on-demand, warmup, or eager instance preparation. In all three modes, Harness opens execution connections on first dependent use. A drain while waiting for eager preparation yields the attempt as a handoff.
 4. Opens the run's host outside any session, with a store for each mounted record memory ([11](11-memory.md#execution)), and streams the Harness run. Every paid dispatch (model requests including inline children, connection tools, web operations) first passes the call check: cancellation, lease renewal, the request limit (`usage_limit_exceeded`) and the admission policy's `proceed` ([09](09-runtime.md#extension-points)). A refusal becomes the run's outcome. A model request names the model it selected by its ID ([04](04-resources.md#models)); the check admits it as that model and keeps the model under the call's ID for its usage records.
 5. At each safe boundary commits a checkpoint and assigns steers in one transaction, emits a stream boundary ([07](07-facts-and-delivery.md#the-session-stream)), offers the steers and then acknowledges the boundary. An ordinary boundary before a model request does not wait for the acknowledgement; an context recovery boundary waits for its fenced checkpoint commit before dispatch; a boundary before tool execution does, so the tools run after both the commit and the steer delivery.
 6. Ends: a completed or waiting result commits a final checkpoint and seals the outcome in the same transaction; a failed or cancelled result seals with the display's interrupted tail; a handoff yields.
@@ -407,6 +411,8 @@ Service binds Harness's [context recovery scope](../a13n-harness/09-context-and-
 Service inherits the default Harness context recovery policy as trusted runtime behavior, independent of Agent revision compaction settings. Primary and summary requests retain ordinary authorization and shared request-budget checks. Service supplies `/workspace/.a13n/history/<thread-id>/` in the primary Environment for best-effort historical transcripts. Files follow that Environment's actual lifetime, independently of durable checkpoint storage. Unavailable storage or readers leave explicit loss notices and do not veto reconstruction. Existing display persistence retains recovery diagnostics and warnings after success; every trigger requires immediate root-cause investigation.
 
 ## Retained tool executions
+
+MCP connections can opt in to SEP-2663 with `config.durable_tasks`. After foreground release or worker loss, a control sweep claims the Tool Execution lease, checks the originating connection authority, and polls the saved task handle outside the database transaction. Input-required handles wait for input, cancellation, or expiry. Terminal results use the retained Tool Execution outbox.
 
 Harness owns the actual invocation, coroutine and native process handle. Each worker holds one Harness tool execution runtime across its attempts; Service supplies durable storage, independent owner leases, Thread-wide ordering and completion delivery. Releasing the foreground wait returns an execution receipt while the original invocation continues. Completing or handing off a Run does not finish its retained tools. Later Runs share the Thread's live execution-context owner while Environment work remains active; otherwise another worker may claim the context.
 
@@ -475,6 +481,14 @@ thread_codeact
 ```
 
 Thread-scoped list, detail and result queries require `read`; cancellation requires `run`. Lists use newest-first `(created_at, id)` pagination with optional originating Service `run_id` and `active` filters. Views retain Harness execution identity and expose Service Run, Attempt and worker correlation, never lease secrets. Result reads use bounded versioned text fragments. Cancellation returns 202 with the current observation, not proof of termination. The Console inspects these records within existing Thread and Run views. Completion-triggered Runs render as system tool notifications with tool name, status and execution ID, without user attribution or raw envelope JSON.
+
+### Durable MCP input
+
+A retained MCP task can checkpoint `input_required` and release its foreground call. Interactive Runs expose pending requests through the originating Run's `/mcp-inputs` resource and through replaceable `interactions` frames in the Session stream. Each request identifies its exact execution, MCP connection and tool call. Scheduled Runs and service-account Runs automatically decline requests; unsupported prompts are also declined.
+
+Human workspace members with `read` can see the pending prompts, including URL destinations. Human members with `run` can respond with `accept`, `decline`, or `cancel`. Only a Form acceptance carries validated content. A response is valid for the prompt the user saw; a changed prompt requires a fresh decision.
+
+Service claims the retained execution in a short transaction, then sends `tasks/update` outside it under the originating Run's authority. Acknowledgement wakes Sweep; a terminal response publishes through the retained-result path. After an explicit rejection, a fresh `tasks/get` can restore a still-pending prompt. When delivery is uncertain, Sweep allows time for the server's state to converge before restoring a still-pending prompt for a fresh decision. Sweep does not replay the submitted content. Responding to an MCP task does not create a successor Run.
 
 ## Seal and successor scheduling
 

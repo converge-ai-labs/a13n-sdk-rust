@@ -33,6 +33,9 @@ pub struct ManagedEnvironmentCreate {
     )]
     pub name: Option<Option<String>>,
 
+    #[serde(rename = "recipe_overrides", skip_serializing_if = "Option::is_none")]
+    pub recipe_overrides: Option<Box<models::RecipeOverrides>>,
+
     #[serde(rename = "template_id")]
     pub template_id: String,
 }
@@ -44,6 +47,7 @@ impl ManagedEnvironmentCreate {
             metrics_data_source_id: None,
             metrics_labels: None,
             name: None,
+            recipe_overrides: None,
             template_id,
         }
     }

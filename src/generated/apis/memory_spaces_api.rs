@@ -545,6 +545,7 @@ pub async fn list_spaces(
     configuration: &configuration::Configuration,
     label: Option<Vec<String>>,
     enabled: Option<bool>,
+    app_id: Option<&str>,
     limit: Option<i32>,
     cursor: Option<&str>,
     x_workspace_id: Option<&str>,
@@ -552,6 +553,7 @@ pub async fn list_spaces(
     // add a prefix to parameters to efficiently prevent name collisions
     let p_query_label = label;
     let p_query_enabled = enabled;
+    let p_query_app_id = app_id;
     let p_query_limit = limit;
     let p_query_cursor = cursor;
     let p_header_x_workspace_id = x_workspace_id;
@@ -580,6 +582,9 @@ pub async fn list_spaces(
     }
     if let Some(ref param_value) = p_query_enabled {
         req_builder = req_builder.query(&[("enabled", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_app_id {
+        req_builder = req_builder.query(&[("app_id", &serde_json::to_string(param_value)?)]);
     }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
