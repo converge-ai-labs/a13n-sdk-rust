@@ -53,6 +53,16 @@ def test_adapter_keeps_typed_unions_and_contract_unchanged() -> None:
     for path in ["/api/v1/usage/context"]:
         assert adapted["paths"][path]["get"]["x-rust-nullable-response"]
     assert "x-rust-nullable-response" not in adapted["paths"]["/api/v1/runs/{run_id}"]["get"]
+    logout = adapted["paths"]["/api/v1/auth/logout"]["post"]
+    assert logout["x-rust-nullable-response"] and logout["x-rust-empty-response"]
+    for path in ("browsers", "egress-credentials", "environments", "memory-spaces", "schedules", "sessions"):
+        params = adapted["paths"][f"/api/v1/{path}"]["get"]["parameters"]
+        app_id = next(param for param in params if param["name"] == "app_id")
+        assert app_id["x-rust-string-query"]
+    for api in ("browsers", "egress_credentials", "environments", "memory_spaces", "schedules", "runs"):
+        generated = (ROOT / f"src/generated/apis/{api}_api.rs").read_text()
+        assert 'query(&[("app_id", &param_value.to_string())])' in generated
+        assert 'query(&[("app_id", &serde_json::to_string(param_value)?)]' not in generated
 
 
 def test_schema_adapters_preserve_presence_constants_binary_and_sensitive_data() -> None:

@@ -1625,7 +1625,7 @@ pub async fn list_environments(
         req_builder = req_builder.query(&[("status", &param_value.to_string())]);
     }
     if let Some(ref param_value) = p_query_app_id {
-        req_builder = req_builder.query(&[("app_id", &serde_json::to_string(param_value)?)]);
+        req_builder = req_builder.query(&[("app_id", &param_value.to_string())]);
     }
     if let Some(ref param_value) = p_query_limit {
         req_builder = req_builder.query(&[("limit", &param_value.to_string())]);

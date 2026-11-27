@@ -1056,7 +1056,7 @@ pub async fn list_user_keys(
 /// End the local session and, when available, return the provider's browser logout URL.
 pub async fn logout(
     configuration: &configuration::Configuration,
-) -> Result<Response<models::LogoutRedirect>, Error<LogoutError>> {
+) -> Result<Response<Option<models::LogoutRedirect>>, Error<LogoutError>> {
     let uri_str = format!("{}/api/v1/auth/logout", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -1090,11 +1090,18 @@ pub async fn logout(
     let content_type = super::ContentType::from(content_type);
 
     if !status.is_client_error() && !status.is_server_error() {
+        if status == reqwest::StatusCode::NO_CONTENT {
+            return Ok(Response {
+                data: None,
+                status,
+                headers,
+            });
+        }
         let content = resp.text().await?;
         match content_type {
             ContentType::Json => serde_json::from_str(&content)
                 .map(|data| Response {
-                    data,
+                    data: Some(data),
                     status,
                     headers,
                 })

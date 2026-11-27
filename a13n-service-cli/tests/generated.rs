@@ -1640,3 +1640,42 @@ fn app_plugins_list_and_replace_dispatch_false_and_precondition() {
         serde_json::json!({"enabled":false})
     );
 }
+
+#[test]
+fn logout_dispatch_preserves_json_and_bodyless_success() {
+    for status in [200, 204] {
+        let body = if status == 200 {
+            br#"{"logout_url":"https://identity.example/logout"}"#.to_vec()
+        } else {
+            Vec::new()
+        };
+        let (base, server) = serve(vec![(
+            status,
+            vec![
+                ("Content-Type", "application/json"),
+                ("X-Request-ID", "logout-test"),
+            ],
+            body,
+        )]);
+        let output = binary(&["--base-url", &base, "auth", "logout", "--include-meta"]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let value: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(value["status"], status);
+        assert_eq!(value["request_id"], "logout-test");
+        if status == 200 {
+            assert_eq!(
+                value["data"]["logout_url"],
+                "https://identity.example/logout"
+            );
+        } else {
+            assert!(value["data"].is_null());
+        }
+        let requests = server.join().unwrap();
+        assert_eq!(requests.len(), 1);
+        assert!(requests[0].starts_with("POST /api/v1/auth/logout "));
+    }
+}

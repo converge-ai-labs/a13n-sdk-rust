@@ -2246,12 +2246,20 @@ impl<'a> AuthResource<'a> {
     /// Preserves the actual HTTP status and headers, including ETag and request ID.
     ///
     /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
-    pub async fn logout(&self) -> Result<Response<models::LogoutRedirect>, Error> {
+    pub async fn logout(&self) -> Result<Response<Option<models::LogoutRedirect>>, Error> {
         let request =
             self.0
                 .client
                 .request(reqwest::Method::POST, "/api/v1/auth/logout", &self.0.ids)?;
-        let response = self.0.client.json(request, &[200, 204]).await?;
+        let response: Response<Option<models::LogoutRedirect>> =
+            self.0.client.json(request, &[200, 204]).await?;
+        if response.status != reqwest::StatusCode::NO_CONTENT && response.data.is_none() {
+            return Err(crate::error::ProtocolError::response(
+                crate::error::ProtocolKind::InvalidJson,
+                response.status.as_u16(),
+                &response.headers,
+            ));
+        }
         Ok(response)
     }
 }
