@@ -20,6 +20,14 @@ pub struct CatalogModel {
     #[serde(rename = "identity")]
     pub identity: String,
 
+    #[serde(
+        rename = "model_api",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub model_api: Option<Option<String>>,
+
     #[serde(rename = "name")]
     pub name: String,
 
@@ -54,6 +62,7 @@ impl CatalogModel {
         CatalogModel {
             characteristics: Box::new(characteristics),
             identity,
+            model_api: None,
             name,
             pricing: if let Some(x) = pricing {
                 Some(Box::new(x))

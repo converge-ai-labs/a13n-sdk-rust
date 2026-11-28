@@ -1051,6 +1051,10 @@ impl<'a> ServiceResources<'a> {
     pub fn provider_types(&self) -> ProviderTypesResource<'a> {
         ProviderTypesResource(self.0.clone())
     }
+    /// Access `realtime` locally, sharing the client and explicit scope.
+    pub fn realtime(&self) -> RealtimeResource<'a> {
+        RealtimeResource(self.0.clone())
+    }
     /// Access `runs` locally, sharing the client and explicit scope.
     pub fn runs(&self) -> RunsResource<'a> {
         RunsResource(self.0.clone())
@@ -12019,6 +12023,109 @@ impl<'a> ProviderTypeResource<'a> {
 /// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
 
 #[derive(Clone)]
+pub struct RealtimeResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`RealtimeResource::get`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct RealtimeGetOptions {
+    /// Query parameter `agent_id`. Required; an empty string is rejected locally.
+    pub agent_id: String,
+    /// Query parameter `agent_revision_id`. `None` omits this parameter.
+    pub agent_revision_id: Option<String>,
+    /// Query parameter `thread_id`. `None` omits this parameter.
+    pub thread_id: Option<String>,
+    /// Query parameter `fork_run_id`. `None` omits this parameter.
+    pub fork_run_id: Option<String>,
+    /// Query parameter `model`. `None` omits this parameter.
+    pub model: Option<String>,
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> RealtimeResource<'a> {
+    /// Access `sessions` locally, sharing the client and explicit scope.
+    pub fn sessions(&self) -> RealtimeSessionsResource<'a> {
+        RealtimeSessionsResource(self.0.clone())
+    }
+    /// Realtime Availability.
+    ///
+    /// `GET /api/v1/realtime`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn get(
+        &self,
+        options: RealtimeGetOptions,
+    ) -> Result<Response<models::RealtimeAvailability>, Error> {
+        if options.agent_id.is_empty() {
+            return Err(Error::InvalidInput);
+        }
+        let mut request =
+            self.0
+                .client
+                .request(reqwest::Method::GET, "/api/v1/realtime", &self.0.ids)?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = query(request, "agent_id", &options.agent_id)?;
+        if let Some(value) = &options.agent_revision_id {
+            request = query(request, "agent_revision_id", value)?;
+        }
+        if let Some(value) = &options.thread_id {
+            request = query(request, "thread_id", value)?;
+        }
+        if let Some(value) = &options.fork_run_id {
+            request = query(request, "fork_run_id", value)?;
+        }
+        if let Some(value) = &options.model {
+            request = query(request, "model", value)?;
+        }
+        let response = self.0.client.json(request, &[200]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
+pub struct RealtimeSessionsResource<'a>(pub(crate) Binding<'a>);
+/// Query and header options for [`RealtimeSessionsResource::create`]. Required values must be supplied before calling the method.
+#[derive(Clone, Debug, Default)]
+pub struct RealtimeSessionsCreateOptions {
+    /// Header parameter `X-Workspace-ID`. The workspace ID a login session acts in; required with a login session. An API key acts in its own workspace and needs none; naming another is forbidden. `None` omits this parameter.
+    pub x_workspace_id: Option<String>,
+}
+impl<'a> RealtimeSessionsResource<'a> {
+    /// Create Realtime Session.
+    ///
+    /// `POST /api/v1/realtime/sessions`.
+    ///
+    /// Preserves the actual HTTP status and headers, including ETag and request ID.
+    ///
+    /// Accepts the full generated request model. Optional nullable fields distinguish omission (`None`), null (`Some(None)`) and value (`Some(Some(value))`).
+    ///
+    /// Drop or time out the whole future to stop local work. Cancellation does not prove Service rollback; mutations are not automatically retried.
+    pub async fn create(
+        &self,
+        body: &models::RealtimeSessionCreate,
+        options: RealtimeSessionsCreateOptions,
+    ) -> Result<Response<models::RealtimeSessionTicket>, Error> {
+        let mut request = self.0.client.request(
+            reqwest::Method::POST,
+            "/api/v1/realtime/sessions",
+            &self.0.ids,
+        )?;
+        request = self
+            .0
+            .client
+            .scoped_request(request, options.x_workspace_id.as_deref());
+        request = request.json(body);
+        let response = self.0.client.json(request, &[201]).await?;
+        Ok(response)
+    }
+}
+/// A local resource reference borrowing its client's transport and shutdown lifetime. Binding performs no request and grants no additional authority.
+
+#[derive(Clone)]
 pub struct RunsResource<'a>(pub(crate) Binding<'a>);
 /// Query and header options for [`RunsResource::list`]. Required values must be supplied before calling the method.
 #[derive(Clone, Debug, Default)]
@@ -21391,6 +21498,13 @@ pub const RESOURCE_OPERATIONS: &[(&str, &str, &str, &str)] = &[
         "/api/v1/provider-types/{kind}",
         "ProviderTypeResource",
         "list",
+    ),
+    ("GET", "/api/v1/realtime", "RealtimeResource", "get"),
+    (
+        "POST",
+        "/api/v1/realtime/sessions",
+        "RealtimeSessionsResource",
+        "create",
     ),
     ("GET", "/api/v1/runs", "RunsResource", "list"),
     ("GET", "/api/v1/runs/{run_id}", "RunResource", "get"),
