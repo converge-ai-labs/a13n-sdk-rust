@@ -13,6 +13,15 @@ use crate::generated::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
+/// struct for typed errors of method [`create_realtime_session`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum CreateRealtimeSessionError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method [`health`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -25,6 +34,83 @@ pub enum HealthError {
 #[serde(untagged)]
 pub enum ReadyError {
     UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`realtime_availability`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum RealtimeAvailabilityError {
+    Status400(models::ErrorEnvelope),
+    DefaultResponse(models::ErrorEnvelope),
+    UnknownValue(serde_json::Value),
+}
+
+/// Issue a one-use WebSocket ticket for the selected Agent and optional Thread.
+pub async fn create_realtime_session(
+    configuration: &configuration::Configuration,
+    realtime_session_create: models::RealtimeSessionCreate,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::RealtimeSessionTicket>, Error<CreateRealtimeSessionError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_body_realtime_session_create = realtime_session_create;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!("{}/api/v1/realtime/sessions", configuration.base_path);
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+    req_builder = req_builder.json(&p_body_realtime_session_create);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::RealtimeSessionTicket`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::RealtimeSessionTicket`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<CreateRealtimeSessionError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
 }
 
 pub async fn health(
@@ -129,6 +215,92 @@ pub async fn ready(
     } else {
         let content = resp.text().await?;
         let entity: Option<ReadyError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(Box::new(ResponseContent {
+            status,
+            headers,
+            content,
+            entity,
+        })))
+    }
+}
+
+/// Report realtime input for the selected Agent and Thread.
+pub async fn realtime_availability(
+    configuration: &configuration::Configuration,
+    agent_id: &str,
+    agent_revision_id: Option<&str>,
+    thread_id: Option<&str>,
+    fork_run_id: Option<&str>,
+    model: Option<&str>,
+    x_workspace_id: Option<&str>,
+) -> Result<Response<models::RealtimeAvailability>, Error<RealtimeAvailabilityError>> {
+    // add a prefix to parameters to efficiently prevent name collisions
+    let p_query_agent_id = agent_id;
+    let p_query_agent_revision_id = agent_revision_id;
+    let p_query_thread_id = thread_id;
+    let p_query_fork_run_id = fork_run_id;
+    let p_query_model = model;
+    let p_header_x_workspace_id = x_workspace_id;
+
+    let uri_str = format!("{}/api/v1/realtime", configuration.base_path);
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    req_builder = req_builder.query(&[("agent_id", &p_query_agent_id.to_string())]);
+    if let Some(ref param_value) = p_query_agent_revision_id {
+        req_builder = req_builder.query(&[("agent_revision_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_thread_id {
+        req_builder = req_builder.query(&[("thread_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_fork_run_id {
+        req_builder = req_builder.query(&[("fork_run_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = p_query_model {
+        req_builder = req_builder.query(&[("model", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(param_value) = p_header_x_workspace_id {
+        req_builder = req_builder.header("X-Workspace-ID", param_value.to_string());
+    }
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_json::from_str(&content)
+                .map(|data| Response {
+                    data,
+                    status,
+                    headers,
+                })
+                .map_err(Error::from),
+            ContentType::Text => {
+                return Err(Error::from(serde_json::Error::custom(
+                    "Received `text/plain` content type response that cannot be converted to `models::RealtimeAvailability`",
+                )));
+            }
+            ContentType::Unsupported(unknown_type) => {
+                return Err(Error::from(serde_json::Error::custom(format!(
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::RealtimeAvailability`"
+                ))));
+            }
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<RealtimeAvailabilityError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(Box::new(ResponseContent {
             status,
             headers,

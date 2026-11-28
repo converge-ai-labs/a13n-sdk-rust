@@ -90,6 +90,14 @@ pub struct ProviderType {
     pub operations: Option<Option<Vec<models::WebOperation>>>,
 
     #[serde(
+        rename = "realtime_model_apis",
+        default,
+        with = "::serde_with::rust::double_option",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub realtime_model_apis: Option<Option<Vec<String>>>,
+
+    #[serde(
         rename = "settings_schemas",
         default,
         with = "::serde_with::rust::double_option",
@@ -168,6 +176,7 @@ impl ProviderType {
             model_apis: None,
             oauth_scheme: None,
             operations: None,
+            realtime_model_apis: None,
             settings_schemas: None,
             setup_label,
             setup_url,

@@ -14,6 +14,8 @@ use serde::{Deserialize, Serialize};
 ///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum Trigger {
+    #[serde(rename = "realtime")]
+    Realtime,
     #[serde(rename = "input")]
     Input,
     #[serde(rename = "queued")]
@@ -37,6 +39,7 @@ pub enum Trigger {
 impl std::fmt::Display for Trigger {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
+            Self::Realtime => write!(f, "realtime"),
             Self::Input => write!(f, "input"),
             Self::Queued => write!(f, "queued"),
             Self::Resume => write!(f, "resume"),
@@ -52,6 +55,6 @@ impl std::fmt::Display for Trigger {
 
 impl Default for Trigger {
     fn default() -> Trigger {
-        Self::Input
+        Self::Realtime
     }
 }
